@@ -269,7 +269,7 @@ const HeroSection = styled('section')(({ theme, scrollProgress }) => ({
   color: '#fff',
   padding: '0',
   overflow: 'hidden',
-  height: 'calc(100vh - 80px)', // 100vh minus header height
+  height: '100vh', // Full viewport height to cover header
   minHeight: '600px',
   display: 'flex',
   alignItems: 'center',
@@ -313,8 +313,10 @@ const HeroContent = styled(Container)(({ theme }) => ({
   padding: theme.spacing(6, 0, 6, 2),
   maxWidth: '1000px',
   marginLeft: 0,
+  paddingTop: '120px', // Add top padding to account for header
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(4, 2),
+    paddingTop: '100px', // Adjust for mobile
     textAlign: 'center',
     alignItems: 'center',
   },
@@ -708,7 +710,7 @@ const HeroBanner = () => {
 
   // Use fallback slides if no banners are available
   const displaySlides = slides.length > 0 ? slides : fallbackSlides;
-  
+
 
 
   const currentSlide = displaySlides[activeSlide] || { title: '', subtitle: '' };
@@ -800,6 +802,7 @@ const HeroBanner = () => {
             zIndex: 2,
             padding: '0 20px 0 0',
             marginLeft: 0,
+            marginTop: '60px', // Add margin to push content below header
             transform: `translateY(${scrollProgress * -30}px)`,
             transition: 'transform 0.3s ease-out',
           }}>
@@ -880,17 +883,6 @@ const HeroBanner = () => {
           ))}
         </CarouselIndicators>
 
-        {/* Refresh Button (Top Right) */}
-        <RefreshButton
-          aria-label="refresh banners"
-          onClick={() => {
-            setRefreshKey(prev => prev + 1);
-            setLoading(true);
-          }}
-          disabled={loading}
-        >
-          <Refresh />
-        </RefreshButton>
 
       </HeroSection>
 

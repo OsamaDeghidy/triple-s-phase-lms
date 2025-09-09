@@ -67,10 +67,13 @@ const pulse = keyframes`
 const HeroSection = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, #0e5181 0%, #1a5f8a 50%, #0a3d62 100%)`,
   color: 'white',
-  padding: theme.spacing(4, 0, 3),
+  padding: theme.spacing(8, 0, 4), // Increased top padding to account for header
   textAlign: 'center',
   position: 'relative',
   overflow: 'hidden',
+  minHeight: '60vh', // Ensure sufficient height for header overlay
+  display: 'flex',
+  alignItems: 'center',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -217,7 +220,7 @@ const ActionButton = styled(IconButton)(({ theme, variant }) => ({
   ...(variant === 'like' && {
     backgroundColor: alpha('#1976d2', 0.1),
     color: '#1976d2',
-  '&:hover': {
+    '&:hover': {
       backgroundColor: '#1976d2',
       color: 'white',
       transform: 'scale(1.1)',
@@ -305,23 +308,23 @@ const ArticlesPage = () => {
       try {
         setLoading(true);
         console.log('Fetching articles from API...');
-        
+
         const response = await articleAPI.getArticles({
           page: currentPage,
           page_size: 6,
           search: searchQuery,
           status: 'published',
-          ordering: sortBy === 'latest' ? '-created_at' : 
-                   sortBy === 'oldest' ? 'created_at' : 
-                   sortBy === 'popular' ? '-views_count' : '-created_at'
+          ordering: sortBy === 'latest' ? '-created_at' :
+            sortBy === 'oldest' ? 'created_at' :
+              sortBy === 'popular' ? '-views_count' : '-created_at'
         });
-        
+
         console.log('Articles API response:', response);
-        
+
         // Handle different response formats
         let articlesData = [];
         let totalCount = 0;
-        
+
         if (Array.isArray(response)) {
           articlesData = response;
           totalCount = response.length;
@@ -335,7 +338,7 @@ const ArticlesPage = () => {
           articlesData = [];
           totalCount = 0;
         }
-        
+
         // Transform articles data to match our component structure
         const transformedArticles = articlesData.map(article => ({
           id: article.id,
@@ -357,7 +360,7 @@ const ArticlesPage = () => {
           featured: article.featured || false,
           rating: 4.5 // Default rating
         }));
-        
+
         setArticles(transformedArticles);
         setTotalPages(Math.ceil(totalCount / 6));
         setLoading(false);
@@ -432,7 +435,7 @@ const ArticlesPage = () => {
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         article.summary.toLowerCase().includes(searchQuery.toLowerCase());
+      article.summary.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -469,14 +472,14 @@ const ArticlesPage = () => {
       transition={{ duration: 0.6 }}
       whileHover={{ scale: 1.02 }}
     >
-      <ModernCard sx={{ 
-        height: { xs: '180px', sm: '240px', md: '280px' }, 
+      <ModernCard sx={{
+        height: { xs: '180px', sm: '240px', md: '280px' },
         cursor: 'pointer',
         flexDirection: { xs: 'column', sm: 'row' }
       }} onClick={() => navigate(`/articles/${article.slug || article.id}`)}>
         {/* Image Section - Smaller */}
-        <Box sx={{ 
-          position: 'relative', 
+        <Box sx={{
+          position: 'relative',
           overflow: 'hidden',
           width: { xs: '140px', sm: '180px', md: '220px' },
           minWidth: { xs: '140px', sm: '180px', md: '220px' },
@@ -489,7 +492,7 @@ const ArticlesPage = () => {
             image={article.image}
             alt={article.title}
             className="article-image"
-            sx={{ 
+            sx={{
               objectFit: 'cover',
               transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
               borderRadius: { xs: '20px 20px 0 0', sm: '0 20px 20px 0' }
@@ -498,7 +501,7 @@ const ArticlesPage = () => {
               e.target.src = 'https://via.placeholder.com/200x180/1976d2/ffffff?text=No+Image';
             }}
           />
-          
+
           {/* Gradient Overlay */}
           <Box sx={{
             position: 'absolute',
@@ -510,11 +513,11 @@ const ArticlesPage = () => {
             borderRadius: { xs: '20px 20px 0 0', sm: '0 20px 20px 0' }
           }} />
         </Box>
-        
+
         {/* Content Section */}
-        <CardContent sx={{ 
-          flexGrow: 1, 
-          p: { xs: 2, sm: 3 }, 
+        <CardContent sx={{
+          flexGrow: 1,
+          p: { xs: 2, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
           gap: { xs: 1, sm: 1.5 },
@@ -534,9 +537,9 @@ const ArticlesPage = () => {
               <Tooltip title={likedArticles.has(article.id) ? "إلغاء الإعجاب" : "إعجاب"}>
                 <ActionButton
                   variant="like"
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    handleLike(article.id); 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLike(article.id);
                   }}
                   sx={{
                     backgroundColor: likedArticles.has(article.id) ? '#1976d2' : alpha('#1976d2', 0.1),
@@ -550,13 +553,13 @@ const ArticlesPage = () => {
                   {likedArticles.has(article.id) ? <FavoriteIcon sx={{ fontSize: 20 }} /> : <FavoriteBorderIcon sx={{ fontSize: 20 }} />}
                 </ActionButton>
               </Tooltip>
-              
+
               <Tooltip title={bookmarkedArticles.has(article.id) ? "إلغاء الحفظ" : "حفظ"}>
                 <ActionButton
                   variant="bookmark"
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    handleBookmark(article.id); 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleBookmark(article.id);
                   }}
                   sx={{
                     backgroundColor: bookmarkedArticles.has(article.id) ? '#42a5f5' : alpha('#42a5f5', 0.1),
@@ -572,11 +575,11 @@ const ArticlesPage = () => {
               </Tooltip>
             </Box>
           </Box>
-          
+
           {/* Title */}
-          <Typography variant="h6" component="h3" sx={{ 
-            fontWeight: 800, 
-            lineHeight: 1.2, 
+          <Typography variant="h6" component="h3" sx={{
+            fontWeight: 800,
+            lineHeight: 1.2,
             color: '#1a1a1a',
             fontSize: { xs: '1.1rem', sm: '1.2rem' },
             mb: 1,
@@ -588,10 +591,10 @@ const ArticlesPage = () => {
           }}>
             {article.title}
           </Typography>
-          
+
           {/* Summary */}
-          <Typography variant="body2" color="text.secondary" sx={{ 
-            lineHeight: 1.4, 
+          <Typography variant="body2" color="text.secondary" sx={{
+            lineHeight: 1.4,
             fontSize: { xs: '0.9rem', sm: '1rem' },
             mb: 2,
             color: '#666',
@@ -603,11 +606,11 @@ const ArticlesPage = () => {
           }}>
             {article.summary}
           </Typography>
-          
+
           {/* Footer with Read More and Stats */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             mt: 'auto',
             flexDirection: { xs: 'column', sm: 'row' },
@@ -622,15 +625,15 @@ const ArticlesPage = () => {
                 <ArrowForwardIcon sx={{ fontSize: 14, color: 'white' }} />
               </Box>
             </ReadMoreButton>
-            
-            <Box sx={{ 
-              display: 'flex', 
-              gap: { xs: 1, sm: 1.5 }, 
+
+            <Box sx={{
+              display: 'flex',
+              gap: { xs: 1, sm: 1.5 },
               alignItems: 'center',
               flexWrap: 'wrap'
             }}>
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 alignItems: 'center',
                 gap: 0.5,
                 backgroundColor: 'rgba(25, 118, 210, 0.1)',
@@ -642,8 +645,8 @@ const ArticlesPage = () => {
                   {article.reading_time} د
                 </Typography>
               </Box>
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 alignItems: 'center',
                 gap: 0.5,
                 backgroundColor: 'rgba(76, 175, 80, 0.1)',
@@ -655,8 +658,8 @@ const ArticlesPage = () => {
                   {article.views_count.toLocaleString()}
                 </Typography>
               </Box>
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 alignItems: 'center',
                 gap: 0.5,
                 backgroundColor: 'rgba(244, 67, 54, 0.1)',
@@ -682,11 +685,12 @@ const ArticlesPage = () => {
         <Box component="main" sx={{ flex: 1 }}>
           <HeroSection>
             <Container>
-              <Skeleton variant="text" width={400} height={60} sx={{ mx: 'auto', mb: 2 }} />
-              <Skeleton variant="text" width={600} height={40} sx={{ mx: 'auto' }} />
+              <Skeleton variant="text" width={300} height={80} sx={{ mx: 'auto', mb: 3 }} />
+              <Skeleton variant="text" width={500} height={30} sx={{ mx: 'auto', mb: 4 }} />
+              <Skeleton variant="rectangular" width={400} height={50} sx={{ mx: 'auto', borderRadius: '25px' }} />
             </Container>
           </HeroSection>
-          
+
           <Container sx={{ py: 4 }}>
             <Grid container spacing={3}>
               {[1, 2, 3, 4, 5, 6].map((item) => (
@@ -725,7 +729,7 @@ const ArticlesPage = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      
+
       <Box component="main" sx={{ flex: 1 }}>
         <HeroSection>
           <Container>
@@ -733,50 +737,54 @@ const ArticlesPage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              style={{ position: 'relative', zIndex: 2 }}
             >
-              <Typography 
-                variant="h3" 
-                component="h1" 
-                sx={{ 
-                  fontWeight: 800, 
-                  mb: 2,
+              <Typography
+                variant="h3"
+                component="h1"
+                sx={{
+                  fontWeight: 800,
+                  mb: 3,
                   color: '#ffffff',
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.2rem' },
+                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
                   lineHeight: 1.2,
-                  textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                  textShadow: '0 4px 20px rgba(0,0,0,0.4)'
                 }}
               >
                 المدونة
               </Typography>
-              <Typography variant="body1" sx={{ 
-                opacity: 0.9, 
-                mb: 2, 
-                fontWeight: 300,
-                fontSize: { xs: '0.9rem', sm: '1rem' }
+              <Typography variant="body1" sx={{
+                opacity: 0.95,
+                mb: 4,
+                fontWeight: 400,
+                fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
+                maxWidth: '600px',
+                mx: 'auto',
+                textShadow: '0 2px 10px rgba(0,0,0,0.3)'
               }}>
                 اكتشف أحدث المقالات والتقنيات في عالم التطوير والتصميم
               </Typography>
-              
+
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}
               >
-                <Box sx={{ 
+                <Box sx={{
                   position: 'relative',
-                  maxWidth: '400px',
+                  maxWidth: '500px',
                   mx: 'auto',
                   '&::before': {
                     content: '""',
                     position: 'absolute',
-                    top: '-2px',
-                    left: '-2px',
-                    right: '-2px',
-                    bottom: '-2px',
+                    top: '-3px',
+                    left: '-3px',
+                    right: '-3px',
+                    bottom: '-3px',
                     background: 'linear-gradient(45deg, #0e5181, #1a5f8a, #0a3d62)',
-                    borderRadius: '25px',
+                    borderRadius: '28px',
                     zIndex: -1,
-                    opacity: 0.3,
+                    opacity: 0.4,
                     animation: `${pulse} 3s ease-in-out infinite`,
                   }
                 }}>
@@ -787,22 +795,22 @@ const ArticlesPage = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <SearchIcon sx={{ 
-                            color: '#0e5181', 
+                          <SearchIcon sx={{
+                            color: '#0e5181',
                             ml: 1,
-                            fontSize: '1.1rem',
+                            fontSize: '1.2rem',
                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
                           }} />
                         </InputAdornment>
                       ),
                     }}
                     sx={{
-                      maxWidth: 400,
+                      maxWidth: 500,
                       width: '100%',
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.98)',
                       borderRadius: '25px',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                      backdropFilter: 'blur(15px)',
+                      boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
                       '& .MuiOutlinedInput-root': {
                         '& fieldset': {
                           border: 'none',
@@ -812,13 +820,13 @@ const ArticlesPage = () => {
                         },
                         '&.Mui-focused fieldset': {
                           border: 'none',
-                          boxShadow: '0 0 0 2px rgba(14, 81, 129, 0.5)',
+                          boxShadow: '0 0 0 3px rgba(14, 81, 129, 0.6)',
                         },
                         paddingRight: '15px',
                       },
                       '& .MuiInputBase-input': {
-                        padding: '10px 15px',
-                        fontSize: '0.9rem',
+                        padding: '12px 15px',
+                        fontSize: '1rem',
                         '&::placeholder': {
                           opacity: 0.7,
                           color: '#666',
@@ -832,21 +840,21 @@ const ArticlesPage = () => {
           </Container>
         </HeroSection>
 
-        <Container sx={{ py: 6 }}>
-          <FilterPaper sx={{ mb: 4 }}>
+        <Container sx={{ py: 8 }}>
+          <FilterPaper sx={{ mb: 6 }}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{ 
-                fontWeight: 700, 
-                mr: 2, 
+              <Typography variant="h6" sx={{
+                fontWeight: 700,
+                mr: 2,
                 color: '#1976d2',
-                        display: 'flex',
-                        alignItems: 'center',
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1
               }}>
                 <TrendingUpIcon />
                 تصفية المقالات:
               </Typography>
-              
+
               <FormControl sx={{ minWidth: 150 }}>
                 <InputLabel>الفئة</InputLabel>
                 <Select
@@ -862,7 +870,7 @@ const ArticlesPage = () => {
                   ))}
                 </Select>
               </FormControl>
-              
+
               <FormControl sx={{ minWidth: 150 }}>
                 <InputLabel>الترتيب</InputLabel>
                 <Select
@@ -890,7 +898,7 @@ const ArticlesPage = () => {
                   </Grid>
                 ))}
               </Grid>
-              
+
               {totalPages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
                   <Pagination
@@ -931,7 +939,7 @@ const ArticlesPage = () => {
                     setSearchQuery('');
                     setSelectedCategory('all');
                   }}
-                  sx={{ 
+                  sx={{
                     borderRadius: 2,
                     borderColor: '#1976d2',
                     color: '#1976d2',
@@ -948,7 +956,7 @@ const ArticlesPage = () => {
           )}
         </Container>
       </Box>
-      
+
       <Footer />
     </Box>
   );
