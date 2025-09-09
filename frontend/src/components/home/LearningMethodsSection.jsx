@@ -1,33 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Tabs, 
-  Tab, 
-  Grid, 
-  Card, 
-  CardContent, 
-  Button, 
-  useTheme, 
-  useMediaQuery, 
+import {
+  Box,
+  Container,
+  Typography,
+  Tabs,
+  Tab,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  useTheme,
+  useMediaQuery,
   styled,
   keyframes,
   Fade,
   Grow,
   CircularProgress,
   Alert,
-  IconButton
+  IconButton,
+  Slider
 } from '@mui/material';
-import { 
-  Code, 
-  School, 
-  MenuBook, 
-  ChevronLeft, 
+import {
+  Code,
+  School,
+  MenuBook,
+  ChevronLeft,
   ChevronRight,
   ArrowForward,
-  CheckCircle
+  CheckCircle,
+  LocalPharmacy,
+  MedicalServices,
+  LocalHospital,
+  Description,
+  NavigateNext,
+  NavigateBefore
 } from '@mui/icons-material';
 import { courseAPI } from '../../services/api.service';
 
@@ -38,134 +45,285 @@ const floatAnimation = keyframes`
 `;
 
 const SectionContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(6, 0),
-  background: '#ffffff',
+  // padding: theme.spacing(4, 0),
+  backgroundColor: '#ffffff',
   position: 'relative',
   overflow: 'hidden',
   '&:before': {
     content: '""',
     position: 'absolute',
-    width: '400px',
-    height: '400px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.03) 0%, rgba(229, 151, 139, 0.03) 100%)',
-    top: '-200px',
-    right: '-200px',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      radial-gradient(circle at 25% 25%, rgba(92, 45, 145, 0.06) 0%, transparent 25%),
+      radial-gradient(circle at 75% 75%, rgba(52, 73, 139, 0.06) 0%, transparent 25%),
+      radial-gradient(circle at 50% 10%, rgba(135, 206, 235, 0.04) 0%, transparent 20%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.98) 100%)
+    `,
     zIndex: 0,
   },
   '&:after': {
     content: '""',
-    position: 'absolute',
-    width: '300px',
-    height: '300px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, rgba(229, 151, 139, 0.02) 0%, rgba(14, 81, 129, 0.02) 100%)',
-    bottom: '-150px',
-    left: '-150px',
-    zIndex: 0,
-  },
-  '& .creative-pattern': {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    opacity: 0.03,
-    zIndex: 0,
-    backgroundImage: `
-      radial-gradient(circle at 20% 30%, #0e5181 1px, transparent 1px),
-      radial-gradient(circle at 80% 70%, #e5978b 1px, transparent 1px),
-      radial-gradient(circle at 40% 80%, #0e5181 1px, transparent 1px),
-      radial-gradient(circle at 90% 20%, #e5978b 1px, transparent 1px),
-      linear-gradient(45deg, transparent 49.5%, rgba(14, 81, 129, 0.08) 50%, transparent 50.5%),
-      linear-gradient(-45deg, transparent 49.5%, rgba(229, 151, 139, 0.08) 50%, transparent 50.5%)
+    right: 0,
+    bottom: 0,
+    background: `
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 48px,
+        rgba(92, 45, 145, 0.015) 50px,
+        rgba(92, 45, 145, 0.015) 52px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 48px,
+        rgba(52, 73, 139, 0.015) 50px,
+        rgba(52, 73, 139, 0.015) 52px
+      )
     `,
-    backgroundSize: '120px 120px, 120px 120px, 120px 120px, 120px 120px, 200px 200px, 200px 200px',
-    backgroundPosition: '0 0, 60px 60px, 30px 90px, 90px 30px, 0 0, 0 0',
+    zIndex: 0,
+  },
+  '& > *': {
+    position: 'relative',
+    zIndex: 1,
   },
   [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(8, 0),
+    padding: theme.spacing(3, 0),
   },
 }));
 
-const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: 800,
-  textAlign: 'center',
-  marginBottom: theme.spacing(1),
-  color: '#0e5181',
-  fontSize: '2.5rem',
+const ContentWrapper = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: theme.spacing(8),
+  alignItems: 'center',
   position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    bottom: -12,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '80px',
-    height: '4px',
-    background: '#e5978b',
-    borderRadius: '2px',
+  zIndex: 2,
+  minHeight: '400px',
+  [theme.breakpoints.down('lg')]: {
+    gridTemplateColumns: '1fr',
+    gap: theme.spacing(6),
   },
+}));
+
+const LeftSection = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(3),
+  [theme.breakpoints.down('lg')]: {
+    textAlign: 'center',
+    order: 2,
+  },
+}));
+
+const CategoryIcon = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  marginBottom: theme.spacing(1),
+  '& .MuiSvgIcon-root': {
+    color: '#A0A0A0',
+    fontSize: '1.2rem',
+  },
+  '& span': {
+    color: '#333333',
+    fontSize: '0.9rem',
+    fontWeight: 500,
+  },
+}));
+
+const MainTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '2.5rem',
+  fontWeight: 800,
+  color: '#5C2D91',
+  lineHeight: 1.2,
+  marginBottom: theme.spacing(2),
   [theme.breakpoints.down('sm')]: {
     fontSize: '2rem',
   },
 }));
 
-const SectionSubtitle = styled(Typography)(({ theme }) => ({
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  maxWidth: '700px',
-  margin: '0 auto',
-  marginBottom: theme.spacing(6),
+const Subtitle = styled(Typography)(({ theme }) => ({
   fontSize: '1.1rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '1rem',
-    padding: theme.spacing(0, 2),
+  color: '#6c757d',
+  lineHeight: 1.6,
+  marginBottom: theme.spacing(3),
+  maxWidth: '500px',
+  [theme.breakpoints.down('lg')]: {
+    maxWidth: '100%',
   },
 }));
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  marginBottom: theme.spacing(6),
-  '& .MuiTabs-flexContainer': {
-    justifyContent: 'center',
-    gap: theme.spacing(1),
-    background: 'rgba(255, 255, 255, 0.7)',
-    padding: theme.spacing(1.5, 2),
-    borderRadius: '50px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
-    maxWidth: 'fit-content',
-    margin: '0 auto',
+const ViewAllButton = styled(Button)(({ theme }) => ({
+  background: '#34498B',
+  color: '#fff',
+  padding: theme.spacing(1.5, 3),
+  borderRadius: '30px',
+  textTransform: 'none',
+  fontWeight: 600,
+  fontSize: '1rem',
+  boxShadow: '0 4px 15px rgba(52, 73, 139, 0.3)',
+  transition: 'all 0.3s ease',
+  alignSelf: 'flex-start',
+  [theme.breakpoints.down('lg')]: {
+    alignSelf: 'center',
   },
-  '& .MuiTab-root': {
-    textTransform: 'none',
-    fontWeight: 700,
-    fontSize: '1rem',
-    color: theme.palette.text.secondary,
-    minWidth: 'auto',
-    padding: theme.spacing(1, 3),
-    borderRadius: '50px',
-    transition: 'all 0.3s ease',
-    '&:hover': {
-      color: '#0e5181',
-      transform: 'translateY(-2px)',
-    },
-    '&.Mui-selected': {
-      color: '#fff',
-      background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
-      boxShadow: '0 4px 15px rgba(14, 81, 129, 0.3)',
-    },
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(52, 73, 139, 0.4)',
+    backgroundColor: '#2a3a6b',
   },
-  '& .MuiTabs-indicator': {
+}));
+
+const RightSection = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  [theme.breakpoints.down('lg')]: {
+    order: 1,
+  },
+}));
+
+const SliderContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  width: '100%',
+  maxWidth: '600px',
+  position: 'relative',
+}));
+
+const SliderTrack = styled(Box)(({ theme }) => ({
+  flex: 1,
+  height: '4px',
+  backgroundColor: '#E0E0E0',
+  borderRadius: '2px',
+  position: 'relative',
+  overflow: 'hidden',
+}));
+
+const SliderProgress = styled(Box)(({ theme, progress }) => ({
+  height: '100%',
+  backgroundColor: '#5C2D91',
+  borderRadius: '2px',
+  width: `${progress}%`,
+  transition: 'width 0.3s ease',
+}));
+
+const SliderThumb = styled(Box)(({ theme, position }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: `${position}%`,
+  transform: 'translate(-50%, -50%)',
+  width: '16px',
+  height: '16px',
+  backgroundColor: '#5C2D91',
+  borderRadius: '50%',
+  border: '3px solid #ffffff',
+  boxShadow: '0 2px 8px rgba(92, 45, 145, 0.3)',
+  cursor: 'pointer',
+  transition: 'left 0.3s ease',
+  '&:hover': {
+    transform: 'translate(-50%, -50%) scale(1.1)',
+  },
+}));
+
+const CategoryCard = styled(Card)(({ theme }) => ({
+  width: '180px',
+  borderRadius: '16px',
+  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.08)',
+  border: '1px solid rgba(0, 0, 0, 0.05)',
+  transition: 'all 0.3s ease',
+  cursor: 'pointer',
+  overflow: 'hidden',
+  backgroundColor: '#ffffff',
+  '&:hover': {
+    transform: 'translateY(-8px)',
+    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.12)',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '100%',
+    maxWidth: '280px',
+  },
+}));
+
+const CardHeader = styled(Box)(({ theme }) => ({
+  background: 'transparent',
+  padding: theme.spacing(3, 2),
+  textAlign: 'center',
+  position: 'relative',
+  '& .MuiSvgIcon-root': {
+    fontSize: '3rem',
+    marginBottom: theme.spacing(1),
+    color: '#87CEEB',
+    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+  },
+}));
+
+const CardTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '1.1rem',
+  fontWeight: 700,
+  marginBottom: theme.spacing(0.5),
+  color: '#5C2D91',
+}));
+
+const CourseCount = styled(Typography)(({ theme }) => ({
+  fontSize: '0.9rem',
+  color: '#666666',
+  fontWeight: 500,
+}));
+
+const CategoryCardContent = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  textAlign: 'center',
+}));
+
+const ReadMoreButton = styled(Button)(({ theme, color }) => ({
+  background: '#34498B',
+  color: '#fff',
+  padding: theme.spacing(1, 2),
+  borderRadius: '20px',
+  textTransform: 'none',
+  fontWeight: 600,
+  fontSize: '0.9rem',
+  width: '100%',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 15px rgba(52, 73, 139, 0.4)',
+    backgroundColor: '#2a3a6b',
+  },
+}));
+
+const ConnectingLine = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: '60%',
+  left: '20%',
+  right: '20%',
+  height: '2px',
+  background: 'linear-gradient(90deg, transparent, #E0E0E0, transparent)',
+  zIndex: 1,
+  borderRadius: '1px',
+  '&:after': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) rotate(45deg)',
+    width: '8px',
+    height: '8px',
+    background: '#E0E0E0',
+    borderRadius: '1px',
+  },
+  [theme.breakpoints.down('lg')]: {
     display: 'none',
-  },
-  [theme.breakpoints.down('sm')]: {
-    '& .MuiTabs-flexContainer': {
-      padding: theme.spacing(1),
-    },
-    '& .MuiTab-root': {
-      fontSize: '0.85rem',
-      padding: theme.spacing(0.5, 1.5),
-    },
   },
 }));
 
@@ -204,7 +362,7 @@ const MethodCard = styled(Card, {
     left: 0,
     right: 0,
     height: '5px',
-    background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+    background: 'linear-gradient(90deg, #6f42c1 0%, #e83e8c 100%)',
     borderTopLeftRadius: '20px',
     borderTopRightRadius: '20px',
     zIndex: 2,
@@ -218,7 +376,7 @@ const CourseImageContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
   height: { xs: '160px', sm: '180px', md: '200px' },
   overflow: 'hidden',
-  background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+  background: 'linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)',
   '& .course-image': {
     width: '100%',
     height: '100%',
@@ -252,7 +410,7 @@ const CourseBadge = styled(Box)(({ theme, variant = 'primary' }) => ({
 
 const MethodHeader = styled(Box)(({ theme, bgcolor }) => ({
   padding: theme.spacing(2.5, 3),
-  background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+  background: 'linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)',
   color: '#fff',
   display: 'flex',
   alignItems: 'center',
@@ -411,98 +569,6 @@ const TabPanel = (props) => {
   );
 };
 
-const SliderContainer = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  width: '100%',
-  overflow: 'hidden',
-  padding: theme.spacing(0, 1),
-  direction: 'rtl', // RTL direction for Arabic
-  '& .slider-track': {
-    display: 'flex',
-    transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-    gap: theme.spacing(3),
-    flexDirection: 'row-reverse', // Reverse flex direction for RTL
-    [theme.breakpoints.down('sm')]: {
-      gap: theme.spacing(2),
-    },
-  },
-  '& .slider-item': {
-    flex: '0 0 300px',
-    width: '300px',
-    direction: 'ltr', // Keep content LTR for proper text display
-    [theme.breakpoints.down('md')]: {
-      flex: '0 0 280px',
-      width: '280px',
-    },
-    [theme.breakpoints.down('sm')]: {
-      flex: '0 0 100%',
-      width: '100%',
-    },
-  },
-}));
-
-const NavigationButton = styled(IconButton)(({ theme, direction }) => ({
-  position: 'absolute',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  zIndex: 10,
-  background: 'rgba(255, 255, 255, 0.9)',
-  backdropFilter: 'blur(10px)',
-  borderRadius: '50%',
-  width: '48px',
-  height: '48px',
-  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-  border: '1px solid rgba(14, 81, 129, 0.1)',
-  color: '#0e5181',
-  '&:hover': {
-    background: '#0e5181',
-    color: '#fff',
-    transform: 'translateY(-50%) scale(1.1)',
-    boxShadow: '0 6px 25px rgba(14, 81, 129, 0.3)',
-  },
-  // RTL positioning - left button becomes right, right button becomes left
-  ...(direction === 'left' && {
-    right: theme.spacing(2), // RTL: left button goes to right
-  }),
-  ...(direction === 'right' && {
-    left: theme.spacing(2), // RTL: right button goes to left
-  }),
-  [theme.breakpoints.down('md')]: {
-    width: '40px',
-    height: '40px',
-    ...(direction === 'left' && {
-      right: theme.spacing(1), // RTL: left button goes to right
-    }),
-    ...(direction === 'right' && {
-      left: theme.spacing(1), // RTL: right button goes to left
-    }),
-  },
-}));
-
-const SliderIndicator = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  marginTop: theme.spacing(3),
-  direction: 'rtl', // RTL direction for indicators
-  '& .indicator-dot': {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(14, 81, 129, 0.3)',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    '&.active': {
-      backgroundColor: '#0e5181',
-      transform: 'scale(1.2)',
-    },
-    '&:hover': {
-      backgroundColor: 'rgba(14, 81, 129, 0.6)',
-    },
-  },
-}));
-
 const LearningMethodsSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -511,14 +577,18 @@ const LearningMethodsSection = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sliderValue, setSliderValue] = useState(0);
   const navigate = useNavigate();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    setCurrentSlide(0); // Reset slider when changing tabs
     if (categories[newValue]) {
       loadCoursesByCategory(categories[newValue].id);
     }
+  };
+
+  const handleSliderChange = (event, newValue) => {
+    setSliderValue(newValue);
   };
 
   // Load categories from API
@@ -570,69 +640,37 @@ const LearningMethodsSection = () => {
     navigate(`/courses/${courseId}`);
   };
 
-  const [slidesPerView, setSlidesPerView] = useState(3);
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Update slides per view based on screen size
-  useEffect(() => {
-    const updateSlidesPerView = () => {
-      if (window.innerWidth < 768) {
-        setSlidesPerView(1);
-      } else if (window.innerWidth < 1024) {
-        setSlidesPerView(2);
-      } else {
-        setSlidesPerView(3);
-      }
-    };
-
-    updateSlidesPerView();
-    window.addEventListener('resize', updateSlidesPerView);
-    return () => window.removeEventListener('resize', updateSlidesPerView);
-  }, []);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => Math.min(prev + 1, Math.max(0, courses.length - slidesPerView)));
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => Math.max(0, prev - 1));
-  };
-
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
-
   const renderCourses = () => {
     if (loading) {
       return (
-    <Box sx={{
-        display: 'flex',
+        <Box sx={{
+          display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center', 
+          alignItems: 'center',
           py: 6,
           gap: 2
         }}>
-          <CircularProgress sx={{ color: '#0e5181' }} />
+          <CircularProgress sx={{ color: '#5C2D91' }} />
           <Typography variant="body1" color="text.secondary">
             جاري تحميل الدورات...
-                  </Typography>
-                    </Box>
+          </Typography>
+        </Box>
       );
     }
 
     if (error) {
       return (
-                    <Box sx={{
+        <Box sx={{
           py: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 2
         }}>
-          <Alert 
-            severity="error" 
-            sx={{ 
-              maxWidth: '600px', 
+          <Alert
+            severity="error"
+            sx={{
+              maxWidth: '600px',
               width: '100%',
               '& .MuiAlert-message': {
                 textAlign: 'center'
@@ -641,24 +679,24 @@ const LearningMethodsSection = () => {
           >
             {error}
           </Alert>
-                  <Button
-                    variant="outlined"
+          <Button
+            variant="outlined"
             onClick={() => {
               setError(null);
               loadCategories();
             }}
-            sx={{ color: '#0e5181', borderColor: '#0e5181' }}
+            sx={{ color: '#5C2D91', borderColor: '#5C2D91' }}
           >
             إعادة المحاولة
-                  </Button>
-            </Box>
+          </Button>
+        </Box>
       );
     }
 
     if (courses.length === 0) {
       return (
-        <Box sx={{ 
-          textAlign: 'center', 
+        <Box sx={{
+          textAlign: 'center',
           py: 6,
           display: 'flex',
           flexDirection: 'column',
@@ -669,74 +707,57 @@ const LearningMethodsSection = () => {
             width: '80px',
             height: '80px',
             borderRadius: '50%',
-            bgcolor: 'rgba(14, 81, 129, 0.1)',
+            bgcolor: 'rgba(92, 45, 145, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             mb: 2
           }}>
-            <School sx={{ fontSize: '2rem', color: '#0e5181' }} />
-        </Box>
+            <School sx={{ fontSize: '2rem', color: '#5C2D91' }} />
+          </Box>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
             لا توجد دورات متاحة في هذا التصنيف حالياً
           </Typography>
           <Typography variant="body2" color="text.secondary">
             سيتم إضافة دورات جديدة قريباً
           </Typography>
-    </Box>
-  );
+        </Box>
+      );
     }
 
-    // Calculate slider values
-    const maxSlides = Math.max(0, courses.length - slidesPerView);
-    const canGoNext = currentSlide < maxSlides;
-    const canGoPrev = currentSlide > 0;
-    const totalSlides = Math.ceil(courses.length / slidesPerView);
-
     return (
-      <SliderContainer>
-        {/* Navigation Buttons - RTL Layout */}
-        {canGoPrev && (
-          <NavigationButton direction="left" onClick={prevSlide}>
-            <ChevronRight /> {/* RTL: show right arrow for previous */}
-          </NavigationButton>
-        )}
-        
-        {canGoNext && (
-          <NavigationButton direction="right" onClick={nextSlide}>
-            <ChevronLeft /> {/* RTL: show left arrow for next */}
-          </NavigationButton>
-        )}
-
-        {/* Slider Track */}
-        <Box 
-          className="slider-track"
-          sx={{
-            // RTL: Use positive translateX for right-to-left movement
-            transform: `translateX(${currentSlide * (slidesPerView === 1 ? 100 : slidesPerView === 2 ? 280 + 24 : 300 + 24)}px)`,
-            [theme.breakpoints.down('sm')]: {
-              transform: `translateX(${currentSlide * 100}%)`,
-            },
-          }}
-        >
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: '1fr',
+          sm: 'repeat(2, 1fr)',
+          md: 'repeat(2, 1fr)',
+          lg: 'repeat(3, 1fr)'
+        },
+        gap: { xs: 2, sm: 3 },
+        width: '100%',
+        maxWidth: '1400px',
+        mx: 'auto',
+        px: { xs: 2, sm: 3 }
+      }}>
         {courses.map((course, index) => (
-            <Box key={course.id} className="slider-item">
+          <Box key={course.id} sx={{ width: '100%' }}>
             <Grow in={true} timeout={index * 200}>
               <Box>
-                <MethodCard 
+                <MethodCard
                   delay={index}
                   onClick={() => handleCourseClick(course.id)}
                 >
                   <CourseImageContainer>
-                    <img 
-                      src={course.image_url || '/src/assets/images/bannar.jpeg'} 
-                      alt={course.title} 
+                    <img
+                      src={course.image_url || '/src/assets/images/bannar.jpeg'}
+                      alt={course.title}
                       className="course-image"
                       onError={(e) => {
                         e.target.src = '/src/assets/images/bannar.jpeg';
                       }}
                     />
-                    
+
                     {/* Course Badges */}
                     {course.is_free && (
                       <CourseBadge variant="free">
@@ -754,32 +775,31 @@ const LearningMethodsSection = () => {
                       </CourseBadge>
                     )}
                   </CourseImageContainer>
-                  
+
                   <MethodContent>
                     <Typography variant="h6" component="h3">
                       {course.title}
                     </Typography>
-                    
+
+                    <Typography variant="body2">
+                      {course.short_description || course.description?.substring(0, 120) + '...' || 'لا يوجد وصف متاح'}
+                    </Typography>
+
                     {course.instructors && course.instructors.length > 0 && (
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                          justifyContent: 'space-between',
+                      <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
                         mt: 1.5,
                         p: 1,
                         bgcolor: 'rgba(14, 81, 129, 0.05)',
                         borderRadius: '8px'
-                        }}>
-                          <Box sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: 1 
                       }}>
                         <Box sx={{
                           width: '24px',
                           height: '24px',
                           borderRadius: '50%',
-                          bgcolor: '#0e5181',
+                          bgcolor: '#5C2D91',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -793,152 +813,421 @@ const LearningMethodsSection = () => {
                           {course.instructors[0]?.name || 'مدرب غير محدد'}
                         </Typography>
                       </Box>
-                          
-                          {/* Open button with icon */}
-                          <IconButton
+                    )}
+
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2, flexWrap: 'wrap' }}>
+                      {course.level && (
+                        <Box sx={{
+                          bgcolor: 'rgba(92, 45, 145, 0.1)',
+                          color: '#5C2D91',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                        }}>
+                          {course.level === 'beginner' ? 'مبتدئ' :
+                            course.level === 'intermediate' ? 'متوسط' :
+                              course.level === 'advanced' ? 'متقدم' : course.level}
+                        </Box>
+                      )}
+                      {course.price && !course.is_free && (
+                        <Box sx={{
+                          bgcolor: 'rgba(92, 45, 145, 0.1)',
+                          color: '#5C2D91',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                        }}>
+                          {course.price} ريال
+                        </Box>
+                      )}
+                      {course.average_rating && (
+                        <Box sx={{
+                          bgcolor: 'rgba(255, 193, 7, 0.1)',
+                          color: '#ffc107',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5
+                        }}>
+                          ⭐ {course.average_rating.toFixed(1)}
+                        </Box>
+                      )}
+                      {course.total_enrollments && (
+                        <Box sx={{
+                          bgcolor: 'rgba(232, 62, 140, 0.1)',
+                          color: '#e83e8c',
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5
+                        }}>
+                          👥 {course.total_enrollments}
+                        </Box>
+                      )}
+                    </Box>
+
+                    {/* Course Stats */}
+                    <Box sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mt: 2,
+                      pt: 2,
+                      borderTop: '1px solid rgba(0, 0, 0, 0.05)',
+                      opacity: 0.8,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        opacity: 1,
+                      }
+                    }} className="course-stats">
+                      <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                          color: '#5C2D91',
+                        }
+                      }}>
+                        <School sx={{ fontSize: '1rem', color: '#5C2D91' }} />
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {course.modules?.length || 0} وحدة
+                        </Typography>
+                      </Box>
+                      <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                          color: '#e83e8c',
+                        }
+                      }}>
+                        <MenuBook sx={{ fontSize: '1rem', color: '#8A7BAA' }} />
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {course.lessons?.length || 0} درس
+                        </Typography>
+                      </Box>
+                      <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                          color: '#e83e8c',
+                        }
+                      }}>
+                        <Code sx={{ fontSize: '1rem', color: '#8A7BAA' }} />
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {course.duration || 'غير محدد'}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Course Tags */}
+                    {course.tags && course.tags.length > 0 && (
+                      <Box sx={{
+                        display: 'flex',
+                        gap: 0.5,
+                        mt: 1.5,
+                        flexWrap: 'wrap'
+                      }}>
+                        {course.tags.slice(0, 3).map((tag, index) => (
+                          <Box
+                            key={index}
+                            sx={{
+                              bgcolor: 'rgba(111, 66, 193, 0.08)',
+                              color: '#5C2D91',
+                              px: 1,
+                              py: 0.3,
+                              borderRadius: '12px',
+                              fontSize: '0.65rem',
+                              fontWeight: 500,
+                              border: '1px solid rgba(111, 66, 193, 0.1)',
+                            }}
+                          >
+                            {tag.name}
+                          </Box>
+                        ))}
+                        {course.tags.length > 3 && (
+                          <Box
+                            sx={{
+                              bgcolor: 'rgba(232, 62, 140, 0.08)',
+                              color: '#e83e8c',
+                              px: 1,
+                              py: 0.3,
+                              borderRadius: '12px',
+                              fontSize: '0.65rem',
+                              fontWeight: 500,
+                              border: '1px solid rgba(232, 62, 140, 0.1)',
+                            }}
+                          >
+                            +{course.tags.length - 3}
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                  </MethodContent>
+
+                  <MethodFooter>
+                    <Button
+                      variant="outlined"
                       size="small"
+                      fullWidth
+                      disableRipple
+                      disableTouchRipple
+                      endIcon={<ArrowForward />}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleCourseClick(course.id);
                       }}
                       sx={{
-                              width: '28px',
-                              height: '28px',
-                              bgcolor: 'rgba(14, 81, 129, 0.1)',
-                        color: '#0e5181',
+                        background: 'linear-gradient(90deg, rgba(92, 45, 145, 0.05) 0%, rgba(138, 123, 170, 0.05) 100%)',
+                        border: '1.5px solid #5C2D91',
+                        color: '#5C2D91',
+                        fontWeight: 600,
+                        borderRadius: '12px',
+                        padding: '10px 20px',
+                        transition: 'all 0.3s ease',
                         '&:hover': {
-                                bgcolor: '#0e5181',
+                          background: 'linear-gradient(90deg, #5C2D91 0%, #8A7BAA 100%)',
                           color: '#fff',
-                                transform: 'scale(1.1)',
-                              },
-                              transition: 'all 0.3s ease',
-                            }}
-                          >
-                            <ArrowForward sx={{ fontSize: '1rem' }} />
-                          </IconButton>
-                        </Box>
-                      )}
-                    </MethodContent>
-                    
-                    <MethodFooter>
-                      {/* Empty footer - removed course button */}
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 6px 12px rgba(92, 45, 145, 0.2)',
+                          borderColor: 'transparent',
+                        },
+                        '&:active': {
+                          transform: 'translateY(0)',
+                          boxShadow: '0 2px 4px rgba(92, 45, 145, 0.1)',
+                        },
+                        '& .MuiTouchRipple-root': {
+                          display: 'none !important'
+                        },
+                        '&:focus': {
+                          transform: 'scale(1) !important',
+                        },
+                        '& .MuiButton-endIcon': {
+                          transition: 'transform 0.3s ease',
+                        },
+                        '&:hover .MuiButton-endIcon': {
+                          transform: 'translateX(4px)',
+                        },
+                      }}
+                    >
+                      عرض الدورة
+                    </Button>
                   </MethodFooter>
                 </MethodCard>
               </Box>
             </Grow>
           </Box>
         ))}
-    </Box>
-
-        {/* Slider Indicators */}
-        {courses.length > slidesPerView && (
-          <SliderIndicator>
-            {Array.from({ length: totalSlides }, (_, index) => (
-              <Box
-                key={index}
-                className={`indicator-dot ${currentSlide === index ? 'active' : ''}`}
-                onClick={() => goToSlide(index)}
-              />
-            ))}
-          </SliderIndicator>
-        )}
-      </SliderContainer>
-  );
+      </Box>
+    );
   };
 
   return (
     <SectionContainer>
-      {/* Creative Pattern Background */}
-      <Box className="creative-pattern" />
-      
       <Container maxWidth="lg">
-        <Box sx={{ position: 'relative', zIndex: 1, mb: 8 }}>
-          <SectionTitle 
-            variant="h2" 
-            component="h2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            أساليب تعليمية مبتكرة
-          </SectionTitle>
-          <SectionSubtitle 
-            data-aos="fade-up"
-            data-aos-delay="200"
-            sx={{ mt: 4 }}
-          >
-            اكتشف طرق تعلم جديدة ومبتكرة تناسب احتياجاتك وتواكب متطلبات سوق العمل
-          </SectionSubtitle>
-        </Box>
+        <ContentWrapper>
+          <LeftSection>
+            <CategoryIcon>
+              <Description />
+              <span>تصنيفات الكورسات</span>
+            </CategoryIcon>
 
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <MainTitle variant="h2" component="h2">
+              تصفح افضل التصنيفات
+            </MainTitle>
+
+            <ViewAllButton
+              endIcon={<ArrowForward />}
+              onClick={() => navigate('/courses')}
+            >
+              شاهد جميع التصنيفات
+            </ViewAllButton>
+          </LeftSection>
+
+          <RightSection>
+            {loading && categories.length === 0 ? (
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                py: 6,
+                gap: 2
+              }}>
+                <CircularProgress sx={{ color: '#5C2D91' }} />
+                <Typography variant="body1" color="text.secondary">
+                  جاري تحميل التصنيفات...
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                {/* Category Cards */}
+                <Box sx={{
+                  display: 'flex',
+                  gap: theme.spacing(3),
+                  justifyContent: 'center',
+                  mb: 3
+                }}>
+                  {/* Pharmacy Card */}
+                  <CategoryCard>
+                    <CardHeader>
+                      <LocalPharmacy />
+                      <CardTitle>الصيدلة</CardTitle>
+                      <CourseCount>كورس 1</CourseCount>
+                    </CardHeader>
+                    <CategoryCardContent>
+                      <ReadMoreButton
+                        onClick={() => navigate('/courses?category=pharmacy')}
+                        endIcon={<ArrowForward />}
+                      >
+                        إقرأ المزيد
+                      </ReadMoreButton>
+                    </CategoryCardContent>
+                  </CategoryCard>
+
+                  {/* Dentistry Card */}
+                  <CategoryCard>
+                    <CardHeader>
+                      <MedicalServices />
+                      <CardTitle>طب الاسنان</CardTitle>
+                      <CourseCount>كورس 2</CourseCount>
+                    </CardHeader>
+                    <CategoryCardContent>
+                      <ReadMoreButton
+                        onClick={() => navigate('/courses?category=dentistry')}
+                        endIcon={<ArrowForward />}
+                      >
+                        إقرأ المزيد
+                      </ReadMoreButton>
+                    </CategoryCardContent>
+                  </CategoryCard>
+
+                  {/* Medicine Card */}
+                  <CategoryCard>
+                    <CardHeader>
+                      <LocalHospital />
+                      <CardTitle>الطب</CardTitle>
+                      <CourseCount>كورس 2</CourseCount>
+                    </CardHeader>
+                    <CategoryCardContent>
+                      <ReadMoreButton
+                        onClick={() => navigate('/courses?category=medicine')}
+                        endIcon={<ArrowForward />}
+                      >
+                        إقرأ المزيد
+                      </ReadMoreButton>
+                    </CategoryCardContent>
+                  </CategoryCard>
+                </Box>
+
+              </>
+            )}
+          </RightSection>
+        </ContentWrapper>
+
+        <ConnectingLine />
+
+        {/* Keep the existing tabs and course display for functionality */}
+        <Box sx={{ position: 'relative', zIndex: 1, mt: 8 }}>
           <Fade in={true} timeout={500}>
             <Box>
               {loading && categories.length === 0 ? (
-                <Box sx={{ 
-                  display: 'flex', 
+                <Box sx={{
+                  display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center', 
+                  alignItems: 'center',
                   py: 6,
                   gap: 2
                 }}>
-                  <CircularProgress sx={{ color: '#0e5181' }} />
+                  <CircularProgress sx={{ color: '#5C2D91' }} />
                   <Typography variant="body1" color="text.secondary">
                     جاري تحميل التصنيفات...
                   </Typography>
                 </Box>
               ) : (
                 <>
-              <StyledTabs
-                value={value}
-                onChange={handleChange}
-                variant="scrollable"
-                scrollButtons="auto"
-                allowScrollButtonsMobile
-                aria-label="learning methods tabs"
-                data-aos="fade-up"
-                data-aos-delay="300"
-              >
+                  {/* <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 4,
+                    gap: 2,
+                    flexWrap: 'wrap'
+                  }}>
                     {categories.map((category, index) => (
-                <Tab 
+                      <Button
                         key={category.id}
-                  label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            {getCategoryIcon(category.name)}
-                            <span>{category.name}</span>
-                            {category.courses_count > 0 && (
-                              <Box sx={{
-                                bgcolor: 'rgba(255, 255, 255, 0.2)',
-                                color: '#fff',
-                                px: 1,
-                                py: 0.2,
-                                borderRadius: '10px',
-                                fontSize: '0.7rem',
-                                fontWeight: 600,
-                                minWidth: '20px',
-                                textAlign: 'center'
-                              }}>
-                                {category.courses_count}
-                    </Box>
-                            )}
-                    </Box>
-                  } 
-                  iconPosition="start"
-                />
+                        variant={value === index ? "contained" : "outlined"}
+                        onClick={() => handleChange(null, index)}
+                        sx={{
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          borderRadius: '25px',
+                          px: 3,
+                          py: 1.5,
+                          ...(value === index ? {
+                            background: 'linear-gradient(90deg, #5C2D91, #8A7BAA)',
+                            color: '#fff',
+                            boxShadow: '0 4px 15px rgba(92, 45, 145, 0.3)',
+                          } : {
+                            borderColor: '#5C2D91',
+                            color: '#5C2D91',
+                            '&:hover': {
+                              borderColor: '#8A7BAA',
+                              color: '#8A7BAA',
+                            }
+                          })
+                        }}
+                      >
+                        {getCategoryIcon(category.name)}
+                        <span style={{ marginLeft: '8px' }}>{category.name}</span>
+                        {category.courses_count > 0 && (
+                          <Box sx={{
+                            bgcolor: value === index ? 'rgba(255, 255, 255, 0.2)' : 'rgba(92, 45, 145, 0.1)',
+                            color: value === index ? '#fff' : '#5C2D91',
+                            px: 1,
+                            py: 0.2,
+                            borderRadius: '10px',
+                            fontSize: '0.7rem',
+                            fontWeight: 600,
+                            minWidth: '20px',
+                            textAlign: 'center',
+                            marginLeft: '8px'
+                          }}>
+                            {category.courses_count}
+                          </Box>
+                        )}
+                      </Button>
                     ))}
-              </StyledTabs>
+                  </Box> */}
 
-              <Box mt={2}>
+                  {/* <Box mt={2}>
                     <TabPanel value={value} index={value}>
-                  {renderCourses()}
-                </TabPanel>
-              </Box>
+                      {renderCourses()}
+                    </TabPanel>
+                  </Box> */}
                 </>
               )}
             </Box>
           </Fade>
         </Box>
-
-
       </Container>
     </SectionContainer>
   );

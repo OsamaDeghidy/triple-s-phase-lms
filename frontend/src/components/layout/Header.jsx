@@ -1,18 +1,18 @@
-import { 
-  AppBar, 
-  Toolbar, 
-  IconButton, 
-  Typography, 
-  Box, 
-  Avatar, 
-  Menu, 
-  MenuItem, 
-  Divider, 
-  Button, 
-  Container, 
-  useTheme, 
-  useMediaQuery, 
-  InputBase, 
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Box,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider,
+  Button,
+  Container,
+  useTheme,
+  useMediaQuery,
+  InputBase,
   Badge,
   Stack,
   alpha,
@@ -49,45 +49,111 @@ const fadeIn = keyframes`
 const StyledAppBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== 'scrolled',
 })(({ theme, scrolled }) => ({
-  backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.98)',
-  backdropFilter: scrolled ? 'blur(5px)' : 'blur(10px)',
-  WebkitBackdropFilter: scrolled ? 'blur(5px)' : 'blur(10px)',
-  boxShadow: scrolled ? '0 1px 5px rgba(0, 0, 0, 0.05)' : '0 2px 10px rgba(0, 0, 0, 0.1)',
-  transition: 'all 0.3s ease-in-out',
-  padding: '8px 0',
-  borderBottom: scrolled ? '1px solid rgba(14, 81, 129, 0.4)' : '1px solid rgba(14, 81, 129, 0.3)',
-  animation: `${fadeIn} 0.5s ease-out`,
+  background: scrolled
+    ? `linear-gradient(135deg, 
+        rgba(102, 51, 153, 0.65) 0%, 
+        rgba(51, 54, 121, 0.62) 50%, 
+        rgba(27, 27, 72, 0.58) 100%)`
+    : `linear-gradient(135deg, 
+        rgba(45, 27, 105, 0.98) 0%, 
+        rgba(26, 16, 63, 0.96) 50%, 
+        rgba(15, 10, 42, 0.94) 100%)`,
+  backdropFilter: 'none',
+  WebkitBackdropFilter: 'none',
+  boxShadow: scrolled
+    ? '0 4px 20px rgba(102, 51, 153, 0.3)'
+    : '0 2px 15px rgba(45, 27, 105, 0.2)',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  padding: scrolled ? '12px 0' : '20px 0',
+  minHeight: scrolled ? '70px' : '90px',
+  borderBottom: scrolled
+    ? '1px solid rgba(255, 255, 255, 0.08)'
+    : '1px solid rgba(255, 255, 255, 0.05)',
+  animation: `${fadeIn} 0.6s ease-out`,
   '&.MuiAppBar-root': {
     zIndex: theme.zIndex.drawer + 1,
   },
-}));
-
-const GradientButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
-  color: 'white',
-  borderRadius: '25px',
-  padding: '10px 25px',
-  fontWeight: '600',
-  textTransform: 'none',
-  boxShadow: '0 4px 15px rgba(14, 81, 129, 0.3)',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 6px 20px rgba(14, 81, 129, 0.4)',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '3px',
+    background: scrolled
+      ? 'linear-gradient(90deg, #663399, #333679, #1B1B48)'
+      : 'linear-gradient(90deg, #E5978B, #D17A6F, #E5978B)',
+    opacity: scrolled ? 0.8 : 1,
+    transition: 'all 0.4s ease',
   },
 }));
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: '25px',
-  backgroundColor: 'rgba(14, 81, 129, 0.1)',
+const GradientButton = styled(Button)(({ theme, scrolled }) => ({
+  background: scrolled
+    ? 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)'
+    : 'linear-gradient(135deg, #2D1B69 0%, #1A103F 50%, #0F0A2A 100%)',
+  color: 'white',
+  borderRadius: '30px',
+  padding: '12px 30px',
+  fontWeight: '600',
+  textTransform: 'none',
+  fontSize: '15px',
+  boxShadow: scrolled
+    ? '0 6px 20px rgba(102, 51, 153, 0.4)'
+    : '0 6px 20px rgba(45, 27, 105, 0.4)',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  border: scrolled
+    ? '1px solid rgba(255, 255, 255, 0.1)'
+    : '1px solid rgba(229, 151, 139, 0.3)',
   '&:hover': {
-    backgroundColor: 'rgba(14, 81, 129, 0.15)',
+    transform: 'translateY(-3px) scale(1.02)',
+    boxShadow: scrolled
+      ? '0 10px 30px rgba(102, 51, 153, 0.6)'
+      : '0 10px 30px rgba(229, 151, 139, 0.6)',
+    background: scrolled
+      ? 'linear-gradient(135deg, #7a3fb3 0%, #3d42a0 50%, #23235a 100%)'
+      : 'linear-gradient(135deg, #3A2375 0%, #2D1B69 50%, #1A103F 100%)',
+  },
+  '&:active': {
+    transform: 'translateY(-1px) scale(0.98)',
+  },
+}));
+
+const Search = styled('div')(({ theme, scrolled }) => ({
+  position: 'relative',
+  borderRadius: '30px',
+  backgroundColor: scrolled
+    ? 'rgba(255, 255, 255, 0.12)'
+    : 'rgba(255, 255, 255, 0.08)',
+  backdropFilter: 'blur(10px)',
+  border: scrolled
+    ? '1px solid rgba(255, 255, 255, 0.15)'
+    : '1px solid rgba(255, 255, 255, 0.1)',
+  '&:hover': {
+    backgroundColor: scrolled
+      ? 'rgba(255, 255, 255, 0.18)'
+      : 'rgba(255, 255, 255, 0.12)',
+    borderColor: scrolled
+      ? 'rgba(255, 255, 255, 0.25)'
+      : 'rgba(229, 151, 139, 0.3)',
+    boxShadow: scrolled
+      ? '0 4px 15px rgba(102, 51, 153, 0.3)'
+      : '0 4px 15px rgba(229, 151, 139, 0.2)',
+  },
+  '&:focus-within': {
+    backgroundColor: scrolled
+      ? 'rgba(255, 255, 255, 0.2)'
+      : 'rgba(255, 255, 255, 0.15)',
+    borderColor: scrolled ? '#663399' : '#E5978B',
+    boxShadow: scrolled
+      ? '0 0 0 3px rgba(102, 51, 153, 0.2)'
+      : '0 0 0 3px rgba(229, 151, 139, 0.2)',
   },
   marginRight: theme.spacing(2),
   marginLeft: theme.spacing(2),
   width: '100%',
-  maxWidth: '400px',
+  maxWidth: '450px',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   [theme.breakpoints.down('sm')]: {
     margin: '10px 0',
     width: '100%',
@@ -103,46 +169,61 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#0e5181',
+  color: '#FFFFFF',
   pointerEvents: 'none',
+  fontSize: '20px',
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: '#0e5181',
+  color: '#FFFFFF',
   width: '100%',
   '& .MuiInputBase-input': {
-    padding: '12px 20px 12px 50px',
+    padding: '16px 20px 16px 55px',
     width: '100%',
+    fontSize: '15px',
+    fontWeight: '500',
     '&::placeholder': {
-      color: 'rgba(14, 81, 129, 0.7)',
+      color: 'rgba(255, 255, 255, 0.7)',
       opacity: 1,
+      fontWeight: '400',
     },
   },
 }));
 
-const NavButton = styled(Button)(({ theme }) => ({
-  color: '#0e5181',
-  margin: theme.spacing(0, 0.5),
+const NavButton = styled(Button)(({ theme, isHome, scrolled }) => ({
+  color: isHome ? '#FFD700' : '#FFFFFF',
+  margin: theme.spacing(0, 1),
   fontWeight: '500',
-  fontSize: '1rem',
+  fontSize: '16px',
   textTransform: 'none',
   position: 'relative',
-  padding: '8px 12px',
-  borderRadius: '8px',
-  transition: 'all 0.3s ease',
+  padding: '12px 18px',
+  borderRadius: '12px',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  border: scrolled ? '1px solid transparent' : '1px solid rgba(255, 255, 255, 0.1)',
+  backgroundColor: scrolled ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: scrolled ? 'none' : 'blur(10px)',
   '&:hover': {
-    backgroundColor: 'rgba(14, 81, 129, 0.1)',
+    backgroundColor: scrolled
+      ? 'rgba(255, 255, 255, 0.12)'
+      : 'rgba(255, 255, 255, 0.15)',
     transform: 'translateY(-2px)',
-  },
-  '&.active': {
-    color: '#e5978b',
-    fontWeight: '600',
+    borderColor: isHome
+      ? 'rgba(255, 215, 0, 0.3)'
+      : scrolled
+        ? 'rgba(255, 255, 255, 0.2)'
+        : 'rgba(229, 151, 139, 0.3)',
+    boxShadow: isHome
+      ? '0 6px 20px rgba(255, 215, 0, 0.3)'
+      : scrolled
+        ? '0 6px 20px rgba(102, 51, 153, 0.3)'
+        : '0 6px 20px rgba(229, 151, 139, 0.3)',
   },
   '& .MuiButton-endIcon': {
     marginRight: 4,
     marginLeft: -4,
     '& svg': {
-      transition: 'transform 0.2s',
+      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
   '&[aria-expanded="true"]': {
@@ -156,67 +237,87 @@ const LogoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   textDecoration: 'none',
-  marginRight: '30px',
+  marginRight: '40px',
   '&:hover': {
     '& img': {
-      transform: 'scale(1.05)',
+      transform: 'scale(1.08) rotate(2deg)',
+    },
+    '& .MuiTypography-root': {
+      background: 'linear-gradient(135deg, #663399, #333679, #1B1B48)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
     },
   },
   [theme.breakpoints.down('sm')]: {
-    marginRight: '15px',
+    marginRight: '20px',
   },
 }));
 
 const LogoImage = styled('img')({
-  height: '52px',
-  transition: 'transform 0.3s ease',
+  height: '48px',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  filter: 'drop-shadow(0 2px 8px rgba(102, 51, 153, 0.3))',
   '@media (max-width: 600px)': {
-    height: '44px',
+    height: '40px',
   },
 });
 
-const LogoText = styled(Typography)(({ theme }) => ({
+const LogoText = styled(Typography)(({ theme, scrolled }) => ({
   fontWeight: 700,
-  fontSize: '1.4rem',
-  background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+  fontSize: '1.5rem',
+  background: scrolled
+    ? 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)'
+    : 'linear-gradient(135deg, #E5978B 0%, #D17A6F 50%, #E5978B 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
-  marginRight: '12px',
+  marginRight: '15px',
   lineHeight: 1.2,
+  transition: 'all 0.3s ease',
   [theme.breakpoints.down('sm')]: {
-    fontSize: '1.2rem',
+    fontSize: '1.3rem',
   },
 }));
 
 const UserMenu = styled(Menu)({
   '& .MuiPaper-root': {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: 'rgba(27, 27, 72, 0.95)',
     color: '#FFFFFF',
-    marginTop: '10px',
-    minWidth: '200px',
-    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+    marginTop: '15px',
+    minWidth: '220px',
+    boxShadow: '0 12px 40px rgba(102, 51, 153, 0.4)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '16px',
     '& .MuiDivider-root': {
       borderColor: 'rgba(255, 255, 255, 0.1)',
+      margin: '8px 0',
     },
   },
 });
 
 const UserMenuItem = styled(MenuItem)({
-  padding: '10px 20px',
+  padding: '12px 20px',
+  borderRadius: '8px',
+  margin: '2px 8px',
+  transition: 'all 0.2s ease',
   '&:hover': {
-    backgroundColor: 'rgba(14, 81, 129, 0.1)',
+    backgroundColor: 'rgba(102, 51, 153, 0.2)',
+    transform: 'translateX(5px)',
   },
   '& .MuiSvgIcon-root': {
-    marginLeft: '10px',
-    color: '#0e5181',
+    marginLeft: '12px',
+    color: '#663399',
+    fontSize: '20px',
   },
 });
 
 const NotificationBadge = styled(Badge)({
   '& .MuiBadge-badge': {
-    backgroundColor: '#e5978b',
+    backgroundColor: '#663399',
     color: '#FFFFFF',
-    border: '2px solid #1A1A2E',
+    border: '2px solid rgba(27, 27, 72, 0.95)',
+    fontSize: '10px',
+    fontWeight: '600',
   },
 });
 
@@ -233,7 +334,6 @@ const Header = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState('');
-  const [dropdownAnchors, setDropdownAnchors] = useState({});
 
   // Fetch categories from API
   useEffect(() => {
@@ -260,13 +360,13 @@ const Header = () => {
 
   // Navigation items with dynamic categories
   const navItems = [
-    { 
-      text: 'الرئيسية', 
-      path: '/', 
-      icon: <HomeIcon /> 
+    {
+      text: 'الرئيسية',
+      path: '/',
+      icon: <HomeIcon />
     },
-    { 
-      text: 'الأقسام', 
+    {
+      text: 'الأقسام',
       path: '#',
       icon: <MenuBookIcon />,
       dropdown: categories.map(category => ({
@@ -274,21 +374,21 @@ const Header = () => {
         path: `/courses?category=${category.slug}`,
       }))
     },
-    { 
-      text: 'منصتنا', 
+    {
+      text: 'منصتنا',
       path: '#',
       icon: <SchoolIcon />,
       dropdown: [
-        { text: 'عن المنصة', path: '/about', icon: '🏢' },
-        { text: 'المدونة', path: '/articles', icon: '📝' },
-        { text: 'اتصل بنا', path: '/contact', icon: '📞' },
+        { text: 'عن المنصة', path: '/about' },
+        { text: 'المدونة', path: '/articles' },
+        { text: 'اتصل بنا', path: '/contact' },
       ]
     },
-    { 
-      text: 'لوحة التحكم', 
-      path: '/dashboard', 
-      icon: <DashboardIcon />, 
-      auth: true 
+    {
+      text: 'لوحة التحكم',
+      path: '/dashboard',
+      icon: <DashboardIcon />,
+      auth: true
     },
   ];
 
@@ -297,7 +397,7 @@ const Header = () => {
   // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
+      const isScrolled = window.scrollY > 30;
       if (isScrolled !== scrolled) {
         setScrolled(isScrolled);
       }
@@ -319,20 +419,6 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  const handleDropdownClick = (event, itemText) => {
-    setDropdownAnchors(prev => ({
-      ...prev,
-      [itemText]: event.currentTarget
-    }));
-  };
-
-  const handleDropdownClose = (itemText) => {
-    setDropdownAnchors(prev => ({
-      ...prev,
-      [itemText]: null
-    }));
-  };
-
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
@@ -349,11 +435,11 @@ const Header = () => {
 
   const renderAuthButtons = () => (
     <Stack direction="row" spacing={2} alignItems="center">
-      <Button 
-        component={RouterLink} 
-        to="/login" 
+      <Button
+        component={RouterLink}
+        to="/login"
         color="inherit"
-        sx={{ 
+        sx={{
           fontWeight: 500,
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -362,8 +448,8 @@ const Header = () => {
       >
         تسجيل الدخول
       </Button>
-      <GradientButton 
-        component={RouterLink} 
+      <GradientButton
+        component={RouterLink}
         to="/register"
         variant="contained"
       >
@@ -390,33 +476,33 @@ const Header = () => {
           <NotificationsNoneIcon />
         </IconButton>
       </NotificationBadge>
-      
+
       <IconButton
         onClick={handleProfileMenuOpen}
         size="small"
-        sx={{ 
+        sx={{
           ml: 2,
           p: 0,
           '&:hover': {
             '& .MuiAvatar-root': {
               transform: 'scale(1.1)',
-              boxShadow: '0 0 0 2px #0e5181',
+              boxShadow: '0 0 0 2px #663399',
             },
           },
         }}
       >
-        <Avatar 
+        <Avatar
           alt={user?.name || 'User'}
           src={user?.avatar}
           sx={{
             width: 40,
             height: 40,
             transition: 'all 0.3s ease',
-            border: '2px solid #0e5181',
+            border: '2px solid #663399',
           }}
         />
       </IconButton>
-      
+
       <UserMenu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -474,7 +560,7 @@ const Header = () => {
         overflowY: 'auto',
       }}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      {/* <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <LogoContainer component={RouterLink} to="/" onClick={() => setMobileMenuOpen(false)}>
           <LogoImage src={logo} alt="شعار المنصة" />
         </LogoContainer>
@@ -497,9 +583,9 @@ const Header = () => {
             />
           </Search>
         </form>
-      </Box>
-      
-      <Box>
+      </Box> */}
+
+      {/* <Box>
         {navItems.map((item) => (
           (!item.auth || isAuthenticated) && (
             <Button
@@ -510,7 +596,7 @@ const Header = () => {
               startIcon={item.icon}
               sx={{
                 justifyContent: 'flex-start',
-                color: location.pathname === item.path ? '#4ECDC4' : '#FFFFFF',
+                color: location.pathname === item.path ? '#663399' : '#FFFFFF',
                 mb: 1,
                 borderRadius: '8px',
                 padding: '10px 15px',
@@ -524,8 +610,8 @@ const Header = () => {
             </Button>
           )
         ))}
-      </Box>
-      
+      </Box> */}
+
       <Box mt={3}>
         {isAuthenticated ? (
           <Button
@@ -534,7 +620,7 @@ const Header = () => {
             onClick={handleLogout}
             startIcon={<ExitToAppIcon />}
             sx={{
-              background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+              background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
               '&:hover': {
                 opacity: 0.9,
               },
@@ -554,8 +640,8 @@ const Header = () => {
                 borderColor: 'rgba(255, 255, 255, 0.2)',
                 mb: 1,
                 '&:hover': {
-                  borderColor: '#0e5181',
-                  backgroundColor: 'rgba(14, 81, 129, 0.1)',
+                  borderColor: '#663399',
+                  backgroundColor: 'rgba(102, 51, 153, 0.1)',
                 },
               }}
               onClick={() => setMobileMenuOpen(false)}
@@ -568,7 +654,9 @@ const Header = () => {
               component={RouterLink}
               to="/register"
               sx={{
-                background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                background: scrolled
+                  ? 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)'
+                  : 'linear-gradient(135deg, #2D1B69 0%, #1A103F 50%, #0F0A2A 100%)',
                 '&:hover': {
                   opacity: 0.9,
                 },
@@ -607,17 +695,17 @@ const Header = () => {
               <LogoContainer component={RouterLink} to="/">
                 <LogoImage src={logo} alt="شعار المنصة" />
                 {!isMobile && (
-                  <LogoText variant="h6">
-                    
+                  <LogoText variant="h6" scrolled={scrolled}>
+
                   </LogoText>
                 )}
               </LogoContainer>
             </Box>
 
             {/* Desktop Navigation */}
-            <Box sx={{ 
-              flexGrow: 1, 
-              display: { xs: 'none', md: 'flex' }, 
+            <Box sx={{
+              flexGrow: 1,
+              display: { xs: 'none', md: 'flex' },
               ml: 4,
               '& > *:not(:last-child)': {
                 mr: 1,
@@ -625,152 +713,92 @@ const Header = () => {
             }}>
               {navItems.map((item) => {
                 if (item.auth && !isAuthenticated) return null;
-                
+
                 if (item.dropdown) {
-                  const open = Boolean(dropdownAnchors[item.text]);
-                  
+                  const [anchorEl, setAnchorEl] = useState(null);
+                  const open = Boolean(anchorEl);
+
+                  const handleClick = (event) => {
+                    setAnchorEl(event.currentTarget);
+                  };
+
+                  const handleClose = () => {
+                    setAnchorEl(null);
+                  };
+
                   return (
                     <div key={item.text}>
                       <NavButton
                         aria-controls={open ? item.text : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
-                        onClick={(event) => handleDropdownClick(event, item.text)}
+                        onClick={handleClick}
                         endIcon={<KeyboardArrowDown />}
                         className={location.pathname.startsWith(item.path) ? 'active' : ''}
+                        scrolled={scrolled}
                       >
                         {item.text}
                       </NavButton>
                       <Menu
                         id={item.text}
-                        anchorEl={dropdownAnchors[item.text]}
+                        anchorEl={anchorEl}
                         open={open}
-                        onClose={() => handleDropdownClose(item.text)}
+                        onClose={handleClose}
                         MenuListProps={{
                           'aria-labelledby': item.text,
                         }}
                         PaperProps={{
                           style: {
-                            backgroundColor: '#FFFFFF',
-                            color: '#333333',
-                            marginTop: '10px',
-                            minWidth: '300px',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                            border: '1px solid rgba(14, 81, 129, 0.1)',
+                            backgroundColor: 'rgba(27, 27, 72, 0.95)',
+                            color: '#FFFFFF',
+                            marginTop: '15px',
+                            minWidth: '220px',
+                            borderRadius: '16px',
+                            boxShadow: '0 12px 40px rgba(102, 51, 153, 0.4)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
                           },
                         }}
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                       >
                         {loadingCategories ? (
-                          <Box display="flex" justifyContent="center" p={2}>
-                            <CircularProgress size={20} sx={{ color: '#0e5181' }} />
+                          <Box display="flex" justifyContent="center" p={3}>
+                            <CircularProgress size={24} sx={{ color: '#663399' }} />
                           </Box>
                         ) : item.dropdown.length > 0 ? (
-                          <Box sx={{ p: 2.5 }}>
-                            {item.dropdown.map((subItem, index) => {
-                              const colors = [
-                                { bg: '#FFF5F5', icon: '#e5978b' }, // Light pink with coral icon
-                                { bg: '#F0F8FF', icon: '#0e5181' }, // Light blue with dark blue icon
-                                { bg: '#FFF8F0', icon: '#e5978b' }, // Light peach with coral icon
-                                { bg: '#F0F0FF', icon: '#0e5181' }, // Light lavender with dark blue icon
-                                { bg: '#FFFFF0', icon: '#e5978b' }, // Light cream with coral icon
-                                { bg: '#F5F0FF', icon: '#0e5181' }, // Light purple with dark blue icon
-                                { bg: '#F0FFF0', icon: '#e5978b' }, // Light mint with coral icon
-                                { bg: '#FFF0F5', icon: '#0e5181' }, // Light pink with dark blue icon
-                                { bg: '#F0FFFF', icon: '#e5978b' }  // Light cyan with coral icon
-                              ];
-                              const colorIndex = index % colors.length;
-                              return (
-                                <Box
-                                  key={subItem.path}
-                                  component={RouterLink}
-                                  to={subItem.path}
-                                  onClick={() => handleDropdownClose(item.text)}
-                                  sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    p: 2,
-                                    mb: 1,
-                                    borderRadius: '12px',
-                                    backgroundColor: colors[colorIndex].bg,
-                                    textDecoration: 'none',
-                                    transition: 'all 0.3s ease',
-                                    cursor: 'pointer',
-                                    border: '2px solid transparent',
-                                    '&:hover': {
-                                      backgroundColor: `${colors[colorIndex].bg}DD`,
-                                      borderColor: colors[colorIndex].icon,
-                                      transform: 'translateX(6px)',
-                                      boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                                    },
-                                    '&:last-child': {
-                                      mb: 0,
-                                    },
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      width: '28px',
-                                      height: '28px',
-                                      borderRadius: '8px',
-                                      backgroundColor: colors[colorIndex].icon,
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      mr: 2,
-                                      color: 'white',
-                                      flexShrink: 0,
-                                      position: 'relative',
-                                      overflow: 'hidden',
-                                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                                    }}
-                                  >
-                                    <Box
-                                      component="svg"
-                                      viewBox="0 0 24 24"
-                                      sx={{
-                                        width: '18px',
-                                        height: '18px',
-                                        fill: 'none',
-                                        stroke: 'white',
-                                        strokeWidth: '2.5',
-                                        strokeLinecap: 'round',
-                                        strokeLinejoin: 'round',
-                                      }}
-                                    >
-                                      {/* Creative Pencil with zigzag */}
-                                      <path d="M3 21L21 3" />
-                                      <path d="M9 3L21 15" />
-                                      <path d="M15 9L21 15" />
-                                      <path d="M3 21L9 15" />
-                                      <path d="M9 15L15 9" />
-                                      <path d="M15 9L21 3" />
-                                      {/* Pencil tip */}
-                                      <path d="M21 3L24 6L21 9" />
-                                      {/* Line below */}
-                                      <path d="M3 21L6 24" />
-                                    </Box>
-                                  </Box>
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      color: '#333333',
-                                      fontWeight: 600,
-                                      fontSize: '0.95rem',
-                                      flexGrow: 1,
-                                      lineHeight: 1.4,
-                                    }}
-                                  >
-                                    {subItem.text}
-                                  </Typography>
-                                </Box>
-                              );
-                            })}
-                          </Box>
+                          item.dropdown.map((subItem) => (
+                            <MenuItem
+                              key={subItem.path}
+                              component={RouterLink}
+                              to={subItem.path}
+                              onClick={handleClose}
+                              sx={{
+                                color: '#E6E6E6',
+                                padding: '12px 20px',
+                                margin: '2px 8px',
+                                borderRadius: '8px',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(102, 51, 153, 0.2)',
+                                  color: '#FFFFFF',
+                                  transform: 'translateX(5px)',
+                                },
+                                '&.Mui-selected': {
+                                  backgroundColor: 'rgba(102, 51, 153, 0.15)',
+                                  color: '#663399',
+                                },
+                              }}
+                            >
+                              {subItem.text}
+                            </MenuItem>
+                          ))
                         ) : (
-                          <MenuItem disabled sx={{ color: 'rgba(14, 81, 129, 0.5)' }}>
+                          <MenuItem disabled sx={{
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            padding: '16px 20px',
+                            textAlign: 'center'
+                          }}>
                             لا توجد أقسام متاحة
                           </MenuItem>
                         )}
@@ -778,13 +806,15 @@ const Header = () => {
                     </div>
                   );
                 }
-                
+
                 return (
                   <NavButton
                     key={item.path}
                     component={RouterLink}
                     to={item.path}
                     className={location.pathname === item.path ? 'active' : ''}
+                    isHome={item.text === 'الرئيسية'}
+                    scrolled={scrolled}
                   >
                     {item.text}
                   </NavButton>
@@ -793,14 +823,14 @@ const Header = () => {
             </Box>
 
             {/* Search */}
-            <Box sx={{ 
-              flexGrow: 1, 
+            <Box sx={{
+              flexGrow: 1,
               display: { xs: 'none', md: 'flex' },
               maxWidth: '500px',
               mx: 3,
             }}>
               <form onSubmit={handleSearch} style={{ width: '100%' }}>
-                <Search>
+                <Search scrolled={scrolled}>
                   <SearchIconWrapper>
                     <SearchIcon />
                   </SearchIconWrapper>
@@ -815,8 +845,8 @@ const Header = () => {
             </Box>
 
             {/* Auth Buttons / User Menu */}
-            <Box sx={{ 
-              display: 'flex', 
+            <Box sx={{
+              display: 'flex',
               alignItems: 'center',
               ml: 'auto',
             }}>
@@ -830,12 +860,15 @@ const Header = () => {
                     component={RouterLink}
                     to="/cart"
                     sx={{
-                      backgroundColor: 'rgba(14, 81, 129, 0.1)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.12)',
                       marginLeft: 1,
-                      color: '#0e5181',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        backgroundColor: 'rgba(14, 81, 129, 0.2)',
-                        color: '#e5978b',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        transform: 'translateY(-2px) scale(1.05)',
+                        borderColor: 'rgba(102, 51, 153, 0.4)',
+                        boxShadow: '0 6px 20px rgba(102, 51, 153, 0.3)',
                       },
                     }}
                   >
@@ -843,18 +876,21 @@ const Header = () => {
                       <ShoppingCartIcon />
                     </Badge>
                   </IconButton>
-                  
+
                   <IconButton
                     size="large"
                     aria-label="show notifications"
                     color="inherit"
                     sx={{
-                      backgroundColor: 'rgba(14, 81, 129, 0.1)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.12)',
                       marginLeft: 1,
-                      color: '#0e5181',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        backgroundColor: 'rgba(14, 81, 129, 0.2)',
-                        color: '#e5978b',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        transform: 'translateY(-2px) scale(1.05)',
+                        borderColor: 'rgba(102, 51, 153, 0.4)',
+                        boxShadow: '0 6px 20px rgba(102, 51, 153, 0.3)',
                       },
                     }}
                   >
@@ -865,25 +901,27 @@ const Header = () => {
                   <IconButton
                     onClick={handleProfileMenuOpen}
                     size="small"
-                    sx={{ 
+                    sx={{
                       ml: 2,
                       p: 0,
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
                         '& .MuiAvatar-root': {
-                          transform: 'scale(1.1)',
-                          boxShadow: '0 0 0 2px #0e5181',
+                          transform: 'scale(1.1) rotate(5deg)',
+                          boxShadow: '0 0 0 3px #663399, 0 8px 25px rgba(102, 51, 153, 0.4)',
                         },
                       },
                     }}
                   >
-                    <Avatar 
+                    <Avatar
                       alt={user?.name || 'User'}
                       src={user?.avatar}
                       sx={{
-                        width: 40,
-                        height: 40,
-                        transition: 'all 0.3s ease',
-                        border: '2px solid #0e5181',
+                        width: 44,
+                        height: 44,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        border: '2px solid #663399',
+                        boxShadow: '0 4px 15px rgba(102, 51, 153, 0.3)',
                       }}
                     />
                   </IconButton>
@@ -901,53 +939,49 @@ const Header = () => {
                     }}
                   >
                     <Box px={2} py={1}>
-                      <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#0e5181' }}>
+                      <Typography variant="subtitle1" fontWeight={600}>
                         {user?.name || 'المستخدم'}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#666666' }}>
+                      <Typography variant="body2" color="text.secondary">
                         {user?.email || 'user@example.com'}
                       </Typography>
                     </Box>
                     <Divider />
-                    <MenuItem onClick={() => { navigate('/profile'); handleMenuClose(); }}
-                      sx={{ color: '#0e5181', '&:hover': { backgroundColor: 'rgba(14, 81, 129, 0.1)' } }}>
-                      <AccountCircleIcon sx={{ ml: 1, color: '#0e5181' }} />
+                    <MenuItem onClick={() => { navigate('/profile'); handleMenuClose(); }}>
+                      <AccountCircleIcon sx={{ ml: 1 }} />
                       الملف الشخصي
                     </MenuItem>
-                    <MenuItem onClick={() => { navigate('/dashboard'); handleMenuClose(); }}
-                      sx={{ color: '#0e5181', '&:hover': { backgroundColor: 'rgba(14, 81, 129, 0.1)' } }}>
-                      <DashboardIcon sx={{ ml: 1, color: '#0e5181' }} />
+                    <MenuItem onClick={() => { navigate('/dashboard'); handleMenuClose(); }}>
+                      <DashboardIcon sx={{ ml: 1 }} />
                       لوحة التحكم
                     </MenuItem>
                     <Divider />
-                    <MenuItem onClick={handleLogout}
-                      sx={{ color: '#0e5181', '&:hover': { backgroundColor: 'rgba(14, 81, 129, 0.1)' } }}>
-                      <ExitToAppIcon sx={{ ml: 1, color: '#0e5181' }} />
+                    <MenuItem onClick={handleLogout}>
+                      <ExitToAppIcon sx={{ ml: 1 }} />
                       تسجيل الخروج
                     </MenuItem>
                   </Menu>
                 </>
               ) : (
                 <Stack direction="row" spacing={2} alignItems="center">
-                  <Button 
-                    component={RouterLink} 
-                    to="/login" 
+                  <Button
+                    component={RouterLink}
+                    to="/login"
                     color="inherit"
-                    sx={{ 
+                    sx={{
                       fontWeight: 500,
-                      color: '#0e5181',
                       '&:hover': {
-                        backgroundColor: 'rgba(14, 81, 129, 0.1)',
-                        color: '#e5978b',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
                       },
                     }}
                   >
                     تسجيل الدخول
                   </Button>
-                  <GradientButton 
-                    component={RouterLink} 
+                  <GradientButton
+                    component={RouterLink}
                     to="/register"
                     variant="contained"
+                    scrolled={scrolled}
                   >
                     إنشاء حساب
                   </GradientButton>
@@ -963,9 +997,13 @@ const Header = () => {
                 onClick={() => setMobileMenuOpen(true)}
                 color="inherit"
                 sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    transform: 'scale(1.05)',
+                    borderColor: 'rgba(102, 51, 153, 0.4)',
                   },
                 }}
               >
@@ -975,7 +1013,7 @@ const Header = () => {
           </Toolbar>
         </Container>
       </StyledAppBar>
-      
+
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <Box
@@ -998,16 +1036,16 @@ const Header = () => {
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
             <LogoContainer component={RouterLink} to="/" onClick={() => setMobileMenuOpen(false)}>
               <LogoImage src={logo} alt="شعار المنصة" />
-              <LogoText variant="h6">أكاديمية التطوير</LogoText>
+              <LogoText variant="h6" scrolled={scrolled}>أكاديمية التطوير</LogoText>
             </LogoContainer>
             <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#FFFFFF' }}>
               <Box component="span" sx={{ fontSize: '1.5rem' }}>×</Box>
             </IconButton>
           </Box>
-          
+
           <Box mb={3}>
             <form onSubmit={handleSearch}>
-              <Search>
+              <Search scrolled={scrolled}>
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
@@ -1020,7 +1058,7 @@ const Header = () => {
               </Search>
             </form>
           </Box>
-          
+
           <Box>
             {navItems.map((item) => (
               (!item.auth || isAuthenticated) && (
@@ -1032,25 +1070,25 @@ const Header = () => {
                     startIcon={item.icon}
                     sx={{
                       justifyContent: 'flex-start',
-                      color: location.pathname === item.path ? '#0e5181' : '#FFFFFF',
+                      color: location.pathname === item.path ? '#663399' : '#FFFFFF',
                       mb: 1,
                       borderRadius: '8px',
                       padding: '10px 15px',
                       '&:hover': {
-                        backgroundColor: 'rgba(14, 81, 129, 0.1)',
+                        backgroundColor: 'rgba(102, 51, 153, 0.1)',
                       },
                     }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.text}
                   </Button>
-                  
+
                   {/* Show dropdown items for categories in mobile menu */}
                   {item.dropdown && item.text === 'الأقسام' && (
                     <Box ml={2} mt={1}>
                       {loadingCategories ? (
                         <Box display="flex" justifyContent="center" p={1}>
-                          <CircularProgress size={16} sx={{ color: '#0e5181' }} />
+                          <CircularProgress size={16} sx={{ color: '#663399' }} />
                         </Box>
                       ) : item.dropdown.length > 0 ? (
                         item.dropdown.map((subItem) => (
@@ -1069,7 +1107,7 @@ const Header = () => {
                               fontSize: '0.9rem',
                               '&:hover': {
                                 backgroundColor: 'rgba(14, 81, 129, 0.1)',
-                                color: '#0e5181',
+                                color: '#663399',
                               },
                             }}
                             onClick={() => setMobileMenuOpen(false)}
@@ -1087,7 +1125,7 @@ const Header = () => {
                 </div>
               )
             ))}
-            
+
             {/* Cart Button for Mobile */}
             {isAuthenticated && (
               <Button
@@ -1097,7 +1135,7 @@ const Header = () => {
                 startIcon={<ShoppingCartIcon />}
                 sx={{
                   justifyContent: 'flex-start',
-                  color: location.pathname === '/cart' ? '#0e5181' : '#FFFFFF',
+                  color: location.pathname === '/cart' ? '#663399' : '#FFFFFF',
                   mb: 1,
                   borderRadius: '8px',
                   padding: '10px 15px',
@@ -1111,7 +1149,7 @@ const Header = () => {
               </Button>
             )}
           </Box>
-          
+
           <Box mt={3}>
             {isAuthenticated ? (
               <Button
@@ -1120,7 +1158,7 @@ const Header = () => {
                 onClick={handleLogout}
                 startIcon={<ExitToAppIcon />}
                 sx={{
-                  background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                  background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
                   '&:hover': {
                     opacity: 0.9,
                   },
@@ -1140,8 +1178,8 @@ const Header = () => {
                     borderColor: 'rgba(255, 255, 255, 0.2)',
                     mb: 1,
                     '&:hover': {
-                      borderColor: '#0e5181',
-                      backgroundColor: 'rgba(14, 81, 129, 0.1)',
+                      borderColor: '#663399',
+                      backgroundColor: 'rgba(102, 51, 153, 0.1)',
                     },
                   }}
                   onClick={() => setMobileMenuOpen(false)}
@@ -1154,7 +1192,7 @@ const Header = () => {
                   component={RouterLink}
                   to="/register"
                   sx={{
-                    background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                    background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
                     '&:hover': {
                       opacity: 0.9,
                     },
@@ -1168,7 +1206,7 @@ const Header = () => {
           </Box>
         </Box>
       )}
-      
+
       {/* Backdrop for mobile menu */}
       {mobileMenuOpen && (
         <Box
@@ -1184,7 +1222,7 @@ const Header = () => {
           }}
         />
       )}
-      
+
       {/* Add space for fixed header */}
       <Toolbar />
     </>

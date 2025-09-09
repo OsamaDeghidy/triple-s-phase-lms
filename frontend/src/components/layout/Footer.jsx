@@ -15,76 +15,42 @@ import {
 import logo from '../../assets/images/logo.png';
 
 const FooterContainer = styled(Box)(({ theme }) => ({
-  backgroundColor: '#FFFFFF',
-  color: '#0e5181',
-  padding: theme.spacing(8, 0, 0),
+  background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
+  color: '#FFFFFF',
+  padding: theme.spacing(3, 0, 2),
   position: 'relative',
   overflow: 'hidden',
-  borderTop: '2px solid rgba(14, 81, 129, 0.1)',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.02) 0%, rgba(229, 151, 139, 0.02) 100%)',
-    zIndex: 0,
-  },
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: `
-      radial-gradient(circle at 20% 20%, rgba(14, 81, 129, 0.03) 1px, transparent 1px),
-      radial-gradient(circle at 80% 80%, rgba(229, 151, 139, 0.03) 1px, transparent 1px),
-      radial-gradient(circle at 40% 60%, rgba(14, 81, 129, 0.02) 1px, transparent 1px)
-    `,
-    backgroundSize: '50px 50px, 50px 50px, 50px 50px',
-    backgroundPosition: '0 0, 25px 25px, 12px 30px',
-    zIndex: 0,
-  },
 }));
 
 const FooterTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
-  color: '#0e5181',
-  marginBottom: theme.spacing(3),
+  color: '#FFFFFF',
+  marginBottom: theme.spacing(1.5),
   position: 'relative',
-  fontSize: '1.2rem',
-  paddingBottom: theme.spacing(1),
+  fontSize: '1rem',
+  paddingBottom: theme.spacing(0.5),
   '&:after': {
     content: '""',
     position: 'absolute',
     right: 0,
     bottom: 0,
-    width: 50,
-    height: 3,
-    background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
-    borderRadius: 3,
+    width: 30,
+    height: 1,
+    background: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 1,
   },
 }));
 
 const FooterLink = styled(Link)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  color: '#333333',
-  marginBottom: theme.spacing(1.5),
+  display: 'block',
+  color: '#E6E6E6',
+  marginBottom: theme.spacing(0.5),
   textDecoration: 'none',
   transition: 'all 0.3s ease',
-  fontSize: '0.95rem',
-  fontWeight: '500',
+  fontSize: '0.85rem',
   '&:hover': {
-    color: '#e5978b',
-    paddingRight: theme.spacing(1),
-    fontWeight: '600',
-    '& .arrow-icon': {
-      opacity: 1,
-      transform: 'translateX(0)',
-    },
+    color: '#FFFFFF',
+    paddingRight: theme.spacing(0.5),
   },
 }));
 
@@ -98,33 +64,36 @@ const ArrowIcon = styled(ArrowBackIcon)({
 
 const ContactItem = styled(Box)(({ theme }) => ({
   display: 'flex',
-  alignItems: 'flex-start',
+  alignItems: 'center',
   marginBottom: theme.spacing(2),
+  textAlign: 'center',
+  flexDirection: 'column',
+  flex: 1,
   '& .MuiSvgIcon-root': {
-    marginLeft: theme.spacing(1),
-    color: '#0e5181',
-    marginTop: 4,
-    fontSize: '1.2rem',
-  },
-  '& .contact-text': {
-    color: '#333333',
-    fontWeight: '500',
-    fontSize: '0.95rem',
+    marginBottom: theme.spacing(1),
+    color: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: '50%',
+    padding: theme.spacing(1.5),
+    fontSize: '1.5rem',
+    width: '60px',
+    height: '60px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
 const SocialIcon = styled(IconButton)(({ theme }) => ({
-  backgroundColor: 'rgba(14, 81, 129, 0.15)',
-  color: '#0e5181',
+  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  color: '#FFFFFF',
   margin: theme.spacing(0, 1, 1, 0),
+  width: '40px',
+  height: '40px',
   transition: 'all 0.3s ease',
-  border: '2px solid rgba(14, 81, 129, 0.2)',
   '&:hover': {
-    backgroundColor: '#e5978b',
-    color: '#FFFFFF',
-    borderColor: '#e5978b',
-    transform: 'translateY(-3px)',
-    boxShadow: '0 5px 15px rgba(229, 151, 139, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    transform: 'translateY(-2px)',
   },
 }));
 
@@ -133,25 +102,38 @@ const Footer = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const contactInfo = [
-    { icon: <PhoneIcon />, text: '+966 12 345 6789' },
-    { icon: <EmailIcon />, text: 'info@academy.edu.sa' },
-    { icon: <LocationIcon />, text: 'المملكة العربية السعودية' },
+    {
+      icon: <PhoneIcon />,
+      title: 'اتصل بنا في اي وقت',
+      text: '+962796098808'
+    },
+    {
+      icon: <EmailIcon />,
+      title: 'راسلنا على الايميل',
+      text: 'info@triplesacademy.com'
+    },
+    {
+      icon: <LocationIcon />,
+      title: 'موقع الاكاديمية',
+      text: 'ش. المدينة المنورة، عمان - الأردن'
+    },
   ];
 
 
 
 
-  const importantLinks = [
-    { text: 'من نحن', to: '/about-us' },
-    { text: 'سياسة الخصوصية', to: '/privacy-policy' },
-    { text: 'سياسة الاستبدال والاسترجاع', to: '/return-policy' },
-    { text: 'الشروط والأحكام', to: '/terms' },
-    { text: 'حقوق الملكية الفكرية', to: '/intellectual-property' },
+  const siteLinks = [
+    { text: 'الكورسات', to: '/courses' },
+    { text: 'فلاش کاردز', to: '/flashcards' },
+    { text: 'بنك الأسئلة', to: '/question-bank' },
+    { text: 'المدونة', to: '/blog' },
+    { text: 'عن الاكاديمية', to: '/about' },
+    { text: 'اتصل بنا', to: '/contact' },
   ];
 
 
 
-  const supportLinks = [
+  const otherLinks = [
     { text: 'الأسئلة الشائعة', to: '/faq' },
     { text: 'سياسة الخصوصية', to: '/privacy-policy' },
     { text: 'الشروط والأحكام', to: '/terms' },
@@ -161,193 +143,189 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: <FacebookIcon />, url: 'https://facebook.com' },
-    { icon: <TwitterIcon />, url: 'https://twitter.com' },
     { icon: <InstagramIcon />, url: 'https://instagram.com' },
-    { icon: <LinkedInIcon />, url: 'https://linkedin.com' },
-    { icon: <YouTubeIcon />, url: 'https://youtube.com' },
   ];
-  
+
   const currentYear = new Date().getFullYear();
 
   return (
-    <>
-      {/* Single Wave Separator */}
-      <Box
-        sx={{
-          position: 'relative',
-          width: '100%',
-          height: '100px',
-          overflow: 'hidden',
-          zIndex: 1,
-        }}
-      >
-        <svg
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-          style={{
-            width: '100%',
-            height: '100%',
+    <FooterContainer component="footer">
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        {/* Contact Bar - Top Row */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: 3,
+            gap: 2,
+            padding: theme.spacing(2, 0)
           }}
         >
-          <path
-            d="M0,120V80 Q300,20 600,50 T1200,30 L1200,120 Z"
-            fill="#0e5181"
-          />
-        </svg>
-      </Box>
+          {contactInfo.map((item, index) => (
+            <ContactItem key={index}>
+              {item.icon}
+              <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 0.5, fontSize: '0.9rem' }}>
+                {item.title}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.9rem' }}>
+                {item.text}
+              </Typography>
+            </ContactItem>
+          ))}
+        </Box>
 
-      <FooterContainer component="footer">
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          {/* Contact Bar - Top Row */}
-          <Box 
-            sx={{ 
-              backgroundColor: 'rgba(14, 81, 129, 0.08)',
-              borderRadius: 2,
-              p: 3,
-              mb: 4,
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: 2,
-              border: '1px solid rgba(14, 81, 129, 0.15)',
-            }}
-          >
-            <Typography variant="subtitle2" sx={{ color: '#0e5181', fontWeight: 600 }}>
-              تواصل معنا
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-              {contactInfo.map((item, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ color: '#0e5181' }}>{item.icon}</Box>
-                  <Typography variant="body2" sx={{ color: '#333333', fontSize: '0.85rem', fontWeight: '500' }}>
-                    {item.text}
-                  </Typography>
+        <Grid container spacing={isMobile ? 3 : 4}>
+          {/* Company Information */}
+          <Grid item xs={12} md={4}>
+            <Box mb={1}>
+              <Box display="flex" alignItems="center" mb={2}>
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    backgroundColor: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 2,
+                    fontSize: '1.5rem',
+                    fontWeight: 700,
+                    color: '#663399'
+                  }}
+                >
+                  S
                 </Box>
-              ))}
-            </Box>
-          </Box>
-          
-          <Grid container spacing={isMobile ? 4 : 6}>
-            {/* Logo and Description */}
-            <Grid item xs={12} md={4}>
-              <Box mb={2}>
-                <Box display="flex" alignItems="center" mb={3}>
-                  <img 
-                    src={logo} 
-                    alt="شعار المعهد" 
-                    style={{ height: 50 }} 
-                  />
-                  <Typography variant="h6" sx={{ color: '#0e5181', fontWeight: 700, mr: 1 }}>
-                  معهد التطوير المهني العالي للتدريب
-                  </Typography>
-                </Box>
-                <Typography variant="body2" sx={{ color: '#333333', lineHeight: 1.8, mb: 3, fontWeight: '500' }}>
-                معنا تحقق أهدافك التدريبية باحترافية وجودة، حيث يعد التطوير المهني اليوم ميزة أساسية لاختيار وترقية الموظفين.
-                <br />
-                أوقات العمل 8 ص - 12 ص
+                <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 700 }}>
+                  Triple S Academy
                 </Typography>
-                <Box mt={2}>
-                  {socialLinks.map((social, index) => (
-                    <SocialIcon 
-                      key={index} 
-                      component="a" 
-                      href={social.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      {social.icon}
-                    </SocialIcon>
-                  ))}
-                </Box>
               </Box>
-            </Grid>
+              <Typography variant="body2" sx={{ color: '#E6E6E6', lineHeight: 1.6, mb: 2, fontSize: '0.85rem' }}>
+                اكتشف قدراتك الكامنة وابدأ رحلة التميز الأكاديمي معنا. نحن هنا لترشدك نحو النجاح بثقة وخبرة
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.85rem', mb: 1 }}>
+                تابعنا
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {socialLinks.map((social, index) => (
+                  <SocialIcon
+                    key={index}
+                    component="a"
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {social.icon}
+                  </SocialIcon>
+                ))}
+              </Box>
+            </Box>
+          </Grid>
 
-            {/* Important Links */}
-            <Grid item xs={12} sm={8} md={4}>
-              <FooterTitle>روابط مهمة</FooterTitle>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  {importantLinks.slice(0, Math.ceil(importantLinks.length / 2)).map((link, index) => (
-                    <Box key={index} mb={1.5}>
-                      <FooterLink 
-                        component={RouterLink} 
-                        to={link.to}
-                        underline="none"
-                      >
-                        <ArrowIcon className="arrow-icon" />
-                        {link.text}
-                      </FooterLink>
-                    </Box>
-                  ))}
-                </Grid>
-                <Grid item xs={6}>
-                  {importantLinks.slice(Math.ceil(importantLinks.length / 2)).map((link, index) => (
-                    <Box key={index} mb={1.5}>
-                      <FooterLink 
-                        component={RouterLink} 
-                        to={link.to}
-                        underline="none"
-                      >
-                        <ArrowIcon className="arrow-icon" />
-                        {link.text}
-                      </FooterLink>
-                    </Box>
-                  ))}
-                </Grid>
+          {/* Site Links */}
+          <Grid item xs={12} sm={6} md={2}>
+            <FooterTitle>روابط الموقع</FooterTitle>
+            {siteLinks.map((link, index) => (
+              <Box key={index} mb={0.5}>
+                <FooterLink
+                  component={RouterLink}
+                  to={link.to}
+                  underline="none"
+                >
+                  {link.text}
+                </FooterLink>
+              </Box>
+            ))}
+          </Grid>
+
+          {/* Other Links and Newsletter - Side by Side */}
+          <Grid item xs={12} sm={6} md={6}>
+            <Grid container spacing={2}>
+              {/* Other Links */}
+              <Grid item xs={6}>
+                <FooterTitle>روابط اخرى</FooterTitle>
+                {/* Empty section as shown in the image */}
+              </Grid>
+
+              {/* Newsletter Subscription */}
+              <Grid item xs={6}>
+                <FooterTitle>تابع جديدنا</FooterTitle>
+                <Typography variant="body2" sx={{ color: '#E6E6E6', lineHeight: 1.4, mb: 2, fontSize: '0.85rem' }}>
+                  اشترك في نشرتنا البريدية للحصول على آخر التحديثات والأخبار
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  <Box sx={{ position: 'relative' }}>
+                    <input
+                      type="email"
+                      placeholder="Email Email"
+                      style={{
+                        width: '100%',
+                        padding: '10px 35px 10px 10px',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        borderRadius: '6px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        color: '#FFFFFF',
+                        fontSize: '0.85rem',
+                        outline: 'none',
+                        '&::placeholder': {
+                          color: '#FFFFFF',
+                          opacity: 0.7
+                        }
+                      }}
+                    />
+                    <EmailIcon
+                      sx={{
+                        position: 'absolute',
+                        right: 10,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#FFFFFF',
+                        fontSize: '1rem'
+                      }}
+                    />
+                  </Box>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#1B1B48',
+                      color: '#FFFFFF',
+                      fontWeight: 600,
+                      padding: '10px 20px',
+                      borderRadius: '6px',
+                      textTransform: 'none',
+                      fontSize: '0.85rem',
+                      '&:hover': {
+                        backgroundColor: '#0F0F2A',
+                      }
+                    }}
+                  >
+                    SUBSCRIBE NOW →
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
           </Grid>
+        </Grid>
 
-          {/* Copyright Section */}
-          <Box 
-            sx={{ 
-              mt: 2, 
-              pt: 1.5, 
-              pb: 1.5,
-              borderTop: '1px solid rgba(14, 81, 129, 0.1)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'relative',
-              '&:before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '100vw',
-                height: '100%',
-                background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.03) 0%, rgba(229, 151, 139, 0.03) 100%)',
-                zIndex: -1,
-              },
-              '&:after': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '100vw',
-                height: '100%',
-                background: `
-                  radial-gradient(circle at 20% 20%, rgba(14, 81, 129, 0.02) 1px, transparent 1px),
-                  radial-gradient(circle at 80% 80%, rgba(229, 151, 139, 0.02) 1px, transparent 1px)
-                `,
-                backgroundSize: '40px 40px, 40px 40px',
-                backgroundPosition: '0 0, 20px 20px',
-                zIndex: -1,
-              },
-            }}
-          >
-            <Typography variant="body2" sx={{ color: '#0e5181', textAlign: 'center', fontWeight: '500', fontSize: '0.85rem' }}>
-              © {currentYear} جميع الحقوق محفوظة لأكاديمية التطوير
-            </Typography>
-          </Box>
+        {/* Copyright Section */}
+        <Box
+          sx={{
+            mt: 2,
+            pt: 2,
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Typography variant="body2" sx={{ color: '#A0A0A0', textAlign: 'center', fontSize: '0.8rem' }}>
+            Copyright © {currentYear} Bluetech Solutions All Rights Reserved.
+          </Typography>
+        </Box>
       </Container>
     </FooterContainer>
-    </>
   );
 };
 
