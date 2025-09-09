@@ -74,9 +74,9 @@ INSTALLED_APPS = [
     # 'silk',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.github',
+   # 'allauth.socialaccount',
+    #'allauth.socialaccount.providers.google',
+    #'allauth.socialaccount.providers.github',
     # 'menu_generator',
     
     # Core LMS apps
