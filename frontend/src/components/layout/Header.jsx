@@ -82,7 +82,7 @@ const StyledAppBar = styled(AppBar, {
     height: '3px',
     background: scrolled
       ? 'linear-gradient(90deg, #663399, #333679, #1B1B48)'
-      : 'linear-gradient(90deg, #E5978B, #D17A6F, #E5978B)',
+      : 'linear-gradient(90deg, #4DBFB3, #D17A6F, #4DBFB3)',
     opacity: scrolled ? 0.8 : 1,
     transition: 'all 0.4s ease',
   },
@@ -144,7 +144,7 @@ const Search = styled('div')(({ theme, scrolled }) => ({
     backgroundColor: scrolled
       ? 'rgba(255, 255, 255, 0.2)'
       : 'rgba(255, 255, 255, 0.15)',
-    borderColor: scrolled ? '#663399' : '#E5978B',
+    borderColor: scrolled ? '#663399' : '#4DBFB3',
     boxShadow: scrolled
       ? '0 0 0 3px rgba(102, 51, 153, 0.2)'
       : '0 0 0 3px rgba(229, 151, 139, 0.2)',
@@ -267,7 +267,7 @@ const LogoText = styled(Typography)(({ theme, scrolled }) => ({
   fontSize: '1.5rem',
   background: scrolled
     ? 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)'
-    : 'linear-gradient(135deg, #E5978B 0%, #D17A6F 50%, #E5978B 100%)',
+    : 'linear-gradient(135deg, #4DBFB3 0%, #D17A6F 50%, #4DBFB3 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   marginRight: '15px',

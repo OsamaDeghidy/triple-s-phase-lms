@@ -248,7 +248,7 @@ const ExamList = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -307,7 +307,7 @@ const ExamList = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <Assessment sx={{ color: '#0e5181', fontSize: 24 }} />
+          <Assessment sx={{ color: '#333679', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="secondary.main">
               {exams.length}
@@ -351,7 +351,7 @@ const ExamList = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <Assessment sx={{ color: '#1976d2', fontSize: 24 }} />
+          <Assessment sx={{ color: '#663399', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="primary.main">
               {exams.filter(exam => exam.is_final).length}
@@ -392,7 +392,7 @@ const ExamList = () => {
           sx={{
             width: 56,
             height: 56,
-            background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+            background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
             boxShadow: '0 4px 20px rgba(14, 81, 129, 0.3)',
             color: 'white',
             '&:hover': {

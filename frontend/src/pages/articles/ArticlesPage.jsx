@@ -65,7 +65,7 @@ const pulse = keyframes`
 
 // Styled components
 const HeroSection = styled(Box)(({ theme }) => ({
-  background: `linear-gradient(135deg, #0e5181 0%, #1a5f8a 50%, #0a3d62 100%)`,
+  background: `linear-gradient(135deg, #333679 0%, #1a5f8a 50%, #0a3d62 100%)`,
   color: 'white',
   padding: theme.spacing(4, 0, 3),
   textAlign: 'center',
@@ -112,7 +112,7 @@ const ModernCard = styled(Card)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '3px',
-    background: 'linear-gradient(90deg, #1976d2, #42a5f5, #1565c0)',
+    background: 'linear-gradient(90deg, #663399, #42a5f5, #1565c0)',
     backgroundSize: '200% 100%',
     animation: `${shimmer} 3s ease-in-out infinite`,
   },
@@ -178,10 +178,10 @@ const SearchBox = styled(TextField)(({ theme }) => ({
     backdropFilter: 'blur(10px)',
     fontSize: '1.1rem',
     '&:hover fieldset': {
-      borderColor: '#0e5181',
+      borderColor: '#333679',
     },
     '&.Mui-focused fieldset': {
-      borderColor: '#0e5181',
+      borderColor: '#333679',
       borderWidth: 2,
     },
   },
@@ -192,8 +192,8 @@ const FilterPaper = styled(Paper)(({ theme }) => ({
   borderRadius: 20,
   background: `linear-gradient(135deg, ${alpha('#ffffff', 0.95)}, ${alpha('#f8f9ff', 0.95)})`,
   backdropFilter: 'blur(20px)',
-  boxShadow: `0 8px 32px ${alpha('#1976d2', 0.08)}`,
-  border: `1px solid ${alpha('#1976d2', 0.1)}`,
+  boxShadow: `0 8px 32px ${alpha('#663399', 0.08)}`,
+  border: `1px solid ${alpha('#663399', 0.1)}`,
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -203,7 +203,7 @@ const FilterPaper = styled(Paper)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '3px',
-    background: `linear-gradient(90deg, #1976d2, #42a5f5, #1565c0)`,
+    background: `linear-gradient(90deg, #663399, #42a5f5, #1565c0)`,
     backgroundSize: '200% 100%',
     animation: `${shimmer} 3s ease-in-out infinite`,
   }
@@ -215,10 +215,10 @@ const ActionButton = styled(IconButton)(({ theme, variant }) => ({
   borderRadius: '14px',
   transition: 'all 0.3s ease',
   ...(variant === 'like' && {
-    backgroundColor: alpha('#1976d2', 0.1),
-    color: '#1976d2',
+    backgroundColor: alpha('#663399', 0.1),
+    color: '#663399',
   '&:hover': {
-      backgroundColor: '#1976d2',
+      backgroundColor: '#663399',
       color: 'white',
       transform: 'scale(1.1)',
     }
@@ -242,7 +242,7 @@ const ReadMoreButton = styled(Box)(({ theme, category }) => ({
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   fontWeight: 700,
   fontSize: '0.85rem',
-  color: '#1976d2',
+  color: '#663399',
   padding: '8px 16px',
   borderRadius: '25px',
   background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.1), rgba(66, 165, 245, 0.1))',
@@ -539,10 +539,10 @@ const ArticlesPage = () => {
                     handleLike(article.id); 
                   }}
                   sx={{
-                    backgroundColor: likedArticles.has(article.id) ? '#1976d2' : alpha('#1976d2', 0.1),
-                    color: likedArticles.has(article.id) ? 'white' : '#1976d2',
+                    backgroundColor: likedArticles.has(article.id) ? '#663399' : alpha('#663399', 0.1),
+                    color: likedArticles.has(article.id) ? 'white' : '#663399',
                     '&:hover': {
-                      backgroundColor: likedArticles.has(article.id) ? '#1565c0' : '#1976d2',
+                      backgroundColor: likedArticles.has(article.id) ? '#1565c0' : '#663399',
                       color: 'white',
                     }
                   }}
@@ -562,7 +562,7 @@ const ArticlesPage = () => {
                     backgroundColor: bookmarkedArticles.has(article.id) ? '#42a5f5' : alpha('#42a5f5', 0.1),
                     color: bookmarkedArticles.has(article.id) ? 'white' : '#42a5f5',
                     '&:hover': {
-                      backgroundColor: bookmarkedArticles.has(article.id) ? '#1976d2' : '#42a5f5',
+                      backgroundColor: bookmarkedArticles.has(article.id) ? '#663399' : '#42a5f5',
                       color: 'white',
                     }
                   }}
@@ -637,8 +637,8 @@ const ArticlesPage = () => {
                 padding: '4px 8px',
                 borderRadius: '12px'
               }}>
-                <ScheduleIcon sx={{ fontSize: 12, color: '#1976d2' }} />
-                <Typography variant="caption" sx={{ fontWeight: 600, color: '#1976d2', fontSize: '0.65rem' }}>
+                <ScheduleIcon sx={{ fontSize: 12, color: '#663399' }} />
+                <Typography variant="caption" sx={{ fontWeight: 600, color: '#663399', fontSize: '0.65rem' }}>
                   {article.reading_time} د
                 </Typography>
               </Box>
@@ -773,7 +773,7 @@ const ArticlesPage = () => {
                     left: '-2px',
                     right: '-2px',
                     bottom: '-2px',
-                    background: 'linear-gradient(45deg, #0e5181, #1a5f8a, #0a3d62)',
+                    background: 'linear-gradient(45deg, #333679, #1a5f8a, #0a3d62)',
                     borderRadius: '25px',
                     zIndex: -1,
                     opacity: 0.3,
@@ -788,7 +788,7 @@ const ArticlesPage = () => {
                       startAdornment: (
                         <InputAdornment position="start">
                           <SearchIcon sx={{ 
-                            color: '#0e5181', 
+                            color: '#333679', 
                             ml: 1,
                             fontSize: '1.1rem',
                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
@@ -838,7 +838,7 @@ const ArticlesPage = () => {
               <Typography variant="h6" sx={{ 
                 fontWeight: 700, 
                 mr: 2, 
-                color: '#1976d2',
+                color: '#663399',
                         display: 'flex',
                         alignItems: 'center',
                 gap: 1
@@ -906,7 +906,7 @@ const ArticlesPage = () => {
                         fontSize: '1rem',
                       },
                       '& .Mui-selected': {
-                        background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                        background: 'linear-gradient(45deg, #663399, #42a5f5)',
                         color: 'white',
                         boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
                       }
@@ -933,11 +933,11 @@ const ArticlesPage = () => {
                   }}
                   sx={{ 
                     borderRadius: 2,
-                    borderColor: '#1976d2',
-                    color: '#1976d2',
+                    borderColor: '#663399',
+                    color: '#663399',
                     '&:hover': {
                       borderColor: '#1565c0',
-                      backgroundColor: alpha('#1976d2', 0.08),
+                      backgroundColor: alpha('#663399', 0.08),
                     }
                   }}
                 >

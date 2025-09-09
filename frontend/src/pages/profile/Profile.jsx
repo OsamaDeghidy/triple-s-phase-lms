@@ -142,7 +142,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 const ProfileHeader = styled(Box)(({ theme }) => ({
-  background: `linear-gradient(135deg, #0e5181 0%, #e5978b 100%)`,
+  background: `linear-gradient(135deg, #333679 0%, #4DBFB3 100%)`,
   borderRadius: theme.spacing(3),
   padding: theme.spacing(4),
   marginBottom: theme.spacing(4),
@@ -164,21 +164,21 @@ const ProfileCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.spacing(3),
   boxShadow: '0 8px 32px rgba(14, 81, 129, 0.1)',
   border: '1px solid',
-  borderColor: alpha('#0e5181', 0.08),
+  borderColor: alpha('#333679', 0.08),
   transition: 'all 0.3s ease',
   background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(229, 151, 139, 0.02) 100%)',
   '&:hover': {
     transform: 'translateY(-4px)',
     boxShadow: '0 12px 40px rgba(14, 81, 129, 0.15)',
-    borderColor: alpha('#0e5181', 0.15),
+    borderColor: alpha('#333679', 0.15),
   }
 }));
 
 const StatsCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.spacing(2.5),
-  background: `linear-gradient(135deg, ${alpha('#0e5181', 0.03)} 0%, ${alpha('#e5978b', 0.03)} 100%)`,
+  background: `linear-gradient(135deg, ${alpha('#333679', 0.03)} 0%, ${alpha('#4DBFB3', 0.03)} 100%)`,
   border: '1px solid',
-  borderColor: alpha('#0e5181', 0.08),
+  borderColor: alpha('#333679', 0.08),
   transition: 'all 0.3s ease',
   '&:hover': {
     transform: 'translateY(-2px)',
@@ -189,12 +189,12 @@ const StatsCard = styled(Card)(({ theme }) => ({
 const SkillChip = styled(Chip)(({ theme }) => ({
   borderRadius: theme.spacing(2),
   fontWeight: 600,
-  background: `linear-gradient(135deg, ${alpha('#0e5181', 0.1)} 0%, ${alpha('#e5978b', 0.1)} 100%)`,
-  border: `1px solid ${alpha('#0e5181', 0.2)}`,
-  color: '#0e5181',
+  background: `linear-gradient(135deg, ${alpha('#333679', 0.1)} 0%, ${alpha('#4DBFB3', 0.1)} 100%)`,
+  border: `1px solid ${alpha('#333679', 0.2)}`,
+  color: '#333679',
   '&:hover': {
     transform: 'scale(1.05)',
-    background: `linear-gradient(135deg, ${alpha('#0e5181', 0.15)} 0%, ${alpha('#e5978b', 0.15)} 100%)`,
+    background: `linear-gradient(135deg, ${alpha('#333679', 0.15)} 0%, ${alpha('#4DBFB3', 0.15)} 100%)`,
   }
 }));
 
@@ -590,7 +590,7 @@ const Profile = () => {
       value: profileData.coursesEnrolled || 0,
       icon: <SchoolIcon />,
       color: 'primary',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #0e5181 100%)'
+      gradient: 'linear-gradient(135deg, #667eea 0%, #333679 100%)'
     },
     {
       title: 'الكورسات المكتملة',
@@ -647,19 +647,19 @@ const Profile = () => {
                   mb: 4,
                   pb: 2,
                   borderBottom: '2px solid',
-                  borderColor: alpha('#0e5181', 0.1)
+                  borderColor: alpha('#333679', 0.1)
                 }}>
-                  <Typography variant="h5" fontWeight="bold" color="#0e5181">
+                  <Typography variant="h5" fontWeight="bold" color="#333679">
                     معلومات الملف الشخصي
                   </Typography>
                   <Button 
                     variant={editMode ? "contained" : "outlined"} 
                     sx={{
-                      backgroundColor: editMode ? '#0e5181' : 'transparent',
-                      color: editMode ? 'white' : '#0e5181',
-                      borderColor: '#0e5181',
+                      backgroundColor: editMode ? '#333679' : 'transparent',
+                      color: editMode ? 'white' : '#333679',
+                      borderColor: '#333679',
                       '&:hover': {
-                        backgroundColor: editMode ? '#0a3d5f' : alpha('#0e5181', 0.1),
+                        backgroundColor: editMode ? '#0a3d5f' : alpha('#333679', 0.1),
                       },
                       px: 3,
                       py: 1.5,
@@ -683,9 +683,9 @@ const Profile = () => {
                       mb: 4,
                       p: 3,
                       borderRadius: 3,
-                      background: `linear-gradient(135deg, ${alpha('#0e5181', 0.02)} 0%, ${alpha('#e5978b', 0.02)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
-                      borderColor: alpha('#0e5181', 0.08)
+                      borderColor: alpha('#333679', 0.08)
                     }}>
                       <Box sx={{ position: 'relative', display: 'inline-block' }}>
                         <Avatar 
@@ -695,7 +695,7 @@ const Profile = () => {
                             width: 140, 
                             height: 140,
                             border: '4px solid',
-                            borderColor: '#0e5181',
+                            borderColor: '#333679',
                             mb: 3,
                             boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)'
                           }}
@@ -727,11 +727,11 @@ const Profile = () => {
                           fullWidth
                           sx={{ 
                             mb: 2,
-                            borderColor: '#0e5181',
-                            color: '#0e5181',
+                            borderColor: '#333679',
+                            color: '#333679',
                             '&:hover': {
                               borderColor: '#0a3d5f',
-                              backgroundColor: alpha('#0e5181', 0.05),
+                              backgroundColor: alpha('#333679', 0.05),
                             }
                           }}
                         >
@@ -751,11 +751,11 @@ const Profile = () => {
                     <Box sx={{
                       p: 3,
                       borderRadius: 3,
-                      background: `linear-gradient(135deg, ${alpha('#0e5181', 0.02)} 0%, ${alpha('#e5978b', 0.02)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
-                      borderColor: alpha('#0e5181', 0.08)
+                      borderColor: alpha('#333679', 0.08)
                     }}>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#0e5181' }}>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#333679' }}>
                         تغيير كلمة المرور
                       </Typography>
                       <Grid container spacing={2}>
@@ -774,13 +774,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -791,7 +791,7 @@ const Profile = () => {
                                     size="small" 
                                     onClick={() => setShowPassword(!showPassword)}
                                     edge="end"
-                                    sx={{ color: '#0e5181' }}
+                                    sx={{ color: '#333679' }}
                                   >
                                     {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                                   </IconButton>
@@ -815,13 +815,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -835,7 +835,7 @@ const Profile = () => {
                             onClick={handlePasswordChange}
                             disabled={loading}
                             sx={{
-                              backgroundColor: '#0e5181',
+                              backgroundColor: '#333679',
                               '&:hover': {
                                 backgroundColor: '#0a3d5f',
                               },
@@ -857,12 +857,12 @@ const Profile = () => {
                     <Box sx={{
                       p: 3,
                       borderRadius: 3,
-                      background: `linear-gradient(135deg, ${alpha('#0e5181', 0.02)} 0%, ${alpha('#e5978b', 0.02)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
-                      borderColor: alpha('#0e5181', 0.08),
+                      borderColor: alpha('#333679', 0.08),
                       mb: 4
                     }}>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#0e5181' }}>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#333679' }}>
                         المعلومات الشخصية
                       </Typography>
                       <Grid container spacing={3}>
@@ -877,13 +877,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -904,13 +904,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -931,13 +931,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -957,13 +957,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -984,13 +984,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1011,13 +1011,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1033,12 +1033,12 @@ const Profile = () => {
                     <Box sx={{
                       p: 3,
                       borderRadius: 3,
-                      background: `linear-gradient(135deg, ${alpha('#0e5181', 0.02)} 0%, ${alpha('#e5978b', 0.02)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
-                      borderColor: alpha('#0e5181', 0.08),
+                      borderColor: alpha('#333679', 0.08),
                       mb: 4
                     }}>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#0e5181' }}>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#333679' }}>
                         معلومات التواصل
                       </Typography>
                       <Grid container spacing={3}>
@@ -1055,13 +1055,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1082,13 +1082,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1109,13 +1109,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1136,13 +1136,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1163,13 +1163,13 @@ const Profile = () => {
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                  borderColor: alpha('#0e5181', 0.2),
+                                  borderColor: alpha('#333679', 0.2),
                                 },
                                 '&:hover fieldset': {
-                                  borderColor: alpha('#0e5181', 0.4),
+                                  borderColor: alpha('#333679', 0.4),
                                 },
                                 '&.Mui-focused fieldset': {
-                                  borderColor: '#0e5181',
+                                  borderColor: '#333679',
                                 },
                               },
                             }}
@@ -1185,11 +1185,11 @@ const Profile = () => {
                     <Box sx={{
                       p: 3,
                       borderRadius: 3,
-                      background: `linear-gradient(135deg, ${alpha('#0e5181', 0.02)} 0%, ${alpha('#e5978b', 0.02)} 100%)`,
+                      background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
-                      borderColor: alpha('#0e5181', 0.08)
+                      borderColor: alpha('#333679', 0.08)
                     }}>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#0e5181' }}>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#333679' }}>
                         نبذة عن المستخدم
                       </Typography>
                       <TextField
@@ -1206,13 +1206,13 @@ const Profile = () => {
                         sx={{
                           '& .MuiOutlinedInput-root': {
                             '& fieldset': {
-                              borderColor: alpha('#0e5181', 0.2),
+                              borderColor: alpha('#333679', 0.2),
                             },
                             '&:hover fieldset': {
-                              borderColor: alpha('#0e5181', 0.4),
+                              borderColor: alpha('#333679', 0.4),
                             },
                             '&.Mui-focused fieldset': {
-                              borderColor: '#0e5181',
+                              borderColor: '#333679',
                             },
                           },
                         }}
@@ -1236,7 +1236,7 @@ const Profile = () => {
           position: 'fixed', 
           bottom: 24, 
           right: 24,
-          backgroundColor: '#0e5181',
+          backgroundColor: '#333679',
           color: 'white',
           '&:hover': {
             backgroundColor: '#0a3d5f',

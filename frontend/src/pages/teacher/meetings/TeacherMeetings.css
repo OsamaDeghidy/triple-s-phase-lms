@@ -12,7 +12,7 @@
 }
 
 .meeting-card.ongoing {
-  border: 2px solid #e5978b;
+  border: 2px solid #4DBFB3;
   background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
 }
 
@@ -35,7 +35,7 @@
 
 .status-chip.upcoming {
   background-color: #e3f2fd;
-  color: #1976d2;
+  color: #663399;
 }
 
 .status-chip.ongoing {
@@ -65,7 +65,7 @@
 }
 
 .fab-button {
-  background: linear-gradient(45deg, #0e5181 30%, #1976d2 90%);
+  background: linear-gradient(45deg, #333679 30%, #663399 90%);
   box-shadow: 0 3px 15px rgba(103, 58, 183, 0.3);
   transition: all 0.3s ease;
 }
@@ -109,7 +109,7 @@
 .progress-bar {
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #e5978b 0%, #66bb6a 100%);
+  background: linear-gradient(90deg, #4DBFB3 0%, #66bb6a 100%);
 }
 
 .action-button {
@@ -136,7 +136,7 @@
 }
 
 .tab-container .Mui-selected {
-  color: #0e5181;
+  color: #333679;
 }
 
 .meeting-info-grid {
@@ -289,6 +289,6 @@
 
 .success-state .success-icon {
   font-size: 64px;
-  color: #e5978b;
+  color: #4DBFB3;
   margin-bottom: 16px;
 } 

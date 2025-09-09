@@ -545,7 +545,7 @@ const getFileIcon = (fileName, fileType) => {
       case 'gif':
       case 'bmp':
       case 'webp':
-        return <Image sx={{ color: '#1976d2' }} />;
+        return <Image sx={{ color: '#663399' }} />;
       case 'video':
       case 'mp4':
       case 'avi':
@@ -563,7 +563,7 @@ const getFileIcon = (fileName, fileType) => {
       case 'document':
       case 'doc':
       case 'docx':
-        return <TextSnippet sx={{ color: '#1976d2' }} />;
+        return <TextSnippet sx={{ color: '#663399' }} />;
       case 'excel':
       case 'xls':
       case 'xlsx':
@@ -605,7 +605,7 @@ const getFileIcon = (fileName, fileType) => {
     case 'bmp':
     case 'webp':
     case 'svg':
-      return <Image sx={{ color: '#1976d2' }} />;
+      return <Image sx={{ color: '#663399' }} />;
     case 'mp4':
     case 'avi':
     case 'mov':
@@ -622,7 +622,7 @@ const getFileIcon = (fileName, fileType) => {
       return <AudioFile sx={{ color: '#f57c00' }} />;
     case 'doc':
     case 'docx':
-      return <TextSnippet sx={{ color: '#1976d2' }} />;
+      return <TextSnippet sx={{ color: '#663399' }} />;
     case 'xls':
     case 'xlsx':
       return <TableChart sx={{ color: '#388e3c' }} />;
@@ -667,7 +667,7 @@ const getFileTypeColor = (fileName, fileType) => {
       case 'gif':
       case 'bmp':
       case 'webp':
-        return '#1976d2';
+        return '#663399';
       case 'video':
       case 'mp4':
       case 'avi':
@@ -685,7 +685,7 @@ const getFileTypeColor = (fileName, fileType) => {
       case 'document':
       case 'doc':
       case 'docx':
-        return '#1976d2';
+        return '#663399';
       case 'excel':
       case 'xls':
       case 'xlsx':
@@ -726,7 +726,7 @@ const getFileTypeColor = (fileName, fileType) => {
     case 'bmp':
     case 'webp':
     case 'svg':
-      return '#1976d2';
+      return '#663399';
     case 'mp4':
     case 'avi':
     case 'mov':
@@ -743,7 +743,7 @@ const getFileTypeColor = (fileName, fileType) => {
       return '#f57c00';
     case 'doc':
     case 'docx':
-      return '#1976d2';
+      return '#663399';
     case 'xls':
     case 'xlsx':
       return '#388e3c';
@@ -874,7 +874,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                     width: 20,
                     height: 20,
                     borderRadius: 2,
-                    background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                    background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -911,7 +911,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                           width: 8,
                           height: 8,
                           borderRadius: '50%',
-                          background: 'linear-gradient(45deg, #0e5181 0%, #e5978b 100%)',
+                          background: 'linear-gradient(45deg, #333679 0%, #4DBFB3 100%)',
                           top: '50%',
                           left: '50%',
                           transform: 'translate(-50%, -50%)',
@@ -946,7 +946,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                       boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 3,
-                        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
                         boxShadow: '0 1px 3px rgba(14, 81, 129, 0.3)',
                       }
                     }} 

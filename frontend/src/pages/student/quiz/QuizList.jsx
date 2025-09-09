@@ -218,7 +218,7 @@ const QuizList = () => {
                     <TableCell>
                       {quiz.time_limit ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <Timer sx={{ color: '#1976d2', fontSize: 18 }} />
+                          <Timer sx={{ color: '#663399', fontSize: 18 }} />
                           <Typography variant="body2" fontWeight={500} color="#2c3e50">
                             {quiz.time_limit} دقيقة
                           </Typography>
@@ -256,7 +256,7 @@ const QuizList = () => {
                             size="small"
                         onClick={() => handleViewHistory(quiz.id)}
                             sx={{ 
-                              color: '#1976d2',
+                              color: '#663399',
                               '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' }
                             }}
                       >

@@ -161,7 +161,7 @@ const TeacherDashboard = () => {
           time: '08:00 - 10:00',
           date: '2024-01-10',
           day: 'الثلاثاء',
-          color: '#0e5181'
+          color: '#333679'
         },
         {
           id: 2,
@@ -169,7 +169,7 @@ const TeacherDashboard = () => {
           time: '10:00 - 11:35',
           date: '2024-01-10',
           day: 'الثلاثاء',
-          color: '#0e5181'
+          color: '#333679'
         },
         {
           id: 3,
@@ -177,7 +177,7 @@ const TeacherDashboard = () => {
           time: '11:00 - 15:00',
           date: '2024-01-11',
           day: 'الأربعاء',
-          color: '#0e5181'
+          color: '#333679'
         },
         {
           id: 4,
@@ -185,7 +185,7 @@ const TeacherDashboard = () => {
           time: '07:00 - 08:15',
           date: '2024-01-12',
           day: 'الخميس',
-          color: '#0e5181'
+          color: '#333679'
         },
         {
           id: 5,
@@ -193,7 +193,7 @@ const TeacherDashboard = () => {
           time: '09:00 - 10:15',
           date: '2024-01-12',
           day: 'الخميس',
-          color: '#0e5181'
+          color: '#333679'
         },
         {
           id: 6,
@@ -201,7 +201,7 @@ const TeacherDashboard = () => {
           time: '09:00 - 10:15',
           date: '2024-01-13',
           day: 'الجمعة',
-          color: '#0e5181'
+          color: '#333679'
         },
         {
           id: 7,
@@ -209,7 +209,7 @@ const TeacherDashboard = () => {
           time: '12:00 - 13:15',
           date: '2024-01-13',
           day: 'الجمعة',
-          color: '#0e5181'
+          color: '#333679'
         }
       ];
       
@@ -282,7 +282,7 @@ const TeacherDashboard = () => {
               sx={{ 
                 fontWeight: 800,
                 mb: 2,
-                color: '#0e5181',
+                color: '#333679',
                 textAlign: 'center'
               }}
             >
@@ -381,7 +381,7 @@ const TeacherDashboard = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          background: '#0e5181',
+                          background: '#333679',
                           color: 'white',
                           '& svg': {
                             fontSize: '1.5rem'
@@ -519,7 +519,7 @@ const TeacherDashboard = () => {
               {/* Tabs Header */}
                 <Box
                   sx={{
-                  background: 'linear-gradient(135deg, #0e5181, #1a6ba8)',
+                  background: 'linear-gradient(135deg, #333679, #1a6ba8)',
                   color: 'white'
                 }}
               >
@@ -564,7 +564,7 @@ const TeacherDashboard = () => {
                 {activeTab === 0 && (
                   <Box sx={{ p: 3 }}>
                     <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#0e5181' }}>
+                      <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#333679' }}>
                         إدارة فصولك الدراسية
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -577,22 +577,22 @@ const TeacherDashboard = () => {
                         <Table sx={{ minWidth: 650 }} aria-label="courses table">
                           <TableHead>
                             <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                              <TableCell sx={{ fontWeight: 700, color: '#0e5181', borderBottom: '2px solid #0e5181', textAlign: 'right' }}>
+                              <TableCell sx={{ fontWeight: 700, color: '#333679', borderBottom: '2px solid #333679', textAlign: 'right' }}>
                                 المقرر
                               </TableCell>
-                              <TableCell align="center" sx={{ fontWeight: 700, color: '#0e5181', borderBottom: '2px solid #0e5181' }}>
+                              <TableCell align="center" sx={{ fontWeight: 700, color: '#333679', borderBottom: '2px solid #333679' }}>
                                 عدد الطلاب
                               </TableCell>
-                              <TableCell align="center" sx={{ fontWeight: 700, color: '#0e5181', borderBottom: '2px solid #0e5181' }}>
+                              <TableCell align="center" sx={{ fontWeight: 700, color: '#333679', borderBottom: '2px solid #333679' }}>
                                 التقييم
                               </TableCell>
-                              <TableCell align="center" sx={{ fontWeight: 700, color: '#0e5181', borderBottom: '2px solid #0e5181' }}>
+                              <TableCell align="center" sx={{ fontWeight: 700, color: '#333679', borderBottom: '2px solid #333679' }}>
                                 التصنيف
                               </TableCell>
-                              <TableCell align="center" sx={{ fontWeight: 700, color: '#0e5181', borderBottom: '2px solid #0e5181' }}>
+                              <TableCell align="center" sx={{ fontWeight: 700, color: '#333679', borderBottom: '2px solid #333679' }}>
                                 الحالة
                               </TableCell>
-                              <TableCell align="center" sx={{ fontWeight: 700, color: '#0e5181', borderBottom: '2px solid #0e5181' }}>
+                              <TableCell align="center" sx={{ fontWeight: 700, color: '#333679', borderBottom: '2px solid #333679' }}>
                                 الإجراءات
                               </TableCell>
                             </TableRow>
@@ -624,7 +624,7 @@ const TeacherDashboard = () => {
                                         width: 40,
                                         height: 40,
                                   borderRadius: 2,
-                                  background: 'linear-gradient(135deg, #0e5181, #1a6ba8)',
+                                  background: 'linear-gradient(135deg, #333679, #1a6ba8)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -661,7 +661,7 @@ const TeacherDashboard = () => {
                                     size="small" 
                 sx={{ 
                                       backgroundColor: '#e3f2fd',
-                                      color: '#1976d2',
+                                      color: '#663399',
                                       fontWeight: 500
                                     }}
                                   />
@@ -682,7 +682,7 @@ const TeacherDashboard = () => {
                                     <IconButton
                                       size="small"
                                       sx={{
-                                        color: '#0e5181',
+                                        color: '#333679',
                                         backgroundColor: 'rgba(14, 81, 129, 0.08)',
                                         '&:hover': {
                                           backgroundColor: 'rgba(14, 81, 129, 0.15)',
@@ -700,7 +700,7 @@ const TeacherDashboard = () => {
                                     <IconButton
               size="small" 
                           sx={{
-                                        color: '#e5978b',
+                                        color: '#4DBFB3',
                                         backgroundColor: 'rgba(229, 151, 139, 0.08)',
                 '&:hover': {
                                           backgroundColor: 'rgba(229, 151, 139, 0.15)',
@@ -731,7 +731,7 @@ const TeacherDashboard = () => {
             <Button 
               variant="contained" 
                     sx={{ 
-                            background: '#0e5181',
+                            background: '#333679',
                             '&:hover': { background: '#1a6ba8' }
                           }}
                           onClick={() => navigate('/teacher/courses/new')}
@@ -865,7 +865,7 @@ const TeacherDashboard = () => {
                                         background: 'rgba(14, 81, 129, 0.08)',
                                       borderRadius: 1,
                                       p: 1,
-                                        color: '#0e5181',
+                                        color: '#333679',
                       display: 'flex',
                                       flexDirection: 'column',
                       justifyContent: 'center',
@@ -896,7 +896,7 @@ const TeacherDashboard = () => {
                         <Button
                           variant="contained"
                 sx={{
-                            background: '#e5978b',
+                            background: '#4DBFB3',
                             '&:hover': { background: '#f0a8a0' }
                           }}
                           onClick={() => navigate('/teacher/meetings')}

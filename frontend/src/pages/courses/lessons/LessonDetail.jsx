@@ -42,7 +42,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+  background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
   color: 'white',
   display: 'flex',
   alignItems: 'center',

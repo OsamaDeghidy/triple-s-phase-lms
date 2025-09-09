@@ -395,7 +395,7 @@ const CourseBadge = styled(Box)(({ theme, variant = 'primary' }) => ({
   fontWeight: 600,
   zIndex: 3,
   ...(variant === 'free' && {
-    background: 'linear-gradient(90deg, #e5978b 0%, #d18a7a 100%)',
+    background: 'linear-gradient(90deg, #4DBFB3 0%, #d18a7a 100%)',
     color: '#fff',
   }),
   ...(variant === 'featured' && {
@@ -403,7 +403,7 @@ const CourseBadge = styled(Box)(({ theme, variant = 'primary' }) => ({
     color: '#fff',
   }),
   ...(variant === 'new' && {
-    background: 'linear-gradient(90deg, #e5978b 0%, #45a049 100%)',
+    background: 'linear-gradient(90deg, #4DBFB3 0%, #45a049 100%)',
     color: '#fff',
   }),
 }));
@@ -491,7 +491,7 @@ const MethodContent = styled(CardContent)(({ theme }) => ({
         width: '8px',
         height: '8px',
         borderRadius: '50%',
-        background: '#0e5181',
+        background: '#333679',
       },
     },
   },
@@ -513,13 +513,13 @@ const MethodFooter = styled(Box)(({ theme }) => ({
     position: 'relative',
     overflow: 'hidden',
     backgroundColor: 'transparent',
-    color: '#0e5181',
-    border: `1.5px solid #0e5181`,
+    color: '#333679',
+    border: `1.5px solid #333679`,
     '&:hover': {
       backgroundColor: 'rgba(14, 81, 129, 0.04)',
       transform: 'translateY(-2px)',
       boxShadow: '0 6px 12px rgba(14, 81, 129, 0.1)',
-      borderColor: '#0e5181',
+      borderColor: '#333679',
     },
     '&:active': {
       transform: 'translateY(0)',
@@ -548,7 +548,7 @@ const MethodFooter = styled(Box)(({ theme }) => ({
     color: theme.palette.text.secondary,
     fontSize: '0.85rem',
     '& svg': {
-      color: '#0e5181',
+      color: '#333679',
       fontSize: '1rem',
     },
   },

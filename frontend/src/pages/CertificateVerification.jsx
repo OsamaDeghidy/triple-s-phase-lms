@@ -325,7 +325,7 @@ const CertificateVerification = () => {
                   py: 1.5,
                   background: 'linear-gradient(45deg, #2196f3 0%, #21cbf3 100%)',
                   '&:hover': {
-                    background: 'linear-gradient(45deg, #1976d2 0%, #1cb5e0 100%)',
+                    background: 'linear-gradient(45deg, #663399 0%, #1cb5e0 100%)',
                   }
                 }}
               >

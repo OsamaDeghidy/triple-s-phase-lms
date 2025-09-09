@@ -400,7 +400,7 @@ const MyCertificates = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -899,7 +899,7 @@ const MyCertificates = () => {
                                    fontSize: line.includes(selectedCertificate.student_name) || line.includes(selectedCertificate.course_title) ? '2rem' : '1.3rem',
                                    lineHeight: 1.6,
                                    color: line.includes(selectedCertificate.student_name) || line.includes(selectedCertificate.course_title) ? 
-                                     '#0e5181' : '#2c3e50',
+                                     '#333679' : '#2c3e50',
                                    textAlign: 'center',
                                    fontFamily: line.includes(selectedCertificate.student_name) || line.includes(selectedCertificate.course_title) ? 
                                      '"Cairo", "Arial", sans-serif' : '"Cairo", "Arial", sans-serif'
@@ -935,7 +935,7 @@ const MyCertificates = () => {
                              sx={{ 
                                mb: 3, 
                                fontSize: '2.2rem',
-                               color: '#0e5181',
+                               color: '#333679',
                                textAlign: 'center',
                                fontFamily: '"Cairo", "Arial", sans-serif'
                              }}
@@ -963,7 +963,7 @@ const MyCertificates = () => {
                              sx={{ 
                                mb: 3, 
                                fontSize: '1.8rem',
-                               color: '#0e5181',
+                               color: '#333679',
                                textAlign: 'center',
                                fontFamily: '"Cairo", "Arial", sans-serif'
                              }}
@@ -1043,7 +1043,7 @@ const MyCertificates = () => {
                            variant="h6" 
                            fontWeight="bold" 
                            sx={{ 
-                             color: '#0e5181', 
+                             color: '#333679', 
                              mb: 1,
                              fontSize: '1.1rem',
                              fontFamily: '"Cairo", "Arial", sans-serif'
@@ -1067,7 +1067,7 @@ const MyCertificates = () => {
                        <Box sx={{ textAlign: 'center', flex: 1 }}>
                          <Box sx={{ 
                            height: 70, 
-                           borderBottom: '2px solid #0e5181', 
+                           borderBottom: '2px solid #333679', 
                            mb: 1,
                            position: 'relative',
                            display: 'flex',
@@ -1088,7 +1088,7 @@ const MyCertificates = () => {
                              <Typography 
                                variant="body2" 
                                sx={{ 
-                                 color: '#0e5181',
+                                 color: '#333679',
                                  fontStyle: 'italic'
                                }}
                              >
@@ -1100,7 +1100,7 @@ const MyCertificates = () => {
                            variant="body2" 
                            fontWeight="bold" 
                            sx={{ 
-                             color: '#0e5181',
+                             color: '#333679',
                              fontSize: '0.9rem',
                              fontFamily: '"Cairo", "Arial", sans-serif'
                            }}

@@ -38,7 +38,7 @@ const StatusChip = styled(Chip)(({ status }) => ({
   }),
   ...(status === 'graded' && {
     backgroundColor: '#e3f2fd',
-    color: '#1976d2',
+    color: '#663399',
   }),
   ...(status === 'late' && {
     backgroundColor: '#ffebee',
@@ -261,7 +261,7 @@ const AssignmentSubmissions = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -314,13 +314,13 @@ const AssignmentSubmissions = () => {
             </Typography>
             {assignment.assignment_file && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-                <FileUploadIcon sx={{ color: '#1976d2' }} />
+                <FileUploadIcon sx={{ color: '#663399' }} />
                 <Button
                   variant="outlined"
                   size="small"
                   startIcon={<DownloadIcon />}
                   onClick={() => handleDownloadFile('assignment_file', assignment.assignment_file)}
-                  sx={{ color: '#1976d2', borderColor: '#1976d2' }}
+                  sx={{ color: '#663399', borderColor: '#663399' }}
                 >
                   تحميل ملف الواجب
                 </Button>
@@ -369,7 +369,7 @@ const AssignmentSubmissions = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <AssignmentTurnedInIcon sx={{ color: '#1976d2', fontSize: 24 }} />
+          <AssignmentTurnedInIcon sx={{ color: '#663399', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="primary">
               {submissionStats.submitted}
@@ -573,7 +573,7 @@ const AssignmentSubmissions = () => {
                               handleDownloadFile('assignment_files.zip', fileAnswers[0]);
                             }
                           }}
-                          sx={{ color: '#1976d2' }}
+                          sx={{ color: '#663399' }}
                         >
                           <DownloadIcon />
                         </IconButton>
@@ -675,7 +675,7 @@ const AssignmentSubmissions = () => {
                       <List dense sx={{ p: 0 }}>
                         <ListItem sx={{ px: 0, py: 1 }}>
                           <ListItemIcon sx={{ minWidth: 40 }}>
-                            <CalendarTodayIcon sx={{ color: '#0e5181' }} />
+                            <CalendarTodayIcon sx={{ color: '#333679' }} />
                         </ListItemIcon>
                         <ListItemText 
                             primary={
@@ -692,7 +692,7 @@ const AssignmentSubmissions = () => {
                       </ListItem>
                         <ListItem sx={{ px: 0, py: 1 }}>
                           <ListItemIcon sx={{ minWidth: 40 }}>
-                            <AccessTimeIcon sx={{ color: '#0e5181' }} />
+                            <AccessTimeIcon sx={{ color: '#333679' }} />
                           </ListItemIcon>
                           <ListItemText 
                             primary={
@@ -710,7 +710,7 @@ const AssignmentSubmissions = () => {
                         {selectedSubmission.grade !== null && (
                           <ListItem sx={{ px: 0, py: 1 }}>
                             <ListItemIcon sx={{ minWidth: 40 }}>
-                              <GradeIcon sx={{ color: '#0e5181' }} />
+                              <GradeIcon sx={{ color: '#333679' }} />
                         </ListItemIcon>
                         <ListItemText 
                               primary={
@@ -755,7 +755,7 @@ const AssignmentSubmissions = () => {
                                   justifyContent: 'space-between'
                                 }}>
                                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <QuizIcon sx={{ color: '#0e5181' }} />
+                                <QuizIcon sx={{ color: '#333679' }} />
                                 <Typography variant="subtitle2" fontWeight={600} color="primary">
                                       السؤال {index + 1}
                                 </Typography>
@@ -788,14 +788,14 @@ const AssignmentSubmissions = () => {
                                           borderRadius: 1,
                                           border: '1px solid #e0e0e0'
                                         }}>
-                                          <FileUploadIcon sx={{ color: '#1976d2' }} />
+                                          <FileUploadIcon sx={{ color: '#663399' }} />
                                           <Typography variant="body2" sx={{ flex: 1 }}>
                                           ملف مرفوع
                                         </Typography>
                                         <IconButton
                                           size="small"
                                           onClick={() => handleDownloadFile(`question_${index + 1}_file`, response)}
-                                          sx={{ color: '#1976d2' }}
+                                          sx={{ color: '#663399' }}
                                         >
                                           <DownloadIcon />
                                         </IconButton>
@@ -1082,7 +1082,7 @@ const AssignmentSubmissions = () => {
                   px: 4, 
                   py: 1.5, 
                   fontWeight: 700, 
-                  background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                  background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
                   '&:hover': { 
                     background: 'linear-gradient(90deg, #0a3d5f 0%, #d17a6e 100%)' 
                   } 

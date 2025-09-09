@@ -274,7 +274,7 @@ const AssignmentQuestions = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-         background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+         background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -327,9 +327,9 @@ const AssignmentQuestions = () => {
             startIcon={<AddIcon />}
             onClick={handleAddQuestion}
             sx={{
-               background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+               background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
               '&:hover': {
-                 background: 'linear-gradient(135deg, #e5978b 0%, #0e5181 100%)',
+                 background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
               }
             }}
           >
@@ -369,7 +369,7 @@ const AssignmentQuestions = () => {
                       <IconButton
                         size="small"
                         onClick={() => handleEditQuestion(question)}
-                        sx={{ color: '#1976d2' }}
+                        sx={{ color: '#663399' }}
                       >
                         <EditIcon />
                       </IconButton>
@@ -442,7 +442,7 @@ const AssignmentQuestions = () => {
           }
         }}
       >
-        <DialogTitle sx={{ textAlign: 'center', fontWeight: 700, color: '#0e5181' }}>
+        <DialogTitle sx={{ textAlign: 'center', fontWeight: 700, color: '#333679' }}>
           {editingQuestion ? 'تعديل السؤال' : 'إضافة سؤال جديد'}
         </DialogTitle>
         <DialogContent sx={{ direction: 'rtl' }}>
@@ -655,11 +655,11 @@ const AssignmentQuestions = () => {
           <Button 
             onClick={() => setOpenQuestionDialog(false)}
             sx={{
-              borderColor: '#0e5181',
-              color: '#0e5181',
+              borderColor: '#333679',
+              color: '#333679',
               '&:hover': {
-                borderColor: '#e5978b',
-                color: '#e5978b',
+                borderColor: '#4DBFB3',
+                color: '#4DBFB3',
               },
               borderRadius: 2,
               textTransform: 'none',
@@ -673,9 +673,9 @@ const AssignmentQuestions = () => {
             onClick={handleSaveQuestion}
             startIcon={<SaveIcon />}
             sx={{
-              background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+              background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #e5978b 0%, #0e5181 100%)',
+                background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
               },
               borderRadius: 2,
               textTransform: 'none',

@@ -12,7 +12,7 @@
 }
 
 .meeting-card.ongoing {
-  border: 2px solid #e5978b;
+  border: 2px solid #4DBFB3;
   background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
 }
 
@@ -47,7 +47,7 @@
 
 .status-chip.upcoming {
   background-color: #e3f2fd;
-  color: #1976d2;
+  color: #663399;
 }
 
 .status-chip.ongoing {
@@ -74,7 +74,7 @@
 
 .attendance-chip.registered {
   background-color: #e3f2fd;
-  color: #1976d2;
+  color: #663399;
 }
 
 .attendance-chip.attending {
@@ -113,7 +113,7 @@
 .progress-bar {
   height: 12px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #e5978b 0%, #66bb6a 100%);
+  background: linear-gradient(90deg, #4DBFB3 0%, #66bb6a 100%);
 }
 
 .attendance-info {
@@ -161,7 +161,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0e5181;
+  background: #333679;
   color: white;
 }
 
@@ -199,7 +199,7 @@
   text-transform: none;
   font-weight: 600;
   transition: all 0.3s ease;
-  background: linear-gradient(45deg, #1976d2 30%, #42a5f5 90%);
+  background: linear-gradient(45deg, #663399 30%, #42a5f5 90%);
 }
 
 .join-button:hover {
@@ -209,7 +209,7 @@
 }
 
 .join-button.ongoing {
-  background: linear-gradient(45deg, #e5978b 30%, #66bb6a 90%);
+  background: linear-gradient(45deg, #4DBFB3 30%, #66bb6a 90%);
 }
 
 .join-button.ongoing:hover {
@@ -229,7 +229,7 @@
 }
 
 .tab-container .Mui-selected {
-  color: #0e5181;
+  color: #333679;
 }
 
 .meeting-info-grid {

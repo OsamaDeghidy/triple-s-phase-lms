@@ -362,7 +362,7 @@ const QuizDetail = () => {
                        minWidth: 50,
                        height: 50,
                        borderRadius: '50%',
-                       background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                       background: 'linear-gradient(135deg, #663399 0%, #1565c0 100%)',
                        color: 'white',
                        display: 'flex',
                        alignItems: 'center',

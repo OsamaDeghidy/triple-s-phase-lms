@@ -602,7 +602,7 @@ const MeetingDetailsDialog = ({
 
         sx={{
 
-          background: 'linear-gradient(135deg, #667eea 0%, #0e5181 100%)',
+          background: 'linear-gradient(135deg, #667eea 0%, #333679 100%)',
 
           color: 'white',
 
@@ -644,7 +644,7 @@ const MeetingDetailsDialog = ({
 
             sx={{ 
 
-              bgcolor: status === 'ongoing' ? '#e5978b' : 
+              bgcolor: status === 'ongoing' ? '#4DBFB3' : 
 
                        status === 'upcoming' ? '#2196f3' : 
 
@@ -710,7 +710,7 @@ const MeetingDetailsDialog = ({
           border: '1px solid #dee2e6',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: 'linear-gradient(180deg, #667eea 0%, #0e5181 100%)',
+          background: 'linear-gradient(180deg, #667eea 0%, #333679 100%)',
           borderRadius: '8px',
           border: '2px solid #f8f9fa',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -963,7 +963,7 @@ const MeetingDetailsDialog = ({
 
                     <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid #e0e0e0' }}>
 
-                      <PersonIcon sx={{ color: '#e5978b', ml: 2, fontSize: 24 }} />
+                      <PersonIcon sx={{ color: '#4DBFB3', ml: 2, fontSize: 24 }} />
 
                       <Box>
 
@@ -989,7 +989,7 @@ const MeetingDetailsDialog = ({
 
                     <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid #e0e0e0' }}>
 
-                      <ScheduleIcon sx={{ color: '#1976d2', ml: 2, fontSize: 24 }} />
+                      <ScheduleIcon sx={{ color: '#663399', ml: 2, fontSize: 24 }} />
 
                       <Box>
 
@@ -1015,7 +1015,7 @@ const MeetingDetailsDialog = ({
 
                     <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid #e0e0e0' }}>
 
-                      <CheckCircleIcon sx={{ color: '#e5978b', ml: 2, fontSize: 24 }} />
+                      <CheckCircleIcon sx={{ color: '#4DBFB3', ml: 2, fontSize: 24 }} />
 
                       <Box>
 

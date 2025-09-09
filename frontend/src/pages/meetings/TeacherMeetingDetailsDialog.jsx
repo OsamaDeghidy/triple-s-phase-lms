@@ -285,7 +285,7 @@ const TeacherMeetingDetailsDialog = ({
       {/* Header */}
       <DialogTitle
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #0e5181 100%)',
+          background: 'linear-gradient(135deg, #667eea 0%, #333679 100%)',
           color: 'white',
           display: 'flex',
           alignItems: 'center',
@@ -307,7 +307,7 @@ const TeacherMeetingDetailsDialog = ({
             color={getStatusColor(status)}
             variant="filled"
             sx={{ 
-              bgcolor: status === 'ongoing' ? '#e5978b' : 
+              bgcolor: status === 'ongoing' ? '#4DBFB3' : 
                        status === 'upcoming' ? '#2196f3' : 
                        status === 'completed' ? '#9e9e9e' : '#f44336',
               color: 'white',
@@ -448,7 +448,7 @@ const TeacherMeetingDetailsDialog = ({
 
                 <Grid item xs={12} sm={6} md={3}>
                   <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid #e0e0e0' }}>
-                    <PersonIcon sx={{ color: '#e5978b', ml: 2, fontSize: 24 }} />
+                    <PersonIcon sx={{ color: '#4DBFB3', ml: 2, fontSize: 24 }} />
                     <Box>
                       <Typography variant="body2" fontWeight={600} color="text.primary">
                         {meetingData.creator_name || 'غير محدد'}
@@ -462,7 +462,7 @@ const TeacherMeetingDetailsDialog = ({
 
                 <Grid item xs={12} sm={6} md={3}>
                   <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid #e0e0e0' }}>
-                    <ScheduleIcon sx={{ color: '#1976d2', ml: 2, fontSize: 24 }} />
+                    <ScheduleIcon sx={{ color: '#663399', ml: 2, fontSize: 24 }} />
                     <Box>
                       <Typography variant="body2" fontWeight={600} color="text.primary">
                         {meetingData.updated_at ? formatDate(meetingData.updated_at) : 'لم يتم التحديث'}
@@ -476,7 +476,7 @@ const TeacherMeetingDetailsDialog = ({
 
                 <Grid item xs={12} sm={6} md={3}>
                   <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid #e0e0e0' }}>
-                    <CheckCircleIcon sx={{ color: '#e5978b', ml: 2, fontSize: 24 }} />
+                    <CheckCircleIcon sx={{ color: '#4DBFB3', ml: 2, fontSize: 24 }} />
                     <Box>
                       <Typography variant="body2" fontWeight={600} color="text.primary">
                         {meetingData.is_active ? 'نشط' : 'غير نشط'}

@@ -315,7 +315,7 @@ const QuizzesList = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -374,7 +374,7 @@ const QuizzesList = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <Quiz sx={{ color: '#e5978b', fontSize: 24 }} />
+          <Quiz sx={{ color: '#4DBFB3', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="success.main">
               {quizzes.length}
@@ -418,7 +418,7 @@ const QuizzesList = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <Quiz sx={{ color: '#1976d2', fontSize: 24 }} />
+          <Quiz sx={{ color: '#663399', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="primary.main">
               {quizzes.filter(quiz => quiz.quiz_type === 'video').length}
@@ -459,7 +459,7 @@ const QuizzesList = () => {
           sx={{
             width: 56,
             height: 56,
-            background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+            background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
             boxShadow: '0 4px 20px rgba(14, 81, 129, 0.3)',
             color: 'white',
             '&:hover': {
@@ -609,7 +609,7 @@ const QuizzesList = () => {
             startIcon={<Add />}
             onClick={() => navigate('/teacher/quizzes/create')}
             sx={{
-              background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+              background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
               '&:hover': {
                 background: 'linear-gradient(90deg, #0a3d5f 0%, #d17a6e 100%)',
               },
@@ -627,7 +627,7 @@ const QuizzesList = () => {
                 <TableCell sx={{ 
                   fontWeight: 800, 
                   color: '#2c3e50', 
-                  borderBottom: '3px solid #0e5181',
+                  borderBottom: '3px solid #333679',
                   fontSize: '0.95rem',
                   textAlign: 'right',
                   py: 2
@@ -637,7 +637,7 @@ const QuizzesList = () => {
                 <TableCell sx={{ 
                   fontWeight: 800, 
                   color: '#2c3e50', 
-                  borderBottom: '3px solid #0e5181',
+                  borderBottom: '3px solid #333679',
                   fontSize: '0.95rem',
                   textAlign: 'right',
                   py: 2
@@ -647,7 +647,7 @@ const QuizzesList = () => {
                 <TableCell sx={{ 
                   fontWeight: 800, 
                   color: '#2c3e50', 
-                  borderBottom: '3px solid #0e5181',
+                  borderBottom: '3px solid #333679',
                   fontSize: '0.95rem',
                   textAlign: 'center',
                   py: 2
@@ -657,7 +657,7 @@ const QuizzesList = () => {
                 <TableCell sx={{ 
                   fontWeight: 800, 
                   color: '#2c3e50', 
-                  borderBottom: '3px solid #0e5181',
+                  borderBottom: '3px solid #333679',
                   fontSize: '0.95rem',
                   textAlign: 'center',
                   py: 2
@@ -667,7 +667,7 @@ const QuizzesList = () => {
                 <TableCell sx={{ 
                   fontWeight: 800, 
                   color: '#2c3e50', 
-                  borderBottom: '3px solid #0e5181',
+                  borderBottom: '3px solid #333679',
                   fontSize: '0.95rem',
                   textAlign: 'right',
                   py: 2
@@ -677,7 +677,7 @@ const QuizzesList = () => {
                 <TableCell sx={{ 
                   fontWeight: 800, 
                   color: '#2c3e50', 
-                  borderBottom: '3px solid #0e5181',
+                  borderBottom: '3px solid #333679',
                   fontSize: '0.95rem',
                   textAlign: 'center',
                   py: 2
@@ -711,7 +711,7 @@ const QuizzesList = () => {
                             height: 32, 
                             borderRadius: '50%',
                             backgroundColor: '#f3e5f5',
-                            color: '#0e5181'
+                            color: '#333679'
                           }}>
                             <Quiz sx={{ fontSize: 18 }} />
                           </Box>
@@ -760,7 +760,7 @@ const QuizzesList = () => {
                               width: 8, 
                               height: 8, 
                               borderRadius: '50%',
-                              backgroundColor: '#0e5181'
+                              backgroundColor: '#333679'
                             }} />
                             <Typography 
                               variant="body2" 
@@ -810,7 +810,7 @@ const QuizzesList = () => {
                             height: 24,
                             borderRadius: 12,
                             backgroundColor: '#f3e5f5',
-                            color: '#0e5181',
+                            color: '#333679',
                             border: '1px solid #e1bee7'
                           }}
                         />
@@ -851,7 +851,7 @@ const QuizzesList = () => {
                                 width: 8, 
                                 height: 8, 
                                 borderRadius: '50%',
-                                backgroundColor: '#1976d2'
+                                backgroundColor: '#663399'
                               }} />
                             </Box>
                             <Typography 
@@ -912,7 +912,7 @@ const QuizzesList = () => {
                             size="small"
                             onClick={() => navigate(`/teacher/quizzes/${quiz.id}`)}
                             sx={{ 
-                              color: '#1976d2',
+                              color: '#663399',
                               backgroundColor: '#e3f2fd',
                               width: 32,
                               height: 32,
@@ -931,7 +931,7 @@ const QuizzesList = () => {
                             size="small"
                             onClick={() => navigate(`/teacher/quizzes/${quiz.id}/edit`)}
                             sx={{ 
-                              color: '#1976d2',
+                              color: '#663399',
                               backgroundColor: '#f3e5f5',
                               width: 32,
                               height: 32,

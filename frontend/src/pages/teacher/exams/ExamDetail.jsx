@@ -436,7 +436,7 @@ const ExamDetail = () => {
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 4 } }}>
       {/* Header Section */}
-      <Paper elevation={3} sx={{ borderRadius: 4, p: 4, mb: 4, background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)', color: 'white' }}>
+      <Paper elevation={3} sx={{ borderRadius: 4, p: 4, mb: 4, background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)', color: 'white' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Assessment sx={{ fontSize: 40, color: 'white' }} />
@@ -643,7 +643,7 @@ const ExamDetail = () => {
               sx={{ 
                 borderRadius: 2, 
                 fontWeight: 'bold',
-                background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #0a3d5f 0%, #d17a6f 100%)',
                 }
@@ -674,7 +674,7 @@ const ExamDetail = () => {
                 startIcon={<Add />}
                 onClick={openAddDialog}
                 sx={{ 
-                  background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                  background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                   '&:hover': {
                     background: 'linear-gradient(135deg, #0a3d5f 0%, #d17a6f 100%)',
                   }
@@ -1086,7 +1086,7 @@ const ExamDetail = () => {
           }
         }}
       >
-        <DialogTitle sx={{ textAlign: 'center', fontWeight: 700, color: '#0e5181' }}>
+        <DialogTitle sx={{ textAlign: 'center', fontWeight: 700, color: '#333679' }}>
           تعديل السؤال
         </DialogTitle>
         <DialogContent sx={{ direction: 'rtl' }}>
@@ -1233,11 +1233,11 @@ const ExamDetail = () => {
           <Button 
             onClick={() => setEditQuestionDialogOpen(false)}
             sx={{
-              borderColor: '#0e5181',
-              color: '#0e5181',
+              borderColor: '#333679',
+              color: '#333679',
               '&:hover': {
-                borderColor: '#e5978b',
-                color: '#e5978b',
+                borderColor: '#4DBFB3',
+                color: '#4DBFB3',
               },
               borderRadius: 2,
               textTransform: 'none',
@@ -1250,9 +1250,9 @@ const ExamDetail = () => {
             onClick={handleEditQuestion}
             variant="contained"
             sx={{
-              background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+              background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #e5978b 0%, #0e5181 100%)',
+                background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
               },
               borderRadius: 2,
               textTransform: 'none',

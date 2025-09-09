@@ -306,7 +306,7 @@ const MyCourses = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -397,7 +397,7 @@ const MyCourses = () => {
                   sx={{ 
               width: 56,
               height: 56,
-              background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+              background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
               boxShadow: '0 4px 20px rgba(14, 81, 129, 0.3)',
               color: 'white',
               '&:hover': {
@@ -586,7 +586,7 @@ const MyCourses = () => {
                   startIcon={<AddIcon />}
                   onClick={handleCreateCourse}
                   sx={{
-                    background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                    background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
                     color: 'white',
                     borderRadius: 2,
                     px: 4,

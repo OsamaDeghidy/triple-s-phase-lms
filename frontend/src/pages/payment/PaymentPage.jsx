@@ -37,7 +37,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 3,
   background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)} 0%, ${alpha(theme.palette.background.default, 0.9)} 100%)`,
   backdropFilter: 'blur(10px)',
-  border: `1px solid ${alpha('#1976d2', 0.1)}`,
+  border: `1px solid ${alpha('#663399', 0.1)}`,
   boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, 0.08)}`,
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
@@ -53,8 +53,8 @@ const PaymentButton = styled(Button)(({ theme }) => ({
   fontWeight: 700,
   borderRadius: theme.shape.borderRadius * 4,
   textTransform: 'none',
-  background: `linear-gradient(135deg, #1976d2 0%, #1565c0 100%)`,
-  boxShadow: `0 8px 32px ${alpha('#1976d2', 0.3)}`,
+  background: `linear-gradient(135deg, #663399 0%, #1565c0 100%)`,
+  boxShadow: `0 8px 32px ${alpha('#663399', 0.3)}`,
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -69,7 +69,7 @@ const PaymentButton = styled(Button)(({ theme }) => ({
   },
   '&:hover': {
     transform: 'translateY(-3px)',
-    boxShadow: `0 16px 48px ${alpha('#1976d2', 0.4)}`,
+    boxShadow: `0 16px 48px ${alpha('#663399', 0.4)}`,
     '&::before': {
       left: '100%',
     },
@@ -79,8 +79,8 @@ const PaymentButton = styled(Button)(({ theme }) => ({
 const CourseCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius * 2,
-  background: `linear-gradient(135deg, ${alpha('#42a5f5', 0.05)} 0%, ${alpha('#1976d2', 0.02)} 100%)`,
-  border: `1px solid ${alpha('#1976d2', 0.1)}`,
+  background: `linear-gradient(135deg, ${alpha('#42a5f5', 0.05)} 0%, ${alpha('#663399', 0.02)} 100%)`,
+  border: `1px solid ${alpha('#663399', 0.1)}`,
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -90,7 +90,7 @@ const CourseCard = styled(Paper)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '3px',
-    background: `linear-gradient(90deg, #1976d2, #f50057)`,
+    background: `linear-gradient(90deg, #663399, #f50057)`,
   },
 }));
 
@@ -232,7 +232,7 @@ const PaymentPage = () => {
           <IconButton 
             onClick={() => navigate(-1)} 
             sx={{ 
-              color: '#1976d2',
+              color: '#663399',
               background: alpha('#fff', 0.8),
               backdropFilter: 'blur(10px)',
               '&:hover': {
@@ -251,7 +251,7 @@ const PaymentPage = () => {
               display: 'flex', 
               alignItems: 'center', 
               gap: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #0e5181 100%)',
+              background: 'linear-gradient(135deg, #667eea 0%, #333679 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -275,7 +275,7 @@ const PaymentPage = () => {
                     alignItems: 'center', 
                     gap: 2,
                     fontWeight: 700,
-                    color: '#1976d2'
+                    color: '#663399'
                   }}
                 >
                   <ReceiptIcon sx={{ fontSize: 28 }} />
@@ -291,7 +291,7 @@ const PaymentPage = () => {
                         width: 120, 
                         height: 120, 
                         border: '4px solid',
-                        borderColor: '#1976d2',
+                        borderColor: '#663399',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                       }}
                   />
@@ -354,7 +354,7 @@ const PaymentPage = () => {
                     borderColor: '#42a5f5'
                   }}
                 >
-                  <SecurityIcon sx={{ mr: 1, color: '#1976d2' }} />
+                  <SecurityIcon sx={{ mr: 1, color: '#663399' }} />
                   <Typography variant="body1" fontWeight={600}>
                   جميع المدفوعات آمنة ومشفرة عبر بوابة Moyasar
                   </Typography>
@@ -376,7 +376,7 @@ const PaymentPage = () => {
                       alignItems: 'center', 
                       gap: 2,
                       fontWeight: 700,
-                      color: '#1976d2'
+                      color: '#663399'
                     }}
                   >
                     <ReceiptIcon sx={{ fontSize: 28 }} />
@@ -390,7 +390,7 @@ const PaymentPage = () => {
                       mb: 2,
                       p: 2,
                       borderRadius: 2,
-                      background: alpha('#1976d2', 0.05)
+                      background: alpha('#663399', 0.05)
                     }}>
                       <Typography variant="body1" fontWeight={600}>سعر الدورة:</Typography>
                       <Typography variant="body1" fontWeight={700} color="primary">
@@ -437,7 +437,7 @@ const PaymentPage = () => {
                       justifyContent: 'space-between',
                       p: 3,
                       borderRadius: 3,
-                      background: 'linear-gradient(135deg, #667eea 0%, #0e5181 100%)',
+                      background: 'linear-gradient(135deg, #667eea 0%, #333679 100%)',
                       color: 'white'
                     }}>
                     <Typography variant="h6" fontWeight={700}>المجموع الكلي:</Typography>
@@ -479,7 +479,7 @@ const PaymentPage = () => {
                     mt: 4, 
                     p: 3, 
                     borderRadius: 3,
-                    background: 'linear-gradient(135deg, #e5978b 0%, #45a049 100%)',
+                    background: 'linear-gradient(135deg, #4DBFB3 0%, #45a049 100%)',
                     color: 'white',
                     position: 'relative',
                     overflow: 'hidden',

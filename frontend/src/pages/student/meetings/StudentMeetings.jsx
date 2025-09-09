@@ -28,7 +28,7 @@ const StyledCard = styled(Card)(({ theme, status }) => ({
   borderRadius: 16,
   boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
   transition: 'all 0.3s ease',
-  border: status === 'ongoing' ? '2px solid #e5978b' : '1px solid #e0e0e0',
+  border: status === 'ongoing' ? '2px solid #4DBFB3' : '1px solid #e0e0e0',
   '&:hover': {
     transform: 'translateY(-4px)',
     boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
@@ -43,7 +43,7 @@ const StatusChip = styled(Chip)(({ status }) => ({
   height: 24,
   ...(status === 'upcoming' && {
     backgroundColor: '#e3f2fd',
-    color: '#1976d2',
+    color: '#663399',
   }),
   ...(status === 'ongoing' && {
     backgroundColor: '#e8f5e8',
@@ -564,7 +564,7 @@ const StudentMeetings = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -604,10 +604,10 @@ const StudentMeetings = () => {
               fontSize: '1rem',
             },
             '& .Mui-selected': {
-              color: '#e5978b',
+              color: '#4DBFB3',
             },
             '& .MuiTabs-indicator': {
-              backgroundColor: '#e5978b',
+              backgroundColor: '#4DBFB3',
             },
           }}
         >

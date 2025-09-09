@@ -152,7 +152,7 @@ const Lessons = () => {
       <Box sx={{
         mb: 4,
         p: 3,
-        background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -208,7 +208,7 @@ const Lessons = () => {
               size="large" 
               onClick={() => navigate(`/teacher/courses/${courseId}/units/${unitId}/lessons/create`)}
               sx={{ 
-                background: 'linear-gradient(45deg, #0e5181 30%, #e5978b 90%)',
+                background: 'linear-gradient(45deg, #333679 30%, #4DBFB3 90%)',
                 color: 'white',
                 borderRadius: '25px',
                 px: 3,

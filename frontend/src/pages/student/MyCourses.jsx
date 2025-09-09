@@ -111,13 +111,13 @@ const EmptyState = ({ isCompleted = false }) => (
     <Box sx={{
       textAlign: 'center',
       py: 8,
-      color: '#0e5181',
+      color: '#333679',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       gap: 2
     }}>
-      <SentimentSatisfiedAlt sx={{ fontSize: 80, color: '#e5978b' }} />
+      <SentimentSatisfiedAlt sx={{ fontSize: 80, color: '#4DBFB3' }} />
       <Typography variant="h5" fontWeight={700} gutterBottom>
         {isCompleted ? 'لا توجد كورسات مكتملة بعد' : 'لا توجد كورسات مسجلة بعد'}
       </Typography>
@@ -132,7 +132,7 @@ const EmptyState = ({ isCompleted = false }) => (
           variant="contained" 
           size="large" 
           sx={{ 
-            bgcolor: '#0e5181', 
+            bgcolor: '#333679', 
             borderRadius: 3, 
             px: 5, 
             py: 1.5, 
@@ -606,7 +606,7 @@ const CourseCard = ({ course, onClick }) => {
                 <Typography variant="caption" sx={{ color: '#666', fontSize: '12px', fontWeight: 500 }}>
                   التقدم
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#0e5181', fontSize: '12px', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: '#333679', fontSize: '12px', fontWeight: 600 }}>
                   {Math.round(actualProgress)}%
                 </Typography>
               </Box>
@@ -620,7 +620,7 @@ const CourseCard = ({ course, onClick }) => {
                   '& .MuiLinearProgress-bar': {
                     background: actualProgress >= 100 
                       ? 'linear-gradient(90deg, #4caf50, #66bb6a)' 
-                      : 'linear-gradient(90deg, #0e5181, #1a6ba8)',
+                      : 'linear-gradient(90deg, #333679, #1a6ba8)',
                     borderRadius: 3
                   }
                 }} 
@@ -638,7 +638,7 @@ const CourseCard = ({ course, onClick }) => {
                   • الدرجة: {course.grade}
                 </span>
               )}
-              <span style={{ marginLeft: '8px', color: '#0e5181', fontWeight: 'bold' }}>
+              <span style={{ marginLeft: '8px', color: '#333679', fontWeight: 'bold' }}>
                 • التقدم: {Math.round(actualProgress)}%
               </span>
             </Typography>
@@ -781,7 +781,7 @@ const CourseCard = ({ course, onClick }) => {
             {!expanded && courseContent.length > 0 && (
               <Box sx={{ mt: 0.5 }}>
                 <Typography variant="caption" sx={{ 
-                  color: '#0e5181', 
+                  color: '#333679', 
                   fontSize: '10px',
                   fontWeight: 500
                 }}>
@@ -824,7 +824,7 @@ const CourseCard = ({ course, onClick }) => {
               alignSelf: 'flex-start',
               mt: 2,
             '&:hover': { 
-                bgcolor: course.status === 'completed' ? '#45a049' : '#1976d2'
+                bgcolor: course.status === 'completed' ? '#45a049' : '#663399'
             }
           }}
             onClick={(e) => {
@@ -1016,11 +1016,11 @@ const CompletedCourseCard = ({ course }) => {
       overflow: 'hidden',
       background: 'linear-gradient(120deg, #fdf2f2 0%, #fff 100%)',
       transition: 'transform 0.25s, box-shadow 0.25s',
-      border: '2px solid #e5978b',
+      border: '2px solid #4DBFB3',
       '&:hover': {
         transform: 'translateY(-8px) scale(1.03)',
         boxShadow: '0 16px 48px 0 rgba(229, 151, 139, 0.25)',
-        border: '2px solid #e5978b',
+        border: '2px solid #4DBFB3',
       },
       '&::before': {
         content: '""',
@@ -1029,7 +1029,7 @@ const CompletedCourseCard = ({ course }) => {
         left: 0,
         right: 0,
         height: '4px',
-        background: 'linear-gradient(90deg, #e5978b, #f0a8a0)',
+        background: 'linear-gradient(90deg, #4DBFB3, #f0a8a0)',
         zIndex: 1
       }
     }}
@@ -1044,16 +1044,16 @@ const CompletedCourseCard = ({ course }) => {
       {/* Course Content */}
       <Box sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-          <Chip label={course.category} sx={{ bgcolor: 'rgba(14, 81, 129, 0.1)', color: '#0e5181', fontWeight: 700, fontSize: 14 }} />
+          <Chip label={course.category} sx={{ bgcolor: 'rgba(14, 81, 129, 0.1)', color: '#333679', fontWeight: 700, fontSize: 14 }} />
         </Box>
-        <Typography variant="h6" fontWeight={800} color="#0e5181" sx={{ mb: 0.5, fontSize: 22 }}>
+        <Typography variant="h6" fontWeight={800} color="#333679" sx={{ mb: 0.5, fontSize: 22 }}>
           {course.title}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, minHeight: 36, fontSize: 16 }}>
           {course.description}
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ mb: 1, fontSize: 15 }}>
-          <SchoolIcon sx={{ fontSize: 20, color: '#e5978b', ml: 0.5 }} />
+          <SchoolIcon sx={{ fontSize: 20, color: '#4DBFB3', ml: 0.5 }} />
           {course.instructor}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
@@ -1062,7 +1062,7 @@ const CompletedCourseCard = ({ course }) => {
               <Typography variant="caption" sx={{ color: '#666', fontSize: '12px', fontWeight: 500 }}>
                 التقدم
               </Typography>
-              <Typography variant="caption" sx={{ color: '#e5978b', fontSize: '12px', fontWeight: 600 }}>
+              <Typography variant="caption" sx={{ color: '#4DBFB3', fontSize: '12px', fontWeight: 600 }}>
                 {Math.round(progress)}%
               </Typography>
             </Box>
@@ -1078,7 +1078,7 @@ const CompletedCourseCard = ({ course }) => {
                 sx={{ 
                   width: `${progress}%`, 
                   height: '100%', 
-                  background: 'linear-gradient(90deg, #e5978b 0%, #f0a8a0 100%)',
+                  background: 'linear-gradient(90deg, #4DBFB3 0%, #f0a8a0 100%)',
                   borderRadius: 6, 
                   transition: 'width 0.8s ease-in-out',
                   position: 'relative',
@@ -1096,10 +1096,10 @@ const CompletedCourseCard = ({ course }) => {
               />
             </Box>
           </Box>
-          <CheckCircleIcon sx={{ color: '#e5978b', fontSize: 28 }} />
+          <CheckCircleIcon sx={{ color: '#4DBFB3', fontSize: 28 }} />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-          <Typography variant="body2" fontWeight={700} color="#e5978b" sx={{ fontSize: 16 }}>
+          <Typography variant="body2" fontWeight={700} color="#4DBFB3" sx={{ fontSize: 16 }}>
             مكتمل - {course.grade || 'A'}
           </Typography>
           {course.completion_date && (
@@ -1114,14 +1114,14 @@ const CompletedCourseCard = ({ course }) => {
             size="large"
             startIcon={<SchoolIcon />}
             sx={{
-              color: '#0e5181',
-              borderColor: '#0e5181',
+              color: '#333679',
+              borderColor: '#333679',
               borderRadius: 3,
               fontWeight: 700,
               fontSize: 18,
               px: 5,
               py: 1.5,
-              '&:hover': { bgcolor: 'rgba(14, 81, 129, 0.1)', borderColor: '#0e5181' }
+              '&:hover': { bgcolor: 'rgba(14, 81, 129, 0.1)', borderColor: '#333679' }
             }}
           >
             عرض الشهادة
@@ -1252,7 +1252,7 @@ const MyCourses = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -1298,15 +1298,15 @@ const MyCourses = () => {
             onClick={() => setTab(0)}
           sx={{ 
               mx: 1,
-              bgcolor: tab === 0 ? '#0e5181' : '#fff',
-              color: tab === 0 ? '#fff' : '#0e5181',
-              borderColor: '#0e5181',
+              bgcolor: tab === 0 ? '#333679' : '#fff',
+              color: tab === 0 ? '#fff' : '#333679',
+              borderColor: '#333679',
               fontWeight: 700,
               borderRadius: 3,
               px: 4,
               py: 1.2,
               boxShadow: tab === 0 ? '0 2px 12px 0 rgba(14, 81, 129, 0.2)' : 'none',
-              '&:hover': { bgcolor: 'rgba(14, 81, 129, 0.1)', color: '#0e5181' }
+              '&:hover': { bgcolor: 'rgba(14, 81, 129, 0.1)', color: '#333679' }
             }}
           >
             الكورسات المسجلة ({enrolledCourses.length})
@@ -1316,15 +1316,15 @@ const MyCourses = () => {
             onClick={() => setTab(1)}
                   sx={{ 
               mx: 1,
-              bgcolor: tab === 1 ? '#e5978b' : '#fff',
-              color: tab === 1 ? '#fff' : '#e5978b',
-              borderColor: '#e5978b',
+              bgcolor: tab === 1 ? '#4DBFB3' : '#fff',
+              color: tab === 1 ? '#fff' : '#4DBFB3',
+              borderColor: '#4DBFB3',
               fontWeight: 700,
               borderRadius: 3,
               px: 4,
               py: 1.2,
               boxShadow: tab === 1 ? '0 2px 12px 0 rgba(229, 151, 139, 0.2)' : 'none',
-              '&:hover': { bgcolor: 'rgba(229, 151, 139, 0.1)', color: '#e5978b' }
+              '&:hover': { bgcolor: 'rgba(229, 151, 139, 0.1)', color: '#4DBFB3' }
             }}
           >
             الكورسات المكتملة ({completedCourses.length})

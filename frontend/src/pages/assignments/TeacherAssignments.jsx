@@ -194,7 +194,7 @@ const TeacherAssignments = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -297,7 +297,7 @@ const TeacherAssignments = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <PeopleIcon sx={{ color: '#1976d2', fontSize: 24 }} />
+          <PeopleIcon sx={{ color: '#663399', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="primary.main">
               {assignmentStats.totalSubmissions}
@@ -351,7 +351,7 @@ const TeacherAssignments = () => {
           sx={{
             width: 56,
             height: 56,
-            background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+            background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
             boxShadow: '0 4px 20px rgba(14, 81, 129, 0.3)',
             color: 'white',
             '&:hover': {
@@ -480,7 +480,7 @@ const TeacherAssignments = () => {
                             backgroundColor: '#e0e0e0',
                             '& .MuiLinearProgress-bar': {
                               borderRadius: 3,
-                              background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)'
+                              background: 'linear-gradient(90deg, #663399 0%, #42a5f5 100%)'
                             }
                           }}
                         />
@@ -510,7 +510,7 @@ const TeacherAssignments = () => {
                         size="small"
                         onClick={() => handleEditAssignment(assignment.id)}
                         sx={{ 
-                          color: '#0e5181',
+                          color: '#333679',
                           '&:hover': { backgroundColor: 'rgba(103, 58, 183, 0.1)' }
                         }}
                       >
@@ -534,7 +534,7 @@ const TeacherAssignments = () => {
                           size="small"
                           onClick={() => handleManageQuestions(assignment.id)}
                           sx={{
-                            color: '#e5978b',
+                            color: '#4DBFB3',
                               '&:hover': { backgroundColor: 'rgba(76, 175, 80, 0.1)' }
                             }}
                           >
@@ -828,7 +828,7 @@ const TeacherAssignments = () => {
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
                           borderRadius: 4,
-                          background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)'
+                          background: 'linear-gradient(90deg, #663399 0%, #42a5f5 100%)'
                         }
                       }}
                     />
@@ -848,7 +848,7 @@ const TeacherAssignments = () => {
                   px: 4, 
                   py: 1.5, 
                   fontWeight: 700, 
-                  background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                  background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
                   '&:hover': { 
                     background: 'linear-gradient(90deg, #0a3d5f 0%, #d17a6e 100%)' 
                   } 

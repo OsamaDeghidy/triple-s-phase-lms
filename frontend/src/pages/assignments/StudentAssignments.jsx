@@ -35,7 +35,7 @@ const StatusChip = styled(Chip)(({ status }) => ({
   }),
   ...(status === 'graded' && {
     backgroundColor: '#e3f2fd',
-    color: '#1976d2',
+    color: '#663399',
   }),
   ...(status === 'pending' && {
     backgroundColor: '#fff3e0',
@@ -220,7 +220,7 @@ const StudentAssignments = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -279,7 +279,7 @@ const StudentAssignments = () => {
           minWidth: 140,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          <AssignmentIcon sx={{ color: '#0e5181', fontSize: 24 }} />
+          <AssignmentIcon sx={{ color: '#333679', fontSize: 24 }} />
           <Box>
             <Typography variant="h5" fontWeight={700} color="primary">
               {assignmentStats.totalAssignments}
@@ -434,7 +434,7 @@ const StudentAssignments = () => {
                               size="small"
                               icon={<QuizIcon />}
                               variant="outlined"
-                              sx={{ borderColor: '#0e5181', color: '#0e5181', fontSize: '0.7rem' }}
+                              sx={{ borderColor: '#333679', color: '#333679', fontSize: '0.7rem' }}
                             />
                           )}
                           {assignment.has_file_upload && (
@@ -451,7 +451,7 @@ const StudentAssignments = () => {
                     </TableCell>
                     <TableCell>
                       <Box className="table-cell-meta">
-                        <SchoolIcon sx={{ color: '#0e5181', fontSize: 18 }} />
+                        <SchoolIcon sx={{ color: '#333679', fontSize: 18 }} />
                         <Typography variant="body2" fontWeight={500}>
                           {assignment.course_title || assignment.course?.title}
                         </Typography>
@@ -498,7 +498,7 @@ const StudentAssignments = () => {
                               backgroundColor: '#e0e0e0',
                               '& .MuiLinearProgress-bar': {
                                 borderRadius: 3,
-                                background: 'linear-gradient(90deg, #e5978b 0%, #66bb6a 100%)'
+                                background: 'linear-gradient(90deg, #4DBFB3 0%, #66bb6a 100%)'
                               }
                             }}
                           />
@@ -519,7 +519,7 @@ const StudentAssignments = () => {
                             size="small"
                             onClick={() => handleAssignmentDetails(assignment)}
                             sx={{ 
-                              color: '#0e5181',
+                              color: '#333679',
                               '&:hover': { backgroundColor: 'rgba(103, 58, 183, 0.1)' }
                             }}
                           >
@@ -546,7 +546,7 @@ const StudentAssignments = () => {
                               size="small"
                               onClick={() => handleDownloadFile('assignment_file', assignment.assignment_file)}
                               sx={{
-                                color: '#1976d2',
+                                color: '#663399',
                                 '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' }
                               }}
                             >
@@ -668,7 +668,7 @@ const StudentAssignments = () => {
                         height: '100%'
                       }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                          <SchoolIcon sx={{ color: '#0e5181' }} />
+                          <SchoolIcon sx={{ color: '#333679' }} />
                           <Typography variant="body1" fontWeight={500} sx={{ textAlign: 'right' }}>
                             المقرر: {selectedAssignment.course_title || selectedAssignment.course?.title}
                           </Typography>
@@ -754,7 +754,7 @@ const StudentAssignments = () => {
                         border: '1px solid #e0e0e0'
                       }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <QuizIcon sx={{ color: '#0e5181', fontSize: 20 }} />
+                          <QuizIcon sx={{ color: '#333679', fontSize: 20 }} />
                           <Typography variant="body2" sx={{ textAlign: 'right' }}>
                             عدد الأسئلة: {selectedAssignment.questions_count || 0}
                           </Typography>
@@ -823,7 +823,7 @@ const StudentAssignments = () => {
                             backgroundColor: '#e0e0e0',
                             '& .MuiLinearProgress-bar': {
                               borderRadius: 4,
-                              background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)'
+                              background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)'
                             }
                           }}
                         />
@@ -856,7 +856,7 @@ const StudentAssignments = () => {
                     px: 4, 
                     py: 1.5, 
                     fontWeight: 700, 
-                    background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                    background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
                     '&:hover': { 
                       background: 'linear-gradient(90deg, #0a3d5f 0%, #d17a6e 100%)' 
                     } 
@@ -912,7 +912,7 @@ const StudentAssignments = () => {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {/* Assignment Info */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, backgroundColor: 'white', borderRadius: 2 }}>
-                  <AssignmentIcon sx={{ color: '#0e5181', fontSize: 32 }} />
+                  <AssignmentIcon sx={{ color: '#333679', fontSize: 32 }} />
                   <Box>
                     <Typography variant="h6" fontWeight={600}>
                       {selectedGrade.assignment.title}

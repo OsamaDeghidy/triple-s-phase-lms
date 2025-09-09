@@ -179,7 +179,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
           src={userData.avatar} 
           alt={userData.name}
           sx={{
-            width: 90, height: 90, mb: 1, border: '3px solid #e5978b', boxShadow: '0 2px 8px 0 rgba(14,81,129,0.09)'
+            width: 90, height: 90, mb: 1, border: '3px solid #4DBFB3', boxShadow: '0 2px 8px 0 rgba(14,81,129,0.09)'
           }}
         />
         <Typography fontWeight={700}>{userData.name}</Typography>
@@ -207,16 +207,16 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
               <ListItemButton
                 sx={{
                   borderRadius: 2,
-                  color: active ? '#0e5181' : '#757575',
+                  color: active ? '#333679' : '#757575',
                   '&:hover': {
                     background: 'linear-gradient(90deg, rgba(14,81,129,0.05) 0%, #fff 100%)',
-                    color: '#0e5181'
+                    color: '#333679'
                   }
                 }}
               >
                 <ListItemIcon sx={{
                   minWidth: 36,
-                  color: active ? '#0e5181' : '#bdbdbd',
+                  color: active ? '#333679' : '#bdbdbd',
                   fontSize: 24
                 }}>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} sx={{ fontWeight: 600 }} />
@@ -419,7 +419,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                     sx={{ 
                       width: 40, 
                       height: 40, 
-                      border: '2px solid #e5978b',
+                      border: '2px solid #4DBFB3',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       '&:hover': {
@@ -456,7 +456,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                           height: 64, 
                           mb: 1,
                           mx: 'auto',
-                          border: '2px solid #e5978b'
+                          border: '2px solid #4DBFB3'
                         }} 
                       />
                       <Typography variant="subtitle1" fontWeight={600}>{userData.name}</Typography>

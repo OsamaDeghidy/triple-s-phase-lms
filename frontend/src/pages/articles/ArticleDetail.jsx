@@ -51,7 +51,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 // Styled components
 const HeroSection = styled(Box)(({ theme }) => ({
-  background: `linear-gradient(135deg, #0e5181 0%, #0a3d5f 50%, #0e5181 100%)`,
+  background: `linear-gradient(135deg, #333679 0%, #0a3d5f 50%, #333679 100%)`,
   color: 'white',
   padding: theme.spacing(4, 0, 3),
   position: 'relative',
@@ -162,7 +162,7 @@ const ArticleImage = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '4px',
-    background: 'linear-gradient(90deg, #1976d2, #42a5f5, #1565c0)',
+    background: 'linear-gradient(90deg, #663399, #42a5f5, #1565c0)',
     borderRadius: `${theme.spacing(3)} ${theme.spacing(3)} 0 0`,
     zIndex: 2,
   },
@@ -184,7 +184,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '3px',
-    background: 'linear-gradient(90deg, #1976d2, #42a5f5, #1565c0)',
+    background: 'linear-gradient(90deg, #663399, #42a5f5, #1565c0)',
     backgroundSize: '200% 100%',
     animation: 'shimmer 3s ease-in-out infinite',
   },
@@ -216,7 +216,7 @@ const CommentCard = styled(Paper)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '2px',
-    background: 'linear-gradient(90deg, #1976d2, #42a5f5)',
+    background: 'linear-gradient(90deg, #663399, #42a5f5)',
   },
   '&:hover': {
     boxShadow: '0 8px 32px rgba(25, 118, 210, 0.15)',
@@ -242,7 +242,7 @@ const CommentForm = styled(Paper)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '3px',
-    background: 'linear-gradient(90deg, #1976d2, #42a5f5, #1565c0)',
+    background: 'linear-gradient(90deg, #663399, #42a5f5, #1565c0)',
     backgroundSize: '200% 100%',
     animation: 'shimmer 3s ease-in-out infinite',
   },
@@ -1582,7 +1582,7 @@ const ArticleDetail = () => {
                                 width: 70,
                                 height: 70,
                                 borderRadius: 3,
-                                background: item.image ? 'transparent' : `linear-gradient(135deg, #1976d2, #42a5f5)`,
+                                background: item.image ? 'transparent' : `linear-gradient(135deg, #663399, #42a5f5)`,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -1615,7 +1615,7 @@ const ArticleDetail = () => {
                                 height: '100%',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background: `linear-gradient(135deg, #1976d2, #42a5f5)`
+                                background: `linear-gradient(135deg, #663399, #42a5f5)`
                               }}>
                                 {(item.category || 'مقال').split(' ')[0]}
                           </Box>

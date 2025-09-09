@@ -325,7 +325,7 @@ const HeroSection = styled('div')(({ theme }) => ({
   overflow: 'hidden',
   color: theme.palette.primary.contrastText,
   // Solid blue background - dominant color
-  background: '#0e5181',
+  background: '#333679',
   // Decorative moving waves
   '&::before': {
     display: 'none',
@@ -335,7 +335,7 @@ const HeroSection = styled('div')(({ theme }) => ({
     content: '""',
     position: 'absolute',
     inset: 0,
-    background: `radial-gradient( circle at 20% 80%, ${alpha('#e5978b', 0.15)} 0%, transparent 55%),
+    background: `radial-gradient( circle at 20% 80%, ${alpha('#4DBFB3', 0.15)} 0%, transparent 55%),
                  radial-gradient( circle at 85% 20%, ${alpha('#ffffff', 0.1)} 0%, transparent 50%)`,
     animation: `${glowPulse} 8s ease-in-out infinite`,
     pointerEvents: 'none',
@@ -634,15 +634,15 @@ const EnrollButton = styled(Button)(({ theme }) => ({
   overflow: 'hidden',
   transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
   background: `linear-gradient(135deg, 
-    #0e5181 0%, 
-    #0e5181 50%,
-    ${alpha('#0e5181', 0.9)} 100%)`,
-  boxShadow: `0 12px 30px ${alpha('#0e5181', 0.4)},
-              0 4px 8px ${alpha('#0e5181', 0.2)}`,
+    #333679 0%, 
+    #333679 50%,
+    ${alpha('#333679', 0.9)} 100%)`,
+  boxShadow: `0 12px 30px ${alpha('#333679', 0.4)},
+              0 4px 8px ${alpha('#333679', 0.2)}`,
   '&:hover': {
     transform: 'translateY(-3px) scale(1.02)',
-    boxShadow: `0 12px 35px ${alpha('#0e5181', 0.4)}`,
-    background: `linear-gradient(135deg, #0e5181 0%, #e5978b 100%)`,
+    boxShadow: `0 12px 35px ${alpha('#333679', 0.4)}`,
+    background: `linear-gradient(135deg, #333679 0%, #4DBFB3 100%)`,
   },
   '&:active': {
     transform: 'translateY(-1px) scale(0.98)',
@@ -683,7 +683,7 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
     left: 0,
     width: '80px',
     height: '4px',
-    background: `linear-gradient(90deg, #0e5181 0%, #e5978b 100%)`,
+    background: `linear-gradient(90deg, #333679 0%, #4DBFB3 100%)`,
     borderRadius: '2px',
   },
 }));
@@ -932,39 +932,39 @@ const CourseDetail = () => {
   // Choose lesson icon by status/type
   const getLessonIcon = (lesson) => {
     if (lesson?.completed) {
-      return <CheckCircle htmlColor="#0e5181" />;
+      return <CheckCircle htmlColor="#333679" />;
     }
     if (lesson?.type === 'video') {
-      return <VideoIcon htmlColor="#0e5181" />;
+      return <VideoIcon htmlColor="#333679" />;
     }
     if (lesson?.type === 'article') {
-      return <InsertDriveFileIcon htmlColor="#e5978b" />;
+      return <InsertDriveFileIcon htmlColor="#4DBFB3" />;
     }
     if (lesson?.type === 'quiz') {
-      return <QuizIconFilled htmlColor="#0e5181" />;
+      return <QuizIconFilled htmlColor="#333679" />;
     }
     if (lesson?.type === 'assignment') {
-      return <AssignmentIcon htmlColor="#e5978b" />;
+      return <AssignmentIcon htmlColor="#4DBFB3" />;
     }
     if (lesson?.type === 'exam') {
-      return <QuizIcon htmlColor="#0e5181" />;
+      return <QuizIcon htmlColor="#333679" />;
     }
     if (lesson?.type === 'file') {
-      return <DownloadIcon htmlColor="#e5978b" />;
+      return <DownloadIcon htmlColor="#4DBFB3" />;
     }
     if (lesson?.type === 'project') {
-      return <CodeIcon htmlColor="#0e5181" />;
+      return <CodeIcon htmlColor="#333679" />;
     }
     if (lesson?.type === 'exercise') {
-      return <AssignmentTurnedInIcon htmlColor="#e5978b" />;
+      return <AssignmentTurnedInIcon htmlColor="#4DBFB3" />;
     }
     if (lesson?.type === 'case-study') {
-      return <InfoIcon htmlColor="#0e5181" />;
+      return <InfoIcon htmlColor="#333679" />;
     }
     if (lesson?.isPreview) {
-      return <PlayCircleOutline htmlColor="#0e5181" />;
+      return <PlayCircleOutline htmlColor="#333679" />;
     }
-    return <DescriptionOutlined htmlColor="#0e5181" />;
+    return <DescriptionOutlined htmlColor="#333679" />;
   };
 
   // Mock FAQ data
@@ -2228,7 +2228,7 @@ const CourseDetail = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
                     <IconButton onClick={handleAddToWishlist} sx={{ 
                       bgcolor: 'rgba(255,255,255,0.12)',
-                      color: isInWishlist ? '#0e5181' : 'rgba(255,255,255,0.8)',
+                      color: isInWishlist ? '#333679' : 'rgba(255,255,255,0.8)',
                       '&:hover': {
                         bgcolor: 'rgba(255,255,255,0.2)',
                         transform: 'scale(1.1)'
@@ -2417,10 +2417,10 @@ const CourseDetail = () => {
                       px: 4, 
                       py: 1.25, 
                       fontWeight: 700, 
-                      background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                      background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                       boxShadow: '0 8px 25px rgba(14, 81, 129, 0.3)',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #e5978b 0%, #0e5181 100%)',
+                        background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
                         boxShadow: '0 12px 35px rgba(14, 81, 129, 0.4)',
                         transform: 'translateY(-2px)'
                       },
@@ -2606,14 +2606,14 @@ const CourseDetail = () => {
                           border: '1px solid rgba(14, 81, 129, 0.1)',
                           boxShadow: '0 4px 15px rgba(14, 81, 129, 0.05)'
                         }}>
-                          <SectionTitle variant="h6" component="h3" sx={{ mb: 2, color: '#0e5181' }}>
+                          <SectionTitle variant="h6" component="h3" sx={{ mb: 2, color: '#333679' }}>
                             📋 المتطلبات الأساسية
                           </SectionTitle>
                           <List disablePadding>
                             {course.requirements.map((req, idx) => (
                               <ListItem key={idx} disableGutters sx={{ py: 0.75 }}>
                                 <ListItemIcon sx={{ minWidth: 30 }}>
-                                  <CheckCircle htmlColor="#0e5181" fontSize="small" />
+                                  <CheckCircle htmlColor="#333679" fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText primary={<Typography variant="body2" dir="rtl" sx={{ color: 'text.primary' }}>{req}</Typography>} />
                               </ListItem>
@@ -2631,14 +2631,14 @@ const CourseDetail = () => {
                           border: '1px solid rgba(229, 151, 139, 0.1)',
                           boxShadow: '0 4px 15px rgba(229, 151, 139, 0.05)'
                         }}>
-                          <SectionTitle variant="h6" component="h3" sx={{ mb: 2, color: '#e5978b' }}>
+                          <SectionTitle variant="h6" component="h3" sx={{ mb: 2, color: '#4DBFB3' }}>
                             🎯 هذه الدورة مناسبة لـ
                           </SectionTitle>
                           <List disablePadding>
                             {course.whoIsThisFor.map((who, idx) => (
                               <ListItem key={idx} disableGutters sx={{ py: 0.75 }}>
                                 <ListItemIcon sx={{ minWidth: 30 }}>
-                                  <CheckCircle htmlColor="#e5978b" fontSize="small" />
+                                  <CheckCircle htmlColor="#4DBFB3" fontSize="small" />
                                 </ListItemIcon>
                                 <ListItemText primary={<Typography variant="body2" dir="rtl" sx={{ color: 'text.primary' }}>{who}</Typography>} />
                               </ListItem>
@@ -2667,7 +2667,7 @@ const CourseDetail = () => {
                         }}>
                           <Box sx={{ 
                             p: 2, 
-                            background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                            background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                             color: 'white',
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -2728,7 +2728,7 @@ const CourseDetail = () => {
                         }}>
                           <Box sx={{ 
                             p: 2, 
-                            background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                            background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                             color: 'white',
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -2787,7 +2787,7 @@ const CourseDetail = () => {
                         background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.05) 0%, rgba(229, 151, 139, 0.05) 100%)',
                         border: '1px solid rgba(14, 81, 129, 0.1)',
                         '& .MuiAlert-icon': {
-                          color: '#0e5181'
+                          color: '#333679'
                         }
                       }}
                     >
@@ -2900,12 +2900,12 @@ const CourseDetail = () => {
                                alignItems: 'center', 
                                justifyContent: 'center',
                               fontWeight: 800,
-                                color: '#0e5181',
+                                color: '#333679',
                                 fontSize: '1.1rem'
                              }}>
                                {moduleIndex + 1}
                              </Box>
-                             <Typography variant="subtitle1" fontWeight={700} dir="rtl" sx={{ color: '#0e5181', fontSize: '1.1rem' }}>
+                             <Typography variant="subtitle1" fontWeight={700} dir="rtl" sx={{ color: '#333679', fontSize: '1.1rem' }}>
                                 {module.title}
                               </Typography>
                             </Box>
@@ -2922,15 +2922,15 @@ const CourseDetail = () => {
                                   label={`إنجاز: ${completedInModule}/${totalInModule} (${percent}%)`} 
                                   sx={{ 
                                     bgcolor: 'rgba(14, 81, 129, 0.08)',
-                                    borderColor: '#0e5181',
-                                    color: '#0e5181',
+                                    borderColor: '#333679',
+                                    color: '#333679',
                                     fontWeight: 600
                                   }}
                                 />
                               );
                             })()}
-                            <AccessTime fontSize="small" sx={{ color: '#e5978b', opacity: 0.9 }} />
-                            <Typography variant="body2" sx={{ color: '#e5978b', opacity: 0.9, fontWeight: 600 }}>
+                            <AccessTime fontSize="small" sx={{ color: '#4DBFB3', opacity: 0.9 }} />
+                            <Typography variant="body2" sx={{ color: '#4DBFB3', opacity: 0.9, fontWeight: 600 }}>
                                 {module.duration}
                               </Typography>
                             </Box>
@@ -2967,7 +2967,7 @@ const CourseDetail = () => {
                                     transition: 'all 0.3s ease',
                                     opacity: !course.isEnrolled && !lesson.isPreview ? 0.6 : 1,
                                     '&:hover': { 
-                                      borderColor: '#0e5181',
+                                      borderColor: '#333679',
                                       bgcolor: 'rgba(14, 81, 129, 0.02)',
                                       transform: course.isEnrolled || lesson.isPreview ? 'translateX(-5px)' : 'none'
                                     }
@@ -2976,7 +2976,7 @@ const CourseDetail = () => {
                                       {/* Icon on the far right (RTL) */}
                                       <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.primary', opacity: 0.95 }}>
                                         {!course.isEnrolled && !lesson.isPreview ? (
-                                          <LockIcon sx={{ color: '#e5978b', fontSize: '1.2rem' }} />
+                                          <LockIcon sx={{ color: '#4DBFB3', fontSize: '1.2rem' }} />
                                         ) : (
                                           getLessonIcon(lesson)
                                         )}
@@ -2988,7 +2988,7 @@ const CourseDetail = () => {
                                           {lesson.title}
                                         {!course.isEnrolled && !lesson.isPreview && (
                                           <Typography component="span" variant="caption" sx={{ 
-                                            color: '#e5978b', 
+                                            color: '#4DBFB3', 
                                             ml: 1,
                                             fontSize: '0.7rem'
                                           }}>
@@ -2998,7 +2998,7 @@ const CourseDetail = () => {
                                     </Typography>
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                      <Typography variant="caption" sx={{ color: '#e5978b', fontWeight: 600 }}>
+                                      <Typography variant="caption" sx={{ color: '#4DBFB3', fontWeight: 600 }}>
                                         {lesson.duration}
                                         </Typography>
                                       {lesson.isPreview && (
@@ -3007,7 +3007,7 @@ const CourseDetail = () => {
                                           label="عرض مجاني" 
                                           sx={{ 
                                             bgcolor: 'rgba(14, 81, 129, 0.1)', 
-                                            color: '#0e5181',
+                                            color: '#333679',
                                             fontSize: '0.7rem',
                                             height: 20
                                           }} 
@@ -3078,11 +3078,11 @@ const CourseDetail = () => {
                       <Chip size="small" color="default" variant="outlined" label={`${course.instructorCourses || 0} دورة`} />
                       <Button variant="text" size="small" sx={{ 
                         textTransform: 'none',
-                        color: '#0e5181',
+                        color: '#333679',
                         fontWeight: 600,
                         '&:hover': {
                           bgcolor: 'rgba(14, 81, 129, 0.1)',
-                          color: '#0e5181'
+                          color: '#333679'
                         }
                       }}>
                         عرض الملف الشخصي
@@ -3133,10 +3133,10 @@ const CourseDetail = () => {
                         py: 1.5,
                         textTransform: 'none',
                         fontWeight: 600,
-                        background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                         boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)',
                         '&:hover': {
-                          background: 'linear-gradient(135deg, #e5978b 0%, #0e5181 100%)',
+                          background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
                           boxShadow: '0 12px 35px rgba(14, 81, 129, 0.3)',
                           transform: 'translateY(-2px)'
                         }
@@ -3252,12 +3252,12 @@ const CourseDetail = () => {
                           py: 1.5,
                           textTransform: 'none',
                           fontWeight: 600,
-                          borderColor: '#0e5181',
-                          color: '#0e5181',
+                          borderColor: '#333679',
+                          color: '#333679',
                           '&:hover': {
-                            bgcolor: '#0e5181',
+                            bgcolor: '#333679',
                             color: 'white',
-                            borderColor: '#0e5181',
+                            borderColor: '#333679',
                             transform: 'translateY(-2px)'
                           }
                         }}
@@ -3346,7 +3346,7 @@ const CourseDetail = () => {
             height: 60,
             borderRadius: '50%',
             boxShadow: '0 8px 25px rgba(14, 81, 129, 0.3)',
-            background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+            background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
             '&:hover': {
               transform: 'scale(1.1)',
               boxShadow: '0 12px 35px rgba(14, 81, 129, 0.4)',
@@ -3403,7 +3403,7 @@ const CourseDetail = () => {
                     <Box sx={{
                       width: '100%',
                       height: 180,
-                      background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                      background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -3443,7 +3443,7 @@ const CourseDetail = () => {
                           top: 16,
                           right: 16,
                           bgcolor: 'rgba(255,255,255,0.9)',
-                          color: '#0e5181',
+                          color: '#333679',
                           fontWeight: 600,
                           fontSize: '0.7rem',
                           backdropFilter: 'blur(10px)',
@@ -3458,9 +3458,9 @@ const CourseDetail = () => {
                           top: 16,
                           left: 16,
                           bgcolor: 'rgba(255,255,255,0.9)',
-                          color: '#0e5181',
+                          color: '#333679',
                           '&:hover': { 
-                            bgcolor: '#0e5181',
+                            bgcolor: '#333679',
                             color: 'white',
                             transform: 'scale(1.1)'
                           },
@@ -3488,7 +3488,7 @@ const CourseDetail = () => {
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         fontSize: '1rem',
-                        color: '#0e5181',
+                        color: '#333679',
                       }}
                       dir="rtl"
                     >
@@ -3504,7 +3504,7 @@ const CourseDetail = () => {
                           width: 28, 
                           height: 28, 
                           mr: 1,
-                          border: '2px solid #e5978b'
+                          border: '2px solid #4DBFB3'
                         }}
                       />
                       <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
@@ -3515,13 +3515,13 @@ const CourseDetail = () => {
                     {/* Course Stats */}
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5, gap: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <VideoIcon fontSize="small" sx={{ color: '#0e5181', mr: 0.5 }} />
+                        <VideoIcon fontSize="small" sx={{ color: '#333679', mr: 0.5 }} />
                         <Typography variant="caption" color="text.secondary">
                           {relatedCourse.lectures || 4} درس
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <PeopleAltOutlined fontSize="small" sx={{ color: '#e5978b', mr: 0.5 }} />
+                        <PeopleAltOutlined fontSize="small" sx={{ color: '#4DBFB3', mr: 0.5 }} />
                         <Typography variant="caption" color="text.secondary">
                           {relatedCourse.students || 6} طالب
                         </Typography>
@@ -3549,7 +3549,7 @@ const CourseDetail = () => {
                         sx={{ 
                           mr: 1.25,
                           '& .MuiRating-iconFilled': {
-                            color: '#e5978b',
+                            color: '#4DBFB3',
                           },
                         }}
                       />
@@ -3575,7 +3575,7 @@ const CourseDetail = () => {
                         sx={{ 
                           fontSize: '1.1rem',
                           fontWeight: 700,
-                          background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                          background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                           WebkitBackgroundClip: 'text',
                           WebkitTextFillColor: 'transparent',
                         }}
@@ -3597,12 +3597,12 @@ const CourseDetail = () => {
                         variant="outlined" 
                         size="small"
                         sx={{ 
-                          borderColor: '#0e5181',
-                          color: '#0e5181',
+                          borderColor: '#333679',
+                          color: '#333679',
                           '&:hover': {
-                            bgcolor: '#0e5181',
+                            bgcolor: '#333679',
                             color: 'white',
-                            borderColor: '#0e5181',
+                            borderColor: '#333679',
                           },
                           borderRadius: 2,
                           textTransform: 'none',
@@ -3658,10 +3658,10 @@ const CourseDetail = () => {
                 sx={{
                   direction: 'ltr',
                   '& .MuiRating-iconFilled': {
-                    color: '#e5978b',
+                    color: '#4DBFB3',
                   },
                   '& .MuiRating-iconHover': {
-                    color: '#e5978b',
+                    color: '#4DBFB3',
                   },
                 }}
               />
@@ -3697,11 +3697,11 @@ const CourseDetail = () => {
               onClick={() => setShowReviewForm(false)}
               disabled={submittingReview}
               sx={{
-                borderColor: '#0e5181',
-                color: '#0e5181',
+                borderColor: '#333679',
+                color: '#333679',
                 '&:hover': {
-                  borderColor: '#e5978b',
-                  color: '#e5978b',
+                  borderColor: '#4DBFB3',
+                  color: '#4DBFB3',
                 },
                 borderRadius: 2,
                 textTransform: 'none',
@@ -3716,9 +3716,9 @@ const CourseDetail = () => {
               disabled={submittingReview || !reviewForm.comment.trim()}
               endIcon={submittingReview ? <CircularProgress size={20} color="inherit" /> : null}
               sx={{
-                background: 'linear-gradient(135deg, #0e5181 0%, #e5978b 100%)',
+                background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #e5978b 0%, #0e5181 100%)',
+                  background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
                 },
                 borderRadius: 2,
                 textTransform: 'none',

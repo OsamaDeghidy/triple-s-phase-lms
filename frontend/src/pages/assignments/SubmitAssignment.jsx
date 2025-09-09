@@ -402,7 +402,7 @@ const SubmitAssignment = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(135deg, #0e5181 0%, #1976d2 100%)',
+        background: 'linear-gradient(135deg, #333679 0%, #663399 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -437,7 +437,7 @@ const SubmitAssignment = () => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <SchoolIcon sx={{ color: '#0e5181' }} />
+              <SchoolIcon sx={{ color: '#333679' }} />
               <Typography variant="h6" fontWeight={600}>
                 {assignment.course_title || assignment.course?.title}
               </Typography>
@@ -478,7 +478,7 @@ const SubmitAssignment = () => {
                 variant="outlined"
                 startIcon={<DownloadIcon />}
                 onClick={() => handleDownloadFile('assignment_file', assignment.assignment_file)}
-                sx={{ mt: 1, color: '#1976d2', borderColor: '#1976d2' }}
+                sx={{ mt: 1, color: '#663399', borderColor: '#663399' }}
               >
                 تحميل ملف الواجب
               </Button>
@@ -698,7 +698,7 @@ const SubmitAssignment = () => {
               disabled={isSubmitting || !canSubmit || error}
               startIcon={isSubmitting ? <CircularProgress size={20} /> : <SendIcon />}
               sx={{
-                background: 'linear-gradient(135deg, #0e5181 0%, #1976d2 100%)',
+                background: 'linear-gradient(135deg, #333679 0%, #663399 100%)',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #5e35b1 0%, #8e24aa 100%)',
                 }

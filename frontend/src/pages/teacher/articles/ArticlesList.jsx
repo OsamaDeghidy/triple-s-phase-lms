@@ -165,16 +165,16 @@ const FilterChip = styled(Chip)(({ theme, active }) => ({
   transition: 'all 0.3s ease',
   height: 32,
   ...(active && {
-    background: `linear-gradient(45deg, #1976d2, #42a5f5)`,
+    background: `linear-gradient(45deg, #663399, #42a5f5)`,
     color: 'white',
-    boxShadow: `0 4px 12px ${alpha('#1976d2', 0.3)}`,
+    boxShadow: `0 4px 12px ${alpha('#663399', 0.3)}`,
     transform: 'translateY(-2px)',
   }),
   '&:hover': {
     transform: active ? 'translateY(-2px)' : 'translateY(-1px)',
     boxShadow: active 
-      ? `0 6px 16px ${alpha('#1976d2', 0.4)}`
-      : `0 4px 12px ${alpha('#1976d2', 0.2)}`,
+      ? `0 6px 16px ${alpha('#663399', 0.4)}`
+      : `0 4px 12px ${alpha('#663399', 0.2)}`,
   }
 }));
 
@@ -184,10 +184,10 @@ const SearchBox = styled(TextField)(({ theme }) => ({
     backgroundColor: alpha('#ffffff', 0.95),
     backdropFilter: 'blur(10px)',
     '&:hover fieldset': {
-      borderColor: '#1976d2',
+      borderColor: '#663399',
     },
     '&.Mui-focused fieldset': {
-      borderColor: '#1976d2',
+      borderColor: '#663399',
       borderWidth: 2,
     },
   },
@@ -196,8 +196,8 @@ const SearchBox = styled(TextField)(({ theme }) => ({
 const StatsCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2.5),
   borderRadius: 16,
-  background: `linear-gradient(135deg, ${alpha('#1976d2', 0.08)}, ${alpha('#42a5f5', 0.08)})`,
-  border: `1px solid ${alpha('#1976d2', 0.15)}`,
+  background: `linear-gradient(135deg, ${alpha('#663399', 0.08)}, ${alpha('#42a5f5', 0.08)})`,
+  border: `1px solid ${alpha('#663399', 0.15)}`,
   backdropFilter: 'blur(10px)',
   transition: 'all 0.3s ease',
   position: 'relative',
@@ -209,11 +209,11 @@ const StatsCard = styled(Paper)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '2px',
-    background: `linear-gradient(90deg, #1976d2, #42a5f5)`,
+    background: `linear-gradient(90deg, #663399, #42a5f5)`,
   },
   '&:hover': {
     transform: 'translateY(-4px)',
-    boxShadow: `0 8px 24px ${alpha('#1976d2', 0.2)}`,
+    boxShadow: `0 8px 24px ${alpha('#663399', 0.2)}`,
   }
 }));
 
@@ -225,7 +225,7 @@ const ActionButton = styled(IconButton)(({ theme, variant }) => ({
   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
   backdropFilter: 'blur(10px)',
   ...(variant === 'edit' && {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#663399',
     color: 'white',
     '&:hover': {
       backgroundColor: '#1565c0',
@@ -243,7 +243,7 @@ const ActionButton = styled(IconButton)(({ theme, variant }) => ({
     }
   }),
   ...(variant === 'view' && {
-    backgroundColor: '#e5978b',
+    backgroundColor: '#4DBFB3',
     color: 'white',
     '&:hover': {
       backgroundColor: '#388e3c',
@@ -258,8 +258,8 @@ const HeaderContainer = styled(Box)(({ theme }) => ({
   borderRadius: 24,
   padding: theme.spacing(4),
   marginBottom: theme.spacing(4),
-  boxShadow: `0 8px 32px ${alpha('#1976d2', 0.08)}`,
-  border: `1px solid ${alpha('#1976d2', 0.1)}`,
+  boxShadow: `0 8px 32px ${alpha('#663399', 0.08)}`,
+  border: `1px solid ${alpha('#663399', 0.1)}`,
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -269,7 +269,7 @@ const HeaderContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     height: '4px',
-    background: `linear-gradient(90deg, #1976d2, #42a5f5, #1565c0)`,
+    background: `linear-gradient(90deg, #663399, #42a5f5, #1565c0)`,
     backgroundSize: '200% 100%',
     animation: `${shimmer} 3s ease-in-out infinite`,
   }
@@ -511,7 +511,7 @@ const ArticlesList = () => {
                 onClick={(e) => { e.stopPropagation(); handleViewDetails(article); }}
                 size="small"
                 sx={{
-                  backgroundColor: '#e5978b',
+                  backgroundColor: '#4DBFB3',
                   color: 'white',
                   '&:hover': {
                     backgroundColor: '#388e3c',
@@ -620,7 +620,7 @@ const ArticlesList = () => {
                   width: 28,
                   height: 28,
                   backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                  color: '#e5978b',
+                  color: '#4DBFB3',
                   '&:hover': {
                     backgroundColor: 'rgba(76, 175, 80, 0.2)',
                     transform: 'scale(1.1)',
@@ -688,7 +688,7 @@ const ArticlesList = () => {
                   borderRadius: '12px',
                   fontSize: '0.7rem',
                   fontWeight: 600,
-                  backgroundColor: '#e5978b',
+                  backgroundColor: '#4DBFB3',
                   color: 'white',
                   boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
                   '&:hover': {
@@ -709,8 +709,8 @@ const ArticlesList = () => {
                   borderRadius: '12px',
                   fontSize: '0.7rem',
                   fontWeight: 600,
-                  borderColor: '#1976d2',
-                  color: '#1976d2',
+                  borderColor: '#663399',
+                  color: '#663399',
                   '&:hover': {
                     borderColor: '#1565c0',
                     backgroundColor: 'rgba(25, 118, 210, 0.08)',
@@ -777,7 +777,7 @@ const ArticlesList = () => {
         <Box sx={{ 
           mb: 4, 
           p: 3, 
-          background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+          background: 'linear-gradient(135deg, #663399 0%, #42a5f5 100%)',
           borderRadius: 3,
           color: 'white',
           position: 'relative',
@@ -839,7 +839,7 @@ const ArticlesList = () => {
       <Box sx={{ 
         mb: 4, 
         p: 3, 
-        background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
         borderRadius: 3,
         color: 'white',
         position: 'relative',
@@ -887,7 +887,7 @@ const ArticlesList = () => {
             sx={{
               width: 56,
               height: 56,
-              background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+              background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
               boxShadow: '0 4px 20px rgba(14, 81, 129, 0.3)',
               color: 'white',
               '&:hover': {
@@ -921,7 +921,7 @@ const ArticlesList = () => {
             minWidth: 140,
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <ArticleIcon sx={{ color: '#1976d2', fontSize: 24 }} />
+            <ArticleIcon sx={{ color: '#663399', fontSize: 24 }} />
             <Box>
               <Typography variant="h5" fontWeight={700} color="primary">
                 {stats.total}
@@ -1103,7 +1103,7 @@ const ArticlesList = () => {
                 onClick={() => navigate('/teacher/articles/create')}
                 sx={{ 
                   borderRadius: 2,
-                  background: 'linear-gradient(90deg, #0e5181 0%, #e5978b 100%)',
+                  background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
                   '&:hover': {
                     background: 'linear-gradient(90deg, #0a3d5f 0%, #d17a6e 100%)',
                   },

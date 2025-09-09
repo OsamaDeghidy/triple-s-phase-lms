@@ -174,7 +174,7 @@ const StudentDashboard = () => {
           time: '08:00 - 10:00',
           date: '2024-01-10',
           day: 'الثلاثاء',
-          color: '#0e5181',
+          color: '#333679',
           type: 'lecture'
         },
         {
@@ -183,7 +183,7 @@ const StudentDashboard = () => {
           time: '10:00 - 11:35',
           date: '2024-01-10',
           day: 'الثلاثاء',
-          color: '#0e5181',
+          color: '#333679',
           type: 'assignment'
         },
         {
@@ -192,7 +192,7 @@ const StudentDashboard = () => {
           time: '11:00 - 15:00',
           date: '2024-01-11',
           day: 'الأربعاء',
-          color: '#0e5181',
+          color: '#333679',
           type: 'exam'
         },
         {
@@ -201,7 +201,7 @@ const StudentDashboard = () => {
           time: '07:00 - 08:15',
           date: '2024-01-12',
           day: 'الخميس',
-          color: '#0e5181',
+          color: '#333679',
           type: 'lecture'
         },
         {
@@ -210,7 +210,7 @@ const StudentDashboard = () => {
           time: '09:00 - 10:15',
           date: '2024-01-12',
           day: 'الخميس',
-          color: '#0e5181',
+          color: '#333679',
           type: 'assignment'
         },
         {
@@ -219,7 +219,7 @@ const StudentDashboard = () => {
           time: '09:00 - 10:15',
           date: '2024-01-13',
           day: 'الجمعة',
-          color: '#0e5181',
+          color: '#333679',
           type: 'practice'
         },
         {
@@ -228,7 +228,7 @@ const StudentDashboard = () => {
           time: '12:00 - 13:15',
           date: '2024-01-13',
           day: 'الجمعة',
-          color: '#0e5181',
+          color: '#333679',
           type: 'exam'
         }
       ];
@@ -315,7 +315,7 @@ const StudentDashboard = () => {
                 mb: 2,
                 background: theme.palette.mode === 'dark'
                   ? 'linear-gradient(45deg, #fff, #90caf9)'
-                  : 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                  : 'linear-gradient(45deg, #663399, #42a5f5)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 display: 'inline-block'
@@ -426,7 +426,7 @@ const StudentDashboard = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          background: '#0e5181',
+                          background: '#333679',
                           color: 'white',
                           '& svg': {
                             fontSize: '1.5rem'
@@ -560,7 +560,7 @@ const StudentDashboard = () => {
           }}>
             {/* Tab Header */}
             <Box sx={{ 
-              background: 'linear-gradient(135deg, #0e5181, #1a6ba8)',
+              background: 'linear-gradient(135deg, #333679, #1a6ba8)',
               borderRadius: '16px 16px 0 0',
               p: 0
             }}>
@@ -614,7 +614,7 @@ const StudentDashboard = () => {
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
-                      <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#0e5181' }}>
+                      <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#333679' }}>
                         مقرراتي النشطة
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -627,9 +627,9 @@ const StudentDashboard = () => {
                endIcon={<TrendingUpIcon />}
                     sx={{ 
                       borderRadius: 3,
-                      background: 'linear-gradient(45deg, #0e5181, #1a6ba8)',
+                      background: 'linear-gradient(45deg, #333679, #1a6ba8)',
                       '&:hover': {
-                        background: 'linear-gradient(45deg, #1a6ba8, #0e5181)',
+                        background: 'linear-gradient(45deg, #1a6ba8, #333679)',
                       }
                     }}
                onClick={() => navigate('/student/courses')}
@@ -689,7 +689,7 @@ const StudentDashboard = () => {
                              <Typography variant="caption" sx={{ color: '#666', fontSize: '11px', fontWeight: 500 }}>
                                التقدم
                              </Typography>
-                             <Typography variant="caption" sx={{ color: '#0e5181', fontSize: '11px', fontWeight: 600 }}>
+                             <Typography variant="caption" sx={{ color: '#333679', fontSize: '11px', fontWeight: 600 }}>
                                {Math.round(course.progress || 0)}%
                              </Typography>
                            </Box>
@@ -703,7 +703,7 @@ const StudentDashboard = () => {
                                '& .MuiLinearProgress-bar': {
                                  background: (course.progress || 0) >= 100 
                                    ? 'linear-gradient(45deg, #4caf50, #66bb6a)' 
-                                   : 'linear-gradient(45deg, #0e5181, #1a6ba8)',
+                                   : 'linear-gradient(45deg, #333679, #1a6ba8)',
                                  borderRadius: 4
                                }
                              }} 
@@ -718,7 +718,7 @@ const StudentDashboard = () => {
                            <Typography variant="body2" color="text.secondary">
                              {course.duration || '1س 34د 44ث'} مدة التشغيل
                            </Typography>
-                           <Typography variant="body2" sx={{ color: '#0e5181', fontWeight: 500 }}>
+                           <Typography variant="body2" sx={{ color: '#333679', fontWeight: 500 }}>
                              التقدم: {Math.round(course.progress || 0)}%
                            </Typography>
                          </Box>
@@ -734,14 +734,14 @@ const StudentDashboard = () => {
                            minWidth: 100,
                            height: 48,
                            borderRadius: 3,
-                           background: 'linear-gradient(45deg, #0e5181, #1a6ba8)',
+                           background: 'linear-gradient(45deg, #333679, #1a6ba8)',
                            color: 'white',
                            fontWeight: 600,
                            fontSize: '1rem',
                            textTransform: 'none',
                            boxShadow: '0 4px 12px rgba(14, 81, 129, 0.3)',
                            '&:hover': {
-                             background: 'linear-gradient(45deg, #1a6ba8, #0e5181)',
+                             background: 'linear-gradient(45deg, #1a6ba8, #333679)',
                              boxShadow: '0 6px 16px rgba(14, 81, 129, 0.4)',
                              transform: 'translateY(-1px)',
                            },
@@ -884,7 +884,7 @@ const StudentDashboard = () => {
                                     background: 'rgba(14, 81, 129, 0.08)',
                                     borderRadius: 1,
                                     p: 1,
-                                    color: '#0e5181',
+                                    color: '#333679',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
@@ -915,7 +915,7 @@ const StudentDashboard = () => {
                      <Button 
                        variant="contained" 
                        sx={{ 
-                          background: '#e5978b',
+                          background: '#4DBFB3',
                           '&:hover': { background: '#f0a8a0' }
                        }}
                        onClick={() => navigate('/student/calendar')}

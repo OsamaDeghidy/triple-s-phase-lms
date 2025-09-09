@@ -277,7 +277,7 @@ const AnimatedBackground = styled('div')(() => ({
 const FloatingShape = styled('div')({
   position: 'absolute',
   borderRadius: '50%',
-  background: 'linear-gradient(45deg, #0e5181, #1a5f8a)',
+  background: 'linear-gradient(45deg, #333679, #1a5f8a)',
   filter: 'blur(60px)',  
   opacity: 0.15,
   zIndex: 1,
@@ -302,12 +302,12 @@ const FloatingShape = styled('div')({
     top: '30%',
     left: '15%',
     animationDelay: '7s',
-    background: 'linear-gradient(45deg, #0a3d62, #0e5181)',
+    background: 'linear-gradient(45deg, #0a3d62, #333679)',
   },
 });
 
 const HeroSection = styled('div')(({ theme }) => ({
-  background: 'linear-gradient(135deg, #0e5181 0%, #1a5f8a 50%, #0a3d62 100%)',
+  background: 'linear-gradient(135deg, #333679 0%, #1a5f8a 50%, #0a3d62 100%)',
   color: 'white',
   padding: '30px 0 25px',
   margin: '0 0 20px 0',
@@ -806,7 +806,7 @@ const Courses = () => {
                     left: '-2px',
                     right: '-2px',
                     bottom: '-2px',
-                    background: 'linear-gradient(45deg, #0e5181, #1a5f8a, #0a3d62)',
+                    background: 'linear-gradient(45deg, #333679, #1a5f8a, #0a3d62)',
                     borderRadius: '25px',
                     zIndex: -1,
                     opacity: 0.3,
@@ -850,7 +850,7 @@ const Courses = () => {
                       startAdornment: (
                         <InputAdornment position="start">
                           <Search sx={{ 
-                            color: '#0e5181', 
+                            color: '#333679', 
                             ml: 1,
                             fontSize: '1.1rem',
                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'

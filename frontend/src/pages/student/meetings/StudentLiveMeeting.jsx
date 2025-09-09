@@ -48,7 +48,7 @@ const ChatMessage = styled(Box)(({ theme, isOwn }) => ({
     maxWidth: '70%',
     padding: theme.spacing(1, 2),
     borderRadius: 16,
-    background: isOwn ? '#0e5181' : '#f5f5f5',
+    background: isOwn ? '#333679' : '#f5f5f5',
     color: isOwn ? '#fff' : '#333',
     margin: theme.spacing(0, 1),
   },
@@ -315,7 +315,7 @@ const StudentLiveMeeting = () => {
         color: 'white'
       }}>
         <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress size={60} sx={{ color: '#0e5181', mb: 2 }} />
+          <CircularProgress size={60} sx={{ color: '#333679', mb: 2 }} />
           <Typography variant="h6">جاري تحميل الاجتماع...</Typography>
         </Box>
       </Box>
@@ -340,7 +340,7 @@ const StudentLiveMeeting = () => {
           <Button 
             variant="contained" 
             onClick={() => navigate('/student/meetings')}
-            sx={{ bgcolor: '#0e5181' }}
+            sx={{ bgcolor: '#333679' }}
           >
             العودة لصفحة الاجتماعات
           </Button>
@@ -615,7 +615,7 @@ const StudentLiveMeeting = () => {
                 {meetingInfo?.materials ? (
                   <ListItem sx={{ py: 1 }}>
                     <ListItemAvatar>
-                      <Avatar sx={{ width: 40, height: 40, bgcolor: '#0e5181' }}>
+                      <Avatar sx={{ width: 40, height: 40, bgcolor: '#333679' }}>
                         <BookIcon />
                       </Avatar>
                     </ListItemAvatar>
@@ -632,7 +632,7 @@ const StudentLiveMeeting = () => {
                     <IconButton
                       size="small"
                       onClick={() => window.open(meetingInfo.materials, '_blank')}
-                      sx={{ color: '#0e5181' }}
+                      sx={{ color: '#333679' }}
                     >
                       <DownloadIcon />
                     </IconButton>
@@ -654,7 +654,7 @@ const StudentLiveMeeting = () => {
           <IconButton
             onClick={toggleMic}
             sx={{
-              bgcolor: isMicOn ? '#e5978b' : '#f44336',
+              bgcolor: isMicOn ? '#4DBFB3' : '#f44336',
               color: '#fff',
               '&:hover': {
                 bgcolor: isMicOn ? '#45a049' : '#d32f2f',
@@ -667,7 +667,7 @@ const StudentLiveMeeting = () => {
           <IconButton
             onClick={toggleVideo}
             sx={{
-              bgcolor: isVideoOn ? '#e5978b' : '#f44336',
+              bgcolor: isVideoOn ? '#4DBFB3' : '#f44336',
               color: '#fff',
               '&:hover': {
                 bgcolor: isVideoOn ? '#45a049' : '#d32f2f',
@@ -767,7 +767,7 @@ const StudentLiveMeeting = () => {
                 <IconButton
                   size="small"
                   onClick={() => navigator.clipboard.writeText(`${window.location.origin}/student/meetings/live/${meetingInfo?.id || meetingId}`)}
-                  sx={{ color: '#0e5181' }}
+                  sx={{ color: '#333679' }}
                 >
                   <FileCopyIcon />
                 </IconButton>
