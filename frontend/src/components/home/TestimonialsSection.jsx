@@ -1,53 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Avatar, useMediaQuery, useTheme, IconButton } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
-import { FormatQuote, Star, StarBorder, StarHalf } from '@mui/icons-material';
+import { FormatQuote, Star, StarBorder, StarHalf, Description, MenuBook } from '@mui/icons-material';
+
+// Statistics data
+const statistics = [
+  { number: '3.9k+', label: 'Successfully Trained' },
+  { number: '15.8k+', label: 'Classes Completed' },
+  { number: '97.5k+', label: 'Satisfaction Rate' },
+  { number: '100.2k+', label: 'Students Community' }
+];
 
 const testimonials = [
   {
     id: 1,
-    name: 'أحمد محمد',
-    role: 'مطور ويب',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    content: 'الدورات المقدمة ممتازة وسهلة الفهم. ساعدتني في تطوير مهاراتي البرمجية بشكل كبير.',
+    name: 'student1',
+    content: 'الدورة كانت مفيدة جداً وتغطي مواضيع مهمة. أسلوب المدرب ممتاز والأمثلة واضحة. الجلسات التفاعلية ساعدتني في تحسين مهاراتي بسرعة.',
     rating: 5,
-    bgColor: '#0e5181'
+    isPositive: true
   },
   {
     id: 2,
-    name: 'سارة أحمد',
-    role: 'مصممة واجهات',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-    content: 'تجربة تعليمية رائعة مع معهد التطوير المهني. المحتوى منظم والمدربون محترفون للغاية.',
-    rating: 5,
-    bgColor: '#e5978b'
+    name: 'student1',
+    content: 'الدورة لم تكن كما توقعت. المحتوى أقل من المتوقع وبعض الأفكار لا يمكن تطبيقها. بعض المواضيع غير متسقة مع المنهج.',
+    rating: 3,
+    isPositive: false
   },
   {
     id: 3,
-    name: 'خالد عبدالله',
-    role: 'محلل بيانات',
-    avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
-    content: 'استفدت كثيراً من دورات تحليل البيانات. أنصح الجميع بالانضمام إلى هذا المعهد المتميز.',
-    rating: 4,
-    bgColor: '#0e5181'
+    name: 'student2',
+    content: 'تجربة رائعة جداً! المحتوى منظم والمدربين محترفين. استفدت كثيراً من هذه الدورة وأوصي بها بشدة.',
+    rating: 5,
+    isPositive: true
   },
   {
     id: 4,
-    name: 'نورة سعيد',
-    role: 'مسوقة رقمية',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-    content: 'دورات التسويق الرقمي غنية بالمعلومات العملية والتطبيقية. شكراً لفريق العمل الرائع.',
-    rating: 5,
-    bgColor: '#e5978b'
+    name: 'student3',
+    content: 'الدورة جيدة ولكن تحتاج إلى تحسينات في التنظيم. بعض الدروس كانت سريعة جداً.',
+    rating: 4,
+    isPositive: true
   },
   {
     id: 5,
-    name: 'محمد علي',
-    role: 'مطور تطبيقات',
-    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-    content: 'المحتوى المقدم حديث ومتوافق مع أحدث التقنيات. أنصح بهذا المعهد لكل من يريد تطوير مهاراته التقنية.',
-    rating: 4,
-    bgColor: '#0e5181'
+    name: 'student4',
+    content: 'محتوى ممتاز وطريقة التدريس واضحة. ساعدتني في تطوير مهاراتي بشكل كبير.',
+    rating: 5,
+    isPositive: true
   },
 ];
 
@@ -57,82 +55,120 @@ const floatAnimation = keyframes`
   100% { transform: translateY(0px); }
 `;
 
-const SectionContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(0, 0, 4, 0),
+// Statistics Banner
+const StatsBanner = styled(Box)(({ theme }) => ({
+  background: 'linear-gradient(90deg, #663399 0%, #333679 100%)',
+  borderRadius: '16px',
+  padding: theme.spacing(4, 2),
+  marginBottom: theme.spacing(8),
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  boxShadow: '0 8px 32px rgba(102, 51, 153, 0.2)',
   position: 'relative',
-  overflow: 'hidden',
-  background: '#ffffff',
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(0, 0, 3, 0),
-  },
-  [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(0, 0, 2, 0),
-  },
   '&:before': {
     content: '""',
     position: 'absolute',
-    width: '400px',
-    height: '400px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.03) 0%, rgba(229, 151, 139, 0.03) 100%)',
-    top: '-200px',
-    right: '-200px',
-    zIndex: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      radial-gradient(circle at 20% 30%, rgba(135, 206, 235, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(135, 206, 235, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(135, 206, 235, 0.06) 0%, transparent 50%)
+    `,
+    borderRadius: '16px',
+    pointerEvents: 'none',
   },
-  '&:after': {
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column',
+    gap: theme.spacing(3),
+    padding: theme.spacing(3, 2),
+  },
+}));
+
+const StatBlock = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  color: '#FFFFFF',
+  position: 'relative',
+  flex: 1,
+  '&:not(:last-child):after': {
     content: '""',
     position: 'absolute',
-    width: '300px',
-    height: '300px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, rgba(229, 151, 139, 0.02) 0%, rgba(14, 81, 129, 0.02) 100%)',
-    bottom: '-150px',
-    left: '-150px',
-    zIndex: 0,
+    right: 0,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '1px',
+    height: '60%',
+    backgroundColor: 'rgba(135, 206, 235, 0.4)',
+  },
+}));
+
+const StatNumber = styled(Typography)(({ theme }) => ({
+  fontSize: '2.5rem',
+  fontWeight: 800,
+  marginBottom: theme.spacing(0.5),
+  color: '#FFFFFF',
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '2rem',
+  },
+}));
+
+const StatLabel = styled(Typography)(({ theme }) => ({
+  fontSize: '1rem',
+  fontWeight: 500,
+  color: '#FFFFFF',
+  opacity: 0.95,
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '0.9rem',
+  },
+}));
+
+const SectionContainer = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(6, 0),
+  position: 'relative',
+  overflow: 'hidden',
+  backgroundColor: '#FFFFFF',
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(4, 0),
   },
 }));
 
 const SectionHeader = styled(Box)(({ theme }) => ({
   textAlign: 'center',
-  marginBottom: theme.spacing(2),
+  marginBottom: theme.spacing(6),
   position: 'relative',
   zIndex: 1,
   [theme.breakpoints.down('sm')]: {
-    marginBottom: theme.spacing(1),
-  },
-}));
-
-const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: 800,
-  marginBottom: theme.spacing(2),
-  position: 'relative',
-  display: 'inline-block',
-  color: '#0e5181',
-  fontSize: '2rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '1.5rem',
-  },
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    right: '50%',
-    bottom: -8,
-    transform: 'translateX(50%)',
-    width: 50,
-    height: 3,
-    background: '#e5978b',
-    borderRadius: 2,
+    marginBottom: theme.spacing(4),
   },
 }));
 
 const SectionSubtitle = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  maxWidth: 700,
-  margin: '0 auto',
-  fontSize: '1.1rem',
-  lineHeight: 1.8,
+  fontSize: '0.9rem',
+  fontWeight: 600,
+  color: '#A0A0A0',
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
+  marginBottom: theme.spacing(2),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: theme.spacing(1),
+  direction: 'rtl',
+}));
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '2.5rem',
+  fontWeight: 800,
+  color: '#663399',
+  lineHeight: 1.2,
+  marginBottom: theme.spacing(4),
+  direction: 'rtl',
+  textAlign: 'center',
   [theme.breakpoints.down('sm')]: {
-    fontSize: '1rem',
+    fontSize: '2rem',
   },
 }));
 
@@ -154,23 +190,15 @@ const TestimonialName = styled(Typography)(({ theme }) => ({
 }));
 
 const TestimonialContent = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(4),
+  marginBottom: theme.spacing(3),
   position: 'relative',
   paddingRight: theme.spacing(5),
-  fontSize: '1.1rem',
-  lineHeight: 1.9,
+  fontSize: '1rem',
+  lineHeight: 1.8,
   color: theme.palette.text.secondary,
-  '&:before': {
-    content: '"\u201C"',
-    position: 'absolute',
-    right: 0,
-    top: -15,
-    fontSize: '5rem',
-    lineHeight: 1,
-    color: 'rgba(74, 108, 247, 0.1)',
-    fontFamily: 'Georgia, serif',
-    zIndex: -1,
-  },
+  direction: 'rtl',
+  textAlign: 'right',
+  marginTop: theme.spacing(4),
 }));
 
 const TestimonialFooter = styled(Box)(({ theme }) => ({
@@ -257,248 +285,187 @@ const NextButton = styled(NavigationButton)(({ theme }) => ({
   },
 }));
 
-const TestimonialCard = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'bgColor' && prop !== 'isActive',
-})(({ theme, bgColor, isActive }) => ({
-  backgroundColor: '#fff',
-  borderRadius: '14px',
-  padding: theme.spacing(2, 2),
-  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.05)',
-  width: 'calc(50% - 16px)',
-  maxWidth: 'calc(50% - 16px)',
-  minHeight: '160px',
+const TestimonialCard = styled(Box)(({ theme }) => ({
+  backgroundColor: '#FFFFFF',
+  borderRadius: '12px',
+  padding: theme.spacing(3),
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+  width: '400px',
+  minHeight: '200px',
   flex: '0 0 auto',
   margin: theme.spacing(0, 1),
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
-  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: 'all 0.3s ease',
   border: '1px solid rgba(0, 0, 0, 0.05)',
   overflow: 'hidden',
-  zIndex: isActive ? 2 : 1,
-  opacity: isActive ? 1 : 0.8,
-  transform: isActive ? 'scale(1.02)' : 'scale(0.98)',
   '&:hover': {
-    transform: isActive ? 'scale(1.05)' : 'scale(1.02)',
-    boxShadow: '0 12px 35px rgba(0, 0, 0, 0.1)',
-    opacity: 1,
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
   },
   '&:before': {
     content: '""',
     position: 'absolute',
     top: 0,
-    right: 0,
-    width: '100%',
-    height: '3px',
-    background: bgColor || theme.palette.primary.main,
-    zIndex: 2,
-    transition: 'all 0.3s ease',
+    left: 0,
+    width: '50px',
+    height: '50px',
+    background: 'linear-gradient(135deg, #663399 0%, #333679 100%)',
+    clipPath: 'polygon(0 0, 0 100%, 100% 0)',
+    zIndex: 1,
   },
-  [theme.breakpoints.down('lg')]: {
-    width: 'calc(50% - 16px)',
-    maxWidth: 'calc(50% - 16px)',
-    minHeight: '140px',
+  [theme.breakpoints.down('md')]: {
+    width: '350px',
     margin: theme.spacing(0, 1),
   },
   [theme.breakpoints.down('sm')]: {
-    width: 'calc(100% - 16px)',
-    maxWidth: 'calc(100% - 16px)',
-    minHeight: '120px',
+    width: '300px',
     margin: theme.spacing(0, 0.5),
-    padding: theme.spacing(1.5, 1.5),
   },
-  [theme.breakpoints.down('xs')]: {
-    width: 'calc(100% - 12px)',
-    maxWidth: 'calc(100% - 12px)',
-    margin: theme.spacing(0, 0.25),
-    padding: theme.spacing(1.5, 1),
+}));
+
+const BookIcon = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(1.5),
+  left: theme.spacing(1.5),
+  width: '28px',
+  height: '28px',
+  backgroundColor: '#FF6B6B',
+  borderRadius: '6px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 2,
+  boxShadow: '0 2px 8px rgba(255, 107, 107, 0.3)',
+  '& .MuiSvgIcon-root': {
+    fontSize: '1.1rem',
+    color: '#FFFFFF',
+  },
+}));
+
+const PaginationDots = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  marginTop: theme.spacing(4),
+}));
+
+const Dot = styled(Box)(({ theme, active }) => ({
+  width: '12px',
+  height: '12px',
+  borderRadius: '50%',
+  backgroundColor: active ? '#663399' : '#E0E0E0',
+  transition: 'all 0.3s ease',
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: active ? '#663399' : '#B0B0B0',
+  },
+}));
+
+const TestimonialsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  overflowX: 'auto',
+  gap: theme.spacing(2),
+  padding: theme.spacing(2, 0),
+  scrollBehavior: 'smooth',
+  '&::-webkit-scrollbar': {
+    height: '6px',
+  },
+  '&::-webkit-scrollbar-track': {
+    backgroundColor: '#f1f1f1',
+    borderRadius: '3px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: '#663399',
+    borderRadius: '3px',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    backgroundColor: '#333679',
   },
 }));
 
 const TestimonialsSection = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const containerRef = React.useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const testimonialsPerPage = 2;
+
+  const handleDotClick = (index) => {
+    setActiveIndex(index);
+    setCurrentPage(index);
+  };
 
   const scrollToTestimonial = (index) => {
-    if (!containerRef.current || isScrolling) return;
-    
-    setIsScrolling(true);
-    const container = containerRef.current;
-    const cards = container.querySelectorAll('[data-testimonial-card]');
-    
-    if (index >= 0 && index < cards.length) {
-      const card = cards[index];
-      const containerWidth = container.offsetWidth;
-      const cardWidth = card.offsetWidth;
-      const scrollLeft = card.offsetLeft - (containerWidth - cardWidth) / 2;
-      
+    const container = document.getElementById('testimonials-container');
+    if (container) {
+      const cardWidth = 400 + 16; // card width + margin
       container.scrollTo({
-        left: scrollLeft,
+        left: index * cardWidth,
         behavior: 'smooth'
       });
-      
-      setActiveIndex(index);
-      
-      // Reset scrolling state after animation completes
-      setTimeout(() => {
-        setIsScrolling(false);
-      }, 800);
     }
   };
-  
-  const handleScroll = (direction) => {
-    const newIndex = direction === 'next' 
-      ? Math.min(activeIndex + 1, testimonials.length - 1)
-      : Math.max(activeIndex - 1, 0);
-    
-    scrollToTestimonial(newIndex);
-  };
-  
-  // Auto-scroll to next testimonial
-  useEffect(() => {
-    if (isMobile) return;
-    
-    const timer = setInterval(() => {
-      const nextIndex = (activeIndex + 1) % testimonials.length;
-      scrollToTestimonial(nextIndex);
-    }, 5000);
-    
-    return () => clearInterval(timer);
-  }, [activeIndex, isMobile]);
 
-  const renderStars = (rating) => {
-    return Array(5).fill(0).map((_, i) => (
-      i < Math.floor(rating) ? 
-        <Star key={i} /> : 
-        (i < rating ? <StarHalf key={i} /> : <StarBorder key={i} />)
-    ));
-  };
+  useEffect(() => {
+    scrollToTestimonial(currentPage);
+  }, [currentPage]);
 
   return (
     <SectionContainer>
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        {/* Statistics Banner */}
+        <StatsBanner>
+          {statistics.map((stat, index) => (
+            <StatBlock key={index}>
+              <StatNumber>{stat.number}</StatNumber>
+              <StatLabel>{stat.label}</StatLabel>
+            </StatBlock>
+          ))}
+        </StatsBanner>
+
+        {/* Testimonials Section */}
         <SectionHeader>
-          <SectionTitle variant="h2" component="h2">
-            آراء طلابنا
-          </SectionTitle>
           <SectionSubtitle>
-            اكتشف ما يقوله طلابنا عن تجربتهم مع منصتنا التعليمية
+            <Description sx={{ fontSize: '1rem' }} />
+            شهادات طلابنا
           </SectionSubtitle>
+          <SectionTitle variant="h2" component="h2">
+            ما يقوله الطلاب عن جامعتنا
+          </SectionTitle>
         </SectionHeader>
 
-        <Box 
-          sx={{ 
-            position: 'relative',
-            width: '100%',
-            overflow: 'hidden',
-            padding: theme.spacing(3, 0, 6),
-            '&:hover .nav-button': {
-              opacity: 1,
-            },
-          }}
-        >
-          <Box 
-            ref={containerRef}
-            sx={{
-              display: 'flex',
-              overflowX: 'auto',
-              scrollBehavior: 'smooth',
-              scrollSnapType: 'x mandatory',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
-              padding: theme.spacing(4, 0),
-              margin: theme.spacing(0, 'auto'),
-              maxWidth: '1400px',
-              width: '100%',
-              '& > *': {
-                scrollSnapAlign: 'center',
-              },
-              [theme.breakpoints.down('sm')]: {
-                padding: theme.spacing(3, 0),
-                scrollPadding: '0 24px',
-              },
-            }}
-          >
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard 
-                key={testimonial.id}
-                data-testimonial-card
-                bgColor={testimonial.bgColor}
-                isActive={activeIndex === index}
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-                onClick={() => scrollToTestimonial(index)}
-              >
-                <TestimonialContent>
-                  {testimonial.content}
-                </TestimonialContent>
-                <QuoteIcon />
-                
-                {/* Name and Date Only */}
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  mt: 'auto',
-                  pt: 2,
-                  borderTop: '1px solid rgba(0, 0, 0, 0.05)'
-                }}>
-                  <Typography variant="body2" sx={{ 
-                    fontWeight: 600,
-                    color: 'text.primary',
-                    fontSize: '0.9rem'
-                  }}>
-                    {testimonial.name}
-                  </Typography>
-                  <Typography variant="caption" sx={{ 
-                    color: 'text.secondary',
-                    fontSize: '0.8rem'
-                  }}>
-                    {new Date().toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </Typography>
-                    </Box>
-              </TestimonialCard>
-            ))}
-          </Box>
+        {/* Testimonial Cards */}
+        <TestimonialsContainer id="testimonials-container">
+          {testimonials.map((testimonial, index) => (
+            <TestimonialCard key={testimonial.id}>
+              <BookIcon>
+                <MenuBook />
+              </BookIcon>
+              <TestimonialContent>
+                {testimonial.content}
+              </TestimonialContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+                <TestimonialName>{testimonial.name}</TestimonialName>
+                <Typography sx={{ color: '#A0A0A0', fontSize: '0.9rem' }}>
+                  ({testimonial.rating})
+                </Typography>
+              </Box>
+            </TestimonialCard>
+          ))}
+        </TestimonialsContainer>
 
-          {/* Navigation Dots */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            gap: 1,
-            mt: 4
-          }}>
-            {testimonials.map((_, index) => (
-              <Box
-                key={index}
-                onClick={() => scrollToTestimonial(index)}
-            sx={{
-                  width: '12px',
-                  height: '12px',
-                  borderRadius: '50%',
-                  backgroundColor: index === activeIndex ? '#0e5181' : 'rgba(14, 81, 129, 0.3)',
-                  cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                    backgroundColor: index === activeIndex ? '#0e5181' : 'rgba(14, 81, 129, 0.6)',
-                    transform: 'scale(1.2)',
-                  },
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
+        {/* Pagination Dots */}
+        <PaginationDots>
+          {Array.from({ length: Math.ceil(testimonials.length / testimonialsPerPage) }).map((_, index) => (
+            <Dot
+              key={index}
+              active={index === currentPage}
+              onClick={() => handleDotClick(index)}
+            />
+          ))}
+        </PaginationDots>
       </Container>
     </SectionContainer>
   );
