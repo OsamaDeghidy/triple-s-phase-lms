@@ -8,7 +8,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import {
   Code, Laptop, Smartphone, PlayCircle, ArrowBackIos,
   ArrowForwardIos, Circle, Star, School, EmojiEvents,
-  ArrowForward, Chat, Refresh
+  ArrowForward, Refresh
 } from '@mui/icons-material';
 import api from '../../services/api.service';
 
@@ -173,10 +173,11 @@ const BackgroundSlide = styled(Box)(({ scrollProgress, theme }) => ({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    objectPosition: 'center',
+    objectPosition: 'center center',
     transform: `scale(${1 + scrollProgress * 0.1}) translateY(${scrollProgress * -20}px)`,
     transition: 'transform 0.3s ease-out',
     filter: `brightness(${1.3 + scrollProgress * 0.2}) contrast(${1.4 + scrollProgress * 0.3}) saturate(${1.2 + scrollProgress * 0.2})`,
+    display: 'block',
   },
   '&:before': {
     content: '""',
@@ -235,31 +236,6 @@ const IndicatorDot = styled(Box)(({ active, theme }) => ({
   },
 }));
 
-// Chat icon (bottom left)
-const ChatIcon = styled(IconButton)(({ theme }) => ({
-  position: 'fixed',
-  bottom: '30px',
-  left: '30px',
-  width: '60px',
-  height: '60px',
-  backgroundColor: '#E5978B',
-  color: '#fff',
-  borderRadius: '50%',
-  boxShadow: '0 8px 25px rgba(229, 151, 139, 0.4)',
-  zIndex: 1000,
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  '&:hover': {
-    backgroundColor: '#D17A6F',
-    transform: 'scale(1.1)',
-    boxShadow: '0 12px 35px rgba(229, 151, 139, 0.6)',
-  },
-  [theme.breakpoints.down('sm')]: {
-    bottom: '20px',
-    left: '20px',
-    width: '50px',
-    height: '50px',
-  },
-}));
 
 // Refresh button (top right)
 const RefreshButton = styled(IconButton)(({ theme }) => ({
@@ -293,7 +269,7 @@ const HeroSection = styled('section')(({ theme, scrollProgress }) => ({
   color: '#fff',
   padding: '0',
   overflow: 'hidden',
-  height: '100vh',
+  height: 'calc(100vh - 80px)', // 100vh minus header height
   minHeight: '600px',
   display: 'flex',
   alignItems: 'center',
@@ -334,8 +310,9 @@ const HeroContent = styled(Container)(({ theme }) => ({
   textAlign: 'left',
   height: '100%',
   justifyContent: 'center',
-  padding: theme.spacing(6, 0, 6, 6),
-  maxWidth: '800px',
+  padding: theme.spacing(6, 0, 6, 2),
+  maxWidth: '1000px',
+  marginLeft: 0,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(4, 2),
     textAlign: 'center',
@@ -348,7 +325,7 @@ const HeroTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   fontSize: '4rem',
   lineHeight: 1.1,
-  maxWidth: '800px',
+  maxWidth: '1000px',
   animation: `${slideInLeft} 1s ease-out 0.3s both`,
   color: '#FFFFFF',
   textShadow: '0 2px 10px rgba(0,0,0,0.3)',
@@ -540,6 +517,28 @@ const FloatingIcon = styled('div')(({ theme, top, left, size = 40, delay }) => (
   },
 }));
 
+// Fallback background slides data (local images) - used when no banners are available
+const fallbackSlides = [
+  {
+    id: 'fallback-1',
+    image: '/static/images/placeholder-banner-1.jpg',
+    title: 'التعلم الطبي، أصبح أسهل',
+    subtitle: 'تعلم بوتيرتك الخاصة، بإرشاد الخبراء'
+  },
+  {
+    id: 'fallback-2',
+    image: '/static/images/placeholder-banner-2.jpg',
+    title: 'تعلم بوتيرتك الخاصة',
+    subtitle: 'التعليم الطبي المهني'
+  },
+  {
+    id: 'fallback-3',
+    image: '/static/images/placeholder-banner-3.jpg',
+    title: 'دورات بقيادة الخبراء',
+    subtitle: 'التدريب الطبي الشامل'
+  }
+];
+
 const HeroBanner = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -554,37 +553,15 @@ const HeroBanner = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fallback background slides data (local images) - used when no banners are available
-  // const fallbackSlides = [
-  //   {
-  //     id: 'fallback-1',
-  //     image: home1Image,
-  //     title: 'Medical Study, Made Easier',
-  //     subtitle: 'Self Paced, Expert-Guided'
-  //   },
-  //   {
-  //     id: 'fallback-2',
-  //     image: home2Image,
-  //     title: 'Learn at Your Own Pace',
-  //     subtitle: 'Professional Medical Education'
-  //   },
-  //   {
-  //     id: 'fallback-3',
-  //     image: home3Image,
-  //     title: 'Expert-Led Courses',
-  //     subtitle: 'Comprehensive Medical Training'
-  //   }
-  // ];
-
   // Fetch banners from API
   useEffect(() => {
     const fetchBanners = async () => {
       try {
         console.log('Fetching banners from API...');
         console.log('API base URL:', api.defaults.baseURL);
-        console.log('Full URL:', `${api.defaults.baseURL}/extras/banners/active/`);
+        console.log('Full URL:', `${api.defaults.baseURL}/api/extras/banners/active/`);
 
-        const response = await api.get('/extras/banners/active/');
+        const response = await api.get('/api/extras/banners/active/');
         console.log('API Response:', response.data);
 
         // Check if response has results property (paginated response)
@@ -620,10 +597,11 @@ const HeroBanner = () => {
 
   // Auto slide functionality for dynamic slides
   useEffect(() => {
-    if (!autoPlay || slides.length === 0) return;
+    const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+    if (!autoPlay || currentSlides.length === 0) return;
 
     const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+      setActiveSlide((prev) => (prev === currentSlides.length - 1 ? 0 : prev + 1));
     }, 5000);
 
     return () => clearInterval(interval);
@@ -644,32 +622,41 @@ const HeroBanner = () => {
 
   // Auto-play functionality for bottom slideshow
   useEffect(() => {
-    if (slides.length === 0) return;
+    const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+    if (currentSlides.length === 0) return;
 
     const interval = setInterval(() => {
       setBottomSlideIndex((prevIndex) =>
-        prevIndex === slides.length - 1 ? 0 : prevIndex + 1
+        prevIndex === currentSlides.length - 1 ? 0 : prevIndex + 1
       );
     }, 4000); // Change slide every 4 seconds
 
     return () => clearInterval(interval);
   }, [slides]);
 
+  // Reset active slide if it's out of bounds
+  useEffect(() => {
+    const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+    if (activeSlide >= currentSlides.length && currentSlides.length > 0) {
+      setActiveSlide(0);
+    }
+  }, [slides.length, activeSlide]);
+
   const handleNext = () => {
-    if (slides.length === 0) return;
-    setActiveSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+    if (currentSlides.length === 0) return;
+    setActiveSlide((prev) => (prev === currentSlides.length - 1 ? 0 : prev + 1));
   };
 
   const handlePrev = () => {
-    if (slides.length === 0) return;
-    setActiveSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+    if (currentSlides.length === 0) return;
+    setActiveSlide((prev) => (prev === 0 ? currentSlides.length - 1 : prev - 1));
   };
 
   const goToSlide = (index) => {
     setActiveSlide(index);
   };
-
-  const currentSlide = slides[activeSlide] || { title: '', subtitle: '' };
 
   // Handle mouse move for parallax effect
   const handleMouseMove = (e) => {
@@ -719,18 +706,12 @@ const HeroBanner = () => {
     );
   }
 
-  // Show empty state if no banners (use fallback slides)
-  if (slides.length === 0 && !loading) {
-    return (
-      <HeroSection>
-        <HeroContent maxWidth="md">
-          <Typography variant="h6" sx={{ color: '#fff' }}>
-            جاري تحميل المحتوى...
-          </Typography>
-        </HeroContent>
-      </HeroSection>
-    );
-  }
+  // Use fallback slides if no banners are available
+  const displaySlides = slides.length > 0 ? slides : fallbackSlides;
+  
+
+
+  const currentSlide = displaySlides[activeSlide] || { title: '', subtitle: '' };
 
   return (
     <>
@@ -741,7 +722,7 @@ const HeroBanner = () => {
       >
         {/* Background Slides (Dynamic from API) with Scroll Effect */}
         <BackgroundSlides>
-          {slides.map((slide, index) => (
+          {displaySlides.map((slide, index) => (
             <BackgroundSlide
               key={slide.id}
               scrollProgress={scrollProgress}
@@ -812,12 +793,13 @@ const HeroBanner = () => {
         </GeometricStripes>
 
         {/* Hero Content with Scroll Effects */}
-        <HeroContent maxWidth="lg">
+        <HeroContent maxWidth={false}>
           <Box sx={{
-            maxWidth: '800px',
+            maxWidth: '1000px',
             position: 'relative',
             zIndex: 2,
-            padding: '0 20px',
+            padding: '0 20px 0 0',
+            marginLeft: 0,
             transform: `translateY(${scrollProgress * -30}px)`,
             transition: 'transform 0.3s ease-out',
           }}>
@@ -889,7 +871,7 @@ const HeroBanner = () => {
 
         {/* Carousel Indicators (Right Side) */}
         <CarouselIndicators>
-          {slides.map((_, index) => (
+          {displaySlides.map((_, index) => (
             <IndicatorDot
               key={index}
               active={index === activeSlide}
@@ -910,13 +892,6 @@ const HeroBanner = () => {
           <Refresh />
         </RefreshButton>
 
-        {/* Chat Icon (Bottom Left) */}
-        <ChatIcon
-          aria-label="chat support"
-          onClick={() => window.open('/contact', '_blank')}
-        >
-          <Chat />
-        </ChatIcon>
       </HeroSection>
 
 

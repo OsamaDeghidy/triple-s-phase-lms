@@ -433,30 +433,6 @@ const Header = () => {
     }
   };
 
-  const renderAuthButtons = () => (
-    <Stack direction="row" spacing={2} alignItems="center">
-      <Button
-        component={RouterLink}
-        to="/login"
-        color="inherit"
-        sx={{
-          fontWeight: 500,
-          '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          },
-        }}
-      >
-        تسجيل الدخول
-      </Button>
-      <GradientButton
-        component={RouterLink}
-        to="/register"
-        variant="contained"
-      >
-        إنشاء حساب
-      </GradientButton>
-    </Stack>
-  );
 
   const renderUserMenu = () => (
     <Box display="flex" alignItems="center">
@@ -822,27 +798,6 @@ const Header = () => {
               })}
             </Box>
 
-            {/* Search */}
-            <Box sx={{
-              flexGrow: 1,
-              display: { xs: 'none', md: 'flex' },
-              maxWidth: '500px',
-              mx: 3,
-            }}>
-              <form onSubmit={handleSearch} style={{ width: '100%' }}>
-                <Search scrolled={scrolled}>
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="ابحث عن دورة..."
-                    inputProps={{ 'aria-label': 'search' }}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </Search>
-              </form>
-            </Box>
 
             {/* Auth Buttons / User Menu */}
             <Box sx={{
@@ -963,29 +918,29 @@ const Header = () => {
                   </Menu>
                 </>
               ) : (
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Button
-                    component={RouterLink}
-                    to="/login"
-                    color="inherit"
-                    sx={{
-                      fontWeight: 500,
-                      '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      },
-                    }}
-                  >
-                    تسجيل الدخول
-                  </Button>
-                  <GradientButton
-                    component={RouterLink}
-                    to="/register"
-                    variant="contained"
-                    scrolled={scrolled}
-                  >
-                    إنشاء حساب
-                  </GradientButton>
-                </Stack>
+                <IconButton
+                  component={RouterLink}
+                  to="/login"
+                  size="large"
+                  aria-label="login"
+                  color="inherit"
+                  sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '12px',
+                    width: '48px',
+                    height: '48px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      transform: 'translateY(-2px) scale(1.05)',
+                      borderColor: 'rgba(102, 51, 153, 0.4)',
+                      boxShadow: '0 6px 20px rgba(102, 51, 153, 0.3)',
+                    },
+                  }}
+                >
+                  <AccountCircleIcon />
+                </IconButton>
               )}
             </Box>
 
@@ -1043,21 +998,6 @@ const Header = () => {
             </IconButton>
           </Box>
 
-          <Box mb={3}>
-            <form onSubmit={handleSearch}>
-              <Search scrolled={scrolled}>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="ابحث عن دورة..."
-                  inputProps={{ 'aria-label': 'search' }}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </Search>
-            </form>
-          </Box>
 
           <Box>
             {navItems.map((item) => (
@@ -1167,41 +1107,22 @@ const Header = () => {
                 تسجيل الخروج
               </Button>
             ) : (
-              <>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  component={RouterLink}
-                  to="/login"
-                  sx={{
-                    color: '#FFFFFF',
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    mb: 1,
-                    '&:hover': {
-                      borderColor: '#663399',
-                      backgroundColor: 'rgba(102, 51, 153, 0.1)',
-                    },
-                  }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  تسجيل الدخول
-                </Button>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  component={RouterLink}
-                  to="/register"
-                  sx={{
-                    background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
-                    '&:hover': {
-                      opacity: 0.9,
-                    },
-                  }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  إنشاء حساب
-                </Button>
-              </>
+              <Button
+                fullWidth
+                variant="contained"
+                component={RouterLink}
+                to="/login"
+                startIcon={<AccountCircleIcon />}
+                sx={{
+                  background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
+                  '&:hover': {
+                    opacity: 0.9,
+                  },
+                }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                تسجيل الدخول
+              </Button>
             )}
           </Box>
         </Box>

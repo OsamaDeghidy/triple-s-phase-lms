@@ -9,7 +9,7 @@ console.log('Environment variables:', {
 const getBaseURL = () => {
   // Check if we're in development mode
   if (import.meta.env.DEV) {
-    return import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+    return 'http://127.0.0.1:8000';
   }
   // In production, use the production URL
   return import.meta.env.VITE_API_BASE_URL || 'https://www.pdt-admin.com';
