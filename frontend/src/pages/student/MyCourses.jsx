@@ -1001,135 +1001,225 @@ const CourseCard = ({ course, onClick }) => {
 };
 
 const CompletedCourseCard = ({ course }) => {
-  // For completed courses, progress should be 100%
-  const progress = 100;
-  
   return (
-  <Card
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      borderRadius: '16px',
-      minHeight: 200,
-      boxShadow: '0 8px 32px 0 rgba(229, 151, 139, 0.15)',
-      mb: 3,
-      overflow: 'hidden',
-      background: 'linear-gradient(120deg, #fdf2f2 0%, #fff 100%)',
-      transition: 'transform 0.25s, box-shadow 0.25s',
-      border: '2px solid #4DBFB3',
-      '&:hover': {
-        transform: 'translateY(-8px) scale(1.03)',
-        boxShadow: '0 16px 48px 0 rgba(229, 151, 139, 0.25)',
-        border: '2px solid #4DBFB3',
-      },
-      '&::before': {
-        content: '""',
+    <Card
+      sx={{
+        borderRadius: '16px',
+        mb: 2,
+        overflow: 'hidden',
+        background: 'white',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+        transition: 'all 0.3s ease-in-out',
+        border: '1px solid #f0f0f0',
+        position: 'relative',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+          border: '1px solid #e0e0e0'
+        }
+      }}
+    >
+      {/* Completion Badge */}
+      <Box sx={{
         position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '4px',
-        background: 'linear-gradient(90deg, #4DBFB3, #f0a8a0)',
-        zIndex: 1
-      }
-    }}
-  >
-    {/* Course Content with Image on Side */}
-    <Box sx={{ 
-      display: 'flex', 
-      width: '100%',
-      flexDirection: { xs: 'column', md: 'row' }
-    }}>
-      
+        top: 16,
+        right: 16,
+        zIndex: 2,
+        width: 60,
+        height: 60,
+        borderRadius: '50%',
+        background: 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 4px 16px rgba(76, 175, 80, 0.4)',
+        border: '3px solid white',
+        animation: 'pulse 2s infinite',
+        '@keyframes pulse': {
+          '0%': {
+            boxShadow: '0 4px 16px rgba(76, 175, 80, 0.4)',
+          },
+          '50%': {
+            boxShadow: '0 6px 24px rgba(76, 175, 80, 0.6)',
+            transform: 'scale(1.05)',
+          },
+          '100%': {
+            boxShadow: '0 4px 16px rgba(76, 175, 80, 0.4)',
+          },
+        },
+        '&:hover': {
+          transform: 'scale(1.1)',
+          boxShadow: '0 8px 32px rgba(76, 175, 80, 0.6)',
+        }
+      }}>
+        <CheckCircleIcon sx={{ 
+          color: 'white', 
+          fontSize: 28,
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+        }} />
+      </Box>
+
+      {/* Course Image */}
+      <CardMedia
+        component="img"
+        image={course.image || course.thumbnail || '/static/images/blank.png'}
+        alt={course.title}
+        sx={{
+          maxWidth: '100%',
+          height: '200px',
+          width: '350px',
+          objectFit: 'cover',
+          background: 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)'
+        }}
+      />
+
       {/* Course Content */}
-      <Box sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-          <Chip label={course.category} sx={{ bgcolor: 'rgba(14, 81, 129, 0.1)', color: '#333679', fontWeight: 700, fontSize: 14 }} />
-        </Box>
-        <Typography variant="h6" fontWeight={800} color="#333679" sx={{ mb: 0.5, fontSize: 22 }}>
+      <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Category */}
+        {course.category && (
+          <Chip 
+            label={course.category} 
+            size="small"
+            sx={{ 
+              bgcolor: '#f5f5f5', 
+              color: '#666', 
+              fontSize: '11px',
+              height: 24,
+              mb: 1.5,
+              alignSelf: 'flex-start'
+            }} 
+          />
+        )}
+
+        {/* Course Title */}
+        <Typography variant="h6" sx={{ 
+          fontWeight: 700, 
+          color: '#333',
+          mb: 0.5,
+          fontSize: '16px',
+          lineHeight: 1.3,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}>
           {course.title}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, minHeight: 36, fontSize: 16 }}>
-          {course.description}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, fontSize: 15 }}>
-          <SchoolIcon sx={{ fontSize: 20, color: '#4DBFB3', ml: 0.5 }} />
-          {course.instructor}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-              <Typography variant="caption" sx={{ color: '#666', fontSize: '12px', fontWeight: 500 }}>
-                التقدم
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#4DBFB3', fontSize: '12px', fontWeight: 600 }}>
-                {Math.round(progress)}%
-              </Typography>
-            </Box>
-            <Box sx={{ 
-              height: 12, 
-              bgcolor: 'rgba(229, 151, 139, 0.1)', 
-              borderRadius: 6, 
-              overflow: 'hidden',
-              position: 'relative',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-            }}>
-              <Box 
-                sx={{ 
-                  width: `${progress}%`, 
-                  height: '100%', 
-                  background: 'linear-gradient(90deg, #4DBFB3 0%, #f0a8a0 100%)',
-                  borderRadius: 6, 
-                  transition: 'width 0.8s ease-in-out',
-                  position: 'relative',
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.2) 100%)',
-                    borderRadius: 6
-                  }
-                }} 
-              />
-            </Box>
-          </Box>
-          <CheckCircleIcon sx={{ color: '#4DBFB3', fontSize: 28 }} />
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-          <Typography variant="body2" fontWeight={700} color="#4DBFB3" sx={{ fontSize: 16 }}>
-            مكتمل - {course.grade || 'A'}
+
+        {/* Course Description */}
+        {course.description && (
+          <Typography variant="body2" sx={{ 
+            color: '#666', 
+            mb: 1,
+            fontSize: '12px',
+            lineHeight: 1.3,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            flex: 1
+          }}>
+            {course.description}
           </Typography>
-          {course.completion_date && (
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: 14 }}>
-              تم الإكمال في: {new Date(course.completion_date).toLocaleDateString('ar-EG')}
+        )}
+
+        {/* Instructor */}
+        {course.instructor && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+            <SchoolIcon sx={{ fontSize: 14, color: '#999' }} />
+            <Typography variant="caption" sx={{ color: '#999', fontSize: '11px' }}>
+              {course.instructor}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Completion Info */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          p: 1.5,
+          bgcolor: '#f8fff8',
+          borderRadius: '8px',
+          border: '1px solid #e8f5e8',
+          mb: 1
+        }}>
+          <Typography variant="body2" sx={{ color: '#333', fontWeight: 600, fontSize: '12px' }}>
+            مكتمل
+          </Typography>
+          {course.grade && (
+            <Typography variant="body2" sx={{ color: '#4caf50', fontWeight: 700, fontSize: '12px' }}>
+              {course.grade}
             </Typography>
           )}
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 3 }}>
+
+        {/* Completion Date */}
+        {course.completion_date && (
+          <Typography variant="caption" sx={{ 
+            color: '#999', 
+            fontSize: '10px',
+            mb: 1,
+            textAlign: 'center'
+          }}>
+            تم الإكمال في: {new Date(course.completion_date).toLocaleDateString('ar-EG')}
+          </Typography>
+        )}
+
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
           <Button
-            variant="outlined"
-            size="large"
+            variant="contained"
+            size="small"
             startIcon={<SchoolIcon />}
+            onClick={() => window.open('http://localhost:5173/student/certificates', '_blank')}
             sx={{
-              color: '#333679',
-              borderColor: '#333679',
-              borderRadius: 3,
-              fontWeight: 700,
-              fontSize: 18,
-              px: 5,
-              py: 1.5,
-              '&:hover': { bgcolor: 'rgba(14, 81, 129, 0.1)', borderColor: '#333679' }
+              bgcolor: '#4caf50',
+              color: 'white',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '12px',
+              py: 0.5,
+              px: 2,
+              textTransform: 'none',
+              flex: 1,
+              '&:hover': { 
+                bgcolor: '#45a049',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)'
+              }
             }}
           >
             عرض الشهادة
           </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<VisibilityIcon />}
+            onClick={() => window.open(`http://localhost:5173/student/courses/${course.id}`, '_blank')}
+            sx={{
+              color: '#333679',
+              borderColor: '#333679',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '12px',
+              py: 0.5,
+              px: 2,
+              textTransform: 'none',
+              flex: 1,
+              '&:hover': { 
+                bgcolor: 'rgba(51, 54, 121, 0.1)',
+                borderColor: '#333679',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 2px 8px rgba(51, 54, 121, 0.2)'
+              }
+            }}
+          >
+            عرض الكورس
+          </Button>
         </Box>
       </Box>
-    </Box>
-  </Card>
+    </Card>
   );
 };
 
@@ -1189,7 +1279,7 @@ const MyCourses = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: 'linear-gradient(120deg, #ede7f6 0%, #fff 100%)',
+          background: 'white',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -1210,7 +1300,7 @@ const MyCourses = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: 'linear-gradient(120deg, #ede7f6 0%, #fff 100%)',
+          background: 'white',
           py: 4
         }}
       >
@@ -1243,7 +1333,7 @@ const MyCourses = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(120deg, #ede7f6 0%, #fff 100%)',
+        background: 'white',
         py: 0,
         px: 0
       }}
@@ -1338,9 +1428,15 @@ const MyCourses = () => {
                   ))
                 : <EmptyState isCompleted={false} />)
             : (completedCourses.length > 0
-                ? completedCourses.map(course => (
-                    <CompletedCourseCard key={course.id} course={course} />
-                  ))
+                ? (
+                    <Grid container spacing={3}>
+                      {completedCourses.map(course => (
+                        <Grid item xs={12} sm={6} md={6} key={course.id}>
+                          <CompletedCourseCard course={course} />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )
                 : <EmptyState isCompleted={true} />)
           }
         </Box>

@@ -105,28 +105,7 @@ const StudentDashboard = () => {
         total_lessons: course.total_lessons || course.totalLessons || 0,
         completed_lessons: course.completed_lessons || course.completedLessons || Math.floor(((course.progress || 0) / 100) * (course.total_lessons || course.totalLessons || 0)),
         duration: course.duration || course.total_duration || "0د"
-      })) : [
-        {
-          id: 1,
-          title: 'الجزيئات وأساسيات علم الأحياء',
-          progress: 0,
-          description: 'مقدمة في الجزيئات والأساسيات البيولوجية',
-          status: 'active',
-          total_lessons: 20,
-          completed_lessons: 0,
-          duration: '1س 34د 44ث'
-        },
-        {
-          id: 2,
-          title: 'الخلايا والعضيات',
-          progress: 0,
-          description: 'دراسة الخلايا والعضيات المختلفة',
-          status: 'active',
-          total_lessons: 16,
-          completed_lessons: 0,
-          duration: '49د 54ث'
-        }
-      ];
+      })) : [];
       
       setCourses(processedCourses);
       
@@ -166,74 +145,8 @@ const StudentDashboard = () => {
       setUpcomingAssignments(assignmentsData);
       setUpcomingMeetings(meetingsData);
       
-      // بيانات وهمية للمحاضرات والواجبات القادمة - للطالب
-      const mockLectures = [
-        {
-          id: 1,
-          title: 'كيمياء 3 - محاضرة',
-          time: '08:00 - 10:00',
-          date: '2024-01-10',
-          day: 'الثلاثاء',
-          color: '#333679',
-          type: 'lecture'
-        },
-        {
-          id: 2,
-          title: 'واجب كيمياء 1',
-          time: '10:00 - 11:35',
-          date: '2024-01-10',
-          day: 'الثلاثاء',
-          color: '#333679',
-          type: 'assignment'
-        },
-        {
-          id: 3,
-          title: 'اختبار كيمياء 2',
-          time: '11:00 - 15:00',
-          date: '2024-01-11',
-          day: 'الأربعاء',
-          color: '#333679',
-          type: 'exam'
-        },
-        {
-          id: 4,
-          title: 'كيمياء 2 - محاضرة',
-          time: '07:00 - 08:15',
-          date: '2024-01-12',
-          day: 'الخميس',
-          color: '#333679',
-          type: 'lecture'
-        },
-        {
-          id: 5,
-          title: 'واجب كيمياء 3',
-          time: '09:00 - 10:15',
-          date: '2024-01-12',
-          day: 'الخميس',
-          color: '#333679',
-          type: 'assignment'
-        },
-        {
-          id: 6,
-          title: 'كيمياء 2 - تدريب',
-          time: '09:00 - 10:15',
-          date: '2024-01-13',
-          day: 'الجمعة',
-          color: '#333679',
-          type: 'practice'
-        },
-        {
-          id: 7,
-          title: 'اختبار نهائي',
-          time: '12:00 - 13:15',
-          date: '2024-01-13',
-          day: 'الجمعة',
-          color: '#333679',
-          type: 'exam'
-        }
-      ];
-      
-      setUpcomingLectures(mockLectures);
+      // Set empty array for lectures if no data from API
+      setUpcomingLectures([]);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -638,126 +551,165 @@ const StudentDashboard = () => {
                   </Button>
                 </Box>
 
-         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-           {courses.map((course, index) => (
-             <motion.div key={course.id} variants={item}>
-               <Card
-                 sx={{
-                   borderRadius: 3,
-                   background: 'white',
-                   border: '1px solid #e0e0e0',
-                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                   transition: 'all 0.3s ease',
-                   '&:hover': {
-                     boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
-                     transform: 'translateY(-2px)',
-                   }
-                 }}
-               >
-                 <CardContent sx={{ p: 3 }}>
-                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                     {/* Left side - Course number and info */}
-                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flex: 1 }}>
-                       {/* Course number */}
-                       <Box
-                         sx={{
-                           width: 40,
-                           height: 40,
-                           borderRadius: 2,
-                           background: '#f5f5f5',
-                           display: 'flex',
-                           alignItems: 'center',
-                           justifyContent: 'center',
-                           fontSize: '1.2rem',
-                           fontWeight: 700,
-                           color: '#666',
-                           flexShrink: 0
-                         }}
-                       >
-                         {index + 1}
-                       </Box>
-                       
-                       {/* Course details */}
-                       <Box sx={{ flex: 1 }}>
-                         <Typography variant="h6" fontWeight={600} sx={{ mb: 1.5, color: '#333' }}>
-                           {course.title}
-                         </Typography>
+         {courses.length > 0 ? (
+           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+             {courses.map((course, index) => (
+               <motion.div key={course.id} variants={item}>
+                 <Card
+                   sx={{
+                     borderRadius: 3,
+                     background: 'white',
+                     border: '1px solid #e0e0e0',
+                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                     transition: 'all 0.3s ease',
+                     '&:hover': {
+                       boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+                       transform: 'translateY(-2px)',
+                     }
+                   }}
+                 >
+                   <CardContent sx={{ p: 3 }}>
+                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                       {/* Left side - Course number and info */}
+                       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flex: 1 }}>
+                         {/* Course number */}
+                         <Box
+                           sx={{
+                             width: 40,
+                             height: 40,
+                             borderRadius: 2,
+                             background: '#f5f5f5',
+                             display: 'flex',
+                             alignItems: 'center',
+                             justifyContent: 'center',
+                             fontSize: '1.2rem',
+                             fontWeight: 700,
+                             color: '#666',
+                             flexShrink: 0
+                           }}
+                         >
+                           {index + 1}
+                         </Box>
                          
-                         {/* Progress bar */}
-                         <Box sx={{ mb: 1.5 }}>
-                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                             <Typography variant="caption" sx={{ color: '#666', fontSize: '11px', fontWeight: 500 }}>
-                               التقدم
+                         {/* Course details */}
+                         <Box sx={{ flex: 1 }}>
+                           <Typography variant="h6" fontWeight={600} sx={{ mb: 1.5, color: '#333' }}>
+                             {course.title}
+                           </Typography>
+                           
+                           {/* Progress bar */}
+                           <Box sx={{ mb: 1.5 }}>
+                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                               <Typography variant="caption" sx={{ color: '#666', fontSize: '11px', fontWeight: 500 }}>
+                                 التقدم
+                               </Typography>
+                               <Typography variant="caption" sx={{ color: '#333679', fontSize: '11px', fontWeight: 600 }}>
+                                 {Math.round(course.progress || 0)}%
+                               </Typography>
+                             </Box>
+                             <LinearProgress 
+                               variant="determinate" 
+                               value={course.progress || 0} 
+                               sx={{ 
+                                 height: 8, 
+                                 borderRadius: 4,
+                                 backgroundColor: '#f0f0f0',
+                                 '& .MuiLinearProgress-bar': {
+                                   background: (course.progress || 0) >= 100 
+                                     ? 'linear-gradient(45deg, #4caf50, #66bb6a)' 
+                                     : 'linear-gradient(45deg, #333679, #1a6ba8)',
+                                   borderRadius: 4
+                                 }
+                               }} 
+                             />
+                           </Box>
+                           
+                           {/* Course info */}
+                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                             <Typography variant="body2" color="text.secondary">
+                               {course.completed_lessons || 0} من {course.total_lessons || 20} درس مكتمل
                              </Typography>
-                             <Typography variant="caption" sx={{ color: '#333679', fontSize: '11px', fontWeight: 600 }}>
-                               {Math.round(course.progress || 0)}%
+                             <Typography variant="body2" color="text.secondary">
+                               {course.duration || '1س 34د 44ث'} مدة التشغيل
+                             </Typography>
+                             <Typography variant="body2" sx={{ color: '#333679', fontWeight: 500 }}>
+                               التقدم: {Math.round(course.progress || 0)}%
                              </Typography>
                            </Box>
-                           <LinearProgress 
-                             variant="determinate" 
-                             value={course.progress || 0} 
-                             sx={{ 
-                               height: 8, 
-                               borderRadius: 4,
-                               backgroundColor: '#f0f0f0',
-                               '& .MuiLinearProgress-bar': {
-                                 background: (course.progress || 0) >= 100 
-                                   ? 'linear-gradient(45deg, #4caf50, #66bb6a)' 
-                                   : 'linear-gradient(45deg, #333679, #1a6ba8)',
-                                 borderRadius: 4
-                               }
-                             }} 
-                           />
-                         </Box>
-                         
-                         {/* Course info */}
-                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                           <Typography variant="body2" color="text.secondary">
-                             {course.completed_lessons || 0} من {course.total_lessons || 20} درس مكتمل
-                           </Typography>
-                           <Typography variant="body2" color="text.secondary">
-                             {course.duration || '1س 34د 44ث'} مدة التشغيل
-                           </Typography>
-                           <Typography variant="body2" sx={{ color: '#333679', fontWeight: 500 }}>
-                             التقدم: {Math.round(course.progress || 0)}%
-                           </Typography>
                          </Box>
                        </Box>
+                       
+                       {/* Right side - Start button */}
+                       <Box sx={{ ml: 2, flexShrink: 0 }}>
+                         <Button
+                           variant="contained"
+                           size="large"
+                           sx={{
+                             minWidth: 100,
+                             height: 48,
+                             borderRadius: 3,
+                             background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                             color: 'white',
+                             fontWeight: 600,
+                             fontSize: '1rem',
+                             textTransform: 'none',
+                             boxShadow: '0 4px 12px rgba(14, 81, 129, 0.3)',
+                             '&:hover': {
+                               background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                               boxShadow: '0 6px 16px rgba(14, 81, 129, 0.4)',
+                               transform: 'translateY(-1px)',
+                             },
+                             transition: 'all 0.3s ease'
+                           }}
+                           onClick={() => handleCourseContinue(course.id)}
+                         >
+                           {(course.progress || 0) > 0 ? 'متابعة' : 'ابدأ'}
+                         </Button>
+                       </Box>
                      </Box>
-                     
-                     {/* Right side - Start button */}
-                     <Box sx={{ ml: 2, flexShrink: 0 }}>
-                       <Button
-                         variant="contained"
-                         size="large"
-                         sx={{
-                           minWidth: 100,
-                           height: 48,
-                           borderRadius: 3,
-                           background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                           color: 'white',
-                           fontWeight: 600,
-                           fontSize: '1rem',
-                           textTransform: 'none',
-                           boxShadow: '0 4px 12px rgba(14, 81, 129, 0.3)',
-                           '&:hover': {
-                             background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                             boxShadow: '0 6px 16px rgba(14, 81, 129, 0.4)',
-                             transform: 'translateY(-1px)',
-                           },
-                           transition: 'all 0.3s ease'
-                         }}
-                         onClick={() => handleCourseContinue(course.id)}
-                       >
-                         {(course.progress || 0) > 0 ? 'متابعة' : 'ابدأ'}
-                       </Button>
-                     </Box>
-                   </Box>
-                 </CardContent>
-               </Card>
-             </motion.div>
-           ))}
-         </Box>
+                   </CardContent>
+                 </Card>
+               </motion.div>
+             ))}
+           </Box>
+         ) : (
+           <Box sx={{ 
+             textAlign: 'center', 
+             py: 6,
+             px: 3,
+             background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+             borderRadius: 3,
+             border: '2px dashed #e0e0e0'
+           }}>
+             <SchoolIcon sx={{ 
+               fontSize: 64, 
+               color: '#ccc', 
+               mb: 2,
+               opacity: 0.6
+             }} />
+             <Typography variant="h6" color="text.secondary" sx={{ mb: 1, fontWeight: 600 }}>
+               لا توجد مقررات مسجلة
+             </Typography>
+             <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
+               لم تسجل في أي مقررات بعد. ابدأ رحلتك التعليمية بالتسجيل في مقرر جديد
+             </Typography>
+             <Button 
+               variant="contained" 
+               size="large"
+               startIcon={<AddIcon />}
+               sx={{ 
+                 borderRadius: 3,
+                 background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                 '&:hover': {
+                   background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                 }
+               }}
+               onClick={() => navigate('/courses')}
+             >
+               تصفح المقررات
+             </Button>
+           </Box>
+         )}
 
         </Box>
               )}

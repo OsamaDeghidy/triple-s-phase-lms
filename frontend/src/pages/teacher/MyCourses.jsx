@@ -612,13 +612,103 @@ const MyCourses = () => {
               <Table sx={{ minWidth: 650 }} aria-label="courses table">
                 <TableHead>
                   <TableRow sx={{ bgcolor: '#f8f9fa' }}>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>الصورة</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>عنوان الكورس</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>التصنيف</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>الطلاب</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>التقييم</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>السعر</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem', textAlign: 'center' }}>الإجراءات</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ 
+                          width: 24, 
+                          height: 24, 
+                          borderRadius: 1, 
+                          bgcolor: '#333679',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <Box sx={{ 
+                            width: 12, 
+                            height: 12, 
+                            borderRadius: 0.5, 
+                            bgcolor: 'white' 
+                          }} />
+                        </Box>
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          الصورة
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <SchoolIcon sx={{ fontSize: 20, color: '#333679' }} />
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          عنوان الكورس
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ 
+                          width: 20, 
+                          height: 20, 
+                          borderRadius: '50%', 
+                          bgcolor: '#333679',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}>
+                          #
+                        </Box>
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          التصنيف
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <PeopleIcon sx={{ fontSize: 20, color: '#333679' }} />
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          الطلاب
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <StarIcon sx={{ fontSize: 20, color: '#333679' }} />
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          التقييم
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ 
+                          width: 20, 
+                          height: 20, 
+                          borderRadius: '50%', 
+                          bgcolor: '#333679',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}>
+                          $
+                        </Box>
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          السعر
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <EditIcon sx={{ fontSize: 20, color: '#333679' }} />
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          الإجراءات
+                        </Typography>
+                      </Box>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -637,30 +727,46 @@ const MyCourses = () => {
                       }}
                       onClick={() => handleCourseClick(course.id)}
                     >
-                      <TableCell>
-                        <Box
-                          component="img"
-                          src={course.image || 'https://via.placeholder.com/120x90/3498db/ffffff?text=Course'}
-                          alt={course.title}
-                          sx={{ 
-                            width: 120, 
-                            height: 90,
-                            borderRadius: 2,
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            objectFit: 'cover',
-                            transition: 'transform 0.2s ease-in-out',
-                            '&:hover': {
-                              transform: 'scale(1.05)',
-                              boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
-                            }
-                          }}
-                        />
+                      <TableCell sx={{ textAlign: 'center' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                          <Box
+                            component="img"
+                            src={course.image || 'https://via.placeholder.com/120x90/3498db/ffffff?text=Course'}
+                            alt={course.title}
+                            sx={{ 
+                              width: 120, 
+                              height: 90,
+                              borderRadius: 2,
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                              objectFit: 'cover',
+                              transition: 'transform 0.2s ease-in-out',
+                              '&:hover': {
+                                transform: 'scale(1.05)',
+                                boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
+                              }
+                            }}
+                          />
+                        </Box>
                       </TableCell>
-                      <TableCell>
-                        <Box>
-                          <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 0.5 }}>
+                      <TableCell sx={{ textAlign: 'center' }}>
+                        <Box sx={{ textAlign: 'center' }}>
+                          <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 0.5, textAlign: 'center' }}>
                             {course.title}
                           </Typography>
+                          {course.module_name && (
+                            <Typography 
+                              variant="body2" 
+                              color="primary.main"
+                              sx={{
+                                mb: 0.5,
+                                textAlign: 'center',
+                                fontWeight: 500,
+                                fontSize: '0.85rem'
+                              }}
+                            >
+                              {course.module_name}
+                            </Typography>
+                          )}
                           <Typography 
                             variant="body2" 
                             color="text.secondary"
@@ -669,42 +775,45 @@ const MyCourses = () => {
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical',
                               overflow: 'hidden',
-                              maxWidth: 200
+
+                              textAlign: 'center'
                             }}
                           >
                             {course.short_description || course.description}
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={course.category?.name || course.category_name || 'غير محدد'} 
-                          size="small" 
-                          sx={{ 
-                            fontWeight: 'bold',
-                            bgcolor: '#3498db',
-                            color: 'white',
-                            fontSize: '0.75rem'
-                          }}
-                        />
+                      <TableCell sx={{ textAlign: 'center' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                          <Chip 
+                            label={course.category?.name || course.category_name || 'غير محدد'} 
+                            size="small" 
+                            sx={{ 
+                              fontWeight: 'bold',
+                              bgcolor: '#3498db',
+                              color: 'white',
+                              fontSize: '0.75rem'
+                            }}
+                          />
+                        </Box>
                       </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TableCell sx={{ textAlign: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
                           <PeopleIcon color="action" fontSize="small" />
                           <Typography variant="body2">
                             {course.total_enrollments || 0}
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <TableCell sx={{ textAlign: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
                           <StarIcon sx={{ color: '#f39c12', fontSize: '1rem' }} />
                           <Typography variant="body2">
                             {course.average_rating || 0}
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ textAlign: 'center' }}>
                         <Typography 
                           variant="body2" 
                           color={course.is_free ? 'success.main' : 'primary.main'} 
@@ -713,12 +822,13 @@ const MyCourses = () => {
                           {course.is_free ? 'مجاني' : `$${course.price}`}
                         </Typography>
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ textAlign: 'center' }}>
                         <Box sx={{ 
                           display: 'flex', 
                           flexDirection: 'column', 
                           gap: 1, 
                           alignItems: 'center',
+                          justifyContent: 'center',
                           minWidth: 120
                         }}>
                           {/* الصف الأول */}

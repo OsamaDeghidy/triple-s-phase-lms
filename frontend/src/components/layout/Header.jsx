@@ -17,7 +17,9 @@ import {
   Stack,
   alpha,
   keyframes,
-  CircularProgress
+  CircularProgress,
+  Switch,
+  FormControlLabel
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
@@ -54,21 +56,18 @@ const StyledAppBar = styled(AppBar, {
         rgba(102, 51, 153, 0.65) 0%, 
         rgba(51, 54, 121, 0.62) 50%, 
         rgba(27, 27, 72, 0.58) 100%)`
-    : `linear-gradient(135deg, 
-        rgba(45, 27, 105, 0.98) 0%, 
-        rgba(26, 16, 63, 0.96) 50%, 
-        rgba(15, 10, 42, 0.94) 100%)`,
+    : 'transparent', // Make header transparent when not scrolled
   backdropFilter: 'none',
   WebkitBackdropFilter: 'none',
   boxShadow: scrolled
     ? '0 4px 20px rgba(102, 51, 153, 0.3)'
-    : '0 2px 15px rgba(45, 27, 105, 0.2)',
+    : 'none',
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   padding: scrolled ? '12px 0' : '20px 0',
   minHeight: scrolled ? '70px' : '90px',
   borderBottom: scrolled
     ? '1px solid rgba(255, 255, 255, 0.08)'
-    : '1px solid rgba(255, 255, 255, 0.05)',
+    : 'none',
   animation: `${fadeIn} 0.6s ease-out`,
   '&.MuiAppBar-root': {
     zIndex: theme.zIndex.drawer + 1,
@@ -254,11 +253,11 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const LogoImage = styled('img')({
-  height: '48px',
+  height: '80px', // Increased from 64px
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   filter: 'drop-shadow(0 2px 8px rgba(102, 51, 153, 0.3))',
   '@media (max-width: 600px)': {
-    height: '40px',
+    height: '65px', // Increased from 52px
   },
 });
 
@@ -321,12 +320,108 @@ const NotificationBadge = styled(Badge)({
   },
 });
 
+const LanguageSwitch = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  background: 'rgba(255, 255, 255, 0.08)',
+  borderRadius: '20px',
+  padding: '6px 12px',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
+  marginLeft: theme.spacing(1),
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  backdropFilter: 'blur(8px)',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(102, 51, 153, 0.2), transparent)',
+    transition: 'left 0.5s ease',
+  },
+  '&:hover': {
+    background: 'rgba(255, 255, 255, 0.12)',
+    borderColor: 'rgba(102, 51, 153, 0.4)',
+    transform: 'scale(1.05)',
+    boxShadow: '0 8px 25px rgba(102, 51, 153, 0.3)',
+    '&::before': {
+      left: '100%',
+    },
+  },
+  '& .MuiSwitch-root': {
+    width: '50px',
+    height: '28px',
+    padding: 0,
+    '& .MuiSwitch-switchBase': {
+      padding: 0,
+      margin: '2px',
+      transitionDuration: '300ms',
+      '&.Mui-checked': {
+        transform: 'translateX(22px)',
+        color: '#fff',
+        '& + .MuiSwitch-track': {
+          backgroundColor: '#663399',
+          opacity: 1,
+          border: 0,
+          boxShadow: '0 0 15px rgba(102, 51, 153, 0.5)',
+        },
+        '&.Mui-disabled + .MuiSwitch-track': {
+          opacity: 0.5,
+        },
+      },
+      '&.Mui-focusVisible .MuiSwitch-thumb': {
+        color: '#663399',
+        border: '3px solid #fff',
+      },
+      '&.Mui-disabled .MuiSwitch-thumb': {
+        color: theme.palette.grey[100],
+      },
+      '&.Mui-disabled + .MuiSwitch-track': {
+        opacity: 0.7,
+      },
+    },
+    '& .MuiSwitch-thumb': {
+      boxSizing: 'border-box',
+      width: '24px',
+      height: '24px',
+      background: 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
+      boxShadow: '0 3px 8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(102, 51, 153, 0.1)',
+      border: '1px solid rgba(102, 51, 153, 0.15)',
+    },
+    '& .MuiSwitch-track': {
+      borderRadius: '24px',
+      backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      opacity: 1,
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      transition: theme.transitions.create(['background-color', 'box-shadow'], {
+        duration: 300,
+      }),
+    },
+  },
+}));
+
+const LanguageLabel = styled(Typography)(({ theme, active }) => ({
+  fontSize: '12px',
+  fontWeight: '600',
+  color: active ? '#fff' : 'rgba(255, 255, 255, 0.6)',
+  margin: '0 5px',
+  transition: 'all 0.3s ease',
+  minWidth: '20px',
+  textAlign: 'center',
+  letterSpacing: '0.3px',
+  textShadow: active ? '0 1px 2px rgba(0, 0, 0, 0.2)' : 'none',
+}));
+
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [language, setLanguage] = useState('ar'); // Default to Arabic
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -431,6 +526,13 @@ const Header = () => {
       navigate(`/courses?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
     }
+  };
+
+  const handleLanguageChange = (event) => {
+    const newLanguage = event.target.checked ? 'en' : 'ar';
+    setLanguage(newLanguage);
+    // Here you can add logic to change the app language
+    console.log('Language changed to:', newLanguage);
   };
 
 
@@ -666,145 +768,9 @@ const Header = () => {
       <StyledAppBar position="fixed" scrolled={scrolled}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Logo */}
-            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: { xs: 1, md: 0 } }}>
-              <LogoContainer component={RouterLink} to="/">
-                <LogoImage src={logo} alt="شعار المنصة" />
-                {!isMobile && (
-                  <LogoText variant="h6" scrolled={scrolled}>
-
-                  </LogoText>
-                )}
-              </LogoContainer>
-            </Box>
-
-            {/* Desktop Navigation */}
-            <Box sx={{
-              flexGrow: 1,
-              display: { xs: 'none', md: 'flex' },
-              ml: 4,
-              '& > *:not(:last-child)': {
-                mr: 1,
-              },
-            }}>
-              {navItems.map((item) => {
-                if (item.auth && !isAuthenticated) return null;
-
-                if (item.dropdown) {
-                  const [anchorEl, setAnchorEl] = useState(null);
-                  const open = Boolean(anchorEl);
-
-                  const handleClick = (event) => {
-                    setAnchorEl(event.currentTarget);
-                  };
-
-                  const handleClose = () => {
-                    setAnchorEl(null);
-                  };
-
-                  return (
-                    <div key={item.text}>
-                      <NavButton
-                        aria-controls={open ? item.text : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick}
-                        endIcon={<KeyboardArrowDown />}
-                        className={location.pathname.startsWith(item.path) ? 'active' : ''}
-                        scrolled={scrolled}
-                      >
-                        {item.text}
-                      </NavButton>
-                      <Menu
-                        id={item.text}
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          'aria-labelledby': item.text,
-                        }}
-                        PaperProps={{
-                          style: {
-                            backgroundColor: 'rgba(27, 27, 72, 0.95)',
-                            color: '#FFFFFF',
-                            marginTop: '15px',
-                            minWidth: '220px',
-                            borderRadius: '16px',
-                            boxShadow: '0 12px 40px rgba(102, 51, 153, 0.4)',
-                            backdropFilter: 'blur(20px)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                          },
-                        }}
-                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                      >
-                        {loadingCategories ? (
-                          <Box display="flex" justifyContent="center" p={3}>
-                            <CircularProgress size={24} sx={{ color: '#663399' }} />
-                          </Box>
-                        ) : item.dropdown.length > 0 ? (
-                          item.dropdown.map((subItem) => (
-                            <MenuItem
-                              key={subItem.path}
-                              component={RouterLink}
-                              to={subItem.path}
-                              onClick={handleClose}
-                              sx={{
-                                color: '#E6E6E6',
-                                padding: '12px 20px',
-                                margin: '2px 8px',
-                                borderRadius: '8px',
-                                transition: 'all 0.2s ease',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(102, 51, 153, 0.2)',
-                                  color: '#FFFFFF',
-                                  transform: 'translateX(5px)',
-                                },
-                                '&.Mui-selected': {
-                                  backgroundColor: 'rgba(102, 51, 153, 0.15)',
-                                  color: '#663399',
-                                },
-                              }}
-                            >
-                              {subItem.text}
-                            </MenuItem>
-                          ))
-                        ) : (
-                          <MenuItem disabled sx={{
-                            color: 'rgba(255, 255, 255, 0.5)',
-                            padding: '16px 20px',
-                            textAlign: 'center'
-                          }}>
-                            لا توجد أقسام متاحة
-                          </MenuItem>
-                        )}
-                      </Menu>
-                    </div>
-                  );
-                }
-
-                return (
-                  <NavButton
-                    key={item.path}
-                    component={RouterLink}
-                    to={item.path}
-                    className={location.pathname === item.path ? 'active' : ''}
-                    isHome={item.text === 'الرئيسية'}
-                    scrolled={scrolled}
-                  >
-                    {item.text}
-                  </NavButton>
-                );
-              })}
-            </Box>
-
-
-            {/* Auth Buttons / User Menu */}
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'center',
-              ml: 'auto',
-            }}>
+            {/* User Avatar and Language Switch - moved to left */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {/* User Avatar and Icons */}
               {isAuthenticated ? (
                 <>
                   {/* Cart Icon */}
@@ -930,6 +896,7 @@ const Header = () => {
                     borderRadius: '12px',
                     width: '48px',
                     height: '48px',
+                    marginLeft: 1,
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -942,6 +909,150 @@ const Header = () => {
                   <AccountCircleIcon />
                 </IconButton>
               )}
+
+              {/* Language Switch */}
+              <LanguageSwitch sx={{ marginLeft: 20 }}> {/* Very large margin for more spacing */}
+                <LanguageLabel active={language === 'ar'}>AR</LanguageLabel>
+                <Switch
+                  checked={language === 'en'}
+                  onChange={handleLanguageChange}
+                  size="small"
+                />
+                <LanguageLabel active={language === 'en'}>EN</LanguageLabel>
+              </LanguageSwitch>
+            </Box>
+
+            {/* Desktop Navigation */}
+            <Box sx={{
+              flexGrow: 1,
+              display: { xs: 'none', md: 'flex' },
+              ml: 4,
+              '& > *:not(:last-child)': {
+                mr: 1,
+              },
+            }}>
+              {navItems.map((item) => {
+                if (item.auth && !isAuthenticated) return null;
+
+                if (item.dropdown) {
+                  const [anchorEl, setAnchorEl] = useState(null);
+                  const open = Boolean(anchorEl);
+
+                  const handleClick = (event) => {
+                    setAnchorEl(event.currentTarget);
+                  };
+
+                  const handleClose = () => {
+                    setAnchorEl(null);
+                  };
+
+                  return (
+                    <div key={item.text}>
+                      <NavButton
+                        aria-controls={open ? item.text : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}
+                        endIcon={<KeyboardArrowDown />}
+                        className={location.pathname.startsWith(item.path) ? 'active' : ''}
+                        scrolled={scrolled}
+                      >
+                        {item.text}
+                      </NavButton>
+                      <Menu
+                        id={item.text}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                          'aria-labelledby': item.text,
+                        }}
+                        PaperProps={{
+                          style: {
+                            backgroundColor: 'rgba(27, 27, 72, 0.95)',
+                            color: '#FFFFFF',
+                            marginTop: '15px',
+                            minWidth: '220px',
+                            borderRadius: '16px',
+                            boxShadow: '0 12px 40px rgba(102, 51, 153, 0.4)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                          },
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      >
+                        {loadingCategories ? (
+                          <Box display="flex" justifyContent="center" p={3}>
+                            <CircularProgress size={24} sx={{ color: '#663399' }} />
+                          </Box>
+                        ) : item.dropdown.length > 0 ? (
+                          item.dropdown.map((subItem) => (
+                            <MenuItem
+                              key={subItem.path}
+                              component={RouterLink}
+                              to={subItem.path}
+                              onClick={handleClose}
+                              sx={{
+                                color: '#E6E6E6',
+                                padding: '12px 20px',
+                                margin: '2px 8px',
+                                borderRadius: '8px',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(102, 51, 153, 0.2)',
+                                  color: '#FFFFFF',
+                                  transform: 'translateX(5px)',
+                                },
+                                '&.Mui-selected': {
+                                  backgroundColor: 'rgba(102, 51, 153, 0.15)',
+                                  color: '#663399',
+                                },
+                              }}
+                            >
+                              {subItem.text}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled sx={{
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            padding: '16px 20px',
+                            textAlign: 'center'
+                          }}>
+                            لا توجد أقسام متاحة
+                          </MenuItem>
+                        )}
+                      </Menu>
+                    </div>
+                  );
+                }
+
+                return (
+                  <NavButton
+                    key={item.path}
+                    component={RouterLink}
+                    to={item.path}
+                    className={location.pathname === item.path ? 'active' : ''}
+                    isHome={item.text === 'الرئيسية'}
+                    scrolled={scrolled}
+                  >
+                    {item.text}
+                  </NavButton>
+                );
+              })}
+            </Box>
+
+
+            {/* Logo - moved to right */}
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
+              <LogoContainer component={RouterLink} to="/">
+                <LogoImage src={logo} alt="شعار المنصة" />
+                {!isMobile && (
+                  <LogoText variant="h6" scrolled={scrolled}>
+
+                  </LogoText>
+                )}
+              </LogoContainer>
             </Box>
 
             {/* Mobile Menu Button */}
@@ -989,13 +1100,42 @@ const Header = () => {
           }}
         >
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {isAuthenticated ? (
+                <Avatar
+                  alt={user?.name || 'User'}
+                  src={user?.avatar}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    border: '2px solid #663399',
+                  }}
+                />
+              ) : (
+                <AccountCircleIcon sx={{ fontSize: 40, color: '#663399' }} />
+              )}
+
+              {/* Language Switch for Mobile */}
+              <LanguageSwitch sx={{ marginLeft: 16 }}> {/* Very large margin for mobile */}
+                <LanguageLabel active={language === 'ar'}>AR</LanguageLabel>
+                <Switch
+                  checked={language === 'en'}
+                  onChange={handleLanguageChange}
+                  size="small"
+                />
+                <LanguageLabel active={language === 'en'}>EN</LanguageLabel>
+              </LanguageSwitch>
+            </Box>
+            <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#FFFFFF' }}>
+              <Box component="span" sx={{ fontSize: '1.5rem' }}>×</Box>
+            </IconButton>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
             <LogoContainer component={RouterLink} to="/" onClick={() => setMobileMenuOpen(false)}>
               <LogoImage src={logo} alt="شعار المنصة" />
               <LogoText variant="h6" scrolled={scrolled}>أكاديمية التطوير</LogoText>
             </LogoContainer>
-            <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#FFFFFF' }}>
-              <Box component="span" sx={{ fontSize: '1.5rem' }}>×</Box>
-            </IconButton>
           </Box>
 
 
@@ -1144,8 +1284,7 @@ const Header = () => {
         />
       )}
 
-      {/* Add space for fixed header */}
-      <Toolbar />
+      {/* No space needed since background covers full height */}
     </>
   );
 };

@@ -372,29 +372,69 @@ const TeacherAssignments = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  عنوان الواجب
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <AssignmentIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      عنوان الواجب
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  المقرر
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <SchoolIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      المقرر
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  الحالة
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <StatusChip label="الحالة" size="small" sx={{ bgcolor: '#f5f5f5', color: '#666' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      الحالة
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  تاريخ التسليم
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <CalendarTodayIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      تاريخ التسليم
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  التسليمات
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <AssignmentTurnedInIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      التسليمات
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  معدل التسليم
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <TrendingUpIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      معدل التسليم
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0' }}>
-                  الدرجة
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <GradeIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      الدرجة
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center' }}>
-                  الإجراءات
+                <TableCell sx={{ fontWeight: 700, color: '#2c3e50', borderBottom: '2px solid #e0e0e0', textAlign: 'center', py: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <EditIcon sx={{ fontSize: 20, color: '#333679' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>
+                      الإجراءات
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -411,9 +451,9 @@ const TeacherAssignments = () => {
                       transition: 'background-color 0.2s ease'
                     }}
                   >
-                    <TableCell>
-                      <Box className="table-cell-content">
-                        <Typography className="table-cell-title" variant="subtitle1" fontWeight={600} color="#2c3e50" sx={{ mb: 0.5 }}>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Box className="table-cell-content" sx={{ textAlign: 'center' }}>
+                        <Typography className="table-cell-title" variant="subtitle1" fontWeight={600} color="#2c3e50" sx={{ mb: 0.5, textAlign: 'center' }}>
                           {assignment.title}
                         </Typography>
                         <Typography className="table-cell-description" variant="body2" color="text.secondary" sx={{ 
@@ -422,38 +462,43 @@ const TeacherAssignments = () => {
                           WebkitBoxOrient: 'vertical',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
-                          maxWidth: 200
+                          maxWidth: 200,
+                          textAlign: 'center'
                         }}>
                           {assignment.description}
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
-                      <Box className="table-cell-meta">
-                        <SchoolIcon sx={{ color: '#ff6b6b', fontSize: 18 }} />
-                        <Typography variant="body2" fontWeight={500}>
-                          {assignment.course_title}
-                        </Typography>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Box className="table-cell-meta" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <SchoolIcon sx={{ color: '#ff6b6b', fontSize: 18 }} />
+                          <Typography variant="body2" fontWeight={500}>
+                            {assignment.course_title}
+                          </Typography>
+                        </Box>
+                        {assignment.module_name && (
+                          <Typography variant="caption" color="text.secondary">
+                            {assignment.module_name}
+                          </Typography>
+                        )}
                       </Box>
-                      {assignment.module_name && (
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                          {assignment.module_name}
-                      </Typography>
-                      )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <StatusChip
                           label={getStatusText(status)}
                           status={status}
                           size="small"
                         />
+                      </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
                       <Typography variant="body2" color="text.secondary">
                         {new Date(assignment.due_date).toLocaleDateString('en-GB')}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
                       <Box>
                         <Typography variant="body2" fontWeight={500}>
                           {assignment.submissions_count} / {assignment.total_students}
@@ -463,9 +508,9 @@ const TeacherAssignments = () => {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
                       <Box className="table-progress-container">
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 0.5 }}>
                           <Typography variant="caption" color="text.secondary">
                             {Math.round(submissionRate)}%
                           </Typography>
@@ -486,13 +531,13 @@ const TeacherAssignments = () => {
                         />
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
                       <Typography variant="body2" fontWeight={500} color="#2c3e50">
                         {assignment.points} نقطة
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Box className="table-cell-actions">
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Box className="table-cell-actions" sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Tooltip title="عرض التفاصيل">
                       <IconButton
                         size="small"

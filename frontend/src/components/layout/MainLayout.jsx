@@ -323,28 +323,118 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
         }
       }}>
         {/* AppBar Wrapper */}
-        <Box sx={{ position: 'relative', zIndex: 1000 }}>
+        <Box sx={{ position: 'relative', zIndex: 1000, overflow: 'visible' }}>
         {/* AppBar */}
         <AppBar position="static" elevation={0} sx={{
-          background: 'rgba(255,255,255,0.85)', boxShadow: '0 2px 10px 0 rgba(14,81,129,0.04)', mb: 3, borderRadius: 3
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%)', 
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 8px 32px rgba(14,81,129,0.08)', 
+          mb: 3, 
+          borderRadius: 0,
+          border: '1px solid rgba(255,255,255,0.2)',
+          position: 'relative',
+          overflow: 'visible',
+          width: '100%',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '2px',
+            background: 'linear-gradient(90deg, #4DBFB3 0%, #333679 50%, #4DBFB3 100%)',
+            zIndex: 1
+          }
         }}>
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Toolbar sx={{ justifyContent: 'space-between', py: 1, position: 'relative', zIndex: 2 }}>
+            {/* Search Bar with Enhanced Design */}
             <Paper
               component="form"
-              sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 250, background: '#fff', borderRadius: 2, boxShadow: 0 }}
+              sx={{ 
+                p: '4px 12px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                width: 300, 
+                background: 'rgba(255,255,255,0.9)', 
+                borderRadius: 3, 
+                boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
+                border: '1px solid rgba(77, 191, 179, 0.2)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  boxShadow: '0 6px 25px rgba(14,81,129,0.15)',
+                  border: '1px solid rgba(77, 191, 179, 0.3)',
+                  transform: 'translateY(-1px)'
+                },
+                '&:focus-within': {
+                  boxShadow: '0 8px 30px rgba(14,81,129,0.2)',
+                  border: '1px solid #4DBFB3',
+                  transform: 'translateY(-2px)'
+                }
+              }}
             >
-              <InputBase sx={{ ml: 1, flex: 1 }} placeholder="بحث..." inputProps={{ 'aria-label': 'بحث' }} />
+              <InputBase 
+                sx={{ 
+                  ml: 1, 
+                  flex: 1,
+                  fontSize: '14px',
+                  '& input': {
+                    '&::placeholder': {
+                      color: '#999',
+                      opacity: 1
+                    }
+                  }
+                }} 
+                placeholder="ابحث عن الكورسات، الدروس، أو أي شيء..." 
+                inputProps={{ 'aria-label': 'بحث' }} 
+              />
+              <Box sx={{ 
+                width: 8, 
+                height: 8, 
+                borderRadius: '50%', 
+                background: 'linear-gradient(45deg, #4DBFB3, #333679)',
+                mr: 1
+              }} />
             </Paper>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {/* Notification Dropdown */}
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              {/* Notification Dropdown with Enhanced Design */}
               <Box ref={notifRef} sx={{ position: 'relative' }}>
                 <IconButton 
                   color="inherit" 
-                  sx={{ bgcolor: notifAnchorEl ? 'rgba(14,81,129,0.1)' : 'rgba(229,151,139,0.1)', p: 1.2 }}
+                  sx={{ 
+                    bgcolor: notifAnchorEl ? 'rgba(77, 191, 179, 0.15)' : 'rgba(77, 191, 179, 0.08)', 
+                    p: 1.5,
+                    borderRadius: 3,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      bgcolor: 'rgba(77, 191, 179, 0.2)',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 4px 15px rgba(77, 191, 179, 0.3)'
+                    }
+                  }}
                   onClick={handleNotifMenuOpen}
                 >
-                  <Badge badgeContent={unreadCount} color="error">
-                    <NotificationsIcon />
+                  <Badge 
+                    badgeContent={unreadCount} 
+                    color="error"
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)',
+                        boxShadow: '0 2px 8px rgba(255, 107, 107, 0.4)',
+                        animation: 'pulse 2s infinite',
+                        '@keyframes pulse': {
+                          '0%': { transform: 'scale(1)' },
+                          '50%': { transform: 'scale(1.1)' },
+                          '100%': { transform: 'scale(1)' }
+                        }
+                      }
+                    }}
+                  >
+                    <NotificationsIcon sx={{ 
+                      color: '#333679',
+                      fontSize: 24,
+                      filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))'
+                    }} />
                   </Badge>
                 </IconButton>
                 
@@ -355,52 +445,137 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                       position: 'absolute',
                       top: '100%',
                       left: 0,
-                      width: 350,
-                      maxHeight: 400,
+                      width: 380,
+                      maxHeight: 450,
                       overflowY: 'auto',
-                      borderRadius: 2,
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                      zIndex: 9999,
-                      p: 2,
-                      background: '#ffffff',
-                      border: '1px solid #e0e0e0',
-                      mt: 1
+                      borderRadius: 3,
+                      boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                      zIndex: 10000,
+                      p: 0,
+                      background: 'rgba(255,255,255,0.95)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(77, 191, 179, 0.2)',
+                      mt: 2,
+                      overflow: 'hidden',
+                      display: 'block',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '3px',
+                        background: 'linear-gradient(90deg, #4DBFB3, #333679)',
+                        zIndex: 1
+                      }
                     }}
                   >
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, p: 1 }}>
-                      <Typography variant="subtitle1" fontWeight={600}>الإشعارات</Typography>
-                      <Typography variant="caption" color="primary" sx={{ cursor: 'pointer' }}>تمييز الكل كمقروء</Typography>
+                    <Box sx={{ 
+                      p: 3, 
+                      background: 'linear-gradient(135deg, rgba(77, 191, 179, 0.05) 0%, rgba(51, 54, 121, 0.05) 100%)',
+                      borderBottom: '1px solid rgba(77, 191, 179, 0.1)'
+                    }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="h6" fontWeight={700} sx={{ color: '#333679' }}>
+                          الإشعارات
+                        </Typography>
+                        <Typography 
+                          variant="caption" 
+                          sx={{ 
+                            color: '#4DBFB3', 
+                            cursor: 'pointer',
+                            fontWeight: 600,
+                            px: 2,
+                            py: 0.5,
+                            borderRadius: 2,
+                            bgcolor: 'rgba(77, 191, 179, 0.1)',
+                            transition: 'all 0.2s',
+                            '&:hover': { 
+                              bgcolor: 'rgba(77, 191, 179, 0.2)',
+                              transform: 'scale(1.05)'
+                            }
+                          }}
+                        >
+                          تمييز الكل كمقروء
+                        </Typography>
+                      </Box>
                     </Box>
-                    <Divider />
-                    <List sx={{ p: 0 }}>
-                      {notifications.map((notification) => (
+                    
+                    <List sx={{ p: 2 }}>
+                      {notifications.map((notification, index) => (
                         <ListItemButton 
                           key={notification.id}
                           sx={{
-                            borderRadius: 1,
-                            mb: 0.5,
-                            bgcolor: !notification.read ? 'rgba(14,81,129,0.05)' : 'transparent',
-                            '&:hover': { bgcolor: 'rgba(229,151,139,0.05)' }
+                            borderRadius: 2,
+                            mb: 1,
+                            p: 2,
+                            bgcolor: !notification.read ? 'rgba(77, 191, 179, 0.08)' : 'transparent',
+                            border: !notification.read ? '1px solid rgba(77, 191, 179, 0.2)' : '1px solid transparent',
+                            transition: 'all 0.3s ease',
+                            '&:hover': { 
+                              bgcolor: 'rgba(77, 191, 179, 0.12)',
+                              transform: 'translateX(4px)',
+                              boxShadow: '0 4px 15px rgba(77, 191, 179, 0.2)'
+                            }
                           }}
                         >
-                          <Box sx={{ width: '100%' }}>
-                            <Typography variant="body2" sx={{ fontWeight: notification.read ? 400 : 600 }}>
+                          <Box sx={{ width: '100%', position: 'relative' }}>
+                            {!notification.read && (
+                              <Box sx={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                bgcolor: '#4DBFB3',
+                                boxShadow: '0 0 8px rgba(77, 191, 179, 0.6)'
+                              }} />
+                            )}
+                            <Typography variant="body2" sx={{ 
+                              fontWeight: notification.read ? 500 : 700,
+                              color: notification.read ? '#666' : '#333',
+                              mb: 0.5,
+                              lineHeight: 1.4
+                            }}>
                               {notification.text}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ 
+                              color: '#999',
+                              fontSize: '11px',
+                              fontWeight: 500
+                            }}>
                               {notification.time}
                             </Typography>
                           </Box>
                         </ListItemButton>
                       ))}
                     </List>
-                    <Box sx={{ textAlign: 'center', mt: 1 }}>
+                    
+                    <Box sx={{ 
+                      textAlign: 'center', 
+                      p: 2,
+                      borderTop: '1px solid rgba(77, 191, 179, 0.1)',
+                      background: 'rgba(77, 191, 179, 0.02)'
+                    }}>
                       <Typography 
                         variant="body2" 
-                        color="primary" 
-                        sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                        sx={{ 
+                          color: '#4DBFB3',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          px: 3,
+                          py: 1,
+                          borderRadius: 2,
+                          bgcolor: 'rgba(77, 191, 179, 0.1)',
+                          transition: 'all 0.2s',
+                          '&:hover': { 
+                            bgcolor: 'rgba(77, 191, 179, 0.2)',
+                            transform: 'scale(1.05)'
+                          }
+                        }}
                       >
-                        عرض الكل
+                        عرض جميع الإشعارات
                       </Typography>
                     </Box>
                   </Paper>
@@ -411,20 +586,37 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
               <Box ref={profileRef} sx={{ position: 'relative' }}>
                 <IconButton 
                   onClick={handleProfileMenuOpen}
-                  sx={{ p: 0, '&:hover': { opacity: 0.8 } }}
+                  sx={{ 
+                    p: 0,
+                    position: 'relative',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: -2,
+                      left: -2,
+                      right: -2,
+                      bottom: -2,
+                      borderRadius: '50%',
+                      background: anchorEl ? 'linear-gradient(45deg, #4DBFB3, #333679)' : 'transparent',
+                      zIndex: -1,
+                      transition: 'all 0.3s ease'
+                    }
+                  }}
                 >
                   <Avatar 
                     src={userData.avatar}
                     alt={userData.name}
                     sx={{ 
-                      width: 40, 
-                      height: 40, 
-                      border: '2px solid #4DBFB3',
+                      width: 44, 
+                      height: 44, 
+                      border: '3px solid white',
                       cursor: 'pointer',
-                      transition: 'all 0.2s',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 15px rgba(14,81,129,0.2)',
                       '&:hover': {
-                        transform: 'scale(1.05)',
-                        boxShadow: '0 2px 8px rgba(14,81,129,0.3)'
+                        transform: 'scale(1.1)',
+                        boxShadow: '0 6px 25px rgba(14,81,129,0.4)',
+                        border: '3px solid #4DBFB3'
                       }
                     }} 
                   />
@@ -437,56 +629,153 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                       position: 'absolute',
                       top: '100%',
                       left: 0,
-                      width: 250,
-                      borderRadius: 2,
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                      zIndex: 9999,
+                      width: 280,
+                      borderRadius: 3,
+                      boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                      zIndex: 10000,
                       overflow: 'hidden',
-                      background: '#ffffff',
-                      border: '1px solid #e0e0e0',
-                      mt: 1
+                      background: 'rgba(255,255,255,0.95)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(77, 191, 179, 0.2)',
+                      mt: 2,
+                      display: 'block',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '3px',
+                        background: 'linear-gradient(90deg, #4DBFB3, #333679)',
+                        zIndex: 1
+                      }
                     }}
                   >
-                    <Box sx={{ p: 2, textAlign: 'center', borderBottom: '1px solid #f0f0f0' }}>
+                    <Box sx={{ 
+                      p: 3, 
+                      textAlign: 'center', 
+                      background: 'linear-gradient(135deg, rgba(77, 191, 179, 0.05) 0%, rgba(51, 54, 121, 0.05) 100%)',
+                      borderBottom: '1px solid rgba(77, 191, 179, 0.1)'
+                    }}>
                       <Avatar 
                         src={userData.avatar}
                         alt={userData.name}
                         sx={{ 
-                          width: 64, 
-                          height: 64, 
-                          mb: 1,
+                          width: 72, 
+                          height: 72, 
+                          mb: 2,
                           mx: 'auto',
-                          border: '2px solid #4DBFB3'
+                          border: '3px solid #4DBFB3',
+                          boxShadow: '0 4px 20px rgba(77, 191, 179, 0.3)'
                         }} 
                       />
-                      <Typography variant="subtitle1" fontWeight={600}>{userData.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">{userData.role}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ color: '#333679', mb: 0.5 }}>
+                        {userData.name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: '#4DBFB3', 
+                        fontWeight: 600,
+                        mb: 0.5
+                      }}>
+                        {userData.role}
+                      </Typography>
+                      <Typography variant="caption" sx={{ 
+                        color: '#666',
+                        fontSize: '12px',
+                        fontWeight: 500
+                      }}>
                         {userData.email}
                       </Typography>
                     </Box>
-                    <List sx={{ p: 0 }}>
-                      <ListItemButton sx={{ '&:hover': { bgcolor: 'rgba(14,81,129,0.05)' } }}>
-                        <ListItemIcon sx={{ minWidth: 36 }}><SettingsIcon fontSize="small" /></ListItemIcon>
-                        <ListItemText primary="إعدادات الحساب" />
+                    
+                    <List sx={{ p: 2 }}>
+                      <ListItemButton sx={{ 
+                        borderRadius: 2,
+                        mb: 0.5,
+                        transition: 'all 0.3s ease',
+                        '&:hover': { 
+                          bgcolor: 'rgba(77, 191, 179, 0.1)',
+                          transform: 'translateX(4px)',
+                          boxShadow: '0 2px 10px rgba(77, 191, 179, 0.2)'
+                        } 
+                      }}>
+                        <ListItemIcon sx={{ 
+                          minWidth: 40,
+                          color: '#4DBFB3'
+                        }}>
+                          <SettingsIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary="إعدادات الحساب" 
+                          sx={{ 
+                            '& .MuiListItemText-primary': {
+                              fontWeight: 600,
+                              color: '#333'
+                            }
+                          }}
+                        />
                       </ListItemButton>
-                      <ListItemButton sx={{ '&:hover': { bgcolor: 'rgba(14,81,129,0.05)' } }}>
-                        <ListItemIcon sx={{ minWidth: 36 }}><NotificationsIcon fontSize="small" /></ListItemIcon>
-                        <ListItemText primary="الإشعارات" />
+                      
+                      <ListItemButton sx={{ 
+                        borderRadius: 2,
+                        mb: 0.5,
+                        transition: 'all 0.3s ease',
+                        '&:hover': { 
+                          bgcolor: 'rgba(77, 191, 179, 0.1)',
+                          transform: 'translateX(4px)',
+                          boxShadow: '0 2px 10px rgba(77, 191, 179, 0.2)'
+                        } 
+                      }}>
+                        <ListItemIcon sx={{ 
+                          minWidth: 40,
+                          color: '#4DBFB3'
+                        }}>
+                          <NotificationsIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary="الإشعارات" 
+                          sx={{ 
+                            '& .MuiListItemText-primary': {
+                              fontWeight: 600,
+                              color: '#333'
+                            }
+                          }}
+                        />
                       </ListItemButton>
-                      <Divider />
+                      
+                      <Divider sx={{ my: 1, borderColor: 'rgba(77, 191, 179, 0.2)' }} />
+                      
                       <ListItemButton 
                         onClick={handleLogout}
-                        sx={{ color: '#f44336', '&:hover': { bgcolor: '#ffebee' } }}
+                        sx={{ 
+                          borderRadius: 2,
+                          color: '#ff6b6b',
+                          transition: 'all 0.3s ease',
+                          '&:hover': { 
+                            bgcolor: 'rgba(255, 107, 107, 0.1)',
+                            transform: 'translateX(4px)',
+                            boxShadow: '0 2px 10px rgba(255, 107, 107, 0.2)'
+                          } 
+                        }}
                       >
-                        <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
+                        <ListItemIcon sx={{ 
+                          minWidth: 40, 
+                          color: 'inherit' 
+                        }}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                             <polyline points="16 17 21 12 16 7"></polyline>
                             <line x1="21" y1="12" x2="9" y2="12"></line>
                           </svg>
                         </ListItemIcon>
-                        <ListItemText primary="تسجيل الخروج" />
+                        <ListItemText 
+                          primary="تسجيل الخروج" 
+                          sx={{ 
+                            '& .MuiListItemText-primary': {
+                              fontWeight: 600
+                            }
+                          }}
+                        />
                       </ListItemButton>
                     </List>
                   </Paper>

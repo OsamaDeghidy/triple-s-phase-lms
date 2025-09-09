@@ -541,59 +541,131 @@ const MyCertificates = () => {
         </Box>
 
       {/* Filters and Search */}
-      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <Box display="flex" gap={1} flexWrap="wrap">
+      <Card sx={{ 
+        mb: 3, 
+        borderRadius: 2, 
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
+      }}>
+        <CardContent sx={{ p: 2 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2, 
+            flexWrap: 'wrap'
+          }}>
+            {/* Search Field */}
+            <Box sx={{ 
+              flex: '1 1 200px',
+              position: 'relative',
+              minWidth: 200
+            }}>
+              <SearchIcon sx={{ 
+                position: 'absolute', 
+                left: 12, 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                color: 'text.secondary',
+                fontSize: '1.2rem'
+              }} />
+              <input
+                type="text"
+                placeholder="ابحث في الشهادات..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 12px 12px 40px',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  backgroundColor: 'white',
+                  transition: 'border-color 0.2s ease',
+                  outline: 'none'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#333679'}
+                onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+              />
+            </Box>
+            
+            {/* Filter Chips */}
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip
                 label="جميع الشهادات"
                 onClick={() => setFilter('all')}
                 color={filter === 'all' ? 'primary' : 'default'}
                 variant={filter === 'all' ? 'filled' : 'outlined'}
+                sx={{ 
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  '&:hover': {
+                    backgroundColor: filter === 'all' ? undefined : 'rgba(51, 54, 121, 0.1)'
+                  }
+                }}
               />
               <Chip
                 label="مؤكدة"
                 onClick={() => setFilter('verified')}
                 color={filter === 'verified' ? 'success' : 'default'}
                 variant={filter === 'verified' ? 'filled' : 'outlined'}
+                sx={{ 
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  '&:hover': {
+                    backgroundColor: filter === 'verified' ? undefined : 'rgba(46, 125, 50, 0.1)'
+                  }
+                }}
               />
               <Chip
                 label="في انتظار التحقق"
                 onClick={() => setFilter('pending')}
                 color={filter === 'pending' ? 'warning' : 'default'}
                 variant={filter === 'pending' ? 'filled' : 'outlined'}
+                sx={{ 
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  '&:hover': {
+                    backgroundColor: filter === 'pending' ? undefined : 'rgba(245, 124, 0, 0.1)'
+                  }
+                }}
               />
             </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box display="flex" gap={1}>
-              <Box flex={1} position="relative">
-                <SearchIcon sx={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'text.secondary' }} />
-                <input
-                  type="text"
-                  placeholder="البحث في الشهادات..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 12px 12px 40px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '14px'
-                  }}
-                />
-              </Box>
-              <Button
-                variant="outlined"
-                onClick={fetchCertificates}
-                startIcon={<RefreshIcon />}
-              >
-                تحديث
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
+            
+            {/* Results Counter */}
+            <Chip 
+              label={`${filteredCertificates.length} من ${certificates.length}`} 
+              color={filteredCertificates.length !== certificates.length ? "secondary" : "primary"}
+              size="small" 
+              variant="outlined"
+              sx={{ 
+                minWidth: 'fit-content',
+                fontWeight: 'bold',
+                borderRadius: 2
+              }}
+            />
+            
+            {/* Refresh Button */}
+            <Button
+              variant="outlined"
+              onClick={fetchCertificates}
+              startIcon={<RefreshIcon />}
+              sx={{
+                borderRadius: 2,
+                borderColor: '#e0e0e0',
+                color: '#666',
+                fontWeight: 600,
+                '&:hover': {
+                  borderColor: '#333679',
+                  backgroundColor: 'rgba(51, 54, 121, 0.1)',
+                  color: '#333679'
+                }
+              }}
+            >
+              تحديث
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Certificates Table */}
       {filteredCertificates.length === 0 ? (

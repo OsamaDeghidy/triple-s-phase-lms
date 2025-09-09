@@ -222,7 +222,7 @@ const TeacherDashboard = () => {
   };
 
   const handleCourseView = (courseId) => {
-    navigate(`/teacher/courses/${courseId}`);
+    navigate(`/courses/${courseId}`);
   };
 
   const handleCourseEdit = (courseId) => {
