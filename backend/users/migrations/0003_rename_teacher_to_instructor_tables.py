@@ -4,19 +4,36 @@ from django.db import migrations
 
 
 def rename_tables(apps, schema_editor):
-    # Rename tables
-    schema_editor.execute('ALTER TABLE users_teacher RENAME TO users_instructor')
-    schema_editor.execute('ALTER TABLE users_teacherapplication RENAME TO users_instructorapplication')
+    # Check if the tables exist before trying to rename them
+    cursor = schema_editor.connection.cursor()
     
-    # Update any foreign key references
-    # Note: SQLite doesn't support direct foreign key constraint modifications,
-    # so we'll need to handle this in the reverse migration if needed
+    # Check if users_teacher table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users_teacher';")
+    if cursor.fetchone():
+        schema_editor.execute('ALTER TABLE users_teacher RENAME TO users_instructor')
+    
+    # Check if users_teacherapplication table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users_teacherapplication';")
+    if cursor.fetchone():
+        schema_editor.execute('ALTER TABLE users_teacherapplication RENAME TO users_instructorapplication')
+    
+    # If the tables don't exist, this migration is essentially a no-op
+    # The tables were already created with the correct names in 0001_initial
 
 
 def reverse_rename_tables(apps, schema_editor):
-    # Reverse the renaming
-    schema_editor.execute('ALTER TABLE users_instructor RENAME TO users_teacher')
-    schema_editor.execute('ALTER TABLE users_instructorapplication RENAME TO users_teacherapplication')
+    # Check if the tables exist before trying to rename them back
+    cursor = schema_editor.connection.cursor()
+    
+    # Check if users_instructor table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users_instructor';")
+    if cursor.fetchone():
+        schema_editor.execute('ALTER TABLE users_instructor RENAME TO users_teacher')
+    
+    # Check if users_instructorapplication table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users_instructorapplication';")
+    if cursor.fetchone():
+        schema_editor.execute('ALTER TABLE users_instructorapplication RENAME TO users_teacherapplication')
 
 
 class Migration(migrations.Migration):
