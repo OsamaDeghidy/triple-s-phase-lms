@@ -218,17 +218,10 @@ const ActionButton = styled(IconButton)(({ theme, variant }) => ({
   borderRadius: '14px',
   transition: 'all 0.3s ease',
   ...(variant === 'like' && {
-<<<<<<< HEAD
     backgroundColor: alpha('#663399', 0.1),
     color: '#663399',
-  '&:hover': {
-      backgroundColor: '#663399',
-=======
-    backgroundColor: alpha('#1976d2', 0.1),
-    color: '#1976d2',
     '&:hover': {
-      backgroundColor: '#1976d2',
->>>>>>> 7db570a3ad443ba93789ccea3151a454c43e43bb
+      backgroundColor: '#663399',
       color: 'white',
       transform: 'scale(1.1)',
     }
@@ -784,21 +777,12 @@ const ArticlesPage = () => {
                   '&::before': {
                     content: '""',
                     position: 'absolute',
-<<<<<<< HEAD
                     top: '-2px',
                     left: '-2px',
                     right: '-2px',
                     bottom: '-2px',
                     background: 'linear-gradient(45deg, #333679, #1a5f8a, #0a3d62)',
                     borderRadius: '25px',
-=======
-                    top: '-3px',
-                    left: '-3px',
-                    right: '-3px',
-                    bottom: '-3px',
-                    background: 'linear-gradient(45deg, #0e5181, #1a5f8a, #0a3d62)',
-                    borderRadius: '28px',
->>>>>>> 7db570a3ad443ba93789ccea3151a454c43e43bb
                     zIndex: -1,
                     opacity: 0.4,
                     animation: `${pulse} 3s ease-in-out infinite`,
@@ -811,13 +795,8 @@ const ArticlesPage = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-<<<<<<< HEAD
                           <SearchIcon sx={{ 
                             color: '#333679', 
-=======
-                          <SearchIcon sx={{
-                            color: '#0e5181',
->>>>>>> 7db570a3ad443ba93789ccea3151a454c43e43bb
                             ml: 1,
                             fontSize: '1.2rem',
                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
@@ -864,21 +843,12 @@ const ArticlesPage = () => {
         <Container sx={{ py: 8 }}>
           <FilterPaper sx={{ mb: 6 }}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-<<<<<<< HEAD
               <Typography variant="h6" sx={{ 
                 fontWeight: 700, 
                 mr: 2, 
                 color: '#663399',
-                        display: 'flex',
-                        alignItems: 'center',
-=======
-              <Typography variant="h6" sx={{
-                fontWeight: 700,
-                mr: 2,
-                color: '#1976d2',
                 display: 'flex',
                 alignItems: 'center',
->>>>>>> 7db570a3ad443ba93789ccea3151a454c43e43bb
                 gap: 1
               }}>
                 <TrendingUpIcon />
