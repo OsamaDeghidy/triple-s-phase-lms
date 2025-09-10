@@ -51,46 +51,43 @@ class Category(models.Model):
         """Return count of active, published courses in this category"""
         return self.courses.filter(is_active=True, status='published').count()
     
-    @classmethod
-    def create_default_categories(cls):
-        """Create default categories if they don't exist"""
-        default_categories = [
-            {
-                'name': 'الدورات',
-                'slug': 'courses',
-                'description': 'دورات تعليمية متنوعة في مختلف المجالات',
-                'order': 1,
-                'is_default': True
-            },
-            {
-                'name': 'التدريب الإلكتروني',
-                'slug': 'e-learning',
-                'description': 'برامج تدريبية إلكترونية تفاعلية',
-                'order': 2,
-                'is_default': True
-            },
-            {
-                'name': 'الدبلومات',
-                'slug': 'diplomas',
-                'description': 'برامج دبلومة متخصصة وشهادات مهنية',
-                'order': 3,
-                'is_default': True
-            }
-        ]
-        
-        for category_data in default_categories:
-            category, created = cls.objects.get_or_create(
-                slug=category_data['slug'],
-                defaults=category_data
-            )
-            if created:
-                print(f"Created default category: {category.name}")
-            else:
-                # Update existing category to ensure it's marked as default
-                if not category.is_default:
-                    category.is_default = True
-                    category.save(update_fields=['is_default'])
-                    print(f"Updated category to default: {category.name}")
+
+
+class SubCategory(models.Model):
+    """Sub-categories for organizing courses within main categories"""
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True, verbose_name=_('Slug'))
+    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='subcategories',
+        verbose_name=_('Category')
+    )
+    image = models.ImageField(upload_to='subcategories/', blank=True, null=True, verbose_name=_('Image'))
+    is_active = models.BooleanField(default=True, verbose_name=_('Is Active'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
+
+    class Meta:
+        verbose_name = _('SubCategory')
+        verbose_name_plural = _('SubCategories')
+        ordering = ['category', 'order', 'name']
+        unique_together = ['category', 'name']
+
+    def __str__(self):
+        return f"{self.category.name} - {self.name}" if self.category else self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    @property
+    def active_courses_count(self):
+        """Return count of active, published courses in this subcategory"""
+        return self.courses.filter(is_active=True, status='published').count()
 
 
 class Tag(models.Model):
@@ -164,6 +161,15 @@ class Course(models.Model):
         blank=True,
         related_name='courses',
         verbose_name=_('Category')
+    )
+    subcategory = models.ForeignKey(
+        SubCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses',
+        verbose_name=_('SubCategory'),
+        help_text=_('Optional subcategory for more specific course organization')
     )
     tags = models.ManyToManyField(
         Tag,
@@ -303,6 +309,10 @@ class Course(models.Model):
         return self.title or self.slug or str(self.id)
     
     def save(self, *args, **kwargs):
+        # Validate subcategory belongs to the same category
+        if self.subcategory and self.category and self.subcategory.category != self.category:
+            raise ValueError("SubCategory must belong to the same Category as the course")
+        
         # Set published_at when status changes to published
         if self.status == 'published' and not self.published_at:
             self.published_at = timezone.now()
@@ -559,9 +569,3 @@ def update_course_slug(sender, instance, created, **kwargs):
         # Update the instance in memory
         instance.slug = slug
 
-@receiver(post_save, sender=Category)
-def ensure_default_categories(sender, instance, created, **kwargs):
-    """Ensure default categories exist after any category is saved"""
-    if created:
-        # Create default categories if they don't exist
-        Category.create_default_categories()

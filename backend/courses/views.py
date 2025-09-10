@@ -17,10 +17,10 @@ from datetime import timedelta, datetime
 from django.core.paginator import Paginator
 import logging
 
-from .models import Course, Category, Tag, Enrollment
+from .models import Course, Category, SubCategory, Tag, Enrollment
 from users.models import Instructor, Profile, User
 from .serializers import (
-    CategorySerializer, TagsSerializer, CourseBasicSerializer, 
+    CategorySerializer, SubCategorySerializer, TagsSerializer, CourseBasicSerializer, 
     CourseDetailSerializer, CourseCreateSerializer, CourseUpdateSerializer,
     CourseEnrollmentSerializer, DashboardStatsSerializer, SearchSerializer
 )
@@ -36,6 +36,18 @@ class CategoryViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
 
+class SubCategoryViewSet(ReadOnlyModelViewSet):
+    """عرض التصنيفات الفرعية"""
+    queryset = SubCategory.objects.filter(is_active=True)
+    serializer_class = SubCategorySerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category']
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at', 'order']
+    ordering = ['category', 'order', 'name']
+
+
 class TagsViewSet(ReadOnlyModelViewSet):
     """عرض الوسوم"""
     queryset = Tag.objects.all()
@@ -45,10 +57,10 @@ class TagsViewSet(ReadOnlyModelViewSet):
 
 class CourseViewSet(ModelViewSet):
     """إدارة الدورات"""
-    queryset = Course.objects.select_related('category').prefetch_related('instructors', 'instructors__profile', 'tags', 'reviews')
+    queryset = Course.objects.select_related('category', 'subcategory').prefetch_related('instructors', 'instructors__profile', 'tags', 'reviews')
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category', 'level', 'status']
+    filterset_fields = ['category', 'subcategory', 'level', 'status']
     search_fields = ['title', 'description', 'short_description']
     ordering_fields = ['created_at', 'updated_at', 'title', 'price', 'average_rating']
     ordering = ['-created_at']
