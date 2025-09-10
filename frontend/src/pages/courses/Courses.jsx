@@ -20,6 +20,7 @@ import {
   Alert,
   Snackbar
 } from '@mui/material';
+import { useSelector } from 'react-redux';
 import { 
   Search, 
   FilterList, 
@@ -459,6 +460,7 @@ const AnimatedBackgroundComponent = () => (
 
 const Courses = () => {
   const theme = useTheme();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -495,30 +497,38 @@ const Courses = () => {
         setCourses(coursesData);
         setCategories(categoriesData);
         
-        // Load cart items
-        try {
-          const cartResponse = await cartAPI.getCart();
-          const cartItemsMap = {};
-          if (cartResponse.items) {
-            cartResponse.items.forEach(item => {
-              cartItemsMap[item.course.id] = true;
-            });
+        // Load cart items only if user is authenticated
+        if (isAuthenticated) {
+          try {
+            const cartResponse = await cartAPI.getCart();
+            const cartItemsMap = {};
+            if (cartResponse.items) {
+              cartResponse.items.forEach(item => {
+                cartItemsMap[item.course.id] = true;
+              });
+            }
+            setCartItems(cartItemsMap);
+          } catch (cartError) {
+            console.log('Cart not available:', cartError);
           }
-          setCartItems(cartItemsMap);
-        } catch (cartError) {
-          console.log('Cart not available:', cartError);
         }
         
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('حدث خطأ أثناء تحميل الدورات. يرجى المحاولة مرة أخرى.');
+        // Don't show error for non-authenticated users trying to access courses
+        if (err.response?.status === 401 && !isAuthenticated) {
+          console.log('User not authenticated, showing public courses only');
+          setError(null);
+        } else {
+          setError('حدث خطأ أثناء تحميل الدورات. يرجى المحاولة مرة أخرى.');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   const filteredCourses = courses.filter(course => {
     // Search filter

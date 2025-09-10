@@ -932,6 +932,7 @@ const Header = () => {
               },
             }}>
               {navItems.map((item) => {
+                // Only hide items that require authentication and user is not authenticated
                 if (item.auth && !isAuthenticated) return null;
 
                 if (item.dropdown) {

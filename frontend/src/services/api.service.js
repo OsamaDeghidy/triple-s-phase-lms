@@ -44,6 +44,24 @@ api.interceptors.response.use(
     console.log('Response interceptor - Error:', error.response?.status, error.response?.data, error.config?.url);
     
     if (error.response?.status === 401) {
+      // Check if this is a public endpoint that shouldn't require authentication
+      const publicEndpoints = [
+        '/api/courses/public/',
+        '/api/courses/categories/',
+        '/api/courses/courses/',
+        '/api/articles/',
+        '/api/certificates/verify/'
+      ];
+      
+      const isPublicEndpoint = publicEndpoints.some(endpoint => 
+        error.config?.url?.includes(endpoint)
+      );
+      
+      if (isPublicEndpoint) {
+        console.log('Public endpoint 401 - not redirecting to login');
+        return Promise.reject(error);
+      }
+      
       console.log('Unauthorized access - redirecting to login');
       // Handle unauthorized access
       localStorage.removeItem('token');

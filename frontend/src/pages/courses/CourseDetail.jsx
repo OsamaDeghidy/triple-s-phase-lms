@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
+import { useSelector } from 'react-redux';
 import { 
   Accordion,
   AccordionSummary,
@@ -839,6 +840,7 @@ const CourseDetail = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1185,8 +1187,31 @@ const CourseDetail = () => {
         console.log('Fetching course data for ID:', id);
         
         // Fetch course details
-        const courseData = await courseAPI.getCourseById(id);
-        console.log('Course data from API:', courseData);
+        let courseData;
+        try {
+          courseData = await courseAPI.getCourseById(id);
+          console.log('Course data from API:', courseData);
+        } catch (error) {
+          // If course details require authentication, try to get basic info from public courses
+          if (error.response?.status === 401) {
+            console.log('Course details require authentication, fetching from public courses...');
+            try {
+              const publicCoursesResponse = await courseAPI.getCourses({ status: 'published' });
+              const publicCourses = publicCoursesResponse.results || publicCoursesResponse;
+              courseData = publicCourses.find(course => course.id === parseInt(id));
+              
+              if (!courseData) {
+                throw new Error('Course not found in public courses');
+              }
+              console.log('Course data from public courses:', courseData);
+            } catch (publicError) {
+              console.error('Error fetching from public courses:', publicError);
+              throw error; // Re-throw original error
+            }
+          } else {
+            throw error;
+          }
+        }
         
         // Fetch related courses
         let relatedCoursesData = [];
@@ -1202,9 +1227,12 @@ const CourseDetail = () => {
         // Fetch course modules from content API (real data)
         let modulesData = [];
         let isUserEnrolled = false;
-        try {
-          console.log('Fetching modules from content API for course:', id);
-          const modulesResponse = await contentAPI.getModules(id);
+        
+        // Only try to fetch modules if user is authenticated
+        if (isAuthenticated) {
+          try {
+            console.log('Fetching modules from content API for course:', id);
+            const modulesResponse = await contentAPI.getModules(id);
           console.log('Content API modules response:', modulesResponse);
           
           // Handle different response formats
@@ -1280,9 +1308,10 @@ const CourseDetail = () => {
             console.warn('Could not fetch course modules from course API:', courseModulesError);
             if (courseModulesError.response && courseModulesError.response.status === 403) {
               isUserEnrolled = false;
+            }
+            modulesData = [];
           }
-          modulesData = [];
-          }
+        }
         }
         
         // Fetch lessons, assignments, quizzes, and exams for each module
@@ -1371,9 +1400,12 @@ const CourseDetail = () => {
         // Fetch course reviews from reviews API (real data)
         let reviewsData = [];
         let ratingStats = null;
-        try {
-          console.log('Fetching reviews from reviews API for course:', id);
-          const reviewsResponse = await reviewsAPI.getCourseReviews(id);
+        
+        // Only try to fetch reviews if user is authenticated
+        if (isAuthenticated) {
+          try {
+            console.log('Fetching reviews from reviews API for course:', id);
+            const reviewsResponse = await reviewsAPI.getCourseReviews(id);
           console.log('Reviews API response:', reviewsResponse);
           
           if (reviewsResponse && reviewsResponse.results) {
@@ -1398,15 +1430,18 @@ const CourseDetail = () => {
             reviewsData = [];
           }
         }
+        }
 
-        // Fetch course rating statistics
-        try {
-          const ratingResponse = await reviewsAPI.getCourseRating(id);
-          console.log('Course rating stats:', ratingResponse);
-          ratingStats = ratingResponse;
-        } catch (error) {
-          console.warn('Could not fetch course rating stats:', error);
-          ratingStats = null;
+        // Fetch course rating statistics (only if authenticated)
+        if (isAuthenticated) {
+          try {
+            const ratingResponse = await reviewsAPI.getCourseRating(id);
+            console.log('Course rating stats:', ratingResponse);
+            ratingStats = ratingResponse;
+          } catch (error) {
+            console.warn('Could not fetch course rating stats:', error);
+            ratingStats = null;
+          }
         }
         
         // Transform API data to match expected format
@@ -1429,7 +1464,12 @@ const CourseDetail = () => {
           } else if (error.response.status === 403) {
             errorMessage = 'ليس لديك صلاحية لعرض هذه الدورة';
           } else if (error.response.status === 401) {
-            errorMessage = 'يرجى تسجيل الدخول لعرض هذه الدورة';
+            // Don't show login required message for public course details
+            if (!isAuthenticated) {
+              errorMessage = 'هذه الدورة غير متاحة للعرض العام. يرجى تسجيل الدخول لعرض التفاصيل الكاملة.';
+            } else {
+              errorMessage = 'يرجى تسجيل الدخول لعرض هذه الدورة';
+            }
           } else if (error.response.data?.detail) {
             errorMessage = error.response.data.detail;
           } else if (error.response.data?.error) {
@@ -1453,7 +1493,7 @@ const CourseDetail = () => {
     if (id) {
       fetchCourseData();
     }
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   // Transform API data to match expected format
   const transformCourseData = (apiCourse, modulesData = [], reviewsData = [], isUserEnrolled = false, ratingStats = null) => {
@@ -2114,9 +2154,29 @@ const CourseDetail = () => {
             {error}
           </Typography>
         </Alert>
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {!isAuthenticated && error.includes('تسجيل الدخول') && (
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large"
+              component={Link}
+              to="/login"
+              sx={{ 
+                px: 4,
+                py: 1.5,
+                borderRadius: 3,
+                background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                }
+              }}
+            >
+              تسجيل الدخول
+            </Button>
+          )}
           <Button 
-            variant="contained" 
+            variant="outlined" 
             color="primary" 
             size="large"
             onClick={() => window.location.reload()}

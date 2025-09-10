@@ -729,23 +729,23 @@ const MyCourses = () => {
                     >
                       <TableCell sx={{ textAlign: 'center' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                          <Box
-                            component="img"
-                            src={course.image || 'https://via.placeholder.com/120x90/3498db/ffffff?text=Course'}
-                            alt={course.title}
-                            sx={{ 
-                              width: 120, 
-                              height: 90,
-                              borderRadius: 2,
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                              objectFit: 'cover',
-                              transition: 'transform 0.2s ease-in-out',
-                              '&:hover': {
-                                transform: 'scale(1.05)',
-                                boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
-                              }
-                            }}
-                          />
+                        <Box
+                          component="img"
+                          src={course.image || 'https://via.placeholder.com/120x90/3498db/ffffff?text=Course'}
+                          alt={course.title}
+                          sx={{ 
+                            width: 120, 
+                            height: 90,
+                            borderRadius: 2,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            objectFit: 'cover',
+                            transition: 'transform 0.2s ease-in-out',
+                            '&:hover': {
+                              transform: 'scale(1.05)',
+                              boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
+                            }
+                          }}
+                        />
                         </Box>
                       </TableCell>
                       <TableCell sx={{ textAlign: 'center' }}>
@@ -785,16 +785,16 @@ const MyCourses = () => {
                       </TableCell>
                       <TableCell sx={{ textAlign: 'center' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                          <Chip 
-                            label={course.category?.name || course.category_name || 'غير محدد'} 
-                            size="small" 
-                            sx={{ 
-                              fontWeight: 'bold',
-                              bgcolor: '#3498db',
-                              color: 'white',
-                              fontSize: '0.75rem'
-                            }}
-                          />
+                        <Chip 
+                          label={course.category?.name || course.category_name || 'غير محدد'} 
+                          size="small" 
+                          sx={{ 
+                            fontWeight: 'bold',
+                            bgcolor: '#3498db',
+                            color: 'white',
+                            fontSize: '0.75rem'
+                          }}
+                        />
                         </Box>
                       </TableCell>
                       <TableCell sx={{ textAlign: 'center' }}>
