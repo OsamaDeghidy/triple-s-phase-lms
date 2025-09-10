@@ -23,11 +23,106 @@ import {
   Payment as PaymentIcon,
   Receipt as ReceiptIcon
 } from '@mui/icons-material';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, keyframes } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { cartAPI } from '../../services/courseService';
 import { paymentAPI } from '../../services/api.service';
+import BackGroundImage from '../../assets/images/BackGround.png';
+import BGTriangleImage from '../../assets/images/BGtriangle.png';
+
+// Animation keyframes
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const triangleFloat = keyframes`
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(-1deg); }
+  75% { transform: translateY(-20px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
+const AnimatedTriangle = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  bottom: '20px',
+  left: '20px',
+  width: '250px',
+  height: '250px',
+  backgroundImage: `url(${BGTriangleImage})`,
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  opacity: 0.7,
+  zIndex: 2,
+  animation: `${triangleFloat} 4s ease-in-out infinite`,
+  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+  '&:hover': {
+    opacity: 1,
+    transform: 'scale(1.1)',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '200px',
+    height: '200px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '160px',
+    height: '160px',
+    bottom: '15px',
+    left: '15px',
+  },
+  [theme.breakpoints.down('xs')]: {
+    width: '120px',
+    height: '120px',
+  }
+}));
+
+const HeroSection = styled(Box)(({ theme }) => ({
+  background: `url(${BackGroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundAttachment: 'fixed',
+  color: 'white',
+  padding: theme.spacing(8, 0, 4),
+  position: 'relative',
+  overflow: 'hidden',
+  minHeight: '40vh',
+  display: 'flex',
+  alignItems: 'center',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
+      url(${BackGroundImage})
+    `,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    filter: 'brightness(1.2) contrast(1.1) saturate(1.1)',
+    zIndex: 1,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: '200%',
+    height: '200%',
+    background: `radial-gradient(circle, ${alpha('#ffffff', 0.08)} 0%, transparent 70%)`,
+    transform: 'translate(-50%, -50%)',
+    animation: `${float} 6s ease-in-out infinite`,
+    zIndex: 2,
+  }
+}));
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
@@ -106,12 +201,12 @@ const CartPage = () => {
       navigate('/login', { state: { from: '/cart' } });
       return;
     }
-    
+
     if (cartItems.length === 0) {
       alert('السلة فارغة. يرجى إضافة دورة إلى السلة أولاً.');
       return;
     }
-    
+
     try {
       setProcessingPayment(true);
       const { url } = await paymentAPI.createMoyasarPayment();
@@ -135,17 +230,24 @@ const CartPage = () => {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      
+
+      {/* Hero Section */}
+      <HeroSection>
+        <AnimatedTriangle />
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3 }}>
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h4" component="h1" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
+              <CartIcon color="inherit" />
+              سلة التسوق
+            </Typography>
+          </Box>
+        </Container>
+      </HeroSection>
+
       <Container maxWidth="lg" sx={{ py: 4, flex: 1 }}>
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton onClick={() => navigate(-1)} sx={{ color: 'primary.main' }}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h4" component="h1" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CartIcon color="primary" />
-            سلة التسوق
-          </Typography>
-        </Box>
 
         {cartItems.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -156,8 +258,8 @@ const CartPage = () => {
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
               لم تقم بإضافة أي دورات إلى السلة بعد
             </Typography>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               size="large"
               onClick={() => navigate('/courses')}
               sx={{ borderRadius: 3, px: 4, py: 1.5 }}
@@ -174,19 +276,19 @@ const CartPage = () => {
                     <CartIcon color="primary" />
                     الدورات المضافة ({cartItems.length})
                   </Typography>
-                  
+
                   {cartItems.map((item) => (
-                    <Box key={item.course.id} sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      p: 2, 
-                      mb: 2, 
-                      border: '1px solid', 
-                      borderColor: 'divider', 
-                      borderRadius: 2 
+                    <Box key={item.course.id} sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      p: 2,
+                      mb: 2,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2
                     }}>
-                      <Avatar 
-                        src={item.course.image} 
+                      <Avatar
+                        src={item.course.image}
                         alt={item.course.title}
                         sx={{ width: 80, height: 80, mr: 2 }}
                       />
@@ -198,11 +300,11 @@ const CartPage = () => {
                           {item.course.instructor}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Chip 
-                            label={item.course.level} 
-                            size="small" 
-                            color="primary" 
-                            variant="outlined" 
+                          <Chip
+                            label={item.course.level}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
                           />
                           <Typography variant="body2" color="text.secondary">
                             {item.course.duration}
@@ -219,8 +321,8 @@ const CartPage = () => {
                           </Typography>
                         )}
                       </Box>
-                      <IconButton 
-                        color="error" 
+                      <IconButton
+                        color="error"
                         onClick={() => removeFromCart(item.id)}
                         sx={{ ml: 1 }}
                       >
@@ -239,7 +341,7 @@ const CartPage = () => {
                     <ReceiptIcon color="primary" />
                     ملخص الطلب
                   </Typography>
-                  
+
                   <Box sx={{ mb: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body1">عدد الدورات:</Typography>
@@ -267,7 +369,7 @@ const CartPage = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <PaymentButton
                     variant="contained"
                     onClick={handleCheckout}
@@ -276,7 +378,7 @@ const CartPage = () => {
                   >
                     {processingPayment ? 'جاري التوجيه...' : 'إتمام الشراء'}
                   </PaymentButton>
-                  
+
                   <Button
                     variant="outlined"
                     fullWidth

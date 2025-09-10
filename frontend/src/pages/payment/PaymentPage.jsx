@@ -27,11 +27,106 @@ import {
   AccessTime as TimeIcon,
   Group as GroupIcon
 } from '@mui/icons-material';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, keyframes } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { courseAPI } from '../../services/courseService';
 import { paymentAPI } from '../../services/api.service';
+import BackGroundImage from '../../assets/images/BackGround.png';
+import BGTriangleImage from '../../assets/images/BGtriangle.png';
+
+// Animation keyframes
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const triangleFloat = keyframes`
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(-1deg); }
+  75% { transform: translateY(-20px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
+const AnimatedTriangle = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  bottom: '20px',
+  left: '20px',
+  width: '250px',
+  height: '250px',
+  backgroundImage: `url(${BGTriangleImage})`,
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  opacity: 0.7,
+  zIndex: 2,
+  animation: `${triangleFloat} 4s ease-in-out infinite`,
+  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+  '&:hover': {
+    opacity: 1,
+    transform: 'scale(1.1)',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '200px',
+    height: '200px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '160px',
+    height: '160px',
+    bottom: '15px',
+    left: '15px',
+  },
+  [theme.breakpoints.down('xs')]: {
+    width: '120px',
+    height: '120px',
+  }
+}));
+
+const HeroSection = styled(Box)(({ theme }) => ({
+  background: `url(${BackGroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundAttachment: 'fixed',
+  color: 'white',
+  padding: theme.spacing(8, 0, 4),
+  position: 'relative',
+  overflow: 'hidden',
+  minHeight: '40vh',
+  display: 'flex',
+  alignItems: 'center',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
+      url(${BackGroundImage})
+    `,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    filter: 'brightness(1.2) contrast(1.1) saturate(1.1)',
+    zIndex: 1,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: '200%',
+    height: '200%',
+    background: `radial-gradient(circle, ${alpha('#ffffff', 0.08)} 0%, transparent 70%)`,
+    transform: 'translate(-50%, -50%)',
+    animation: `${float} 6s ease-in-out infinite`,
+    zIndex: 2,
+  }
+}));
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 3,
@@ -143,10 +238,10 @@ const PaymentPage = () => {
       navigate('/login', { state: { from: `/payment/${courseId}` } });
       return;
     }
-    
+
     try {
       setProcessingPayment(true);
-      
+
       // Create direct payment for the course
       const { url } = await paymentAPI.createCoursePayment(courseId);
       window.location.href = url;
@@ -172,10 +267,10 @@ const PaymentPage = () => {
 
   if (authLoading || loading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         minHeight: '60vh',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
       }}>
@@ -186,10 +281,10 @@ const PaymentPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         minHeight: '60vh',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
       }}>
@@ -206,8 +301,8 @@ const PaymentPage = () => {
             الدورة غير موجودة
           </Typography>
         </Alert>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={() => navigate('/courses')}
           startIcon={<ArrowBack />}
           sx={{ borderRadius: 3, px: 4, py: 1.5 }}
@@ -219,60 +314,65 @@ const PaymentPage = () => {
   }
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      minHeight: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column' 
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <Header />
-      
+
+      {/* Hero Section */}
+      <HeroSection>
+        <AnimatedTriangle />
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3 }}>
+          <Box sx={{ mb: 6, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton
+              onClick={() => navigate(-1)}
+              sx={{
+                color: 'white',
+                background: alpha('#fff', 0.2),
+                backdropFilter: 'blur(10px)',
+                '&:hover': {
+                  background: alpha('#fff', 0.3),
+                  transform: 'scale(1.1)',
+                }
+              }}
+            >
+              <ArrowBack />
+            </IconButton>
+            <Typography
+              variant="h3"
+              component="h1"
+              fontWeight={800}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                color: 'white',
+                textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+              }}
+            >
+              <PaymentIcon sx={{ fontSize: 40 }} />
+              إتمام الشراء
+            </Typography>
+          </Box>
+        </Container>
+      </HeroSection>
+
       <Container maxWidth="lg" sx={{ py: 6, flex: 1 }}>
-        <Box sx={{ mb: 6, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton 
-            onClick={() => navigate(-1)} 
-            sx={{ 
-              color: '#663399',
-              background: alpha('#fff', 0.8),
-              backdropFilter: 'blur(10px)',
-              '&:hover': {
-                background: alpha('#fff', 0.9),
-                transform: 'scale(1.1)',
-              }
-            }}
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography 
-            variant="h3" 
-            component="h1" 
-            fontWeight={800} 
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #333679 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            <PaymentIcon sx={{ fontSize: 40 }} />
-            إتمام الشراء
-          </Typography>
-        </Box>
 
         <Grid container spacing={4}>
           <Grid xs={12} lg={8}>
             <StyledCard>
               <CardContent>
-                <Typography 
-                  variant="h5" 
-                  gutterBottom 
-                  sx={{ 
-                    mb: 4, 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{
+                    mb: 4,
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: 2,
                     fontWeight: 700,
                     color: '#663399'
@@ -281,45 +381,45 @@ const PaymentPage = () => {
                   <ReceiptIcon sx={{ fontSize: 28 }} />
                   معلومات الدورة
                 </Typography>
-                
+
                 <CourseCard elevation={0}>
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3 }}>
-                  <Avatar 
-                    src={course.image} 
-                    alt={course.title}
-                      sx={{ 
-                        width: 120, 
-                        height: 120, 
+                    <Avatar
+                      src={course.image}
+                      alt={course.title}
+                      sx={{
+                        width: 120,
+                        height: 120,
                         border: '4px solid',
                         borderColor: '#663399',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                       }}
-                  />
-                  <Box sx={{ flex: 1 }}>
+                    />
+                    <Box sx={{ flex: 1 }}>
                       <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-                      {course.title}
-                    </Typography>
+                        {course.title}
+                      </Typography>
                       <Typography variant="body1" color="text.secondary" sx={{ mb: 2, fontSize: '1.1rem' }}>
-                      {course.instructor}
-                    </Typography>
-                      
+                        {course.instructor}
+                      </Typography>
+
                       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 3 }}>
-                      <Chip 
-                        label={course.level} 
-                        color="primary" 
+                        <Chip
+                          label={course.level}
+                          color="primary"
                           variant="filled"
                           sx={{ fontWeight: 600 }}
-                      />
+                        />
                         <FeatureBox>
                           <TimeIcon fontSize="small" />
-                        {course.duration}
+                          {course.duration}
                         </FeatureBox>
                         <FeatureBox>
                           <GroupIcon fontSize="small" />
-                        {course.total_enrollments || 0} مشترك
+                          {course.total_enrollments || 0} مشترك
                         </FeatureBox>
-                  </Box>
-                </Box>
+                      </Box>
+                    </Box>
 
                     <Box sx={{ textAlign: 'center', minWidth: 120 }}>
                       <Typography variant="h4" color="primary" fontWeight={800} sx={{ mb: 1 }}>
@@ -329,10 +429,10 @@ const PaymentPage = () => {
                         ريال سعودي
                       </Typography>
                       {course.discount_price && (
-                        <Typography 
-                          variant="body2" 
-                          color="error.main" 
-                          sx={{ 
+                        <Typography
+                          variant="body2"
+                          color="error.main"
+                          sx={{
                             textDecoration: 'line-through',
                             fontWeight: 600
                           }}
@@ -344,9 +444,9 @@ const PaymentPage = () => {
                   </Box>
                 </CourseCard>
 
-                <Alert 
-                  severity="info" 
-                  sx={{ 
+                <Alert
+                  severity="info"
+                  sx={{
                     mt: 4,
                     borderRadius: 3,
                     background: alpha('#e3f2fd', 0.8),
@@ -356,7 +456,7 @@ const PaymentPage = () => {
                 >
                   <SecurityIcon sx={{ mr: 1, color: '#663399' }} />
                   <Typography variant="body1" fontWeight={600}>
-                  جميع المدفوعات آمنة ومشفرة عبر بوابة Moyasar
+                    جميع المدفوعات آمنة ومشفرة عبر بوابة Moyasar
                   </Typography>
                 </Alert>
               </CardContent>
@@ -365,28 +465,28 @@ const PaymentPage = () => {
 
           <Grid xs={12} lg={4}>
             <Box sx={{ position: 'sticky', top: 24 }}>
-            <StyledCard>
-              <CardContent>
-                  <Typography 
-                    variant="h5" 
-                    gutterBottom 
-                    sx={{ 
-                      mb: 4, 
-                      display: 'flex', 
-                      alignItems: 'center', 
+              <StyledCard>
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                      mb: 4,
+                      display: 'flex',
+                      alignItems: 'center',
                       gap: 2,
                       fontWeight: 700,
                       color: '#663399'
                     }}
                   >
                     <ReceiptIcon sx={{ fontSize: 28 }} />
-                  ملخص الطلب
-                </Typography>
-                
+                    ملخص الطلب
+                  </Typography>
+
                   <Box sx={{ mb: 4 }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
+                    <Box sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       mb: 2,
                       p: 2,
                       borderRadius: 2,
@@ -394,14 +494,14 @@ const PaymentPage = () => {
                     }}>
                       <Typography variant="body1" fontWeight={600}>سعر الدورة:</Typography>
                       <Typography variant="body1" fontWeight={700} color="primary">
-                      {parseFloat(course.discount_price || course.price).toFixed(2)} ر.س
-                    </Typography>
-                  </Box>
-                    
-                  {course.discount_price && (
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
+                        {parseFloat(course.discount_price || course.price).toFixed(2)} ر.س
+                      </Typography>
+                    </Box>
+
+                    {course.discount_price && (
+                      <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
                         mb: 2,
                         p: 1.5,
                         borderRadius: 2,
@@ -409,16 +509,16 @@ const PaymentPage = () => {
                       }}>
                         <Typography variant="body2" color="success.main" fontWeight={600}>
                           التوفير:
-                      </Typography>
+                        </Typography>
                         <Typography variant="body2" color="success.main" fontWeight={700}>
                           {(parseFloat(course.price) - parseFloat(course.discount_price)).toFixed(2)} ر.س
-                      </Typography>
-                    </Box>
-                  )}
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
+                        </Typography>
+                      </Box>
+                    )}
+
+                    <Box sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       mb: 2,
                       p: 2,
                       borderRadius: 2,
@@ -426,42 +526,42 @@ const PaymentPage = () => {
                     }}>
                       <Typography variant="body1" fontWeight={600}>الضريبة (15%):</Typography>
                       <Typography variant="body1" fontWeight={700} color="warning.main">
-                      {(parseFloat(course.discount_price || course.price) * 0.15).toFixed(2)} ر.س
-                    </Typography>
-                  </Box>
-                    
+                        {(parseFloat(course.discount_price || course.price) * 0.15).toFixed(2)} ر.س
+                      </Typography>
+                    </Box>
+
                     <Divider sx={{ my: 3, borderWidth: 2 }} />
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
+
+                    <Box sx={{
+                      display: 'flex',
                       justifyContent: 'space-between',
                       p: 3,
                       borderRadius: 3,
                       background: 'linear-gradient(135deg, #667eea 0%, #333679 100%)',
                       color: 'white'
                     }}>
-                    <Typography variant="h6" fontWeight={700}>المجموع الكلي:</Typography>
+                      <Typography variant="h6" fontWeight={700}>المجموع الكلي:</Typography>
                       <Typography variant="h5" fontWeight={800}>
-                      {calculateTotal().toFixed(2)} ر.س
-                    </Typography>
+                        {calculateTotal().toFixed(2)} ر.س
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-                
-                <PaymentButton
-                  variant="contained"
-                  onClick={handlePaymentSubmit}
-                  disabled={processingPayment}
-                  startIcon={processingPayment ? <CircularProgress size={20} color="inherit" /> : <PaymentIcon />}
-                >
+
+                  <PaymentButton
+                    variant="contained"
+                    onClick={handlePaymentSubmit}
+                    disabled={processingPayment}
+                    startIcon={processingPayment ? <CircularProgress size={20} color="inherit" /> : <PaymentIcon />}
+                  >
                     {processingPayment ? 'جاري التوجيه...' : 'إتمام الدفع الآمن'}
-                </PaymentButton>
-                
+                  </PaymentButton>
+
                   <Button
                     variant="outlined"
                     fullWidth
-                    sx={{ 
-                      mt: 3, 
-                      borderRadius: 3, 
+                    sx={{
+                      mt: 3,
+                      borderRadius: 3,
                       py: 1.5,
                       borderWidth: 2,
                       fontWeight: 600,
@@ -474,10 +574,10 @@ const PaymentPage = () => {
                   >
                     العودة للدورات
                   </Button>
-                  
-                  <Box sx={{ 
-                    mt: 4, 
-                    p: 3, 
+
+                  <Box sx={{
+                    mt: 4,
+                    p: 3,
                     borderRadius: 3,
                     background: 'linear-gradient(135deg, #4DBFB3 0%, #45a049 100%)',
                     color: 'white',
@@ -494,10 +594,10 @@ const PaymentPage = () => {
                       opacity: 0.3,
                     }
                   }}>
-                    <Typography variant="h6" sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 1, 
+                    <Typography variant="h6" sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
                       mb: 2,
                       fontWeight: 700
                     }}>
@@ -508,19 +608,19 @@ const PaymentPage = () => {
                       <Typography variant="body2" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                         <StarIcon fontSize="small" />
                         وصول مدى الحياة للدورة
-                  </Typography>
+                      </Typography>
                       <Typography variant="body2" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                         <StarIcon fontSize="small" />
                         شهادة إتمام معتمدة
-                  </Typography>
+                      </Typography>
                       <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <StarIcon fontSize="small" />
                         ضمان استرداد الأموال خلال 30 يوم
-                  </Typography>
+                      </Typography>
                     </Box>
                   </Box>
-              </CardContent>
-            </StyledCard>
+                </CardContent>
+              </StyledCard>
             </Box>
           </Grid>
         </Grid>

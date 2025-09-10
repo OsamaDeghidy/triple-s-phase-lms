@@ -44,6 +44,8 @@ import { styled } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { articleAPI } from '../../services/api.service';
+import BackGroundImage from '../../assets/images/BackGround.png';
+import BGTriangleImage from '../../assets/images/BGtriangle.png';
 
 // Animation keyframes
 const float = keyframes`
@@ -63,15 +65,27 @@ const pulse = keyframes`
   100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); }
 `;
 
+const triangleFloat = keyframes`
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(-1deg); }
+  75% { transform: translateY(-20px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
 // Styled components
 const HeroSection = styled(Box)(({ theme }) => ({
-  background: `linear-gradient(135deg, #333679 0%, #1a5f8a 50%, #0a3d62 100%)`,
+  background: `url(${BackGroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundAttachment: 'fixed',
   color: 'white',
-  padding: theme.spacing(8, 0, 4), // Increased top padding to account for header
+  padding: theme.spacing(12, 0, 6), // Increased padding for more height
   textAlign: 'center',
   position: 'relative',
   overflow: 'hidden',
-  minHeight: '60vh', // Ensure sufficient height for header overlay
+  minHeight: '65vh', // Decreased height from 80vh to 65vh
   display: 'flex',
   alignItems: 'center',
   '&::before': {
@@ -81,8 +95,15 @@ const HeroSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-    opacity: 0.3,
+    background: `
+      linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
+      url(${BackGroundImage})
+    `,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    filter: 'brightness(1.2) contrast(1.1) saturate(1.1)',
+    zIndex: 1,
   },
   '&::after': {
     content: '""',
@@ -91,9 +112,44 @@ const HeroSection = styled(Box)(({ theme }) => ({
     left: '50%',
     width: '200%',
     height: '200%',
-    background: `radial-gradient(circle, ${alpha('#ffffff', 0.1)} 0%, transparent 70%)`,
+    background: `radial-gradient(circle, ${alpha('#ffffff', 0.08)} 0%, transparent 70%)`,
     transform: 'translate(-50%, -50%)',
     animation: `${float} 6s ease-in-out infinite`,
+    zIndex: 2,
+  }
+}));
+
+const AnimatedTriangle = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  bottom: '20px',
+  left: '20px',
+  width: '250px',
+  height: '250px',
+  backgroundImage: `url(${BGTriangleImage})`,
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  opacity: 0.7,
+  zIndex: 2,
+  animation: `${triangleFloat} 4s ease-in-out infinite`,
+  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+  '&:hover': {
+    opacity: 1,
+    transform: 'scale(1.1)',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '200px',
+    height: '200px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '160px',
+    height: '160px',
+    bottom: '15px',
+    left: '15px',
+  },
+  [theme.breakpoints.down('xs')]: {
+    width: '120px',
+    height: '120px',
   }
 }));
 
@@ -732,12 +788,13 @@ const ArticlesPage = () => {
 
       <Box component="main" sx={{ flex: 1 }}>
         <HeroSection>
+          <AnimatedTriangle />
           <Container>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              style={{ position: 'relative', zIndex: 2 }}
+              style={{ position: 'relative', zIndex: 3 }}
             >
               <Typography
                 variant="h3"
@@ -765,77 +822,6 @@ const ArticlesPage = () => {
                 اكتشف أحدث المقالات والتقنيات في عالم التطوير والتصميم
               </Typography>
 
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}
-              >
-                <Box sx={{
-                  position: 'relative',
-                  maxWidth: '500px',
-                  mx: 'auto',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: '-2px',
-                    left: '-2px',
-                    right: '-2px',
-                    bottom: '-2px',
-                    background: 'linear-gradient(45deg, #333679, #1a5f8a, #0a3d62)',
-                    borderRadius: '25px',
-                    zIndex: -1,
-                    opacity: 0.4,
-                    animation: `${pulse} 3s ease-in-out infinite`,
-                  }
-                }}>
-                  <SearchBox
-                    placeholder="ابحث في المقالات..."
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon sx={{ 
-                            color: '#333679', 
-                            ml: 1,
-                            fontSize: '1.2rem',
-                            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                          }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{
-                      maxWidth: 500,
-                      width: '100%',
-                      backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                      borderRadius: '25px',
-                      backdropFilter: 'blur(15px)',
-                      boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          border: 'none',
-                        },
-                        '&:hover fieldset': {
-                          border: 'none',
-                        },
-                        '&.Mui-focused fieldset': {
-                          border: 'none',
-                          boxShadow: '0 0 0 3px rgba(14, 81, 129, 0.6)',
-                        },
-                        paddingRight: '15px',
-                      },
-                      '& .MuiInputBase-input': {
-                        padding: '12px 15px',
-                        fontSize: '1rem',
-                        '&::placeholder': {
-                          opacity: 0.7,
-                          color: '#666',
-                        },
-                      },
-                    }}
-                  />
-                </Box>
-              </motion.div>
             </motion.div>
           </Container>
         </HeroSection>
@@ -843,9 +829,9 @@ const ArticlesPage = () => {
         <Container sx={{ py: 8 }}>
           <FilterPaper sx={{ mb: 6 }}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{ 
-                fontWeight: 700, 
-                mr: 2, 
+              <Typography variant="h6" sx={{
+                fontWeight: 700,
+                mr: 2,
                 color: '#663399',
                 display: 'flex',
                 alignItems: 'center',

@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Button, 
-  Card, 
-  CardContent, 
-  CardMedia, 
-  Chip, 
-  Container, 
-  Grid, 
-  TextField, 
-  Typography, 
-  Tabs, 
-  Tab, 
-  Avatar, 
-  InputAdornment, 
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+  Tabs,
+  Tab,
+  Avatar,
+  InputAdornment,
   Skeleton,
   IconButton,
   Divider,
@@ -21,15 +21,15 @@ import {
   Snackbar
 } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { 
-  Search, 
-  FilterList, 
-  Add, 
-  Star, 
-  StarBorder, 
-  AccessTime, 
-  People, 
-  Category, 
+import {
+  Search,
+  FilterList,
+  Add,
+  Star,
+  StarBorder,
+  AccessTime,
+  People,
+  Category,
   School,
   TrendingUp,
   NewReleases,
@@ -48,6 +48,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { keyframes } from '@emotion/react';
 import { courseAPI, cartAPI } from '../../services/courseService';
 import { API_CONFIG } from '../../config/api.config';
+import BackGroundImage from '../../assets/images/BackGround.png';
+import BGTriangleImage from '../../assets/images/BGtriangle.png';
 
 // Helper: truncate text to a fixed number of characters and append ellipsis
 const truncateText = (text, maxChars = 30) => {
@@ -243,6 +245,14 @@ const rotate = keyframes`
   to { transform: rotate(360deg); }
 `;
 
+const triangleFloat = keyframes`
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(-1deg); }
+  75% { transform: translateY(-20px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
 const AnimatedBackground = styled('div')(() => ({
   position: 'fixed',
   top: 0,
@@ -279,7 +289,7 @@ const FloatingShape = styled('div')({
   position: 'absolute',
   borderRadius: '50%',
   background: 'linear-gradient(45deg, #333679, #1a5f8a)',
-  filter: 'blur(60px)',  
+  filter: 'blur(60px)',
   opacity: 0.15,
   zIndex: 1,
   animation: `${float} 15s ease-in-out infinite`,
@@ -307,13 +317,54 @@ const FloatingShape = styled('div')({
   },
 });
 
+const AnimatedTriangle = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  bottom: '20px',
+  left: '20px',
+  width: '250px',
+  height: '250px',
+  backgroundImage: `url(${BGTriangleImage})`,
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  opacity: 0.7,
+  zIndex: 2,
+  animation: `${triangleFloat} 4s ease-in-out infinite`,
+  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+  '&:hover': {
+    opacity: 1,
+    transform: 'scale(1.1)',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '200px',
+    height: '200px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '160px',
+    height: '160px',
+    bottom: '15px',
+    left: '15px',
+  },
+  [theme.breakpoints.down('xs')]: {
+    width: '120px',
+    height: '120px',
+  }
+}));
+
 const HeroSection = styled('div')(({ theme }) => ({
-  background: 'linear-gradient(135deg, #333679 0%, #1a5f8a 50%, #0a3d62 100%)',
+  background: `url(${BackGroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundAttachment: 'fixed',
   color: 'white',
-  padding: '30px 0 25px',
+  padding: theme.spacing(12, 0, 6),
   margin: '0 0 20px 0',
   position: 'relative',
   overflow: 'hidden',
+  minHeight: '65vh',
+  display: 'flex',
+  alignItems: 'center',
   boxShadow: '0 15px 50px rgba(0, 0, 0, 0.3)',
   '&::before': {
     content: '""',
@@ -322,22 +373,28 @@ const HeroSection = styled('div')(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 30%, rgba(14, 81, 129, 0.3) 0%, transparent 50%)',
+    background: `
+      linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
+      url(${BackGroundImage})
+    `,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    filter: 'brightness(1.2) contrast(1.1) saturate(1.1)',
     zIndex: 1,
-    animation: `${pulse} 15s ease-in-out infinite`,
   },
   '&::after': {
     content: '""',
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23e5978b\' fill-opacity=\'0.08\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")',
-    opacity: 0.6,
+    top: '50%',
+    left: '50%',
+    width: '200%',
+    height: '200%',
+    background: `radial-gradient(circle, ${alpha('#ffffff', 0.08)} 0%, transparent 70%)`,
+    transform: 'translate(-50%, -50%)',
+    animation: `${float} 6s ease-in-out infinite`,
     zIndex: 2,
-    animation: `${rotate} 120s linear infinite`,
-  },
+  }
 }));
 
 // Floating shape styles are now defined in the keyframes section above
@@ -382,21 +439,21 @@ const CategoryChip = styled(Chip, {
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   border: '2px solid',
   borderColor: selected ? theme.palette.primary.main : 'transparent',
-  backgroundColor: selected 
+  backgroundColor: selected
     ? theme.palette.primary.main
     : alpha(theme.palette.background.paper, 0.8),
-  color: selected 
+  color: selected
     ? '#fff'
     : theme.palette.text.primary,
-  boxShadow: selected 
+  boxShadow: selected
     ? '0 4px 20px rgba(0, 0, 0, 0.15)'
     : '0 2px 8px rgba(0, 0, 0, 0.08)',
   cursor: 'pointer',
   '&:hover': {
-    backgroundColor: selected 
+    backgroundColor: selected
       ? theme.palette.primary.dark
       : alpha(theme.palette.primary.main, 0.1),
-    color: selected 
+    color: selected
       ? '#fff'
       : theme.palette.primary.main,
     borderColor: theme.palette.primary.main,
@@ -477,26 +534,26 @@ const Courses = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Fetch courses and categories in parallel
         const [coursesResponse, categoriesResponse] = await Promise.all([
           courseAPI.getCourses({ status: 'published' }),
           courseAPI.getCategories()
         ]);
-        
+
         const coursesData = coursesResponse.results || coursesResponse;
         const categoriesData = categoriesResponse.results || categoriesResponse;
-        
+
         // Debug logging
         console.log('Courses data:', coursesData);
         console.log('Categories data:', categoriesData);
         if (coursesData.length > 0) {
           console.log('Sample course category structure:', coursesData[0].category);
         }
-        
+
         setCourses(coursesData);
         setCategories(categoriesData);
-        
+
         // Load cart items only if user is authenticated
         if (isAuthenticated) {
           try {
@@ -512,7 +569,7 @@ const Courses = () => {
             console.log('Cart not available:', cartError);
           }
         }
-        
+
       } catch (err) {
         console.error('Error fetching data:', err);
         // Don't show error for non-authenticated users trying to access courses
@@ -533,19 +590,19 @@ const Courses = () => {
   const filteredCourses = courses.filter(course => {
     // Search filter
     const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = !searchTerm || 
-                         course.title?.toLowerCase().includes(searchLower) ||
-                         (course.instructors && course.instructors.some(instructor => 
-                           instructor.name?.toLowerCase().includes(searchLower)
-                         ));
-    
+    const matchesSearch = !searchTerm ||
+      course.title?.toLowerCase().includes(searchLower) ||
+      (course.instructors && course.instructors.some(instructor =>
+        instructor.name?.toLowerCase().includes(searchLower)
+      ));
+
     // Category filter - handle different data structures
     let matchesCategory = activeCategory === 'all';
     if (!matchesCategory && course.category) {
       // Check if category is an object with id or just an id
       const categoryId = typeof course.category === 'object' ? course.category.id : course.category;
       matchesCategory = categoryId == activeCategory; // Use == to handle string/number comparison
-      
+
       // Debug logging for first few courses
       if (courses.indexOf(course) < 3) {
         console.log(`Course "${course.title}":`, {
@@ -556,12 +613,12 @@ const Courses = () => {
         });
       }
     }
-    
+
     // Level filter
     const matchesLevel = tabValue === 'all' || course.level === tabValue;
-    
+
     const result = matchesSearch && matchesCategory && matchesLevel;
-    
+
     // Debug logging for filtering
     if (courses.indexOf(course) < 3) {
       console.log(`Course "${course.title}" filter result:`, {
@@ -571,7 +628,7 @@ const Courses = () => {
         finalResult: result
       });
     }
-    
+
     return result;
   });
 
@@ -587,7 +644,7 @@ const Courses = () => {
   const toggleCartItem = async (courseId, e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
       if (cartItems[courseId]) {
         // Remove from cart - we need to find the cart item ID first
@@ -610,16 +667,16 @@ const Courses = () => {
       }
     } catch (error) {
       console.error('Error toggling cart item:', error);
-      setSnackbar({ 
-        open: true, 
-        message: 'حدث خطأ أثناء تحديث السلة', 
-        severity: 'error' 
+      setSnackbar({
+        open: true,
+        message: 'حدث خطأ أثناء تحديث السلة',
+        severity: 'error'
       });
     }
   };
 
   const getLevelLabel = (level) => {
-    switch(level?.toLowerCase()) {
+    switch (level?.toLowerCase()) {
       case 'beginner':
         return 'مبتدئ';
       case 'intermediate':
@@ -704,8 +761,8 @@ const Courses = () => {
           <Typography variant="body1" color="text.secondary" paragraph>
             {error}
           </Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={() => window.location.reload()}
             sx={{ mt: 2 }}
           >
@@ -725,22 +782,23 @@ const Courses = () => {
         <FloatingShape style={{ width: '250px', height: '250px', top: '30%', left: '15%', animationDelay: '7s' }} />
       </AnimatedBackground>
       <Header />
-      
+
       {/* Hero Section */}
       <HeroSection>
+        <AnimatedTriangle />
         {/* Animated Background Elements */}
         <FloatingShape style={{ width: '300px', height: '300px', top: '-100px', right: '-100px', animationDelay: '0s' }} />
         <FloatingShape style={{ width: '200px', height: '200px', bottom: '-50px', right: '20%', animationDelay: '2s', animationDuration: '15s' }} />
         <FloatingShape style={{ width: '400px', height: '400px', bottom: '-200px', left: '-150px', animationDelay: '4s', animationDuration: '20s' }} />
-        
+
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Box sx={{ 
-              textAlign: 'center', 
+            <Box sx={{
+              textAlign: 'center',
               py: 3,
               position: 'relative',
               '&::before, &::after': {
@@ -764,11 +822,11 @@ const Courses = () => {
                 animation: `${pulse} 10s ease-in-out infinite reverse`,
               }
             }}>
-              <Typography 
-                variant="h3" 
-                component="h1" 
-                sx={{ 
-                  fontWeight: 800, 
+              <Typography
+                variant="h3"
+                component="h1"
+                sx={{
+                  fontWeight: 800,
                   mb: 2,
                   color: '#ffffff',
                   fontSize: { xs: '1.5rem', sm: '2rem', md: '2.2rem' },
@@ -783,11 +841,11 @@ const Courses = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    maxWidth: '600px', 
-                    mx: 'auto', 
+                <Typography
+                  variant="body1"
+                  sx={{
+                    maxWidth: '600px',
+                    mx: 'auto',
                     mb: 2,
                     color: 'rgba(255,255,255,0.9)',
                     fontSize: { xs: '0.9rem', sm: '1rem' },
@@ -805,7 +863,7 @@ const Courses = () => {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 style={{ width: '100%', maxWidth: '700px', margin: '0 auto' }}
               >
-                <Box sx={{ 
+                <Box sx={{
                   position: 'relative',
                   maxWidth: '400px',
                   mx: 'auto',
@@ -859,8 +917,8 @@ const Courses = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <Search sx={{ 
-                            color: '#333679', 
+                          <Search sx={{
+                            color: '#333679',
                             ml: 1,
                             fontSize: '1.1rem',
                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
@@ -875,7 +933,7 @@ const Courses = () => {
           </motion.div>
         </Container>
       </HeroSection>
-      
+
       {/* Main Content */}
       <Container maxWidth="xl" sx={{ flex: 1, py: 6, position: 'relative', zIndex: 1 }}>
         <Box sx={{ mb: 6 }}>
@@ -902,7 +960,7 @@ const Courses = () => {
                       setTabValue('all');
                     }}
                     startIcon={<FilterList />}
-                    sx={{ 
+                    sx={{
                       borderRadius: '20px',
                       textTransform: 'none',
                       fontSize: '0.8rem'
@@ -912,9 +970,9 @@ const Courses = () => {
                   </Button>
                 )}
               </Box>
-              <Box sx={{ 
-                display: 'flex', 
-                flexWrap: 'wrap', 
+              <Box sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
                 gap: 1.5,
                 maxHeight: { xs: '140px', sm: 'auto' },
                 overflowY: { xs: 'auto', sm: 'visible' },
@@ -981,21 +1039,21 @@ const Courses = () => {
                 <span style={{ fontWeight: 600, color: 'primary.main' }}>{filteredCourses.length}</span>
                 دورة متاحة من إجمالي {courses.length} دورة
                 {(activeCategory !== 'all' || searchTerm || tabValue !== 'all') && (
-                  <Chip 
-                    label="مفلترة" 
-                    size="small" 
-                    color="primary" 
+                  <Chip
+                    label="مفلترة"
+                    size="small"
+                    color="primary"
                     variant="outlined"
-                    sx={{ 
-                      height: '20px', 
+                    sx={{
+                      height: '20px',
                       fontSize: '0.7rem',
                       ml: 1
-                    }} 
+                    }}
                   />
                 )}
               </Typography>
             </Box>
-            
+
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
@@ -1030,15 +1088,15 @@ const Courses = () => {
               <Tab value="advanced" label="متقدم" icon={<Whatshot fontSize="small" />} iconPosition="start" />
             </Tabs>
           </Box>
-          
+
           {filteredCourses.length > 0 ? (
-            <Box sx={{ 
+            <Box sx={{
               display: 'grid',
-              gridTemplateColumns: { 
+              gridTemplateColumns: {
                 xs: '1fr',
                 sm: 'repeat(2, 1fr)',
                 md: 'repeat(3, 1fr)',
-                lg: 'repeat(4, 1fr)' 
+                lg: 'repeat(4, 1fr)'
               },
               gap: 3,
               width: '100%'
@@ -1054,18 +1112,18 @@ const Courses = () => {
                   >
                     <StyledCard elevation={0} component={Link} to={`/courses/${course.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                       <CourseMedia>
-                        <img 
-                          src={getCourseImage(course)} 
-                          alt={course.title} 
+                        <img
+                          src={getCourseImage(course)}
+                          alt={course.title}
                           className="course-image"
                         />
                         {course.is_featured && (
-                          <Chip 
-                            label="مميز" 
-                            color="primary" 
-                            size="small" 
+                          <Chip
+                            label="مميز"
+                            color="primary"
+                            size="small"
                             className="course-badge"
-                            sx={{ 
+                            sx={{
                               bgcolor: 'primary.main',
                               color: 'white',
                               fontWeight: 600,
@@ -1073,12 +1131,12 @@ const Courses = () => {
                           />
                         )}
                         {course.is_certified && (
-                          <Chip 
-                            label="شهادة" 
-                            color="secondary" 
-                            size="small" 
+                          <Chip
+                            label="شهادة"
+                            color="secondary"
+                            size="small"
                             className="course-badge"
-                            sx={{ 
+                            sx={{
                               bgcolor: 'secondary.main',
                               color: 'white',
                               fontWeight: 600,
@@ -1086,7 +1144,7 @@ const Courses = () => {
                             }}
                           />
                         )}
-                        <CartButton 
+                        <CartButton
                           className="cart-button"
                           onClick={(e) => toggleCartItem(course.id, e)}
                           added={cartItems[course.id]}
@@ -1099,10 +1157,10 @@ const Courses = () => {
                           {!cartItems[course.id] && <CartBadge>+</CartBadge>}
                         </CartButton>
                       </CourseMedia>
-                      
-                      <CardContent sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
+
+                      <CardContent sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
                         flexGrow: 1,
                         p: 3,
                       }}>
@@ -1129,11 +1187,11 @@ const Courses = () => {
                               }}
                             />
                           )}
-                          <Chip 
+                          <Chip
                             label={getLevelLabel(course.level)}
                             size="small"
                             color={course.level === 'beginner' ? 'success' : course.level === 'intermediate' ? 'warning' : 'error'}
-                            sx={{ 
+                            sx={{
                               mb: 1.5,
                               fontWeight: 600,
                               fontSize: '0.7rem',
@@ -1143,10 +1201,10 @@ const Courses = () => {
                             {course.title}
                           </CourseTitle>
                         </Box>
-                        
+
                         <InstructorInfo>
-                          <Avatar 
-                            src={getInstructorAvatar(course.instructors)} 
+                          <Avatar
+                            src={getInstructorAvatar(course.instructors)}
                             alt={getInstructorName(course.instructors)}
                             sx={{ width: 32, height: 32, ml: 1.5 }}
                           />
@@ -1167,9 +1225,9 @@ const Courses = () => {
                             </Box>
                           </Box>
                         </InstructorInfo>
-                        
+
                         <Divider sx={{ my: 2 }} />
-                        
+
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <CourseMeta>
                             <Box>
@@ -1185,7 +1243,7 @@ const Courses = () => {
                               </Typography>
                             </Box>
                           </CourseMeta>
-                          
+
                           <Box sx={{ textAlign: 'left' }}>
                             {course.discount_price ? (
                               <>
@@ -1210,11 +1268,11 @@ const Courses = () => {
               ))}
             </Box>
           ) : (
-            <Box 
-              textAlign="center" 
-              py={8} 
-              sx={{ 
-                bgcolor: 'background.paper', 
+            <Box
+              textAlign="center"
+              py={8}
+              sx={{
+                bgcolor: 'background.paper',
                 borderRadius: 2,
                 border: '1px dashed',
                 borderColor: 'divider',
@@ -1246,9 +1304,9 @@ const Courses = () => {
           )}
         </Box>
       </Container>
-      
+
       <Footer />
-      
+
       {/* Snackbar for notifications */}
       <Snackbar
         open={snackbar.open}
@@ -1256,8 +1314,8 @@ const Courses = () => {
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           sx={{ width: '100%' }}
         >
