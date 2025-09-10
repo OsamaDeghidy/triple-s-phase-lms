@@ -651,7 +651,7 @@
                 <span>المحاضرات</span>
             </a>
         </li>
-        <li>
+        <!-- <li>
             <a href="{% url 'admin:assignments_assignment_changelist' %}" class="{% if '/admin/assignments/assignment/' in request.path %}active{% endif %}">
                 <i class="fas fa-tasks"></i>
                 <span>الواجبات</span>
@@ -668,7 +668,49 @@
                 <i class="fas fa-file-alt"></i>
                 <span>الامتحانات</span>
             </a>
+        </li> -->
+        
+        <!-- Assessment System -->
+        <li class="menu-section">
+            <span>نظام التقييمات</span>
         </li>
+        <li>
+            <a href="{% url 'admin:assessment_assessment_changelist' %}" class="{% if '/admin/assessment/assessment/' in request.path %}active{% endif %}">
+                <i class="fas fa-question-circle"></i>
+                <span>الاختبارات</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin:assessment_questionbank_changelist' %}" class="{% if '/admin/assessment/questionbank/' in request.path %}active{% endif %}">
+                <i class="fas fa-database"></i>
+                <span>بنك الأسئلة</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin:assessment_flashcard_changelist' %}" class="{% if '/admin/assessment/flashcard/' in request.path %}active{% endif %}">
+                <i class="fas fa-layer-group"></i>
+                <span>البطاقات التعليمية</span>
+            </a>
+        </li>
+        <!-- <li>
+            <a href="{% url 'admin:assessment_studentsubmission_changelist' %}" class="{% if '/admin/assessment/studentsubmission/' in request.path %}active{% endif %}">
+                <i class="fas fa-file-upload"></i>
+                <span>تقديمات الطلاب</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin:assessment_studentanswer_changelist' %}" class="{% if '/admin/assessment/studentanswer/' in request.path %}active{% endif %}">
+                <i class="fas fa-edit"></i>
+                <span>إجابات الطلاب</span>
+            </a>
+        </li> -->
+        <!-- <li>
+            <a href="{% url 'admin:assessment_studentflashcardprogress_changelist' %}" class="{% if '/admin/assessment/studentflashcardprogress/' in request.path %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                <span>تقدم البطاقات</span>
+            </a>
+        </li> -->
+        
         <li>
             <a href="{% url 'admin:certificates_certificate_changelist' %}" class="{% if '/admin/certificates/certificate/' in request.path %}active{% endif %}">
                 <i class="fas fa-certificate"></i>

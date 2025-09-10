@@ -461,7 +461,7 @@ const Header = () => {
       icon: <HomeIcon />
     },
     {
-      text: 'الأقسام',
+      text: 'خدماتنا',
       path: '#',
       icon: <MenuBookIcon />,
       dropdown: categories.map(category => ({
@@ -470,11 +470,11 @@ const Header = () => {
       }))
     },
     {
-      text: 'منصتنا',
+      text: 'الاكاديمية',
       path: '#',
       icon: <SchoolIcon />,
       dropdown: [
-        { text: 'عن المنصة', path: '/about' },
+        { text: 'عن الاكاديمية', path: '/about' },
         { text: 'المدونة', path: '/articles' },
         { text: 'اتصل بنا', path: '/contact' },
       ]

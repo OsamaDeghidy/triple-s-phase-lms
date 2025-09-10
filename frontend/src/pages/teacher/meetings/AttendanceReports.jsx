@@ -202,7 +202,7 @@ const AttendanceReports = () => {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'تاريخ غير صحيح';
       
-      return date.toLocaleDateString('ar-EG', { 
+      return date.toLocaleDateString('en-GB', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric',
@@ -221,7 +221,7 @@ const AttendanceReports = () => {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'وقت غير صحيح';
       
-      return date.toLocaleTimeString('ar-EG', { 
+      return date.toLocaleTimeString('en-GB', { 
         hour: '2-digit', 
         minute: '2-digit'
       });

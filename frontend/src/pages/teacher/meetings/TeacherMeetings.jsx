@@ -480,7 +480,7 @@ const TeacherMeetings = () => {
       
       console.log('Formatting date:', dateString, 'to:', date);
       
-      return date.toLocaleDateString('ar-EG', { 
+      return date.toLocaleDateString('en-GB', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric',
@@ -504,7 +504,7 @@ const TeacherMeetings = () => {
       
       console.log('Formatting time:', dateString, 'to:', date);
       
-      return date.toLocaleTimeString('ar-EG', { 
+      return date.toLocaleTimeString('en-GB', { 
         hour: '2-digit', 
         minute: '2-digit'
       });

@@ -366,7 +366,7 @@ const MeetingDetailsDialog = ({
 
       
 
-      return date.toLocaleDateString('ar-EG', { 
+      return date.toLocaleDateString('en-GB', { 
 
         weekday: 'long', 
 
@@ -418,7 +418,7 @@ const MeetingDetailsDialog = ({
 
       
 
-      return date.toLocaleTimeString('ar-EG', { 
+      return date.toLocaleTimeString('en-GB', { 
 
         hour: '2-digit', 
 
@@ -1545,7 +1545,7 @@ const MeetingDetailsDialog = ({
                           وقت التسجيل:
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {new Date().toLocaleString('ar-EG')}
+                          {new Date().toLocaleString('en-GB')}
                         </Typography>
                       </Box>
                       

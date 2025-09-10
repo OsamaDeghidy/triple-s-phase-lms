@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'store',
     'reviews',
     'assignments',
+    'assessment',
     'certificates',
     'meetings',
     'notifications',
@@ -484,6 +485,21 @@ ADMIN_REORDER = (
         'assignments.Exam',
         'assignments.ExamQuestion',
         'assignments.UserExamAttempt',
+    )},
+    
+    # Assessment System
+    {'app': 'assessment', 'label': 'نظام التقييمات', 'models': (
+        'assessment.Assessment',
+        'assessment.QuestionBank',
+        'assessment.AssessmentQuestions',
+        'assessment.StudentSubmission',
+        'assessment.StudentAnswer',
+        'assessment.Flashcard',
+        'assessment.StudentFlashcardProgress',
+    )},
+    
+    # Assignments
+    {'app': 'assignments', 'label': 'الواجبات', 'models': (
         'assignments.Assignment',
         'assignments.AssignmentSubmission',
     )},
