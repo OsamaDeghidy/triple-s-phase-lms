@@ -238,228 +238,262 @@ const Footer = () => {
           ))}
         </Box>
 
-        {/* Main Content Grid - All Cards in One Row */}
-        <Grid container spacing={4} sx={{ alignItems: 'stretch', justifyContent: 'center' }}>
+        {/* Main Content - Single Unified Card */}
+        <Box
+          sx={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '12px',
+            padding: theme.spacing(4),
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: 'none',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: 4,
+            flexDirection: isMobile ? 'column' : 'row',
+            textAlign: 'center'
+          }}
+        >
           {/* Column 1: Logo and Description */}
-          <Grid item xs={12} sm={6} md={2.5}>
-            <Box
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box display="flex" alignItems="center" justifyContent="center" mb={2.5}>
+              <Box
+                component="img"
+                src={logo}
+                alt="Triple S Academy Logo"
+                sx={{
+                  width: { xs: 120, sm: 140, md: 240 },
+                  height: { xs: 120, sm: 140, md: 100 },
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                  filter: 'brightness(0) invert(1)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    filter: 'brightness(0) invert(1) drop-shadow(0 0 20px rgba(255, 255, 255, 0.5))',
+                    transform: 'scale(1.05)',
+                  }
+                }}
+              />
+            </Box>
+            <Typography
+              variant="body2"
               sx={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                padding: theme.spacing(3),
-                height: '100%',
-                minHeight: '250px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
+                color: '#FFFFFF',
+                lineHeight: 1.5,
+                mb: 2.5,
+                fontSize: '0.85rem',
+                textAlign: 'center',
+                fontWeight: 400
               }}
             >
-              <Box display="flex" alignItems="center" justifyContent="center" mb={2.5}>
-                <Box
-                  component="img"
-                  src={logo}
-                  alt="Triple S Academy Logo"
-                  sx={{
-                    width: { xs: 140, sm: 160, md: 180 },
-                    height: { xs: 140, sm: 160, md: 180 },
-                    maxWidth: '100%',
-                    objectFit: 'contain',
-                    filter: 'brightness(0) invert(1)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      filter: 'brightness(0) invert(1) drop-shadow(0 0 20px rgba(255, 255, 255, 0.5))',
-                      transform: 'scale(1.05)',
-                    }
-                  }}
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: '#FFFFFF',
-                  lineHeight: 1.5,
-                  mb: 2.5,
-                  fontSize: '0.85rem',
-                  textAlign: 'center',
-                  fontWeight: 400
-                }}
-              >
-                Discover your hidden potential and start your journey of academic excellence with us.
+              Discover your hidden potential and start your journey of academic excellence with us.
+            </Typography>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 1.5, fontSize: '0.85rem' }}>
+                FOLLOW US ON
               </Typography>
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 1.5, fontSize: '0.85rem' }}>
-                  FOLLOW US ON
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 0.8, justifyContent: 'center' }}>
-                  {socialLinks.map((social, index) => (
-                    <SocialIcon
-                      key={index}
-                      component="a"
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        width: '35px',
-                        height: '35px',
-                        fontSize: '1.1rem'
-                      }}
-                    >
-                      {social.icon}
-                    </SocialIcon>
-                  ))}
-                </Box>
+              <Box sx={{ display: 'flex', gap: 0.8, justifyContent: 'center' }}>
+                {socialLinks.map((social, index) => (
+                  <SocialIcon
+                    key={index}
+                    component="a"
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      width: '35px',
+                      height: '35px',
+                      fontSize: '1.1rem'
+                    }}
+                  >
+                    {social.icon}
+                  </SocialIcon>
+                ))}
               </Box>
             </Box>
-          </Grid>
+          </Box>
 
           {/* Column 2: Site Links */}
-          <Grid item xs={12} sm={6} md={2.5}>
-            <Box
+          <Box sx={{ flex: 1, maxWidth: '300px' }}>
+            <Typography
+              variant="h5"
               sx={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                borderRadius: '12px',
-                padding: theme.spacing(3),
-                height: '100%',
-                minHeight: '250px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <FooterTitle sx={{ fontSize: '1rem', mb: 2 }}>Site Links</FooterTitle>
-              {siteLinks.map((link, index) => (
-                <Box key={index} mb={0.8}>
-                  <FooterLink
-                    component={RouterLink}
-                    to={link.to}
-                    underline="none"
-                    sx={{ fontSize: '0.85rem', color: '#FFFFFF' }}
-                  >
-                    {link.text}
-                  </FooterLink>
-                </Box>
-              ))}
-            </Box>
-          </Grid>
-
-          {/* Column 3: Other Links */}
-          <Grid item xs={12} sm={6} md={2.5}>
-            <Box
-              sx={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                borderRadius: '12px',
-                padding: theme.spacing(3),
-                height: '100%',
-                minHeight: '250px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <FooterTitle sx={{ fontSize: '1rem', mb: 2 }}>Other Links</FooterTitle>
-              {otherLinks.map((link, index) => (
-                <Box key={index} mb={0.8}>
-                  <FooterLink
-                    component={RouterLink}
-                    to={link.to}
-                    underline="none"
-                    sx={{ fontSize: '0.85rem', color: '#FFFFFF' }}
-                  >
-                    {link.text}
-                  </FooterLink>
-                </Box>
-              ))}
-            </Box>
-          </Grid>
-
-          {/* Column 4: Newsletter Subscription */}
-          <Grid item xs={12} sm={6} md={2.5}>
-            <Box
-              sx={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                padding: theme.spacing(3),
-                height: '100%',
-                minHeight: '250px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <FooterTitle sx={{ fontSize: '1rem', mb: 2 }}>Get in touch!</FooterTitle>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: '#FFFFFF',
-                  lineHeight: 1.4,
-                  mb: 2,
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                mb: 3,
+                position: 'relative',
+                '&:after': {
+                  content: '"— — —"',
+                  position: 'absolute',
+                  bottom: '-8px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  color: '#6A3ABF',
                   fontSize: '0.8rem',
-                  textAlign: 'center'
-                }}
-              >
-                Subscribe our newsletter to get our latest Update & news
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                <Box sx={{ position: 'relative' }}>
-                  <input
-                    type="email"
-                    placeholder="Email Email"
-                    style={{
-                      width: '100%',
-                      padding: '10px 35px 10px 10px',
-                      border: '1px solid #E0E0E0',
-                      borderRadius: '6px',
-                      backgroundColor: '#FFFFFF',
-                      color: '#333333',
-                      fontSize: '0.85rem',
-                      outline: 'none',
-                    }}
-                  />
-                  <EmailIcon
-                    sx={{
-                      position: 'absolute',
-                      right: 10,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: '#666666',
-                      fontSize: '1rem'
-                    }}
-                  />
-                </Box>
-                <Button
-                  variant="contained"
+                  letterSpacing: '2px'
+                }
+              }}
+            >
+              روابط الموقع
+            </Typography>
+            <Box sx={{ mt: 4 }}>
+              {siteLinks.map((link, index) => (
+                <Typography
+                  key={index}
+                  component={RouterLink}
+                  to={link.to}
                   sx={{
-                    backgroundColor: '#4A148C',
-                    color: '#FFFFFF',
-                    fontWeight: 600,
-                    padding: '10px 16px',
-                    borderRadius: '6px',
-                    textTransform: 'none',
-                    fontSize: '0.85rem',
+                    display: 'block',
+                    color: '#C0B0E0',
+                    fontSize: '0.9rem',
+                    mb: 1.5,
+                    textDecoration: 'none',
+                    transition: 'color 0.3s ease',
                     '&:hover': {
-                      backgroundColor: '#6A1B9A',
-                      transform: 'translateY(-2px)',
+                      color: '#FFFFFF'
                     }
                   }}
                 >
-                  SUBSCRIBE NOW →
-                </Button>
-              </Box>
+                  {link.text === 'courses' ? 'الكورسات' : link.text === 'Flash Cards' ? 'فلاش کاردز' : link.text}
+                </Typography>
+              ))}
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+
+          {/* Column 3: Other Links */}
+          <Box sx={{ flex: 1, maxWidth: '300px' }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                mb: 3,
+                position: 'relative',
+                '&:after': {
+                  content: '"— — —"',
+                  position: 'absolute',
+                  bottom: '-8px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  color: '#6A3ABF',
+                  fontSize: '0.8rem',
+                  letterSpacing: '2px'
+                }
+              }}
+            >
+              روابط اخرى
+            </Typography>
+            <Box sx={{ mt: 4 }}>
+              {otherLinks.map((link, index) => (
+                <Typography
+                  key={index}
+                  component={RouterLink}
+                  to={link.to}
+                  sx={{
+                    display: 'block',
+                    color: '#C0B0E0',
+                    fontSize: '0.9rem',
+                    mb: 1.5,
+                    textDecoration: 'none',
+                    transition: 'color 0.3s ease',
+                    '&:hover': {
+                      color: '#FFFFFF'
+                    }
+                  }}
+                >
+                  {link.text}
+                </Typography>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Column 4: Newsletter Subscription */}
+          <Box sx={{ flex: 1, maxWidth: '300px' }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                mb: 3,
+                position: 'relative',
+                '&:after': {
+                  content: '"— — —"',
+                  position: 'absolute',
+                  bottom: '-8px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  color: '#6A3ABF',
+                  fontSize: '0.8rem',
+                  letterSpacing: '2px'
+                }
+              }}
+            >
+              Get in touch!
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#FFFFFF',
+                lineHeight: 1.4,
+                mb: 2,
+                fontSize: '0.8rem',
+                textAlign: 'center'
+              }}
+            >
+              Subscribe our newsletter to get our latest Update & news
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box sx={{ position: 'relative' }}>
+                <input
+                  type="email"
+                  placeholder="Email Email"
+                  style={{
+                    width: '100%',
+                    padding: '10px 35px 10px 10px',
+                    border: '1px solid #E0E0E0',
+                    borderRadius: '6px',
+                    backgroundColor: '#FFFFFF',
+                    color: '#333333',
+                    fontSize: '0.85rem',
+                    outline: 'none',
+                  }}
+                />
+                <EmailIcon
+                  sx={{
+                    position: 'absolute',
+                    right: 10,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#666666',
+                    fontSize: '1rem'
+                  }}
+                />
+              </Box>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: '#4A148C',
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  padding: '10px 16px',
+                  borderRadius: '6px',
+                  textTransform: 'none',
+                  fontSize: '0.85rem',
+                  '&:hover': {
+                    backgroundColor: '#6A1B9A',
+                    transform: 'translateY(-2px)',
+                  }
+                }}
+              >
+                SUBSCRIBE NOW →
+              </Button>
+            </Box>
+          </Box>
+        </Box>
 
         {/* Bottom Bar */}
         <Box
