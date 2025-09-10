@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Category, Tag, Enrollment
+from .models import Course, Category, SubCategory, Tag, Enrollment
 from users.models import Instructor
 from django.db.models import Count
 from django.utils.text import slugify
@@ -7,10 +7,28 @@ from django.utils.text import slugify
 
 class CategorySerializer(serializers.ModelSerializer):
     courses_count = serializers.SerializerMethodField()
+    subcategories = serializers.SerializerMethodField()
     
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'image', 'courses_count']
+        fields = ['id', 'name', 'description', 'image', 'courses_count', 'subcategories']
+        read_only_fields = ['id']
+    
+    def get_courses_count(self, obj):
+        return obj.courses.filter(status='published').count()
+    
+    def get_subcategories(self, obj):
+        subcategories = obj.subcategories.filter(is_active=True)
+        return SubCategorySerializer(subcategories, many=True, context=self.context).data
+
+
+class SubCategorySerializer(serializers.ModelSerializer):
+    courses_count = serializers.SerializerMethodField()
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    
+    class Meta:
+        model = SubCategory
+        fields = ['id', 'name', 'description', 'image', 'category', 'category_name', 'courses_count', 'is_active']
         read_only_fields = ['id']
     
     def get_courses_count(self, obj):
@@ -26,6 +44,7 @@ class TagsSerializer(serializers.ModelSerializer):
 
 class CourseBasicSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
+    subcategory_name = serializers.CharField(source='subcategory.name', read_only=True)
     instructors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     enrolled_count = serializers.SerializerMethodField()
@@ -37,7 +56,7 @@ class CourseBasicSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'subtitle', 'description', 'short_description', 'image', 'image_url', 'price',
-            'discount_price', 'category', 'category_name', 'instructors', 'tags',
+            'discount_price', 'category', 'category_name', 'subcategory', 'subcategory_name', 'instructors', 'tags',
             'level', 'status', 'is_complete_course', 'created_at', 'rating', 'enrolled_count',
             'is_free', 'is_featured', 'is_certified', 'total_enrollments', 'average_rating', 'duration'
         ]
@@ -130,6 +149,7 @@ class CourseInstructorSerializer(serializers.Serializer):
 
 class CourseDetailSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
+    subcategory = SubCategorySerializer(read_only=True)
     instructors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     is_enrolled = serializers.SerializerMethodField()
@@ -139,7 +159,7 @@ class CourseDetailSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'title', 'subtitle', 'description', 'short_description', 'image', 'promotional_video',
-            'price', 'discount_price', 'category', 'instructors', 'tags', 'level', 'status', 
+            'price', 'discount_price', 'category', 'subcategory', 'instructors', 'tags', 'level', 'status', 
             'is_complete_course', 'created_at', 'updated_at', 'is_enrolled', 'is_free', 
             'is_featured', 'is_certified', 'total_enrollments', 'average_rating', 'language',
             'syllabus_pdf', 'materials_pdf', 'duration'
@@ -235,7 +255,7 @@ class CourseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'title', 'subtitle', 'description', 'short_description', 'category', 
+            'title', 'subtitle', 'description', 'short_description', 'category', 'subcategory',
             'tags', 'level', 'status', 'language', 'price', 'discount_price', 'is_free', 
             'is_complete_course', 'is_featured', 'is_certified', 'image', 
             'promotional_video', 'syllabus_pdf', 'materials_pdf'
@@ -249,6 +269,11 @@ class CourseCreateSerializer(serializers.ModelSerializer):
         }
     
     def validate(self, data):
+        # Validate subcategory belongs to the same category
+        if data.get('subcategory') and data.get('category'):
+            if data['subcategory'].category != data['category']:
+                raise serializers.ValidationError("SubCategory must belong to the same Category as the course")
+        
         # Ensure free courses have price 0
         if data.get('is_free', False):
             data['price'] = 0

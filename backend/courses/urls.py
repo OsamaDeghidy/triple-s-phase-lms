@@ -6,6 +6,7 @@ from . import dashboard_views
 # Create router
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet, basename='category')
+router.register(r'subcategories', views.SubCategoryViewSet, basename='subcategory')
 router.register(r'tags', views.TagsViewSet, basename='tag')
 router.register(r'courses', views.CourseViewSet, basename='course')
 
