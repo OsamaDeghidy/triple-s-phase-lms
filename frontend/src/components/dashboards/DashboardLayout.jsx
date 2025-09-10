@@ -70,7 +70,7 @@ const UserProfileCard = () => {
         avatar: user.profile_picture || profileImage,
         role: getUserRole() === 'instructor' ? 'مدرس' : 'طالب',
         description: user.bio || (getUserRole() === 'instructor' ? 'مدرس في المنصة' : 'طالب في المنصة'),
-        joinDate: user.date_joined ? new Date(user.date_joined).toLocaleDateString('ar-EG') : 'غير محدد'
+        joinDate: user.date_joined ? new Date(user.date_joined).toLocaleDateString('en-GB') : 'غير محدد'
       };
     }
     return {

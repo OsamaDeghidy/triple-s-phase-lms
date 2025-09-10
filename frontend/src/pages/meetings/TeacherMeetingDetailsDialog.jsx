@@ -223,7 +223,7 @@ const TeacherMeetingDetailsDialog = ({
     if (!dateString) return 'غير محدد';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('ar-EG', {
+      return date.toLocaleDateString('en-GB', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -238,7 +238,7 @@ const TeacherMeetingDetailsDialog = ({
     if (!dateString) return 'غير محدد';
     try {
       const date = new Date(dateString);
-      return date.toLocaleTimeString('ar-EG', { 
+      return date.toLocaleTimeString('en-GB', { 
         hour: '2-digit', 
         minute: '2-digit',
         hour12: true

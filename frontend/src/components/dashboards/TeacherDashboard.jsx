@@ -237,7 +237,7 @@ const TeacherDashboard = () => {
   };
 
   const formatDate = (date) => {
-    return new Intl.DateTimeFormat('ar-SA', {
+    return new Intl.DateTimeFormat('en-GB', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -759,7 +759,7 @@ const TeacherDashboard = () => {
                           <ChevronLeftIcon />
                         </IconButton>
                         <Typography variant="body1" sx={{ minWidth: 120, textAlign: 'center', color: '#333', fontWeight: 600 }}>
-                          {currentDate.toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' })}
+                          {currentDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                       </Typography>
                         <IconButton
                         size="small"

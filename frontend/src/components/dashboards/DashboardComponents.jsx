@@ -651,7 +651,7 @@ export const EnhancedAnnouncementCard = ({ announcement }) => {
     id: announcement?.id || 0,
     title: announcement?.title || 'إعلان جديد',
     content: announcement?.content || 'محتوى الإعلان',
-    date: announcement?.date || new Date().toLocaleDateString('ar-SA'),
+    date: announcement?.date || new Date().toLocaleDateString('en-GB'),
     read: announcement?.read || false,
     course: announcement?.course || null,
     ...announcement
