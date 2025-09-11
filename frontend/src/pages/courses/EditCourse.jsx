@@ -149,6 +149,7 @@ const EditCourse = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   
   // Form state - initialize with empty values
   const [courseData, setCourseData] = useState({
@@ -160,6 +161,7 @@ const EditCourse = () => {
     level: 'beginner',
     language: 'ar',
     category: '',
+    subcategory: '',
     tags: [],
     isFree: false,
     price: 0,
@@ -205,6 +207,7 @@ const EditCourse = () => {
             level: course.level || 'beginner',
             language: course.language || 'ar',
             category: course.category?.id || '',
+            subcategory: course.subcategory?.id || '',
             tags: course.tags?.map(tag => tag.name) || [],
             isFree: course.is_free || false,
             price: course.price || 0,
@@ -251,6 +254,30 @@ const EditCourse = () => {
       setError('معرف الدورة غير صحيح');
     }
   }, [id]);
+
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      if (courseData.category) {
+        try {
+          const subcategoriesData = await courseAPI.getSubCategories(courseData.category);
+          console.log('Subcategories API response:', subcategoriesData);
+          setSubcategories(subcategoriesData);
+        } catch (error) {
+          console.error('Error fetching subcategories:', error);
+          setSubcategories([]);
+        }
+      } else {
+        setSubcategories([]);
+        setCourseData(prev => ({
+          ...prev,
+          subcategory: ''
+        }));
+      }
+    };
+
+    fetchSubCategories();
+  }, [courseData.category]);
   
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -324,6 +351,15 @@ const EditCourse = () => {
         if (courseData.discountPrice && courseData.discountPrice >= courseData.price) {
           setError('السعر المخفض يجب أن يكون أقل من السعر الأصلي');
           return;
+        }
+        
+        // Validate subcategory belongs to selected category
+        if (courseData.subcategory && courseData.category) {
+          const selectedSubcategory = subcategories.find(sub => sub.id === parseInt(courseData.subcategory));
+          if (selectedSubcategory && selectedSubcategory.category !== parseInt(courseData.category)) {
+            setError('التصنيف الفرعي يجب أن ينتمي إلى التصنيف المحدد');
+            return;
+          }
         }
         
         // Prepare data for API
@@ -528,6 +564,27 @@ const EditCourse = () => {
                   {Array.isArray(categories) && categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                <InputLabel>التصنيف الفرعي</InputLabel>
+                <Select
+                  name="subcategory"
+                  value={courseData.subcategory}
+                  onChange={handleChange}
+                  label="التصنيف الفرعي"
+                  disabled={!courseData.category}
+                  sx={{ textAlign: 'right' }}
+                >
+                  <MenuItem value="">
+                    <em>اختر تصنيفاً فرعياً</em>
+                  </MenuItem>
+                  {Array.isArray(subcategories) && subcategories.map((subcategory) => (
+                    <MenuItem key={subcategory.id} value={subcategory.id}>
+                      {subcategory.name}
                     </MenuItem>
                   ))}
                 </Select>

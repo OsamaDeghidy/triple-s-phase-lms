@@ -257,6 +257,22 @@ export const courseAPI = {
     }
   },
 
+  // Get subcategories
+  getSubCategories: async (categoryId = null) => {
+    try {
+      const params = categoryId ? { category: categoryId } : {};
+      const response = await api.get('/api/courses/subcategories/', { params });
+      // Ensure we return an array
+      const data = response.data;
+      return Array.isArray(data) ? data : 
+             data.results ? data.results : 
+             data.data ? data.data : [];
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+      return [];
+    }
+  },
+
   // Get tags
   getTags: async () => {
     const response = await api.get('/api/courses/tags/');
