@@ -237,7 +237,7 @@ const Profile = () => {
     bio: user?.bio || '',
     avatar: user?.profile_picture || profileImage,
     coverImage: 'https://source.unsplash.com/random/1200x300?programming',
-    joinDate: user?.date_joined ? new Date(user.date_joined).toLocaleDateString('ar-EG') : '',
+    joinDate: user?.date_joined ? new Date(user.date_joined).toLocaleDateString('en-US') : '',
     skills: user?.skills || [],
     education: user?.education || [],
     experience: user?.experience || [],

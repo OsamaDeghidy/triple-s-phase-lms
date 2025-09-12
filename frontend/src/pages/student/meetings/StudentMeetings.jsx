@@ -665,7 +665,7 @@ const StudentMeetings = () => {
       )}
 
       {/* Meetings Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={1.25}>
         {filteredMeetings.map((meeting) => {
           if (!meeting || !meeting.id) return null;
           

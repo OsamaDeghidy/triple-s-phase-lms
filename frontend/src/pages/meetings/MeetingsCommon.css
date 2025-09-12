@@ -1,8 +1,17 @@
 /* Common Styles for Meetings Pages */
 .meetings-container {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #ffffff;
   min-height: 100vh;
   padding: 24px;
+}
+
+/* Grid spacing customization */
+.meetings-container .MuiGrid-root {
+  --Grid-columnSpacing: 10px;
+}
+
+.meetings-container .MuiGrid-container {
+  --Grid-columnSpacing: 10px;
 }
 
 .meetings-header {

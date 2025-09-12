@@ -22,7 +22,9 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Edit as EditIcon,
-  RemoveRedEye as ViewIcon
+  RemoveRedEye as ViewIcon,
+  Quiz as QuizIcon,
+  QuestionAnswer as QuestionAnswerIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -62,7 +64,8 @@ const TeacherDashboard = () => {
     averageRating: 0,
     pendingAssignments: 0,
     upcomingMeetings: 0,
-    recentEnrollments: 0
+    recentEnrollments: 0,
+    totalQuestions: 0
   });
   const [courses, setCourses] = useState([]);
   const [studentProgress, setStudentProgress] = useState([]);
@@ -86,13 +89,15 @@ const TeacherDashboard = () => {
         coursesData,
         progressData,
         activityData,
-        announcementsData
+        announcementsData,
+        questionBankStats
       ] = await Promise.all([
         dashboardService.getTeacherStats(),
         dashboardService.getTeacherCourses(),
         dashboardService.getStudentProgress(),
         dashboardService.getRecentActivity(),
-        dashboardService.getRecentAnnouncements()
+        dashboardService.getRecentAnnouncements(),
+        dashboardService.getQuestionBankStats()
       ]);
 
       // تحديث البيانات الحقيقية
@@ -103,7 +108,8 @@ const TeacherDashboard = () => {
         averageRating: statsData.averageRating || 0,
         pendingAssignments: statsData.pendingAssignments || 0,
         upcomingMeetings: statsData.upcomingMeetings || 0,
-        recentEnrollments: statsData.recentEnrollments || 0
+        recentEnrollments: statsData.recentEnrollments || 0,
+        totalQuestions: questionBankStats?.total_questions || 0
       });
       
       setCourses(coursesData || []);
@@ -494,6 +500,58 @@ const TeacherDashboard = () => {
                         </Typography>
                         <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
                           {stats.averageRating.toFixed(1)}★
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+            
+            {/* Question Bank Stats Card */}
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <motion.div variants={item}>
+                <Card
+                  sx={{ 
+                    height: 100,
+                    borderRadius: 3,
+                    background: 'white',
+                    border: 'none',
+                    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+                    },
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => navigate('/teacher/question-bank')}
+                >
+                  <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Box
+                        sx={{
+                          width: 45,
+                          height: 45,
+                          borderRadius: 2,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: '#2196f3',
+                          color: 'white',
+                          '& svg': {
+                            fontSize: '1.5rem'
+                          }
+                        }}
+                      >
+                        <QuizIcon />
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
+                          بنك الأسئلة
+                        </Typography>
+                        <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
+                          {stats.totalQuestions || 0}
                         </Typography>
                       </Box>
                     </Box>

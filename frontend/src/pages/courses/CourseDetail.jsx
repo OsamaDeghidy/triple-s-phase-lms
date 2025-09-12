@@ -1544,7 +1544,7 @@ const CourseDetail = () => {
         id: review.user?.id || null,
       },
       rating: review.rating || 5,
-      date: review.created_at ? new Date(review.created_at).toLocaleDateString('ar-EG', { 
+      date: review.created_at ? new Date(review.created_at).toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'short', 
         day: 'numeric' 
@@ -1590,7 +1590,7 @@ const CourseDetail = () => {
       originalPrice: discountPrice > 0 ? price : price,
       discount: discount,
       isBestseller: apiCourse.is_featured || apiCourse.is_bestseller || false,
-      lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' }) : 'مؤخراً',
+      lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'مؤخراً',
       language: apiCourse.language || 'العربية',
       captions: apiCourse.captions || ['العربية', 'English'],
       features: [

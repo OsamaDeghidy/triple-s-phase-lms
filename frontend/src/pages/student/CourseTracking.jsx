@@ -1157,7 +1157,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                           <>
                             <Typography variant="caption" color="text.secondary" sx={{ mx: 1 }}>•</Typography>
                             <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                              موعد التسليم: {new Date(assignment.due_date).toLocaleDateString('ar-SA')}
+                              موعد التسليم: {new Date(assignment.due_date).toLocaleDateString('en-US')}
                             </Typography>
                           </>
                         )}

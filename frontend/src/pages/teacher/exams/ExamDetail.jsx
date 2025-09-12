@@ -367,7 +367,7 @@ const ExamDetail = () => {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'غير محدد';
       
-      return date.toLocaleDateString('ar-EG', {
+      return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',

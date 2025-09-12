@@ -740,7 +740,7 @@ const TeacherAssignments = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                           <CalendarTodayIcon sx={{ color: '#666' }} />
                           <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                            تاريخ التسليم: {new Date(selectedAssignment.due_date).toLocaleString('ar-SA')}
+                            تاريخ التسليم: {new Date(selectedAssignment.due_date).toLocaleString('en-US')}
                           </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
@@ -758,7 +758,7 @@ const TeacherAssignments = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                           <AccessTimeIcon sx={{ color: '#666' }} />
                           <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                            تاريخ الإنشاء: {new Date(selectedAssignment.created_at).toLocaleString('ar-SA')}
+                            تاريخ الإنشاء: {new Date(selectedAssignment.created_at).toLocaleString('en-US')}
                           </Typography>
                         </Box>
                       </Box>

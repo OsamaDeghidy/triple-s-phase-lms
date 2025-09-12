@@ -266,7 +266,7 @@ const CourseCard = ({ course, onClick }) => {
             id: `assignment-${assignment.id}`,
             title: assignment.title,
             type: 'assignment',
-            duration: assignment.due_date ? new Date(assignment.due_date).toLocaleDateString('ar-EG') : null,
+            duration: assignment.due_date ? new Date(assignment.due_date).toLocaleDateString('en-US') : null,
             completed: assignment.is_submitted || false,
             progress: assignment.grade ? Math.round((assignment.grade / assignment.max_grade) * 100) : 0,
             module_title: assignment.module?.title || 'Assignment',
@@ -595,7 +595,7 @@ const CourseCard = ({ course, onClick }) => {
                   color: '#999', 
                   fontSize: '12px'
                 }}>
-                  مسجل منذ: {new Date(course.enrollment_date).toLocaleDateString('ar-EG')}
+                  مسجل منذ: {new Date(course.enrollment_date).toLocaleDateString('en-US')}
                 </Typography>
               )}
             </Box>
@@ -689,7 +689,7 @@ const CourseCard = ({ course, onClick }) => {
                 fontSize: '10px',
                 fontStyle: 'italic'
               }}>
-                آخر تحديث: {new Date().toLocaleTimeString('ar-EG')}
+                آخر تحديث: {new Date().toLocaleTimeString('en-US')}
               </Typography>
             )}
             
@@ -1162,7 +1162,7 @@ const CompletedCourseCard = ({ course }) => {
             mb: 1,
             textAlign: 'center'
           }}>
-            تم الإكمال في: {new Date(course.completion_date).toLocaleDateString('ar-EG')}
+            تم الإكمال في: {new Date(course.completion_date).toLocaleDateString('en-US')}
           </Typography>
         )}
 

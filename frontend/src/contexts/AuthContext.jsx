@@ -87,6 +87,11 @@ export const AuthProvider = ({ children }) => {
     return profile.status?.toLowerCase() || user_details?.type?.toLowerCase() || 'student';
   }, [profile, user_details]);
 
+  // Get auth token
+  const getAuthToken = useCallback(() => {
+    return localStorage.getItem('token');
+  }, []);
+
   // Expose the auth state and methods
   const value = {
     user,
@@ -99,6 +104,7 @@ export const AuthProvider = ({ children }) => {
     hasRole,
     hasAnyRole,
     getUserRole,
+    getAuthToken,
     updateUser: (userData) => {
       // This is a no-op since we're using Redux for state management
       // The actual update should be done through Redux actions

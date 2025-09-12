@@ -61,7 +61,7 @@ export const testDateFormatting = () => {
       if (!date) {
         console.log(`✅ Date ${index}: null -> "غير محدد"`);
       } else {
-        const formatted = new Date(date).toLocaleDateString('ar-EG', {
+        const formatted = new Date(date).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',

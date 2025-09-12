@@ -56,11 +56,11 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         # Students can only see published assessments
-        if hasattr(user, 'profile') and user.profile.role == 'student':
+        if hasattr(user, 'profile') and user.profile.status == 'Student':
             queryset = queryset.filter(status='published')
         
         # Teachers can see their own assessments
-        elif hasattr(user, 'profile') and user.profile.role == 'teacher':
+        elif hasattr(user, 'profile') and user.profile.status == 'Instructor':
             queryset = queryset.filter(created_by=user)
         
         return queryset.select_related('course', 'created_by').prefetch_related('assessment_questions__question')
@@ -221,7 +221,7 @@ class QuestionBankViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         # Students can only see questions from published assessments
-        if hasattr(user, 'profile') and user.profile.role == 'student':
+        if hasattr(user, 'profile') and user.profile.status == 'Student':
             # Only show questions that are part of published assessments
             queryset = queryset.filter(
                 assessment_questions__assessment__status='published'
@@ -231,6 +231,10 @@ class QuestionBankViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         """Set the creator when creating a question"""
+        print("=== CREATING QUESTION ===")
+        print("Request data:", self.request.data)
+        print("User:", self.request.user)
+        print("Serializer validated data:", serializer.validated_data)
         serializer.save(created_by=self.request.user)
     
     @action(detail=False, methods=['get'])
@@ -256,6 +260,21 @@ class QuestionBankViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(questions, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get question bank statistics"""
+        queryset = self.get_queryset()
+        
+        stats = {
+            'total_questions': queryset.count(),
+            'by_type': queryset.values('question_type').annotate(count=Count('id')),
+            'by_difficulty': queryset.values('difficulty_level').annotate(count=Count('id')),
+            'by_course': queryset.values('lesson__module__course__title').annotate(count=Count('id')),
+            'recent_questions': queryset.order_by('-created_at')[:5].values('id', 'question_text', 'question_type', 'created_at'),
+        }
+        
+        return Response(stats)
     
     @action(detail=False, methods=['get'])
     def by_lesson(self, request):
