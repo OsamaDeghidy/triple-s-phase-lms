@@ -25,7 +25,8 @@ import {
   RemoveRedEye as ViewIcon,
   Quiz as QuizIcon,
   QuestionAnswer as QuestionAnswerIcon,
-  Psychology as PsychologyIcon
+  Psychology as PsychologyIcon,
+  Add as AddIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -313,7 +314,7 @@ const TeacherDashboard = () => {
 
         {/* Stats Cards - 4 بطاقات إحصائيات بحجم كامل وارتفاع أقل */}
         <Box sx={{ mb: 5, px: 1 }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ '& .MuiGrid-root': { paddingTop: '0 !important' } }}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
@@ -412,7 +413,7 @@ const TeacherDashboard = () => {
               </motion.div>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            {/* <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
                   sx={{ 
@@ -460,7 +461,7 @@ const TeacherDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+             */}
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
@@ -1029,80 +1030,230 @@ const TeacherDashboard = () => {
                 {/* Flashcards Tab */}
                 {activeTab === 2 && (
                   <Box sx={{ p: 3 }}>
-                    <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#333679' }}>
+                    <Box sx={{ mb: 4 }}>
+                      <Typography variant="h5" fontWeight={700} sx={{ mb: 1, color: '#333679' }}>
                         البطاقات التعليمية
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body1" color="text.secondary">
                         إدارة البطاقات التعليمية لتحسين تجربة التعلم
                       </Typography>
                     </Box>
 
-                    <Grid container spacing={3}>
-                      {/* Stats Cards */}
-                      <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ p: 2, textAlign: 'center', background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)', color: 'white' }}>
-                          <PsychologyIcon sx={{ fontSize: 32, mb: 1 }} />
-                          <Typography variant="h4" fontWeight={700}>
-                            {stats.totalFlashcards || 0}
-                          </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    {/* Stats Cards - نفس تصميم الإحصائيات الرئيسية */}
+                    <Box sx={{ mb: 4 }}>
+                      <Grid container spacing={2}>
+                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                          <Card
+                            sx={{ 
+                              height: 100,
+                              borderRadius: 3,
+                              background: 'white',
+                              border: 'none',
+                              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                              '&:hover': {
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+                              },
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
+                            <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box
+                                  sx={{
+                                    width: 45,
+                                    height: 45,
+                                    borderRadius: 2,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: '#ff6b6b',
+                                    color: 'white',
+                                    '& svg': {
+                                      fontSize: '1.5rem'
+                                    }
+                                  }}
+                                >
+                                  <PsychologyIcon />
+                                </Box>
+                                <Box>
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
                             إجمالي البطاقات
                           </Typography>
+                                  <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
+                                    {stats.totalFlashcards || 0}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ p: 2, textAlign: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-                          <QuestionAnswerIcon sx={{ fontSize: 32, mb: 1 }} />
-                          <Typography variant="h4" fontWeight={700}>
-                            {Math.round((stats.totalFlashcards || 0) * 0.7)}
-                          </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                          <Card
+                            sx={{ 
+                              height: 100,
+                              borderRadius: 3,
+                              background: 'white',
+                              border: 'none',
+                              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                              '&:hover': {
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+                              },
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
+                            <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box
+                                  sx={{
+                                    width: 45,
+                                    height: 45,
+                                    borderRadius: 2,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: '#667eea',
+                                    color: 'white',
+                                    '& svg': {
+                                      fontSize: '1.5rem'
+                                    }
+                                  }}
+                                >
+                                  <QuestionAnswerIcon />
+                                </Box>
+                                <Box>
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
                             مرتبطة بأسئلة
                           </Typography>
+                                  <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
+                                    {Math.round((stats.totalFlashcards || 0) * 0.7)}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ p: 2, textAlign: 'center', background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)', color: 'white' }}>
-                          <VisibilityIcon sx={{ fontSize: 32, mb: 1 }} />
-                          <Typography variant="h4" fontWeight={700}>
-                            {Math.round((stats.totalFlashcards || 0) * 0.5)}
-                          </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                          <Card
+                            sx={{ 
+                              height: 100,
+                              borderRadius: 3,
+                              background: 'white',
+                              border: 'none',
+                              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                              '&:hover': {
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+                              },
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
+                            <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box
+                                  sx={{
+                                    width: 45,
+                                    height: 45,
+                                    borderRadius: 2,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: '#2e7d32',
+                                    color: 'white',
+                                    '& svg': {
+                                      fontSize: '1.5rem'
+                                    }
+                                  }}
+                                >
+                                  <VisibilityIcon />
+                                </Box>
+                                <Box>
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
                             تحتوي على صور
                           </Typography>
+                                  <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
+                                    {Math.round((stats.totalFlashcards || 0) * 0.5)}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
                         </Card>
                       </Grid>
 
-                      <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ p: 2, textAlign: 'center', background: 'linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%)', color: 'white' }}>
-                          <TrendingUpIcon sx={{ fontSize: 32, mb: 1 }} />
-                          <Typography variant="h4" fontWeight={700}>
-                            {Math.round((stats.totalFlashcards || 0) * 0.3)}
-                          </Typography>
-                          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                          <Card
+                            sx={{ 
+                              height: 100,
+                              borderRadius: 3,
+                              background: 'white',
+                              border: 'none',
+                              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                              '&:hover': {
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+                              },
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
+                            <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box
+                                  sx={{
+                                    width: 45,
+                                    height: 45,
+                                    borderRadius: 2,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: '#7b1fa2',
+                                    color: 'white',
+                                    '& svg': {
+                                      fontSize: '1.5rem'
+                                    }
+                                  }}
+                                >
+                                  <TrendingUpIcon />
+                                </Box>
+                                <Box>
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
                             تم مراجعتها
                           </Typography>
+                                  <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
+                                    {Math.round((stats.totalFlashcards || 0) * 0.3)}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
                         </Card>
                       </Grid>
+                      </Grid>
+                    </Box>
 
                       {/* Action Buttons */}
-                      <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ mb: 4 }}>
+                      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                           <Button
                             variant="contained"
                             startIcon={<PsychologyIcon />}
                             onClick={() => navigate('/teacher/flashcards')}
                             sx={{
                               background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
-                              borderRadius: 2,
+                            borderRadius: 3,
                               px: 4,
                               py: 1.5,
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)',
                               '&:hover': {
-                                background: 'linear-gradient(135deg, #ff5252, #d32f2f)'
-                              }
+                              background: 'linear-gradient(135deg, #ff5252, #d32f2f)',
+                              boxShadow: '0 6px 16px rgba(255, 107, 107, 0.4)',
+                              transform: 'translateY(-2px)'
+                            },
+                            transition: 'all 0.3s ease'
                             }}
                           >
                             إدارة البطاقات التعليمية
@@ -1114,65 +1265,91 @@ const TeacherDashboard = () => {
                             sx={{
                               borderColor: '#ff6b6b',
                               color: '#ff6b6b',
-                              borderRadius: 2,
+                            borderRadius: 3,
                               px: 4,
                               py: 1.5,
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            borderWidth: 2,
                               '&:hover': {
                                 borderColor: '#ff5252',
-                                backgroundColor: 'rgba(255, 107, 107, 0.1)'
-                              }
+                              backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                              borderWidth: 2,
+                              transform: 'translateY(-2px)'
+                            },
+                            transition: 'all 0.3s ease'
                             }}
                           >
                             إنشاء بطاقة جديدة
                           </Button>
                         </Box>
-                      </Grid>
+                    </Box>
 
                       {/* Recent Flashcards Preview */}
-                      <Grid item xs={12}>
-                        <Card sx={{ p: 3 }}>
-                          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, color: '#333679' }}>
-                            أحدث البطاقات التعليمية
+                    <Card 
+                      sx={{ 
+                        borderRadius: 3,
+                        background: 'white',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        border: '1px solid #f0f0f0'
+                      }}
+                    >
+                      <CardContent sx={{ p: 4 }}>
+                        <Box sx={{ textAlign: 'center' }}>
+                          <PsychologyIcon sx={{ fontSize: 64, color: '#ff6b6b', mb: 2 }} />
+                          <Typography variant="h5" fontWeight={700} sx={{ mb: 2, color: '#333679' }}>
+                            البطاقات التعليمية
                           </Typography>
                           {stats.totalFlashcards > 0 ? (
-                            <Box sx={{ textAlign: 'center', py: 2 }}>
-                              <Typography variant="body1" color="text.secondary">
-                                لديك {stats.totalFlashcards} بطاقة تعليمية
+                            <>
+                              <Typography variant="h4" fontWeight={700} sx={{ mb: 1, color: '#ff6b6b' }}>
+                                {stats.totalFlashcards}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                                بطاقة تعليمية متاحة
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                                 قم بإدارة البطاقات التعليمية لتحسين تجربة التعلم للطلاب
                               </Typography>
-                            </Box>
+                            </>
                           ) : (
-                            <Box sx={{ textAlign: 'center', py: 4 }}>
-                              <PsychologyIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
-                              <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                            <>
+                              <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
                                 لا توجد بطاقات تعليمية
                               </Typography>
-                              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                                 ابدأ بإنشاء بطاقات تعليمية جديدة لمساعدة طلابك في التعلم
                               </Typography>
+                            </>
+                          )}
                               <Button
                                 variant="contained"
                                 startIcon={<AddIcon />}
                                 onClick={() => navigate('/teacher/flashcards')}
+                            size="large"
                                 sx={{
                                   background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
-                                  borderRadius: 2,
-                                  px: 4,
-                                  py: 1.5,
+                              borderRadius: 3,
+                              px: 6,
+                              py: 2,
+                              fontSize: '1.1rem',
+                              fontWeight: 600,
+                              textTransform: 'none',
+                              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)',
                                   '&:hover': {
-                                    background: 'linear-gradient(135deg, #ff5252, #d32f2f)'
-                                  }
-                                }}
-                              >
-                                إنشاء أول بطاقة تعليمية
+                                background: 'linear-gradient(135deg, #ff5252, #d32f2f)',
+                                boxShadow: '0 6px 16px rgba(255, 107, 107, 0.4)',
+                                transform: 'translateY(-2px)'
+                              },
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            {stats.totalFlashcards > 0 ? 'إدارة البطاقات' : 'إنشاء أول بطاقة تعليمية'}
                               </Button>
                             </Box>
-                          )}
+                      </CardContent>
                         </Card>
-                      </Grid>
-                    </Grid>
                   </Box>
                 )}
                 </Box>
