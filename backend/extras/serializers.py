@@ -13,9 +13,28 @@ class BannerSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'image', 'image_url', 'url',
             'is_active', 'banner_type', 'display_order',
-            'start_date', 'end_date', 'created_at', 'updated_at'
+            'start_date', 'end_date', 'button_text', 'button_url',
+            'background_color', 'text_color', 'created_at', 'updated_at'
         ]
         read_only_fields = ('created_at', 'updated_at')
+    
+    def get_image_url(self, obj):
+        if obj.image:
+            return self.context['request'].build_absolute_uri(obj.image.url)
+        return None
+
+
+class BannerByTypeSerializer(serializers.ModelSerializer):
+    """Simplified serializer for banners by type"""
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Banner
+        fields = [
+            'id', 'title', 'description', 'image_url', 'url',
+            'banner_type', 'display_order', 'button_text', 'button_url',
+            'background_color', 'text_color'
+        ]
     
     def get_image_url(self, obj):
         if obj.image:

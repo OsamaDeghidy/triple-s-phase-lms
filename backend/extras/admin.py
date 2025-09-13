@@ -116,6 +116,14 @@ class BannerAdmin(admin.ModelAdmin):
         ('تواريخ العرض', {
             'fields': ('start_date', 'end_date')
         }),
+        ('إعدادات الزر', {
+            'fields': ('button_text', 'button_url'),
+            'classes': ('collapse',)
+        }),
+        ('إعدادات التصميم', {
+            'fields': ('background_color', 'text_color'),
+            'classes': ('collapse',)
+        }),
         ('معلومات إضافية', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)

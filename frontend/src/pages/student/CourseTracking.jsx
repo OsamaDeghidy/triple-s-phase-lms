@@ -67,7 +67,6 @@ import {
   Bookmark,
   AccessTime,
   MenuBook,
-  Assignment,
   Quiz,
   VideoLibrary,
   Star,
@@ -76,7 +75,6 @@ import {
   ArrowBack,
   ArrowForward,
   DescriptionOutlined,
-  EmojiEvents,
   School,
   Timeline,
   LocalLibrary,
@@ -114,18 +112,12 @@ import {
   InsertDriveFile,
   Visibility,
   OpenInNew,
+  Search,
 } from '@mui/icons-material';
 import { Quiz as QuizIcon } from '@mui/icons-material';
 import QuizStart from './quiz/QuizStart';
 import QuizResult from './quiz/QuizResult';
-import ExamStart from './exam/ExamStart';
-import ExamTaking from './exam/ExamTaking';
-import ExamResult from './exam/ExamResult';
-import FinalExamModal from './FinalExamModal';
 import { courseAPI } from '../../services/api.service';
-import certificateAPI from '../../services/certificate.service';
-import Header from '../../components/layout/Header.jsx';
-import Footer from '../../components/layout/Footer.jsx';
 import { API_CONFIG } from '../../config/api.config';
 // Force reload
 
@@ -773,34 +765,38 @@ const getFileTypeColor = (fileName, fileType) => {
   }
 };
 
-const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, currentLessonId, setActiveQuizId, setOpenQuiz, setShowQuizResult, showFinalExamButton, onFinalExamClick, assignments, quizzes, exams, onAssignmentClick }) => {
+const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, currentLessonId, setActiveQuizId, setOpenQuiz, setShowQuizResult, quizzes }) => {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState('lessons');
   
   return (
-    <Paper 
-      elevation={0} 
+    <Box 
       sx={{ 
         borderRadius: 2, 
         overflow: 'hidden',
-        border: `1px solid ${theme.palette.divider}`,
         maxHeight: 'calc(100vh - 200px)',
         overflowY: 'auto',
         '&::-webkit-scrollbar': {
           width: '6px',
         },
         '&::-webkit-scrollbar-track': {
-          background: theme.palette.grey[100],
+          background: 'rgba(255,255,255,0.1)',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: theme.palette.grey[400],
+          backgroundColor: 'rgba(255,255,255,0.3)',
           borderRadius: '3px',
         },
       }}
     >
-      <Box sx={{ p: 2, bgcolor: theme.palette.background.paper, borderBottom: `1px solid ${theme.palette.divider}` }}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', mb: 2 }}>
-          <MenuBook sx={{ ml: 1 }} />
+      <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+        <Typography variant="h6" sx={{ 
+          fontWeight: 'bold', 
+          display: 'flex', 
+          alignItems: 'center', 
+          mb: 2,
+          color: 'white'
+        }}>
+          <MenuBook sx={{ ml: 1, color: 'white' }} />
           محتوى الدورة
         </Typography>
         
@@ -814,41 +810,68 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
               minHeight: 40,
               fontSize: '0.8rem',
               fontWeight: 'bold',
+              color: 'rgba(255,255,255,0.7)',
+              textTransform: 'none',
+              '&:hover': {
+                color: 'white',
+                bgcolor: 'rgba(255,255,255,0.1)',
+              }
             },
             '& .Mui-selected': {
-              color: theme.palette.primary.main,
+              color: 'white',
+              bgcolor: 'rgba(255,255,255,0.15)',
             },
             '& .MuiTabs-indicator': {
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor: 'white',
               height: 3,
             }
           }}
         >
           <Tab 
-            label={`الدروس (${modules?.reduce((sum, module) => sum + (module.lessons?.length || 0), 0) || 0})`} 
+            label={`All`} 
             value="lessons"
-            icon={<MenuBook sx={{ fontSize: 18 }} />}
-            iconPosition="start"
           />
           <Tab 
-            label={`الواجبات (${assignments?.length || 0})`} 
-            value="assignments"
-            icon={<Assignment sx={{ fontSize: 18 }} />}
-            iconPosition="start"
+            label={`Videos`} 
+            value="videos"
           />
           <Tab 
-            label={`الكويزات (${quizzes?.length || 0})`} 
+            label={`Quizzes`} 
             value="quizzes"
-            icon={<Quiz sx={{ fontSize: 18 }} />}
-            iconPosition="start"
-          />
-          <Tab 
-            label={`الامتحانات (${exams?.length || 0})`} 
-            value="exams"
-            icon={<EmojiEvents sx={{ fontSize: 18 }} />}
-            iconPosition="start"
           />
         </Tabs>
+        
+        {/* Search Bar */}
+        <Box sx={{ mt: 2 }}>
+          <TextField
+            placeholder="Search..."
+            variant="outlined"
+            size="small"
+            fullWidth
+            InputProps={{
+              startAdornment: <Search sx={{ color: 'rgba(255,255,255,0.7)', mr: 1 }} />,
+              sx: {
+                color: 'white',
+                '& .MuiOutlinedInput-root': {
+                  color: 'white',
+                  '& fieldset': {
+                    borderColor: 'rgba(255,255,255,0.3)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255,255,255,0.5)',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white',
+                  },
+                },
+                '& .MuiInputBase-input::placeholder': {
+                  color: 'rgba(255,255,255,0.7)',
+                  opacity: 1,
+                },
+              }
+            }}
+          />
+        </Box>
       </Box>
       
       {/* Tab Content */}
@@ -860,11 +883,12 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
               component="div"
               onClick={() => onModuleClick(module.id)}
               sx={{
-                bgcolor: expandedModule === module.id ? 'action.hover' : 'background.paper',
-                borderBottom: `1px solid ${theme.palette.divider}`,
+                bgcolor: expandedModule === module.id ? 'rgba(255,255,255,0.15)' : 'transparent',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
                 cursor: 'pointer',
+                color: 'white',
                 '&:hover': {
-                  bgcolor: 'action.hover',
+                  bgcolor: 'rgba(255,255,255,0.1)',
                 },
               }}
             >
@@ -923,53 +947,64 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
               </ListItemIcon>
               <ListItemText 
                 primary={
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textAlign: 'right', direction: 'rtl' }}>
+                  <Typography variant="subtitle1" sx={{ 
+                    fontWeight: 'bold', 
+                    textAlign: 'left', 
+                    color: 'white',
+                    fontSize: '0.9rem'
+                  }}>
                     {module.title}
                   </Typography>
                 }
                 secondary={
-                  <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl', display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                    {module.completedLessons} من {module.totalLessons} دروس
+                  <Typography variant="caption" sx={{ 
+                    textAlign: 'left', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    mt: 0.5, 
+                    justifyContent: 'flex-start',
+                    color: 'rgba(255,255,255,0.7)',
+                    fontSize: '0.75rem'
+                  }}>
+                    {module.completedLessons} of {module.totalLessons} lessons
                   </Typography>
                 }
                 sx={{ ml: 1 }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Box sx={{ width: 80, mr: 1 }}>
+                <Box sx={{ width: 60, mr: 1 }}>
                   <LinearProgress 
                     variant="determinate" 
                     value={module.progress} 
                     sx={{ 
-                      height: 6, 
-                      borderRadius: 3,
-                      bgcolor: 'grey.100',
-                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
+                      height: 4, 
+                      borderRadius: 2,
+                      bgcolor: 'rgba(255,255,255,0.2)',
                       '& .MuiLinearProgress-bar': {
-                        borderRadius: 3,
-                        background: 'linear-gradient(90deg, #333679 0%, #4DBFB3 100%)',
-                        boxShadow: '0 1px 3px rgba(14, 81, 129, 0.3)',
+                        borderRadius: 2,
+                        background: 'linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%)',
                       }
                     }} 
                   />
                 </Box>
                 <Box 
                   sx={{
-                    width: 32,
-                    height: 32,
+                    width: 28,
+                    height: 28,
                     borderRadius: '50%',
-                    bgcolor: expandedModule === module.id ? 'primary.main' : 'grey.200',
+                    bgcolor: expandedModule === module.id ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: expandedModule === module.id ? 'white' : 'grey.600',
+                    color: 'white',
                     transition: 'all 0.3s ease',
                     '&:hover': {
-                      bgcolor: expandedModule === module.id ? 'primary.dark' : 'grey.300',
+                      bgcolor: 'rgba(255,255,255,0.3)',
                       transform: 'scale(1.1)',
                     }
                   }}
                 >
-                  {expandedModule === module.id ? <ExpandLess sx={{ fontSize: 20 }} /> : <ExpandMore sx={{ fontSize: 20 }} />}
+                  {expandedModule === module.id ? <ExpandLess sx={{ fontSize: 16 }} /> : <ExpandMore sx={{ fontSize: 16 }} />}
                 </Box>
               </Box>
             </ListItem>
@@ -983,35 +1018,44 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                     selected={currentLessonId === lesson.id}
                     onClick={() => onLessonClick(module.id, lesson.id)}
                     sx={{
-                      pl: 8,
+                      pl: 4,
                       pr: 2,
                       py: 1.5,
                       cursor: 'pointer',
-                      borderBottom: `1px solid ${theme.palette.divider}`,
-                      bgcolor: currentLessonId === lesson.id ? 'action.selected' : 'background.paper',
+                      borderBottom: '1px solid rgba(255,255,255,0.1)',
+                      bgcolor: currentLessonId === lesson.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                      color: 'white',
                       '&:hover': {
-                        bgcolor: 'action.hover',
+                        bgcolor: 'rgba(255,255,255,0.1)',
                       },
                       '&.Mui-selected': {
-                        bgcolor: 'action.selected',
+                        bgcolor: 'rgba(255,255,255,0.2)',
                         '&:hover': {
-                          bgcolor: 'action.hover',
+                          bgcolor: 'rgba(255,255,255,0.3)',
                         },
                       },
                     }}
                   >
                     <ListItemIcon sx={{ minWidth: 36 }}>
                       {lesson.completed ? (
-                        <CheckCircle color="success" sx={{ fontSize: 20 }} />
+                        <CheckCircle sx={{ fontSize: 20, color: '#10b981' }} />
                       ) : (
                         <Box 
                           sx={{
                             width: 20,
                             height: 20,
                             borderRadius: '50%',
-                            border: `2px solid ${theme.palette.grey[400]}`,
+                            border: '2px solid rgba(255,255,255,0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '0.75rem',
+                            fontWeight: 'bold'
                           }}
-                        />
+                        >
+                          {lessonIndex + 1}
+                        </Box>
                       )}
                     </ListItemIcon>
                     <ListItemText 
@@ -1020,53 +1064,33 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                           variant="body2" 
                           sx={{ 
                             fontWeight: currentLessonId === lesson.id ? 'bold' : 'normal',
-                            color: currentLessonId === lesson.id ? 'primary.main' : 'text.primary',
+                            color: currentLessonId === lesson.id ? 'white' : 'rgba(255,255,255,0.9)',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 1
+                            gap: 1,
+                            fontSize: '0.85rem'
                           }}
                         >
                           {lesson.title}
-                          {lesson.type === 'quiz' && (
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              startIcon={<QuizIcon />}
-                              sx={{ ml: 1, fontSize: '0.75rem', borderRadius: 2, px: 1.5, py: 0.5 }}
-                              onClick={e => {
-                                e.stopPropagation();
-                                setActiveQuizId && setActiveQuizId(lesson.quizId || lesson.id);
-                                setOpenQuiz && setOpenQuiz(true);
-                                setShowQuizResult && setShowQuizResult(false);
-                              }}
-                            >
-                              ابدأ الكويز
-                            </Button>
-                          )}
                         </Typography>
                       }
                       secondary={
                         <Box>
-                          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem', display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              {getLessonIcon(lesson.type)}
-                              <span style={{ marginRight: '4px' }}>
-                                {lesson.type === 'video' ? 'فيديو' : lesson.type === 'quiz' ? 'اختبار' : 'تمرين'}
-                              </span>
-                            </Box>
+                          <Typography variant="caption" sx={{ 
+                            fontSize: '0.7rem', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            mt: 0.5, 
+                            gap: 1,
+                            color: 'rgba(255,255,255,0.6)'
+                          }}>
                             <span>{lesson.duration}</span>
                           </Typography>
-                          {lesson.resources && lesson.resources.length > 0 && (
-                            <Typography variant="caption" color="primary.main" sx={{ fontSize: '0.65rem', display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                              <NoteAlt sx={{ fontSize: 12, ml: 0.5 }} />
-                              {lesson.resources.length} مرفق
-                            </Typography>
-                          )}
                         </Box>
                       }
                     />
-                    <IconButton size="small" edge="end">
-                      <PlayCircleOutline sx={{ fontSize: 20 }} />
+                    <IconButton size="small" edge="end" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      <PlayCircleOutline sx={{ fontSize: 18 }} />
                     </IconButton>
                   </ListItem>
                 ))}
@@ -1074,136 +1098,9 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
             </Collapse>
           </React.Fragment>
         ))}
-        {/* زر الامتحان الشامل بعد آخر وحدة إذا كل الدروس مكتملة */}
-        {showFinalExamButton && (
-          <ListItem sx={{ justifyContent: 'center', py: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{
-                borderRadius: 2,
-                fontWeight: 'bold',
-                px: 0,
-                py: 0.5,
-                fontSize: 15,
-                minWidth: 0,
-                width: '85%',
-                height: 38,
-                boxShadow: '0 2px 8px 0 rgba(63,81,181,0.08)',
-                mx: 'auto',
-                display: 'block',
-                mt: 1,
-                mb: 1,
-                letterSpacing: 1,
-              }}
-              onClick={onFinalExamClick}
-            >
-              بدء الامتحان الشامل
-            </Button>
-          </ListItem>
-          )}
         </List>
       )}
 
-      {/* Assignments Tab */}
-      {activeTab === 'assignments' && (
-        <List sx={{ p: 0 }}>
-          {assignments && assignments.length > 0 ? (
-            assignments.map((assignment, index) => (
-              <ListItem
-                key={assignment.id || index}
-                sx={{
-                  borderBottom: `1px solid ${theme.palette.divider}`,
-                  direction: 'rtl',
-                  textAlign: 'right',
-                  '&:hover': {
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <Box 
-                    sx={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      bgcolor: 'warning.light',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'warning.dark',
-                    }}
-                  >
-                    <Assignment sx={{ fontSize: 20 }} />
-                  </Box>
-                </ListItemIcon>
-                <ListItemText 
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textAlign: 'right', direction: 'rtl' }}>
-                      {assignment.title || assignment.name || `الواجب ${index + 1}`}
-                    </Typography>
-                  }
-                  secondary={
-                    <Box sx={{ textAlign: 'right', direction: 'rtl' }}>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                        {assignment.description || 'لا يوجد وصف متوفر'}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ ml: 1, textAlign: 'right', direction: 'rtl' }}>
-                          النقاط: {assignment.points || assignment.total_points || 'غير محدد'}
-                        </Typography>
-                        {assignment.due_date && (
-                          <>
-                            <Typography variant="caption" color="text.secondary" sx={{ mx: 1 }}>•</Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                              موعد التسليم: {new Date(assignment.due_date).toLocaleDateString('en-US')}
-                            </Typography>
-                          </>
-                        )}
-                      </Box>
-                      {assignment.attachments && assignment.attachments.length > 0 && (
-                        <Typography variant="caption" color="primary.main" sx={{ fontSize: '0.65rem', display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                          <NoteAlt sx={{ fontSize: 12, ml: 0.5 }} />
-                          {assignment.attachments.length} مرفق
-                        </Typography>
-                      )}
-                    </Box>
-                  }
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ 
-                    borderRadius: 2, 
-                    textTransform: 'none',
-                    fontSize: '0.7rem',
-                    px: 1.5,
-                    py: 0.5,
-                    minWidth: 'auto'
-                  }}
-                  onClick={() => {
-                    // Navigate to assignment submission page
-                    onAssignmentClick && onAssignmentClick(assignment.id);
-                  }}
-                >
-                  عرض الواجب
-                </Button>
-              </ListItem>
-            ))
-          ) : (
-            <ListItem>
-              <ListItemText 
-                primary={
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-                    لا توجد واجبات متاحة لهذه الدورة
-                  </Typography>
-                }
-              />
-            </ListItem>
-          )}
-        </List>
-      )}
 
       {/* Quizzes Tab */}
       {activeTab === 'quizzes' && (
@@ -1213,11 +1110,10 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
               <ListItem
                 key={quiz.id || index}
                 sx={{
-                  borderBottom: `1px solid ${theme.palette.divider}`,
-                  direction: 'rtl',
-                  textAlign: 'right',
+                  borderBottom: '1px solid rgba(255,255,255,0.1)',
+                  color: 'white',
                   '&:hover': {
-                    bgcolor: 'action.hover',
+                    bgcolor: 'rgba(255,255,255,0.1)',
                   },
                 }}
               >
@@ -1227,11 +1123,11 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                       width: 36,
                       height: 36,
                       borderRadius: '50%',
-                      bgcolor: 'secondary.light',
+                      bgcolor: 'rgba(255,255,255,0.2)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: 'secondary.dark',
+                      color: 'white',
                     }}
                   >
                     <Quiz sx={{ fontSize: 20 }} />
@@ -1239,34 +1135,43 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                 </ListItemIcon>
                 <ListItemText 
                   primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textAlign: 'right', direction: 'rtl' }}>
-                      {quiz.title || quiz.name || `الكويز ${index + 1}`}
+                    <Typography variant="subtitle1" sx={{ 
+                      fontWeight: 'bold', 
+                      textAlign: 'left', 
+                      color: 'white',
+                      fontSize: '0.9rem'
+                    }}>
+                      {quiz.title || quiz.name || `Quiz ${index + 1}`}
                     </Typography>
                   }
                   secondary={
-                    <Box sx={{ textAlign: 'right', direction: 'rtl' }}>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                        {quiz.description || 'لا يوجد وصف متوفر'}
+                    <Box sx={{ textAlign: 'left' }}>
+                      <Typography variant="caption" sx={{ 
+                        textAlign: 'left', 
+                        color: 'rgba(255,255,255,0.7)',
+                        fontSize: '0.75rem'
+                      }}>
+                        {quiz.description || 'No description available'}
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ ml: 1, textAlign: 'right', direction: 'rtl' }}>
-                          النقاط: {quiz.total_points || quiz.points || 'غير محدد'}
+                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-start' }}>
+                        <Typography variant="caption" sx={{ 
+                          color: 'rgba(255,255,255,0.6)',
+                          fontSize: '0.7rem'
+                        }}>
+                          Points: {quiz.total_points || quiz.points || 'N/A'}
                         </Typography>
                         {quiz.time_limit && (
                           <>
-                            <Typography variant="caption" color="text.secondary" sx={{ mx: 1 }}>•</Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                              المدة: {quiz.time_limit} دقيقة
+                            <Typography variant="caption" sx={{ mx: 1, color: 'rgba(255,255,255,0.6)' }}>•</Typography>
+                            <Typography variant="caption" sx={{ 
+                              color: 'rgba(255,255,255,0.6)',
+                              fontSize: '0.7rem'
+                            }}>
+                              Duration: {quiz.time_limit} min
                             </Typography>
                           </>
                         )}
                       </Box>
-                      {quiz.attachments && quiz.attachments.length > 0 && (
-                        <Typography variant="caption" color="primary.main" sx={{ fontSize: '0.65rem', display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                          <NoteAlt sx={{ fontSize: 12, ml: 0.5 }} />
-                          {quiz.attachments.length} مرفق
-                        </Typography>
-                      )}
                     </Box>
                   }
                 />
@@ -1280,7 +1185,13 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                     fontSize: '0.7rem',
                     px: 1.5,
                     py: 0.5,
-                    minWidth: 'auto'
+                    minWidth: 'auto',
+                    color: 'white',
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    '&:hover': {
+                      borderColor: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                    }
                   }}
                   onClick={() => {
                     setActiveQuizId && setActiveQuizId(quiz.id);
@@ -1288,7 +1199,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                     setShowQuizResult && setShowQuizResult(false);
                   }}
                 >
-                  ابدأ الكويز
+                  Start Quiz
                 </Button>
               </ListItem>
             ))
@@ -1296,8 +1207,12 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
             <ListItem>
               <ListItemText 
                 primary={
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-                    لا توجد كويزات متاحة لهذه الدورة
+                  <Typography variant="body2" sx={{ 
+                    textAlign: 'center', 
+                    py: 2,
+                    color: 'rgba(255,255,255,0.7)'
+                  }}>
+                    No quizzes available for this course
                   </Typography>
                 }
               />
@@ -1306,103 +1221,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
         </List>
       )}
 
-      {/* Exams Tab */}
-      {activeTab === 'exams' && (
-        <List sx={{ p: 0 }}>
-          {exams && exams.length > 0 ? (
-            exams.map((exam, index) => (
-              <ListItem
-                key={exam.id || index}
-                sx={{
-                  borderBottom: `1px solid ${theme.palette.divider}`,
-                  direction: 'rtl',
-                  textAlign: 'right',
-                  '&:hover': {
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <Box 
-                    sx={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: '50%',
-                      bgcolor: 'error.light',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'error.dark',
-                    }}
-                  >
-                    <EmojiEvents sx={{ fontSize: 20 }} />
                   </Box>
-                </ListItemIcon>
-                <ListItemText 
-                  primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textAlign: 'right', direction: 'rtl' }}>
-                      {exam.title || exam.name || `الامتحان ${index + 1}`}
-                    </Typography>
-                  }
-                  secondary={
-                    <Box sx={{ textAlign: 'right', direction: 'rtl' }}>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                        {exam.description || 'لا يوجد وصف متوفر'}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ ml: 1, textAlign: 'right', direction: 'rtl' }}>
-                          النقاط: {exam.total_points || exam.points || 'غير محدد'}
-                        </Typography>
-                        {exam.time_limit && (
-                          <>
-                            <Typography variant="caption" color="text.secondary" sx={{ mx: 1 }}>•</Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', direction: 'rtl' }}>
-                              المدة: {exam.time_limit} دقيقة
-                            </Typography>
-                          </>
-                        )}
-                      </Box>
-                      {exam.attachments && exam.attachments.length > 0 && (
-                        <Typography variant="caption" color="primary.main" sx={{ fontSize: '0.65rem', display: 'flex', alignItems: 'center', mt: 0.5, justifyContent: 'flex-end' }}>
-                          <NoteAlt sx={{ fontSize: 12, ml: 0.5 }} />
-                          {exam.attachments.length} مرفق
-                        </Typography>
-                      )}
-                    </Box>
-                  }
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<EmojiEvents sx={{ fontSize: '0.8rem' }} />}
-                  sx={{ 
-                    borderRadius: 2, 
-                    textTransform: 'none',
-                    fontSize: '0.7rem',
-                    px: 1.5,
-                    py: 0.5,
-                    minWidth: 'auto'
-                  }}
-                  onClick={() => handleExamStart(exam.id)}
-                >
-                  ابدأ الامتحان
-                </Button>
-              </ListItem>
-            ))
-          ) : (
-            <ListItem>
-              <ListItemText 
-                primary={
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-                    لا توجد امتحانات متاحة لهذه الدورة
-                  </Typography>
-                }
-              />
-            </ListItem>
-          )}
-        </List>
-      )}
-    </Paper>
   );
 };
 
@@ -1429,39 +1248,18 @@ const CourseTracking = () => {
   const [activeQuizId, setActiveQuizId] = useState(null);
   const [activeAttemptId, setActiveAttemptId] = useState(null);
   const [showQuizResult, setShowQuizResult] = useState(false);
-  const [examStep, setExamStep] = useState('start');
-  const [openFinalExam, setOpenFinalExam] = useState(false);
-  const [openExam, setOpenExam] = useState(false);
-  const [activeExamId, setActiveExamId] = useState(null);
-  const [activeExamAttemptId, setActiveExamAttemptId] = useState(null);
-  const [showExamResult, setShowExamResult] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
-  const [courseCompletionStatus, setCourseCompletionStatus] = useState(null);
-  const [isGeneratingCertificate, setIsGeneratingCertificate] = useState(false);
   const [imagePreview, setImagePreview] = useState({ open: false, url: '', title: '' });
   
   // Fetch course data on component mount
   useEffect(() => {
     if (courseId) {
       fetchCourseData();
-      checkCourseCompletion();
     }
   }, [courseId]);
 
-  // Check course completion status
-  const checkCourseCompletion = async () => {
-    try {
-      const status = await certificateAPI.checkCourseCompletion(courseId);
-      console.log('Course completion status from API:', status);
-      console.log('API says - Total modules:', status.total_modules, 'Completed modules:', status.completed_modules);
-      console.log('API says - is_completed:', status.is_completed, 'has_certificate:', status.has_certificate);
-      setCourseCompletionStatus(status);
-    } catch (error) {
-      console.error('Error checking course completion:', error);
-    }
-  };
 
   const fetchCourseData = async () => {
     try {
@@ -1553,10 +1351,7 @@ const CourseTracking = () => {
             };
           })
         })),
-        assignments: response.assignments || [],
-        exams: response.exams || [],
-        quizzes: response.quizzes || [],
-        final_exam: response.final_exam || null
+        quizzes: response.quizzes || []
       };
       
       // Debug: Log transformed data
@@ -1605,11 +1400,9 @@ const CourseTracking = () => {
     completedLessons: (courseData.modules || []).reduce((sum, module) => sum + (module.completedLessons || 0), 0),
     completionPercentage: courseData.progress || 0,
     totalDuration: courseData.duration || 0,
-    totalAssignments: (courseData.assignments || []).length,
-    totalExams: (courseData.exams || []).length,
     totalQuizzes: (courseData.quizzes || []).length,
     remainingLessons: (courseData.modules || []).reduce((sum, module) => sum + (module.lessons?.length || 0), 0) - (courseData.modules || []).reduce((sum, module) => sum + (module.completedLessons || 0), 0)
-  } : { totalLessons: 0, completedLessons: 0, completionPercentage: 0, totalDuration: 0, totalAssignments: 0, totalExams: 0, totalQuizzes: 0, remainingLessons: 0 };
+  } : { totalLessons: 0, completedLessons: 0, completionPercentage: 0, totalDuration: 0, totalQuizzes: 0, remainingLessons: 0 };
 
 
   const nextLesson = courseData ? (() => {
@@ -1700,9 +1493,6 @@ const CourseTracking = () => {
       });
       
       showSnackbar('تم إكمال الدرس بنجاح!', 'success');
-      
-      // Check course completion status after lesson completion
-      await checkCourseCompletion();
       
       // Auto-advance to next lesson if available
       setTimeout(() => {
@@ -1890,10 +1680,6 @@ const CourseTracking = () => {
     setShowSidebar(!showSidebar);
   };
 
-  // Handle assignment click
-  const handleAssignmentClick = (assignmentId) => {
-    navigate(`/student/assignments/${assignmentId}/submit`);
-  };
 
   const toggleSidebarExpand = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
@@ -1913,291 +1699,9 @@ const CourseTracking = () => {
     setSnackbarOpen(true);
   };
 
-  // Generate certificate
-  const handleGenerateCertificate = async () => {
-    try {
-      setIsGeneratingCertificate(true);
-      console.log('Attempting to generate certificate for course:', courseId);
-      console.log('Current course completion status:', courseCompletionStatus);
-      console.log('Current course stats:', courseStats);
-      
-      const result = await certificateAPI.generateCertificate(courseId);
-      
-      if (result.certificate) {
-        showSnackbar('تم إنشاء الشهادة بنجاح!', 'success');
-        // Update completion status
-        await checkCourseCompletion();
-        // Navigate to certificates page or show certificate
-        setTimeout(() => {
-          navigate('/student/certificates');
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error generating certificate:', error);
-      const errorMessage = error.response?.data?.error || 'حدث خطأ أثناء إنشاء الشهادة';
-      console.log('Error details:', error.response?.data);
-      showSnackbar(errorMessage, 'error');
-    } finally {
-      setIsGeneratingCertificate(false);
-    }
-  };
 
-  // Exam handlers
-  const handleExamStart = (examId) => {
-    setActiveExamId(examId);
-    setOpenExam(true);
-    setShowExamResult(false);
-    setExamStep('start');
-  };
 
-  const handleExamFinish = (attemptId) => {
-    setActiveExamAttemptId(attemptId);
-    setShowExamResult(true);
-    setExamStep('result');
-  };
 
-  const handleExamClose = () => {
-    setOpenExam(false);
-    setActiveExamId(null);
-    setActiveExamAttemptId(null);
-    setShowExamResult(false);
-    setExamStep('start');
-  };
-
-  // Instructor Info Component
-  const InstructorInfo = ({ instructor, avatar }) => {
-    return (
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          p: 2, 
-          borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'divider',
-          mb: 2,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Avatar 
-            src={avatar} 
-            alt={instructor}
-            sx={{ 
-              width: 56, 
-              height: 56, 
-              mr: 2,
-              border: '2px solid',
-              borderColor: 'primary.main',
-            }} 
-          />
-          <Box>
-            <Typography variant="subtitle2" color="text.secondary">
-              المعلم
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              {instructor}
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
-    );
-  };
-
-  // Course Stats Component
-  const CourseStats = ({ stats }) => {
-    // Add safety check for stats
-    if (!stats) {
-      return (
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 2, 
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-            mb: 2,
-          }}
-        >
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
-            إحصائيات الدورة
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            جاري تحميل الإحصائيات...
-          </Typography>
-        </Paper>
-      );
-    }
-
-    return (
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          p: 2, 
-          borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'divider',
-          mb: 2,
-        }}
-      >
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
-          إحصائيات الدورة
-        </Typography>
-        
-        <Box sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              التقدم
-            </Typography>
-            <Typography variant="body2" color="primary.main" sx={{ fontWeight: 'bold' }}>
-              {stats.completionPercentage || 0}%
-            </Typography>
-          </Box>
-          <LinearProgress 
-            variant="determinate" 
-            value={stats.completionPercentage || 0} 
-            sx={{ 
-              height: 8, 
-              borderRadius: 4,
-              bgcolor: 'grey.200',
-              '& .MuiLinearProgress-bar': {
-                borderRadius: 4,
-                background: 'linear-gradient(90deg, #4facfe 0%, #00f2fe 100%)',
-              }
-            }} 
-          />
-        </Box>
-        
-        <Grid container spacing={1} sx={{ mb: 1 }}>
-          <Grid item xs={6}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Box 
-                sx={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  bgcolor: 'success.light',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'success.dark',
-                  mr: 1,
-                }}
-              >
-                <CheckCircle sx={{ fontSize: 20 }} />
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  مكتمل
-                </Typography>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                  {stats.completedLessons || 0} دروس
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Box 
-                sx={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  bgcolor: 'warning.light',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'warning.dark',
-                  mr: 1,
-                }}
-              >
-                <HourglassEmpty sx={{ fontSize: 20 }} />
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  المتبقي
-                </Typography>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                  {stats.remainingLessons || 0} دروس
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-        
-        {(() => {
-          const shouldShowCertificateButton = (courseCompletionStatus?.is_completed || courseStats.completionPercentage === 100);
-          console.log('Should show certificate button:', shouldShowCertificateButton);
-          console.log('courseCompletionStatus?.is_completed:', courseCompletionStatus?.is_completed);
-          console.log('courseStats.completionPercentage:', courseStats.completionPercentage);
-          return shouldShowCertificateButton;
-        })() ? (
-          courseCompletionStatus?.has_certificate ? (
-            <Button 
-              variant="contained" 
-              fullWidth 
-              size="large"
-              startIcon={<EmojiEvents />}
-              onClick={() => navigate(`/student/certificates?courseId=${courseId}&autoOpen=true`)}
-              sx={{ 
-                mt: 2,
-                borderRadius: 2, 
-                textTransform: 'none',
-                fontWeight: 'bold',
-                py: 1.5,
-                background: 'linear-gradient(45deg, #4caf50 0%, #8bc34a 100%)',
-                boxShadow: '0 4px 15px rgba(76, 175, 80, 0.3)',
-                '&:hover': {
-                  boxShadow: '0 6px 20px rgba(76, 175, 80, 0.4)',
-                },
-              }}
-            >
-              عرض الشهادة
-            </Button>
-          ) : (
-            <Button 
-              variant="contained" 
-              fullWidth 
-              size="large"
-              startIcon={isGeneratingCertificate ? <CircularProgress size={20} color="inherit" /> : <EmojiEvents />}
-              onClick={handleGenerateCertificate}
-              disabled={isGeneratingCertificate}
-              sx={{ 
-                mt: 2,
-                borderRadius: 2, 
-                textTransform: 'none',
-                fontWeight: 'bold',
-                py: 1.5,
-                background: 'linear-gradient(45deg, #4facfe 0%, #00f2fe 100%)',
-                boxShadow: '0 4px 15px rgba(0, 242, 254, 0.3)',
-                '&:hover': {
-                  boxShadow: '0 6px 20px rgba(0, 242, 254, 0.4)',
-                },
-              }}
-            >
-              {isGeneratingCertificate ? 'جاري إنشاء الشهادة...' : 'احصل على الشهادة'}
-            </Button>
-          )
-        ) : (
-          <Button 
-            variant="outlined" 
-            fullWidth 
-            size="large"
-            startIcon={<EmojiEvents />}
-            disabled
-            sx={{ 
-              mt: 2,
-              borderRadius: 2, 
-              textTransform: 'none',
-              fontWeight: 'bold',
-              py: 1.5,
-              opacity: 0.6,
-            }}
-          >
-            أكمل الدورة للحصول على الشهادة
-          </Button>
-        )}
-      </Paper>
-    );
-  };
 
   const toggleBookmark = (lessonId) => {
     setBookmarkedLessons(prev => ({
@@ -2286,7 +1790,6 @@ const CourseTracking = () => {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
-      <Header />
       
       {/* Mobile App Bar */}
       <AppBar 
@@ -2405,8 +1908,8 @@ const CourseTracking = () => {
                 bottom: 0,
                 right: 0,
                 zIndex: 1100,
-                height: { xs: showSidebar ? 'calc(100vh - 64px + 200px)' : 0, md: 'calc(100vh + 300px)' },
-                bgcolor: 'background.paper',
+                height: { xs: showSidebar ? 'calc(100vh - 64px + 200px)' : 0, md: 'calc(100vh + 70px)' },
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
                 boxShadow: { xs: 3, md: 1 },
                 borderRadius: { xs: 0, md: 2 },
                 transform: { 
@@ -2424,21 +1927,101 @@ const CourseTracking = () => {
                 minHeight: 'calc(100%)',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'visible'
+                overflow: 'visible',
+                color: 'white'
               }}>
-                {/* Close button for mobile */}
+                {/* Header with close and collapse buttons */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  mb: 3,
+                  pt: 1
+                }}>
                 <IconButton
                   onClick={toggleSidebar}
                   sx={{
                     display: { xs: 'flex', md: 'none' },
-                    position: 'absolute',
-                    left: 8,
-                    top: 8,
-                    zIndex: 1,
+                      color: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                      '&:hover': {
+                        bgcolor: 'rgba(255,255,255,0.2)',
+                      }
                   }}
                 >
                   <Close />
                 </IconButton>
+                  
+                  <IconButton
+                    onClick={toggleSidebarExpand}
+                    sx={{
+                      display: { xs: 'none', md: 'flex' },
+                      color: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                      '&:hover': {
+                        bgcolor: 'rgba(255,255,255,0.2)',
+                      }
+                    }}
+                  >
+                    <ChevronLeft />
+                  </IconButton>
+                </Box>
+
+                {/* Course Title */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="caption" sx={{ 
+                    color: 'rgba(255,255,255,0.7)', 
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    Biology
+                  </Typography>
+                  <Typography variant="h6" sx={{ 
+                    color: 'white', 
+                    fontWeight: 'bold',
+                    fontSize: '1.1rem',
+                    lineHeight: 1.3,
+                    mt: 0.5
+                  }}>
+                    Molecules and Fundamentals of Biology
+                  </Typography>
+                </Box>
+
+                {/* Progress Section */}
+                <Box sx={{ 
+                  mb: 3, 
+                  p: 2, 
+                  bgcolor: 'rgba(255,255,255,0.1)', 
+                  borderRadius: 2,
+                  border: '1px solid rgba(255,255,255,0.2)'
+                }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                      Lessons Completed
+                    </Typography>
+                    <IconButton size="small" sx={{ color: 'white', p: 0.5 }}>
+                      <Settings sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+                    {courseStats.completedLessons}/{courseStats.totalLessons}
+                  </Typography>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={(courseStats.completedLessons / courseStats.totalLessons) * 100}
+                    sx={{ 
+                      height: 4, 
+                      borderRadius: 2,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 2,
+                        background: 'linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%)',
+                      }
+                    }} 
+                  />
+                </Box>
                 
                 {/* Scrollable Content */}
                 <Box sx={{ 
@@ -2471,35 +2054,10 @@ const CourseTracking = () => {
                     setActiveQuizId={setActiveQuizId}
                     setOpenQuiz={setOpenQuiz}
                     setShowQuizResult={setShowQuizResult}
-                    showFinalExamButton={courseData.hasFinalExam}
-                    onFinalExamClick={() => setOpenFinalExam(true)}
-                    assignments={courseData.assignments}
                     quizzes={courseData.quizzes}
-                    exams={courseData.exams}
-                    onAssignmentClick={handleAssignmentClick}
                   />
                 </Box>
                 
-                {/* Fixed Bottom Section */}
-                <Box sx={{ 
-                  mt: 'auto',
-                  pt: 2,
-                  pb: 2,
-                  position: 'sticky',
-                  bottom: 0,
-                  borderTop: '1px solid',
-                  borderColor: 'divider',
-                  bgcolor: 'background.paper',
-                  zIndex: 1
-                }}>
-                  <InstructorInfo 
-                    instructor={courseData.instructor}
-                    avatar={courseData.instructorAvatar}
-                  />
-                  <Box sx={{ mt: 2 }}>
-                    <CourseStats stats={courseStats} />
-                  </Box>
-                </Box>
               </Box>
             </Box>
           
@@ -2613,250 +2171,112 @@ const CourseTracking = () => {
                   </Box>
                   
                   {/* Lesson Navigation */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
-                    <IconButton 
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    gap: 2,
+                    mt: 3,
+                    p: 2,
+                    bgcolor: 'white',
+                    borderRadius: 2,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    border: '1px solid #e5e7eb'
+                  }}>
+                    <Button 
                       variant="outlined" 
                       disabled={!currentLesson}
                       onClick={navigateToPreviousLesson}
+                      startIcon={<ArrowBack />}
                       sx={{
-                        width: 48,
-                        height: 48,
-                        border: '2px solid',
-                        borderColor: 'primary.main',
-                        color: 'primary.main',
+                        minWidth: 120,
+                        height: 40,
+                        bgcolor: 'white',
+                        color: 'text.primary',
+                        borderColor: '#d1d5db',
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                         '&:hover': {
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                          transform: 'scale(1.1)',
+                          bgcolor: '#f9fafb',
+                          borderColor: '#9ca3af',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
                         },
                         '&:disabled': {
-                          borderColor: 'grey.300',
-                          color: 'grey.300',
+                          bgcolor: '#f9fafb',
+                          color: '#9ca3af',
+                          borderColor: '#e5e7eb',
                         },
-                        transition: 'all 0.3s ease',
                       }}
                     >
-                      <ArrowForward />
-                    </IconButton>
+                      Previous
+                    </Button>
                     
                     <Button 
-                      variant="contained" 
-                      endIcon={<CheckCircle />}
+                      variant="outlined"
+                      disabled={!currentLesson}
+                      onClick={navigateToNextLesson}
+                      endIcon={<ArrowForward />}
+                      sx={{
+                        minWidth: 120,
+                        height: 40,
+                        bgcolor: 'white',
+                        color: 'text.primary',
+                        borderColor: '#d1d5db',
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                        '&:hover': {
+                          bgcolor: '#f9fafb',
+                          borderColor: '#9ca3af',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                        },
+                        '&:disabled': {
+                          bgcolor: '#f9fafb',
+                          color: '#9ca3af',
+                          borderColor: '#e5e7eb',
+                        },
+                      }}
+                    >
+                      Next
+                    </Button>
+                    
+                    <Button 
+                      variant="contained"
                       disabled={!currentLesson}
                       onClick={markLessonAsCompleted}
                       sx={{
-                        background: 'linear-gradient(45deg, #4facfe 0%, #00f2fe 100%)',
-                        boxShadow: '0 4px 15px rgba(0, 242, 254, 0.3)',
-                        '&:hover': {
-                          boxShadow: '0 6px 20px rgba(0, 242, 254, 0.4)',
-                        },
-                      }}
-                    >
-                      تمت المشاهدة
-                    </Button>
-                    
-                    <IconButton 
-                      variant="outlined" 
-                      disabled={!currentLesson}
-                      onClick={navigateToNextLesson}
-                      sx={{
-                        width: 48,
-                        height: 48,
-                        border: '2px solid',
-                        borderColor: 'primary.main',
-                        color: 'primary.main',
-                        '&:hover': {
-                          bgcolor: 'primary.main',
+                        minWidth: 180,
+                        height: 40,
+                        bgcolor: '#3b82f6',
                           color: 'white',
-                          transform: 'scale(1.1)',
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                        '&:hover': {
+                          bgcolor: '#2563eb',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
                         },
                         '&:disabled': {
-                          borderColor: 'grey.300',
-                          color: 'grey.300',
+                          bgcolor: '#d1d5db',
+                          color: '#9ca3af',
+                          boxShadow: 'none',
                         },
-                        transition: 'all 0.3s ease',
                       }}
                     >
-                      <ArrowBack />
-                    </IconButton>
+                      Complete and Continue
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>
               
-              {/* Lesson Content */}
-              <Card 
-                elevation={0}
-                sx={{
-                  mb: 3,
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                    عن هذا الدرس
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    {currentLesson?.content || 'لا يوجد وصف متوفر لهذا الدرس. يرجى اختيار درس آخر.'}
-                  </Typography>
-                  
-                  {/* Resources */}
-                  {currentLesson?.resources && currentLesson.resources.length > 0 && (
-                    <Box sx={{ mt: 3 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, display: 'flex', alignItems: 'center' }}>
-                        <NoteAlt sx={{ ml: 1, color: 'primary.main' }} />
-                        المرفقات والموارد ({currentLesson.resources.length})
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                        {(currentLesson.resources || []).map((resource, index) => {
-                          const fileName = resource.title || resource.name || `ملف ${index + 1}`;
-                          const fileType = resource.resource_type;
-                          const fileIcon = getFileIcon(fileName, fileType);
-                          const fileColor = getFileTypeColor(fileName, fileType);
-                          
-                          return (
-                            <Paper 
-                              key={index}
-                              elevation={0}
-                              sx={{
-                                p: 2,
-                                borderRadius: 2,
-                                display: 'flex',
-                                alignItems: 'center',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                width: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33.333% - 16px)' },
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                cursor: 'pointer',
-                                '&:hover': {
-                                  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-                                  transform: 'translateY(-4px)',
-                                  borderColor: fileColor,
-                                },
-                              }}
-                              onClick={() => previewResource(resource)}
-                            >
-                              <Box 
-                                sx={{
-                                  width: 56,
-                                  height: 56,
-                                  borderRadius: 2,
-                                  bgcolor: `${fileColor}15`,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  mr: 2,
-                                  flexShrink: 0,
-                                  border: `2px solid ${fileColor}30`,
-                                  transition: 'all 0.3s ease',
-                                  '&:hover': {
-                                    bgcolor: `${fileColor}25`,
-                                    borderColor: fileColor,
-                                    transform: 'scale(1.1)',
-                                  }
-                                }}
-                              >
-                                {fileIcon}
                               </Box>
-                              <Box sx={{ flex: 1, minWidth: 0 }}>
-                                <Typography 
-                                  variant="subtitle2" 
-                                  sx={{ 
-                                    fontWeight: 'bold',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    color: 'text.primary',
-                                    mb: 0.5
-                                  }}
-                                >
-                                  {fileName}
-                                </Typography>
-                                <Typography 
-                                  variant="caption" 
-                                  color="text.secondary"
-                                  sx={{
-                                    display: 'block',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    textTransform: 'capitalize'
-                                  }}
-                                >
-                                  {fileType || 'ملف'}
-                                </Typography>
-                                {resource.description && (
-                                  <Typography 
-                                    variant="caption" 
-                                    color="text.secondary"
-                                    sx={{
-                                      display: 'block',
-                                      whiteSpace: 'nowrap',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      mt: 0.5,
-                                      fontSize: '0.7rem'
-                                    }}
-                                  >
-                                    {resource.description}
-                                  </Typography>
-                                )}
-                              </Box>
-                              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                <Tooltip title="معاينة الملف">
-                                  <IconButton 
-                                    size="small" 
-                                    sx={{ 
-                                      color: fileColor,
-                                      '&:hover': {
-                                        bgcolor: `${fileColor}20`,
-                                        transform: 'scale(1.1)'
-                                      }
-                                    }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      previewResource(resource);
-                                    }}
-                                  >
-                                    <Visibility sx={{ fontSize: 18 }} />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="تحميل الملف">
-                                  <IconButton 
-                                    size="small" 
-                                    sx={{ 
-                                      color: fileColor,
-                                      '&:hover': {
-                                        bgcolor: `${fileColor}20`,
-                                        transform: 'scale(1.1)'
-                                      }
-                                    }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      downloadResource(resource);
-                                    }}
-                                  >
-                                    <Download sx={{ fontSize: 18 }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </Paper>
-                          );
-                        })}
-                      </Box>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Box>
           </Box>
         </Box>
       </Container>
-      
-      <Footer />
       
       {/* Quiz Modal */}
       <Modal
@@ -2925,103 +2345,7 @@ const CourseTracking = () => {
         </Fade>
       </Modal>
       
-      {/* Final Exam Modal */}
-      <Modal
-        open={openFinalExam}
-        onClose={() => setOpenFinalExam(false)}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 500 }}
-      >
-        <Fade in={openFinalExam}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: { xs: '98vw', sm: 700 },
-            maxWidth: '98vw',
-            bgcolor: 'background.paper',
-            borderRadius: 3,
-            boxShadow: 24,
-            p: { xs: 1, sm: 4 },
-            outline: 'none',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-          }}>
-            <IconButton
-              onClick={() => setOpenFinalExam(false)}
-              sx={{ position: 'absolute', top: 8, left: 8, zIndex: 10 }}
-            >
-              <Close />
-            </IconButton>
-            <FinalExamModal 
-              onClose={() => setOpenFinalExam(false)} 
-              finalExamData={courseData?.final_exam}
-              courseId={courseId}
-            />
-          </Box>
-        </Fade>
-      </Modal>
 
-      {/* Exam Modal */}
-      <Modal
-        open={openExam}
-        onClose={handleExamClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 500 }}
-      >
-        <Fade in={openExam}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: { xs: '98vw', sm: 800 },
-            maxWidth: '98vw',
-            bgcolor: 'background.paper',
-            borderRadius: 3,
-            boxShadow: 24,
-            p: { xs: 1, sm: 4 },
-            outline: 'none',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-          }}>
-            <IconButton
-              onClick={handleExamClose}
-              sx={{ position: 'absolute', top: 8, left: 8, zIndex: 10 }}
-            >
-              <Close />
-            </IconButton>
-            {examStep === 'start' && (
-              <ExamStart
-                examId={activeExamId}
-                onStart={(attemptId) => {
-                  setActiveExamAttemptId(attemptId);
-                  setExamStep('taking');
-                }}
-                onClose={handleExamClose}
-              />
-            )}
-            {examStep === 'taking' && (
-              <ExamTaking
-                examId={activeExamId}
-                attemptId={activeExamAttemptId}
-                onFinish={handleExamFinish}
-                onClose={handleExamClose}
-              />
-            )}
-            {examStep === 'result' && (
-              <ExamResult
-                examId={activeExamId}
-                attemptId={activeExamAttemptId}
-                onClose={handleExamClose}
-              />
-            )}
-          </Box>
-        </Fade>
-      </Modal>
 
       {/* Image Preview Modal */}
       <Modal
