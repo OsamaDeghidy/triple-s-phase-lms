@@ -236,39 +236,13 @@ const CourseDetail = () => {
 
     // Review states
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const [submittingReview, setSubmittingReview] = useState(false);
     const [reviewForm, setReviewForm] = useState({
         rating: 5,
-<<<<<<< HEAD
-        date: '2 weeks ago',
-        title: 'Excellent course!',
-        content: 'This course took my React skills to the next level. The instructor explains complex concepts in a way that\'s easy to understand. The projects are challenging but rewarding.',
-        likes: 42,
-        isLiked: false,
-      },
-      {
-        id: 2,
-        user: 'Sarah Williams',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-        rating: 5,
-        date: '1 month ago',
-        title: 'Worth every penny!',
-        content: 'The Redux section alone is worth the price. The instructor breaks down complex topics into manageable chunks. I\'ve already implemented several techniques in my job.',
-        likes: 28,
-        isLiked: true,
-      },
-      {
-        id: 3,
-        user: 'Michael Chen',
-        avatar: 'https://randomuser.me/api/portraits/men/75.jpg',
-        rating: 4,
-        date: '2 months ago',
-        title: 'Great content, but could use more exercises',
-        content: 'The course content is top-notch, but I would have liked more hands-on exercises. The instructor is very knowledgeable and presents the material clearly.',
-        likes: 15,
-        isLiked: false,
-      },
-    ],
-  };
+        title: '',
+        content: '',
+        comment: ''
+    });
 
   // Mock related courses
   const mockRelatedCourses = [
@@ -291,550 +265,6 @@ const CourseDetail = () => {
       price: 89.99,
     },
   ];
-
-  // Initialize all modules as collapsed by default
-  const initializeExpandedModules = (modules) => {
-    const initialExpanded = {};
-    if (Array.isArray(modules)) {
-      modules.forEach(module => {
-        if (module && module.id) {
-          initialExpanded[module.id] = false;
-        }
-      });
-    }
-    return initialExpanded;
-  };
-
-  // Load course data
-  useEffect(() => {
-    const fetchCourseData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        console.log('Fetching course data for ID:', id);
-        
-        // Fetch course details
-        let courseData;
-        try {
-          courseData = await courseAPI.getCourseById(id);
-          console.log('Course data from API:', courseData);
-        } catch (error) {
-          // If course details require authentication, try to get basic info from public courses
-          if (error.response?.status === 401) {
-            console.log('Course details require authentication, fetching from public courses...');
-            try {
-              const publicCoursesResponse = await courseAPI.getCourses({ status: 'published' });
-              const publicCourses = publicCoursesResponse.results || publicCoursesResponse;
-              courseData = publicCourses.find(course => course.id === parseInt(id));
-              
-              if (!courseData) {
-                throw new Error('Course not found in public courses');
-              }
-              console.log('Course data from public courses:', courseData);
-            } catch (publicError) {
-              console.error('Error fetching from public courses:', publicError);
-              throw error; // Re-throw original error
-            }
-          } else {
-            throw error;
-          }
-        }
-        
-        // Fetch related courses
-        let relatedCoursesData = [];
-        try {
-          const relatedResponse = await courseAPI.getRelatedCourses(id);
-          relatedCoursesData = relatedResponse.results || relatedResponse || [];
-          console.log('Related courses data:', relatedCoursesData);
-        } catch (error) {
-          console.warn('Could not fetch related courses:', error);
-          relatedCoursesData = [];
-        }
-        
-        // Fetch course modules from content API (real data)
-        let modulesData = [];
-        let isUserEnrolled = false;
-        
-        // Only try to fetch modules if user is authenticated
-        if (isAuthenticated) {
-          try {
-            console.log('Fetching modules from content API for course:', id);
-            const modulesResponse = await contentAPI.getModules(id);
-          console.log('Content API modules response:', modulesResponse);
-          
-          // Handle different response formats
-          if (modulesResponse && typeof modulesResponse === 'object') {
-            if (Array.isArray(modulesResponse)) {
-              modulesData = modulesResponse;
-            } else if (modulesResponse.modules && Array.isArray(modulesResponse.modules)) {
-              modulesData = modulesResponse.modules;
-            } else if (modulesResponse.results && Array.isArray(modulesResponse.results)) {
-              modulesData = modulesResponse.results;
-            } else if (modulesResponse.data && Array.isArray(modulesResponse.data)) {
-              modulesData = modulesResponse.data;
-            } else {
-              modulesData = [];
-            }
-          } else {
-            modulesData = [];
-          }
-          
-          console.log('Processed content modules data:', modulesData);
-          
-          // If we got modules data, user is enrolled or content is public
-          if (modulesData.length > 0) {
-            isUserEnrolled = true;
-          } else {
-            // Try to get modules from course API as fallback
-            try {
-              const courseModulesResponse = await courseAPI.getCourseModules(id);
-              console.log('Course API modules response:', courseModulesResponse);
-              
-              if (courseModulesResponse && typeof courseModulesResponse === 'object') {
-                if (Array.isArray(courseModulesResponse)) {
-                  modulesData = courseModulesResponse;
-                } else if (courseModulesResponse.modules && Array.isArray(courseModulesResponse.modules)) {
-                  modulesData = courseModulesResponse.modules;
-                } else if (courseModulesResponse.results && Array.isArray(courseModulesResponse.results)) {
-                  modulesData = courseModulesResponse.results;
-                }
-              }
-              
-              if (modulesData.length > 0) {
-                isUserEnrolled = true;
-              }
-            } catch (courseModulesError) {
-              console.warn('Could not fetch course modules from course API:', courseModulesError);
-              if (courseModulesError.response && courseModulesError.response.status === 403) {
-                isUserEnrolled = false;
-              }
-            }
-          }
-        } catch (error) {
-          console.warn('Could not fetch modules from content API:', error);
-          
-          // Try course API as fallback
-          try {
-            const courseModulesResponse = await courseAPI.getCourseModules(id);
-            console.log('Fallback course API modules response:', courseModulesResponse);
-            
-            if (courseModulesResponse && typeof courseModulesResponse === 'object') {
-              if (Array.isArray(courseModulesResponse)) {
-                modulesData = courseModulesResponse;
-              } else if (courseModulesResponse.modules && Array.isArray(courseModulesResponse.modules)) {
-                modulesData = courseModulesResponse.modules;
-              } else if (courseModulesResponse.results && Array.isArray(courseModulesResponse.results)) {
-                modulesData = courseModulesResponse.results;
-              }
-            }
-            
-            if (modulesData.length > 0) {
-              isUserEnrolled = true;
-            }
-          } catch (courseModulesError) {
-            console.warn('Could not fetch course modules from course API:', courseModulesError);
-            if (courseModulesError.response && courseModulesError.response.status === 403) {
-              isUserEnrolled = false;
-            }
-            modulesData = [];
-          }
-        }
-        }
-        
-        // Fetch lessons, assignments, quizzes, and exams for each module
-        if (modulesData.length > 0) {
-          console.log('Fetching content for modules...');
-          for (let i = 0; i < modulesData.length; i++) {
-            const module = modulesData[i];
-            const moduleId = module.id;
-            
-            // Fetch lessons
-            try {
-              const lessonsResponse = await contentAPI.getLessons({ moduleId: moduleId, courseId: id });
-              console.log(`Lessons for module ${moduleId}:`, lessonsResponse);
-              
-              if (lessonsResponse && Array.isArray(lessonsResponse)) {
-                modulesData[i].lessons = lessonsResponse;
-              } else if (lessonsResponse && Array.isArray(lessonsResponse.results)) {
-                modulesData[i].lessons = lessonsResponse.results;
-              } else if (lessonsResponse && Array.isArray(lessonsResponse.data)) {
-                modulesData[i].lessons = lessonsResponse.data;
-              }
-            } catch (error) {
-              console.warn(`Could not fetch lessons for module ${moduleId}:`, error);
-              modulesData[i].lessons = [];
-            }
-
-            // Fetch assignments for this module
-            try {
-              const assignmentsResponse = await assignmentsAPI.getAssignments({ 
-                course: id, 
-                module: moduleId 
-              });
-              console.log(`Assignments for module ${moduleId}:`, assignmentsResponse);
-              
-              if (assignmentsResponse && Array.isArray(assignmentsResponse)) {
-                modulesData[i].assignments = assignmentsResponse;
-              } else if (assignmentsResponse && Array.isArray(assignmentsResponse.results)) {
-                modulesData[i].assignments = assignmentsResponse.results;
-              } else if (assignmentsResponse && Array.isArray(assignmentsResponse.data)) {
-                modulesData[i].assignments = assignmentsResponse.data;
-              }
-            } catch (error) {
-              console.warn(`Could not fetch assignments for module ${moduleId}:`, error);
-              modulesData[i].assignments = [];
-            }
-
-            // Fetch quizzes for this module
-            try {
-              const quizzesResponse = await api.get(`/api/assignments/quizzes/`, {
-                params: { course: id, module: moduleId }
-              });
-              console.log(`Quizzes for module ${moduleId}:`, quizzesResponse.data);
-              
-              if (quizzesResponse.data && Array.isArray(quizzesResponse.data)) {
-                modulesData[i].quizzes = quizzesResponse.data;
-              } else if (quizzesResponse.data && Array.isArray(quizzesResponse.data.results)) {
-                modulesData[i].quizzes = quizzesResponse.data.results;
-              }
-            } catch (error) {
-              console.warn(`Could not fetch quizzes for module ${moduleId}:`, error);
-              modulesData[i].quizzes = [];
-            }
-
-            // Fetch exams for this module
-            try {
-              const examsResponse = await examAPI.getExams({ 
-                course: id, 
-                module: moduleId 
-              });
-              console.log(`Exams for module ${moduleId}:`, examsResponse);
-              
-              if (examsResponse && Array.isArray(examsResponse)) {
-                modulesData[i].exams = examsResponse;
-              } else if (examsResponse && Array.isArray(examsResponse.results)) {
-                modulesData[i].exams = examsResponse.results;
-              } else if (examsResponse && Array.isArray(examsResponse.data)) {
-                modulesData[i].exams = examsResponse.data;
-              }
-            } catch (error) {
-              console.warn(`Could not fetch exams for module ${moduleId}:`, error);
-              modulesData[i].exams = [];
-            }
-          }
-        }
-
-        // Fetch course reviews from reviews API (real data)
-        let reviewsData = [];
-        let ratingStats = null;
-        
-        // Only try to fetch reviews if user is authenticated
-        if (isAuthenticated) {
-          try {
-            console.log('Fetching reviews from reviews API for course:', id);
-            const reviewsResponse = await reviewsAPI.getCourseReviews(id);
-          console.log('Reviews API response:', reviewsResponse);
-          
-          if (reviewsResponse && reviewsResponse.results) {
-            reviewsData = reviewsResponse.results;
-          } else if (Array.isArray(reviewsResponse)) {
-            reviewsData = reviewsResponse;
-          } else {
-            reviewsData = [];
-          }
-          
-          console.log('Processed reviews data:', reviewsData);
-        } catch (error) {
-          console.warn('Could not fetch reviews from reviews API:', error);
-          
-          // Try course API as fallback
-          try {
-            const courseReviewsResponse = await courseAPI.getCourseReviews(id);
-            reviewsData = courseReviewsResponse.results || courseReviewsResponse || [];
-            console.log('Fallback course reviews data:', reviewsData);
-          } catch (courseReviewsError) {
-            console.warn('Could not fetch course reviews from course API:', courseReviewsError);
-            reviewsData = [];
-          }
-        }
-        }
-
-        // Fetch course rating statistics (only if authenticated)
-        if (isAuthenticated) {
-          try {
-            const ratingResponse = await reviewsAPI.getCourseRating(id);
-            console.log('Course rating stats:', ratingResponse);
-            ratingStats = ratingResponse;
-          } catch (error) {
-            console.warn('Could not fetch course rating stats:', error);
-            ratingStats = null;
-          }
-        }
-        
-        // Transform API data to match expected format
-        const transformedCourse = transformCourseData(courseData, modulesData, reviewsData, isUserEnrolled, ratingStats);
-        console.log('Transformed course:', transformedCourse);
-        console.log('Transformed course modules:', transformedCourse.modules);
-        
-        setCourse(transformedCourse);
-        setRelatedCourses(relatedCoursesData);
-        setExpandedModules(initializeExpandedModules(transformedCourse.modules));
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching course data:', error);
-        let errorMessage = 'فشل في تحميل بيانات الدورة';
-        
-        if (error.response) {
-          // Server responded with error status
-          if (error.response.status === 404) {
-            errorMessage = 'الدورة غير موجودة';
-          } else if (error.response.status === 403) {
-            errorMessage = 'ليس لديك صلاحية لعرض هذه الدورة';
-          } else if (error.response.status === 401) {
-            // Don't show login required message for public course details
-            if (!isAuthenticated) {
-              errorMessage = 'هذه الدورة غير متاحة للعرض العام. يرجى تسجيل الدخول لعرض التفاصيل الكاملة.';
-            } else {
-              errorMessage = 'يرجى تسجيل الدخول لعرض هذه الدورة';
-            }
-          } else if (error.response.data?.detail) {
-            errorMessage = error.response.data.detail;
-          } else if (error.response.data?.error) {
-            errorMessage = error.response.data.error;
-          } else if (error.response.data?.message) {
-            errorMessage = error.response.data.message;
-          }
-        } else if (error.request) {
-          // Network error
-          errorMessage = 'خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت.';
-        } else {
-          // Other error
-          errorMessage = error.message || 'حدث خطأ غير متوقع';
-        }
-        
-        setError(errorMessage);
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchCourseData();
-    }
-  }, [id, isAuthenticated]);
-
-  // Transform API data to match expected format
-  const transformCourseData = (apiCourse, modulesData = [], reviewsData = [], isUserEnrolled = false, ratingStats = null) => {
-    console.log('Transforming course data:', apiCourse);
-    
-    // Handle image URLs
-    const getImageUrl = (imageField) => {
-      if (!imageField) return 'https://source.unsplash.com/random/1600x500?programming,react';
-      if (typeof imageField === 'string') {
-        // Check if it's already a full URL
-        if (imageField.startsWith('http')) return imageField;
-        // If it's a relative path, prepend the base URL
-        return `${API_CONFIG.baseURL}${imageField}`;
-      }
-      if (imageField.url) return imageField.url;
-      return 'https://source.unsplash.com/random/1600x500?programming,react';
-    };
-
-    // Handle file URLs (e.g., PDFs)
-    const getFileUrl = (fileField) => {
-      if (!fileField) return null;
-      if (typeof fileField === 'string') {
-        if (fileField.startsWith('http')) return fileField;
-        return `${API_CONFIG.baseURL}${fileField}`;
-      }
-      if (fileField.url) return fileField.url;
-      return null;
-    };
-
-    // Handle price calculations
-    const price = parseFloat(apiCourse.price) || 0;
-    const discountPrice = parseFloat(apiCourse.discount_price) || 0;
-    const discount = discountPrice > 0 ? Math.round(((price - discountPrice) / price) * 100) : 0;
-
-    // Calculate total lessons and hours from modules
-    const totalLessons = Array.isArray(modulesData) ? modulesData.reduce((total, module) => {
-      return total + (Array.isArray(module.lessons || module.content) ? (module.lessons || module.content).length : 0);
-    }, 0) : 0;
-
-    const totalHours = Math.round(totalLessons * 0.5); // Estimate 30 minutes per lesson
-
-    // Transform reviews data with real API data
-    const transformedReviews = Array.isArray(reviewsData) ? reviewsData.map(review => ({
-      id: review.id,
-      user: {
-        name: review.user_name || review.user?.username || review.user?.first_name || review.user?.name || 'مستخدم',
-        avatar: getImageUrl(review.user_image || review.user?.profile?.avatar || review.user?.profile_pic || review.avatar),
-        id: review.user?.id || null,
-      },
-      rating: review.rating || 5,
-      date: review.created_at ? new Date(review.created_at).toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-      }) : 'مؤخراً',
-      title: review.title || 'تقييم ممتاز',
-      content: review.review_text || review.content || review.comment || review.text || '',
-      likes: review.like_count || review.helpful_count || review.likes_count || 0,
-      isLiked: review.is_liked_by_user || review.is_liked || false,
-      isOwner: review.is_owner || false,
-      isApproved: review.is_approved !== false,
-      ...review
-    })) : [];
-
-    // Use rating statistics if available
-    const courseRating = ratingStats?.average_rating || apiCourse.average_rating || apiCourse.rating || 4.8;
-    const totalReviews = ratingStats?.review_count || ratingStats?.total_reviews || transformedReviews.length;
-
-    return {
-      id: apiCourse.id,
-      title: apiCourse.title || apiCourse.name || '',
-      subtitle: apiCourse.subtitle || apiCourse.short_description || apiCourse.description?.substring(0, 100) || '',
-      description: apiCourse.description || '',
-      longDescription: apiCourse.description || apiCourse.long_description || apiCourse.content || '',
-      instructor: apiCourse.instructors?.[0]?.name || apiCourse.instructor?.name || apiCourse.teacher?.name || 'مدرس محترف',
-      instructorTitle: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.title || apiCourse.teacher?.title || 'مدرس محترف',
-      instructorBio: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.bio || apiCourse.teacher?.bio || '',
-      instructorAvatar: getImageUrl(apiCourse.instructors?.[0]?.profile_pic || apiCourse.instructor?.profile_pic || apiCourse.teacher?.profile_pic),
-      instructorRating: apiCourse.instructor?.rating || apiCourse.teacher?.rating || 4.9,
-      instructorStudents: apiCourse.instructor?.students_count || apiCourse.teacher?.students_count || apiCourse.total_enrollments || 0,
-      instructorCourses: apiCourse.instructor?.courses_count || apiCourse.teacher?.courses_count || 8,
-      bannerImage: getImageUrl(apiCourse.image || apiCourse.banner_image || apiCourse.cover_image),
-      thumbnail: getImageUrl(apiCourse.image || apiCourse.thumbnail || apiCourse.cover_image),
-      category: apiCourse.category?.name || apiCourse.category || 'التدريب الإلكتروني',
-      level: apiCourse.level || 'مبتدئ',
-      duration: apiCourse.duration || `${totalHours} ساعة`,
-      totalHours: totalHours,
-      lectures: totalLessons,
-      resources: apiCourse.resources_count || apiCourse.materials_count || 45,
-      students: apiCourse.total_enrollments || apiCourse.students_count || apiCourse.enrollments_count || 0,
-      rating: courseRating,
-      courseReviews: transformedReviews,
-      price: price,
-      originalPrice: discountPrice > 0 ? price : price,
-      discount: discount,
-      isBestseller: apiCourse.is_featured || apiCourse.is_bestseller || false,
-      lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'مؤخراً',
-      language: apiCourse.language || 'العربية',
-      captions: apiCourse.captions || ['العربية', 'English'],
-      features: [
-        'وصول مدى الحياة',
-        'الوصول عبر الجوال والتلفاز',
-        'شهادة إتمام الدورة',
-        'ضمان استرداد الأموال خلال 30 يوم',
-        'موارد قابلة للتحميل',
-        'واجبات واختبارات'
-      ],
-      isEnrolled: apiCourse.is_enrolled || false,
-      planPdfUrl: getFileUrl(apiCourse.timeline_pdf || apiCourse.plan_pdf || apiCourse.plan || apiCourse.syllabus_pdf),
-      enrichmentPdfUrl: getFileUrl(apiCourse.enrichment_pdf || apiCourse.resources_pdf || apiCourse.materials_pdf),
-      requirements: apiCourse.requirements || apiCourse.prerequisites || [],
-      whoIsThisFor: apiCourse.who_is_this_for || apiCourse.target_audience || apiCourse.audience || [],
-      modules: transformModulesData(modulesData, apiCourse, isUserEnrolled),
-      curriculum: [
-        { title: 'البداية', duration: '2h 45m', lectures: 5, completed: 2 },
-        { title: 'أنماط React المتقدمة', duration: '4h 15m', lectures: 6, completed: 0 },
-        { title: 'إدارة الحالة مع Redux', duration: '5h 30m', lectures: 6, completed: 0 },
-        { title: 'تحسين الأداء', duration: '3h 45m', lectures: 5, completed: 0 },
-      ],
-      faqs: apiCourse.faqs || [
-        {
-          question: 'كيف يمكنني الوصول إلى دورتي بعد الشراء؟',
-          answer: 'بعد الشراء، يمكنك الوصول إلى دورتك فوراً عن طريق الذهاب إلى "تعلمي" في حسابك. ستكون الدورة متاحة هناك للوصول مدى الحياة.'
-        },
-        {
-          question: 'هل تقدمون شهادة إتمام؟',
-          answer: 'نعم، ستحصل على شهادة إتمام بمجرد إنهاء جميع محتوى الدورة واجتياز أي تقييمات مطلوبة.'
-        },
-        {
-          question: 'هل يمكنني تحميل فيديوهات الدورة؟',
-          answer: 'لأسباب حقوق النشر والترخيص، لا نسمح بتحميل فيديوهات الدورة. ومع ذلك، يمكنك الوصول إليها في أي وقت من خلال منصتنا مع اتصال بالإنترنت.'
-        },
-        {
-          question: 'ماذا لو احتجت إلى مساعدة أثناء الدورة؟',
-          answer: 'يمكنك طرح الأسئلة في منطقة مناقشة الدورة حيث يمكن للمدرب والطلاب الآخرين المساعدة. للمشكلات التقنية، فريق الدعم لدينا متاح على مدار الساعة طوال أيام الأسبوع.'
-        },
-        {
-          question: 'هل هناك ضمان استرداد الأموال؟',
-          answer: 'نعم، نقدم ضمان استرداد الأموال لمدة 30 يوماً إذا لم تكن راضياً عن الدورة لأي سبب.'
-        }
-      ]
-    };
-  };
-
-  // Transform modules data
-  const transformModulesData = (modulesData, courseData, isUserEnrolled = false) => {
-    console.log('transformModulesData called with:', { modulesData, courseData, isUserEnrolled });
-    
-    // Ensure modulesData is an array
-    if (!modulesData || !Array.isArray(modulesData)) {
-      console.log('modulesData is not an array, using empty array');
-      modulesData = [];
-    }
-    
-    // Check if modulesData is empty or has no lessons
-    const hasValidModules = modulesData.length > 0 && modulesData.some(module => {
-      const lessons = module.lessons || module.content || module.lectures || [];
-      return Array.isArray(lessons) && lessons.length > 0;
-=======
-        comment: ''
->>>>>>> 9b9ccdc107cea605ff1da83d52dec020829dbf62
-    });
-    const [submittingReview, setSubmittingReview] = useState(false);
-
-
-    // Toggle module expansion
-    const toggleModule = (moduleId) => {
-        setExpandedModules(prev => ({
-            ...prev,
-            [moduleId]: !prev[moduleId]
-        }));
-    };
-
-    // Preview dialog handlers
-    const handleClosePreview = () => setIsPreviewOpen(false);
-
-    // Choose lesson icon by status/type
-    const getLessonIcon = (lesson) => {
-        if (lesson?.completed) {
-            return <CheckCircle htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'video') {
-            return <VideoIcon htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'article') {
-            return <InsertDriveFileIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'quiz') {
-            return <QuizIconFilled htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'assignment') {
-            return <AssignmentIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'exam') {
-            return <QuizIcon htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'file') {
-            return <DownloadIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'project') {
-            return <CodeIcon htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'exercise') {
-            return <AssignmentTurnedInIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'case-study') {
-            return <InfoIcon htmlColor="#333679" />;
-        }
-        if (lesson?.isPreview) {
-            return <PlayCircleOutline htmlColor="#333679" />;
-        }
-        return <DescriptionOutlined htmlColor="#333679" />;
-    };
-
 
     // Initialize all modules as collapsed by default
     const initializeExpandedModules = (modules) => {
@@ -1166,149 +596,6 @@ const CourseDetail = () => {
         }
     }, [id, isAuthenticated]);
 
-    // Transform API data to match expected format
-    const transformCourseData = (apiCourse, modulesData = [], reviewsData = [], isUserEnrolled = false, ratingStats = null) => {
-        console.log('Transforming course data:', apiCourse);
-
-        // Handle image URLs
-        const getImageUrl = (imageField) => {
-            if (!imageField) return 'https://source.unsplash.com/random/1600x500?programming,react';
-            if (typeof imageField === 'string') {
-                // Check if it's already a full URL
-                if (imageField.startsWith('http')) return imageField;
-                // If it's a relative path, prepend the base URL
-                return `${API_CONFIG.baseURL}${imageField}`;
-            }
-            if (imageField.url) return imageField.url;
-            return 'https://source.unsplash.com/random/1600x500?programming,react';
-        };
-
-        // Handle file URLs (e.g., PDFs)
-        const getFileUrl = (fileField) => {
-            if (!fileField) return null;
-            if (typeof fileField === 'string') {
-                if (fileField.startsWith('http')) return fileField;
-                return `${API_CONFIG.baseURL}${fileField}`;
-            }
-            if (fileField.url) return fileField.url;
-            return null;
-        };
-
-        // Handle price calculations
-        const price = parseFloat(apiCourse.price) || 0;
-        const discountPrice = parseFloat(apiCourse.discount_price) || 0;
-        const discount = discountPrice > 0 ? Math.round(((price - discountPrice) / price) * 100) : 0;
-
-        // Calculate total lessons and hours from modules
-        const totalLessons = Array.isArray(modulesData) ? modulesData.reduce((total, module) => {
-            return total + (Array.isArray(module.lessons || module.content) ? (module.lessons || module.content).length : 0);
-        }, 0) : 0;
-
-        const totalHours = Math.round(totalLessons * 0.5); // Estimate 30 minutes per lesson
-
-        // Transform reviews data with real API data
-        const transformedReviews = Array.isArray(reviewsData) ? reviewsData.map(review => ({
-            id: review.id,
-            user: {
-                name: review.user_name || review.user?.username || review.user?.first_name || review.user?.name || 'مستخدم',
-                avatar: getImageUrl(review.user_image || review.user?.profile?.avatar || review.user?.profile_pic || review.avatar),
-                id: review.user?.id || null,
-            },
-            rating: review.rating || 5,
-            date: review.created_at ? new Date(review.created_at).toLocaleDateString('ar-EG', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            }) : 'مؤخراً',
-            title: review.title || 'تقييم ممتاز',
-            content: review.review_text || review.content || review.comment || review.text || '',
-            likes: review.like_count || review.helpful_count || review.likes_count || 0,
-            isLiked: review.is_liked_by_user || review.is_liked || false,
-            isOwner: review.is_owner || false,
-            isApproved: review.is_approved !== false,
-            ...review
-        })) : [];
-
-        // Use rating statistics if available
-        const courseRating = ratingStats?.average_rating || apiCourse.average_rating || apiCourse.rating || 4.8;
-        const totalReviews = ratingStats?.review_count || ratingStats?.total_reviews || transformedReviews.length;
-
-        return {
-            id: apiCourse.id,
-            title: apiCourse.title || apiCourse.name || '',
-            subtitle: apiCourse.subtitle || apiCourse.short_description || apiCourse.description?.substring(0, 100) || '',
-            description: apiCourse.description || '',
-            longDescription: apiCourse.description || apiCourse.long_description || apiCourse.content || '',
-            instructor: apiCourse.instructors?.[0]?.name || apiCourse.instructor?.name || apiCourse.teacher?.name || 'مدرس محترف',
-            instructorTitle: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.title || apiCourse.teacher?.title || 'مدرس محترف',
-            instructorBio: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.bio || apiCourse.teacher?.bio || '',
-            instructorAvatar: getImageUrl(apiCourse.instructors?.[0]?.profile_pic || apiCourse.instructor?.profile_pic || apiCourse.teacher?.profile_pic),
-            instructorRating: apiCourse.instructor?.rating || apiCourse.teacher?.rating || 4.9,
-            instructorStudents: apiCourse.instructor?.students_count || apiCourse.teacher?.students_count || apiCourse.total_enrollments || 0,
-            instructorCourses: apiCourse.instructor?.courses_count || apiCourse.teacher?.courses_count || 8,
-            bannerImage: getImageUrl(apiCourse.image || apiCourse.banner_image || apiCourse.cover_image),
-            thumbnail: getImageUrl(apiCourse.image || apiCourse.thumbnail || apiCourse.cover_image),
-            category: apiCourse.category?.name || apiCourse.category || 'التدريب الإلكتروني',
-            level: apiCourse.level || 'مبتدئ',
-            duration: apiCourse.duration || `${totalHours} ساعة`,
-            totalHours: totalHours,
-            lectures: totalLessons,
-            resources: apiCourse.resources_count || apiCourse.materials_count || 45,
-            students: apiCourse.total_enrollments || apiCourse.students_count || apiCourse.enrollments_count || 0,
-            rating: courseRating,
-            courseReviews: transformedReviews,
-            price: price,
-            originalPrice: discountPrice > 0 ? price : price,
-            discount: discount,
-            isBestseller: apiCourse.is_featured || apiCourse.is_bestseller || false,
-            lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' }) : 'مؤخراً',
-            language: apiCourse.language || 'العربية',
-            captions: apiCourse.captions || ['العربية', 'English'],
-            features: [
-                'وصول مدى الحياة',
-                'الوصول عبر الجوال والتلفاز',
-                'شهادة إتمام الدورة',
-                'ضمان استرداد الأموال خلال 30 يوم',
-                'موارد قابلة للتحميل',
-                'واجبات واختبارات'
-            ],
-            isEnrolled: apiCourse.is_enrolled || false,
-            planPdfUrl: getFileUrl(apiCourse.timeline_pdf || apiCourse.plan_pdf || apiCourse.plan || apiCourse.syllabus_pdf),
-            enrichmentPdfUrl: getFileUrl(apiCourse.enrichment_pdf || apiCourse.resources_pdf || apiCourse.materials_pdf),
-            requirements: apiCourse.requirements || apiCourse.prerequisites || [],
-            whoIsThisFor: apiCourse.who_is_this_for || apiCourse.target_audience || apiCourse.audience || [],
-            modules: transformModulesData(modulesData, apiCourse, isUserEnrolled),
-            curriculum: [
-                { title: 'البداية', duration: '2h 45m', lectures: 5, completed: 2 },
-                { title: 'أنماط React المتقدمة', duration: '4h 15m', lectures: 6, completed: 0 },
-                { title: 'إدارة الحالة مع Redux', duration: '5h 30m', lectures: 6, completed: 0 },
-                { title: 'تحسين الأداء', duration: '3h 45m', lectures: 5, completed: 0 },
-            ],
-            faqs: apiCourse.faqs || [
-                {
-                    question: 'كيف يمكنني الوصول إلى دورتي بعد الشراء؟',
-                    answer: 'بعد الشراء، يمكنك الوصول إلى دورتك فوراً عن طريق الذهاب إلى "تعلمي" في حسابك. ستكون الدورة متاحة هناك للوصول مدى الحياة.'
-                },
-                {
-                    question: 'هل تقدمون شهادة إتمام؟',
-                    answer: 'نعم، ستحصل على شهادة إتمام بمجرد إنهاء جميع محتوى الدورة واجتياز أي تقييمات مطلوبة.'
-                },
-                {
-                    question: 'هل يمكنني تحميل فيديوهات الدورة؟',
-                    answer: 'لأسباب حقوق النشر والترخيص، لا نسمح بتحميل فيديوهات الدورة. ومع ذلك، يمكنك الوصول إليها في أي وقت من خلال منصتنا مع اتصال بالإنترنت.'
-                },
-                {
-                    question: 'ماذا لو احتجت إلى مساعدة أثناء الدورة؟',
-                    answer: 'يمكنك طرح الأسئلة في منطقة مناقشة الدورة حيث يمكن للمدرب والطلاب الآخرين المساعدة. للمشكلات التقنية، فريق الدعم لدينا متاح على مدار الساعة طوال أيام الأسبوع.'
-                },
-                {
-                    question: 'هل هناك ضمان استرداد الأموال؟',
-                    answer: 'نعم، نقدم ضمان استرداد الأموال لمدة 30 يوماً إذا لم تكن راضياً عن الدورة لأي سبب.'
-                }
-            ]
-        };
-    };
-
     // Transform modules data
     const transformModulesData = (modulesData, courseData, isUserEnrolled = false) => {
         console.log('transformModulesData called with:', { modulesData, courseData, isUserEnrolled });
@@ -1586,6 +873,199 @@ const CourseDetail = () => {
         console.log('transformModulesData result:', result);
         return result;
     };
+
+  // Transform API data to match expected format
+  const transformCourseData = (apiCourse, modulesData = [], reviewsData = [], isUserEnrolled = false, ratingStats = null) => {
+    console.log('Transforming course data:', apiCourse);
+    
+    // Handle image URLs
+    const getImageUrl = (imageField) => {
+      if (!imageField) return 'https://source.unsplash.com/random/1600x500?programming,react';
+      if (typeof imageField === 'string') {
+        // Check if it's already a full URL
+        if (imageField.startsWith('http')) return imageField;
+        // If it's a relative path, prepend the base URL
+        return `${API_CONFIG.baseURL}${imageField}`;
+      }
+      if (imageField.url) return imageField.url;
+      return 'https://source.unsplash.com/random/1600x500?programming,react';
+    };
+
+    // Handle file URLs (e.g., PDFs)
+    const getFileUrl = (fileField) => {
+      if (!fileField) return null;
+      if (typeof fileField === 'string') {
+        if (fileField.startsWith('http')) return fileField;
+        return `${API_CONFIG.baseURL}${fileField}`;
+      }
+      if (fileField.url) return fileField.url;
+      return null;
+    };
+
+    // Handle price calculations
+    const price = parseFloat(apiCourse.price) || 0;
+    const discountPrice = parseFloat(apiCourse.discount_price) || 0;
+    const discount = discountPrice > 0 ? Math.round(((price - discountPrice) / price) * 100) : 0;
+
+    // Calculate total lessons and hours from modules
+    const totalLessons = Array.isArray(modulesData) ? modulesData.reduce((total, module) => {
+      return total + (Array.isArray(module.lessons || module.content) ? (module.lessons || module.content).length : 0);
+    }, 0) : 0;
+
+    const totalHours = Math.round(totalLessons * 0.5); // Estimate 30 minutes per lesson
+
+    // Transform reviews data with real API data
+    const transformedReviews = Array.isArray(reviewsData) ? reviewsData.map(review => ({
+      id: review.id,
+      user: {
+        name: review.user_name || review.user?.username || review.user?.first_name || review.user?.name || 'مستخدم',
+        avatar: getImageUrl(review.user_image || review.user?.profile?.avatar || review.user?.profile_pic || review.avatar),
+        id: review.user?.id || null,
+      },
+      rating: review.rating || 5,
+      date: review.created_at ? new Date(review.created_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      }) : 'مؤخراً',
+      title: review.title || 'تقييم ممتاز',
+      content: review.review_text || review.content || review.comment || review.text || '',
+      likes: review.like_count || review.helpful_count || review.likes_count || 0,
+      isLiked: review.is_liked_by_user || review.is_liked || false,
+      isOwner: review.is_owner || false,
+      isApproved: review.is_approved !== false,
+      ...review
+    })) : [];
+
+    // Use rating statistics if available
+    const courseRating = ratingStats?.average_rating || apiCourse.average_rating || apiCourse.rating || 4.8;
+    const totalReviews = ratingStats?.review_count || ratingStats?.total_reviews || transformedReviews.length;
+
+    return {
+      id: apiCourse.id,
+      title: apiCourse.title || apiCourse.name || '',
+      subtitle: apiCourse.subtitle || apiCourse.short_description || apiCourse.description?.substring(0, 100) || '',
+      description: apiCourse.description || '',
+      longDescription: apiCourse.description || apiCourse.long_description || apiCourse.content || '',
+      instructor: apiCourse.instructors?.[0]?.name || apiCourse.instructor?.name || apiCourse.teacher?.name || 'مدرس محترف',
+      instructorTitle: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.title || apiCourse.teacher?.title || 'مدرس محترف',
+      instructorBio: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.bio || apiCourse.teacher?.bio || '',
+      instructorAvatar: getImageUrl(apiCourse.instructors?.[0]?.profile_pic || apiCourse.instructor?.profile_pic || apiCourse.teacher?.profile_pic),
+      instructorRating: apiCourse.instructor?.rating || apiCourse.teacher?.rating || 4.9,
+      instructorStudents: apiCourse.instructor?.students_count || apiCourse.teacher?.students_count || apiCourse.total_enrollments || 0,
+      instructorCourses: apiCourse.instructor?.courses_count || apiCourse.teacher?.courses_count || 8,
+      bannerImage: getImageUrl(apiCourse.image || apiCourse.banner_image || apiCourse.cover_image),
+      thumbnail: getImageUrl(apiCourse.image || apiCourse.thumbnail || apiCourse.cover_image),
+      category: apiCourse.category?.name || apiCourse.category || 'التدريب الإلكتروني',
+      level: apiCourse.level || 'مبتدئ',
+      duration: apiCourse.duration || `${totalHours} ساعة`,
+      totalHours: totalHours,
+      lectures: totalLessons,
+      resources: apiCourse.resources_count || apiCourse.materials_count || 45,
+      students: apiCourse.total_enrollments || apiCourse.students_count || apiCourse.enrollments_count || 0,
+      rating: courseRating,
+      courseReviews: transformedReviews,
+      price: price,
+      originalPrice: discountPrice > 0 ? price : price,
+      discount: discount,
+      isBestseller: apiCourse.is_featured || apiCourse.is_bestseller || false,
+      lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'مؤخراً',
+      language: apiCourse.language || 'العربية',
+      captions: apiCourse.captions || ['العربية', 'English'],
+      features: [
+        'وصول مدى الحياة',
+        'الوصول عبر الجوال والتلفاز',
+        'شهادة إتمام الدورة',
+        'ضمان استرداد الأموال خلال 30 يوم',
+        'موارد قابلة للتحميل',
+        'واجبات واختبارات'
+      ],
+      isEnrolled: apiCourse.is_enrolled || false,
+      planPdfUrl: getFileUrl(apiCourse.timeline_pdf || apiCourse.plan_pdf || apiCourse.plan || apiCourse.syllabus_pdf),
+      enrichmentPdfUrl: getFileUrl(apiCourse.enrichment_pdf || apiCourse.resources_pdf || apiCourse.materials_pdf),
+      requirements: apiCourse.requirements || apiCourse.prerequisites || [],
+      whoIsThisFor: apiCourse.who_is_this_for || apiCourse.target_audience || apiCourse.audience || [],
+      modules: transformModulesData(modulesData, apiCourse, isUserEnrolled),
+      curriculum: [
+        { title: 'البداية', duration: '2h 45m', lectures: 5, completed: 2 },
+        { title: 'أنماط React المتقدمة', duration: '4h 15m', lectures: 6, completed: 0 },
+        { title: 'إدارة الحالة مع Redux', duration: '5h 30m', lectures: 6, completed: 0 },
+        { title: 'تحسين الأداء', duration: '3h 45m', lectures: 5, completed: 0 },
+      ],
+      faqs: apiCourse.faqs || [
+        {
+          question: 'كيف يمكنني الوصول إلى دورتي بعد الشراء؟',
+          answer: 'بعد الشراء، يمكنك الوصول إلى دورتك فوراً عن طريق الذهاب إلى "تعلمي" في حسابك. ستكون الدورة متاحة هناك للوصول مدى الحياة.'
+        },
+        {
+          question: 'هل تقدمون شهادة إتمام؟',
+          answer: 'نعم، ستحصل على شهادة إتمام بمجرد إنهاء جميع محتوى الدورة واجتياز أي تقييمات مطلوبة.'
+        },
+        {
+          question: 'هل يمكنني تحميل فيديوهات الدورة؟',
+          answer: 'لأسباب حقوق النشر والترخيص، لا نسمح بتحميل فيديوهات الدورة. ومع ذلك، يمكنك الوصول إليها في أي وقت من خلال منصتنا مع اتصال بالإنترنت.'
+        },
+        {
+          question: 'ماذا لو احتجت إلى مساعدة أثناء الدورة؟',
+          answer: 'يمكنك طرح الأسئلة في منطقة مناقشة الدورة حيث يمكن للمدرب والطلاب الآخرين المساعدة. للمشكلات التقنية، فريق الدعم لدينا متاح على مدار الساعة طوال أيام الأسبوع.'
+        },
+        {
+          question: 'هل هناك ضمان استرداد الأموال؟',
+          answer: 'نعم، نقدم ضمان استرداد الأموال لمدة 30 يوماً إذا لم تكن راضياً عن الدورة لأي سبب.'
+        }
+      ]
+    };
+  };
+
+    // Toggle module expansion
+    const toggleModule = (moduleId) => {
+        setExpandedModules(prev => ({
+            ...prev,
+            [moduleId]: !prev[moduleId]
+        }));
+    };
+
+    // Preview dialog handlers
+    const handleClosePreview = () => setIsPreviewOpen(false);
+
+    // Choose lesson icon by status/type
+    const getLessonIcon = (lesson) => {
+        if (lesson?.completed) {
+            return <CheckCircle htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'video') {
+            return <VideoIcon htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'article') {
+            return <InsertDriveFileIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'quiz') {
+            return <QuizIconFilled htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'assignment') {
+            return <AssignmentIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'exam') {
+            return <QuizIcon htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'file') {
+            return <DownloadIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'project') {
+            return <CodeIcon htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'exercise') {
+            return <AssignmentTurnedInIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'case-study') {
+            return <InfoIcon htmlColor="#333679" />;
+        }
+        if (lesson?.isPreview) {
+            return <PlayCircleOutline htmlColor="#333679" />;
+        }
+        return <DescriptionOutlined htmlColor="#333679" />;
+    };
+
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);

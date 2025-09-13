@@ -39,7 +39,7 @@ const teacherNavItems = [
   { text: 'بنك الأسئلة', icon: <QuizIcon />, path: '/teacher/question-bank' },
   { text: 'البطاقات التعليمية', icon: <PsychologyIcon />, path: '/teacher/flashcards' },
   // { text: 'الواجبات', icon: <AssignmentIcon />, path: '/teacher/assignments' },
- // { text: 'الكويزات', icon: <AssessmentIcon />, path: '/teacher/quizzes' },
+  { text: 'الكويزات', icon: <AssessmentIcon />, path: '/teacher/quizzes' },
  // { text: 'الامتحانات', icon: <AssessmentIcon />, path: '/teacher/exams' },
   { text: 'المحاضرات', icon: <VideoCallIcon />, path: '/teacher/meetings' },
   { text: 'المقالات', icon: <ArticleIcon />, path: '/teacher/articles' },

@@ -161,7 +161,9 @@ const BackgroundSlides = styled(Box)(({ theme }) => ({
   overflow: 'hidden',
 }));
 
-const BackgroundSlide = styled(Box)(({ scrollProgress, theme }) => ({
+const BackgroundSlide = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'scrollProgress',
+})(({ scrollProgress, theme }) => ({
   position: 'absolute',
   top: 0,
   left: 0,
@@ -264,7 +266,9 @@ const RefreshButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const HeroSection = styled('section')(({ theme, scrollProgress }) => ({
+const HeroSection = styled('section', {
+  shouldForwardProp: (prop) => prop !== 'scrollProgress',
+})(({ theme, scrollProgress }) => ({
   position: 'relative',
   color: '#fff',
   padding: '0',
