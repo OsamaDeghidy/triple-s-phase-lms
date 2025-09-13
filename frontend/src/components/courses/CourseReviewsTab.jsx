@@ -1,0 +1,288 @@
+import React from 'react';
+import {
+    Box,
+    Typography,
+    Button,
+    Rating,
+    Avatar,
+    IconButton,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
+} from '@mui/material';
+import {
+    DescriptionOutlined,
+    StarBorder,
+    Favorite,
+    FavoriteBorder,
+    ExpandMore
+} from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
+
+// Styled Components
+const SectionTitle = styled(Typography)(({ theme }) => ({
+    fontWeight: 700,
+    color: '#333679',
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+        fontSize: '1.5rem',
+    },
+}));
+
+const CourseReviewsTab = ({
+    course,
+    setShowReviewForm,
+    handleLikeReview
+}) => {
+    const theme = useTheme();
+
+    if (!course) {
+        return null;
+    }
+
+    return (
+        <Box>
+            <SectionTitle variant="h5" component="h2" gutterBottom>
+                الأسئلة الشائعة
+            </SectionTitle>
+            <Box sx={{ mb: 4 }}>
+                {course.faqs && course.faqs.length > 0 ? (
+                    course.faqs.map((faq, index) => (
+                        <Accordion
+                            key={index}
+                            elevation={0}
+                            sx={{
+                                mb: 2,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 2,
+                                '&:before': { display: 'none' },
+                                '&.Mui-expanded': {
+                                    margin: 0,
+                                    '&:not(:last-child)': {
+                                        borderBottom: 0,
+                                    },
+                                },
+                            }}
+                        >
+                            <AccordionSummary
+                                expandIcon={<ExpandMore />}
+                                aria-controls={`faq-panel-${index}`}
+                                id={`faq-header-${index}`}
+                                sx={{
+                                    minHeight: 70,
+                                    '&.Mui-expanded': {
+                                        minHeight: 70,
+                                        borderBottom: '1px solid',
+                                        borderColor: 'divider',
+                                    },
+                                }}
+                            >
+                                <Typography variant="subtitle1" fontWeight={600} dir="rtl">
+                                    {faq.question}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography variant="body1" color="text.secondary" dir="rtl" sx={{ lineHeight: 1.8 }}>
+                                    {faq.answer}
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))
+                ) : (
+                    <Box sx={{
+                        p: 4,
+                        textAlign: 'center',
+                        borderRadius: 2,
+                        background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.05) 0%, rgba(229, 151, 139, 0.05) 100%)',
+                        border: '1px solid rgba(14, 81, 129, 0.1)'
+                    }}>
+                        <Typography variant="body1" color="text.secondary">
+                            لا توجد أسئلة شائعة متاحة في الوقت الحالي.
+                        </Typography>
+                    </Box>
+                )}
+            </Box>
+
+            {/* Reviews Section */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Box>
+                    <SectionTitle variant="h5" component="h2" sx={{ mb: 0.5 }}>
+                        تقييمات الطلاب
+                    </SectionTitle>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="h3" component="span" sx={{ mr: 1, fontWeight: 700 }}>
+                            {(() => {
+                                const rating = course.rating;
+                                if (typeof rating === 'number') {
+                                    return rating.toFixed(1);
+                                } else if (typeof rating === 'string') {
+                                    const numRating = parseFloat(rating);
+                                    return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                                } else {
+                                    return '0.0';
+                                }
+                            })()}
+                        </Typography>
+                        <Rating
+                            value={course.rating}
+                            precision={0.1}
+                            readOnly
+                            size="large"
+                            emptyIcon={<StarBorder fontSize="inherit" />}
+                            sx={{ mr: 1.25 }}
+                        />
+                        <Typography variant="body1" color="text.secondary" sx={{ ml: 0.5 }}>
+                            تقييم الدورة • {course.reviews?.length || 0} تقييم
+                        </Typography>
+                    </Box>
+                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<DescriptionOutlined />}
+                    onClick={() => setShowReviewForm(true)}
+                    sx={{
+                        borderRadius: 3,
+                        px: 4,
+                        py: 1.5,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
+                        boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)',
+                        '&:hover': {
+                            background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
+                            boxShadow: '0 12px 35px rgba(14, 81, 129, 0.3)',
+                            transform: 'translateY(-2px)'
+                        }
+                    }}
+                >
+                    كتابة تقييم
+                </Button>
+            </Box>
+
+            {/* Rating Distribution */}
+            <Box sx={{ mb: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                    تفصيل التقييمات
+                </Typography>
+                {[5, 4, 3, 2, 1].map((star) => (
+                    <Box key={star} sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                        <Box sx={{ width: 80, display: 'flex', justifyContent: 'space-between', mr: 2 }}>
+                            <Typography variant="body2" fontWeight={500}>{star} نجمة</Typography>
+                            <Box sx={{ width: 8 }} />
+                        </Box>
+                        <Box sx={{ flexGrow: 1, mx: 2 }}>
+                            <Box sx={{ width: '100%', height: 10, bgcolor: 'divider', borderRadius: 5, overflow: 'hidden' }}>
+                                <Box
+                                    sx={{
+                                        height: '100%',
+                                        width: `${(star / 5) * 100}%`,
+                                        background: `linear-gradient(90deg, ${theme.palette.warning.main} 0%, ${theme.palette.warning.light} 100%)`,
+                                        borderRadius: 5
+                                    }}
+                                />
+                            </Box>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 40, textAlign: 'right' }}>
+                            {Math.round((star / 5) * (course.reviews?.length || 0))} تقييم
+                        </Typography>
+                    </Box>
+                ))}
+            </Box>
+
+            {/* Reviews List */}
+            <Box>
+                {Array.isArray(course.reviews) ? course.reviews.map((review) => (
+                    <Box
+                        key={review.id}
+                        sx={{
+                            p: 3,
+                            mb: 3,
+                            bgcolor: 'background.paper',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'divider'
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Avatar
+                                    src={review.user?.avatar}
+                                    alt={review.user?.name}
+                                    sx={{ width: 48, height: 48, mr: 2 }}
+                                />
+                                <Box>
+                                    <Typography variant="subtitle1" fontWeight={600} dir="rtl">
+                                        {review.user?.name || 'مستخدم'}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Rating
+                                            value={review.rating}
+                                            precision={0.5}
+                                            readOnly
+                                            size="small"
+                                            emptyIcon={<StarBorder fontSize="inherit" />}
+                                            sx={{ mr: 1.25, color: 'warning.main' }}
+                                        />
+                                        <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
+                                            {review.date}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
+                            <IconButton
+                                size="small"
+                                color={review.isLiked ? 'primary' : 'default'}
+                                onClick={() => handleLikeReview(review.id)}
+                                sx={{
+                                    '&:hover': {
+                                        transform: 'scale(1.1)',
+                                    },
+                                    transition: 'all 0.2s ease'
+                                }}
+                            >
+                                {review.isLiked ? <Favorite color="error" /> : <FavoriteBorder />}
+                                <Typography variant="body2" sx={{ ml: 0.5 }}>
+                                    {review.likes}
+                                </Typography>
+                            </IconButton>
+                        </Box>
+                        {review.title && (
+                            <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 600 }} dir="rtl">
+                                {review.title}
+                            </Typography>
+                        )}
+                        <Typography variant="body1" color="text.secondary" dir="rtl" sx={{ lineHeight: 1.8 }}>
+                            {review.content}
+                        </Typography>
+                    </Box>
+                )) : null}
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderRadius: 3,
+                            px: 4,
+                            py: 1.5,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            borderColor: '#333679',
+                            color: '#333679',
+                            '&:hover': {
+                                bgcolor: '#333679',
+                                color: 'white',
+                                borderColor: '#333679',
+                                transform: 'translateY(-2px)'
+                            }
+                        }}
+                    >
+                        تحميل المزيد من التقييمات
+                    </Button>
+                </Box>
+            </Box>
+        </Box>
+    );
+};
+
+export default CourseReviewsTab;
