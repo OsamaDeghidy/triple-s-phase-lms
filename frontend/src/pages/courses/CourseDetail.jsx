@@ -206,7 +206,7 @@ const CourseSkeleton = () => (
                         <SkeletonPulse variant="rectangular" width={120} height={40} sx={{ borderRadius: 2 }} />
                     </Box>
                     <Tabs value={0} sx={{ mb: 3 }}>
-                        {['Overview', 'Curriculum', 'Instructor', 'Reviews', 'FAQs'].map((tab) => (
+                        {['Overview', 'Curriculum', 'Instructor', 'Reviews'].map((tab) => (
                             <Tab key={tab} label={tab} sx={{ minWidth: 'auto' }} />
                         ))}
                     </Tabs>
@@ -741,28 +741,7 @@ const CourseDetail = () => {
                 { title: 'إدارة الحالة مع Redux', duration: '5h 30m', lectures: 6, completed: 0 },
                 { title: 'تحسين الأداء', duration: '3h 45m', lectures: 5, completed: 0 },
             ],
-            faqs: apiCourse.faqs || [
-                {
-                    question: 'كيف يمكنني الوصول إلى دورتي بعد الشراء؟',
-                    answer: 'بعد الشراء، يمكنك الوصول إلى دورتك فوراً عن طريق الذهاب إلى "تعلمي" في حسابك. ستكون الدورة متاحة هناك للوصول مدى الحياة.'
-                },
-                {
-                    question: 'هل تقدمون شهادة إتمام؟',
-                    answer: 'نعم، ستحصل على شهادة إتمام بمجرد إنهاء جميع محتوى الدورة واجتياز أي تقييمات مطلوبة.'
-                },
-                {
-                    question: 'هل يمكنني تحميل فيديوهات الدورة؟',
-                    answer: 'لأسباب حقوق النشر والترخيص، لا نسمح بتحميل فيديوهات الدورة. ومع ذلك، يمكنك الوصول إليها في أي وقت من خلال منصتنا مع اتصال بالإنترنت.'
-                },
-                {
-                    question: 'ماذا لو احتجت إلى مساعدة أثناء الدورة؟',
-                    answer: 'يمكنك طرح الأسئلة في منطقة مناقشة الدورة حيث يمكن للمدرب والطلاب الآخرين المساعدة. للمشكلات التقنية، فريق الدعم لدينا متاح على مدار الساعة طوال أيام الأسبوع.'
-                },
-                {
-                    question: 'هل هناك ضمان استرداد الأموال؟',
-                    answer: 'نعم، نقدم ضمان استرداد الأموال لمدة 30 يوماً إذا لم تكن راضياً عن الدورة لأي سبب.'
-                }
-            ]
+            faqs: []
         };
     };
 
@@ -1330,7 +1309,7 @@ const CourseDetail = () => {
             </Dialog>
 
             {/* Main Content - Single Column Layout - Right Aligned */}
-            <Box sx={{ bgcolor: '#ffffff', minHeight: '100vh' }}>
+            <Box sx={{ bgcolor: '#ffffff', minHeight: { md: '10vh', lg: '20vh', xl: '30vh' }, }}>
                 <Container maxWidth="lg" sx={{ py: 0, px: { xs: 2, sm: 3, md: 4 } }}>
                     {/* Single Column Layout - All components start from right */}
                     <Box sx={{

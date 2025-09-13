@@ -43,68 +43,6 @@ const CourseReviewsTab = ({
 
     return (
         <Box>
-            <SectionTitle variant="h5" component="h2" gutterBottom>
-                الأسئلة الشائعة
-            </SectionTitle>
-            <Box sx={{ mb: 4 }}>
-                {course.faqs && course.faqs.length > 0 ? (
-                    course.faqs.map((faq, index) => (
-                        <Accordion
-                            key={index}
-                            elevation={0}
-                            sx={{
-                                mb: 2,
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                borderRadius: 2,
-                                '&:before': { display: 'none' },
-                                '&.Mui-expanded': {
-                                    margin: 0,
-                                    '&:not(:last-child)': {
-                                        borderBottom: 0,
-                                    },
-                                },
-                            }}
-                        >
-                            <AccordionSummary
-                                expandIcon={<ExpandMore />}
-                                aria-controls={`faq-panel-${index}`}
-                                id={`faq-header-${index}`}
-                                sx={{
-                                    minHeight: 70,
-                                    '&.Mui-expanded': {
-                                        minHeight: 70,
-                                        borderBottom: '1px solid',
-                                        borderColor: 'divider',
-                                    },
-                                }}
-                            >
-                                <Typography variant="subtitle1" fontWeight={600} dir="rtl">
-                                    {faq.question}
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography variant="body1" color="text.secondary" dir="rtl" sx={{ lineHeight: 1.8 }}>
-                                    {faq.answer}
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                    ))
-                ) : (
-                    <Box sx={{
-                        p: 4,
-                        textAlign: 'center',
-                        borderRadius: 2,
-                        background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.05) 0%, rgba(229, 151, 139, 0.05) 100%)',
-                        border: '1px solid rgba(14, 81, 129, 0.1)'
-                    }}>
-                        <Typography variant="body1" color="text.secondary">
-                            لا توجد أسئلة شائعة متاحة في الوقت الحالي.
-                        </Typography>
-                    </Box>
-                )}
-            </Box>
-
             {/* Reviews Section */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Box>

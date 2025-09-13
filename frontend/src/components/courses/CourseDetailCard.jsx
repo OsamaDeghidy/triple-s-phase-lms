@@ -35,7 +35,9 @@ const CourseDetailCard = ({
             <Box sx={{
                 display: { xs: 'none', md: 'block' },
                 bgcolor: '#ffffff',
-                minHeight: '60vh',
+                minHeight: { md: '20vh', lg: '30vh', xl: '40vh' },
+                width: '100%',
+                overflow: 'hidden',
                 '@keyframes float': {
                     '0%, 100%': {
                         transform: 'translateY(0px)'
@@ -45,8 +47,23 @@ const CourseDetailCard = ({
                     }
                 }
             }}>
-                <Container maxWidth="lg" sx={{ py: 0, px: { xs: 2, sm: 3, md: 4 }, display: 'flex', justifyContent: 'flex-start' }}>
-                    <Box sx={{ maxWidth: '1200px', width: '100%', direction: 'rtl', margin: '0 auto' }}>
+                <Container
+                    maxWidth="lg"
+                    sx={{
+                        py: 0,
+                        px: { xs: 1, sm: 2, md: 3, lg: 4, xl: 5 },
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        width: '100%'
+                    }}
+                >
+                    <Box sx={{
+                        maxWidth: { md: '100%', lg: '1000px', xl: '1200px' },
+                        width: '100%',
+                        direction: 'rtl',
+                        margin: '0 0 0 auto',
+                        position: 'relative'
+                    }}>
 
 
 
@@ -55,60 +72,100 @@ const CourseDetailCard = ({
                             {/* Course Visual - Full Width with Enhanced Design */}
                             <Box
                                 sx={{
-                                    position: 'absolute',
+                                    position: 'relative',
                                     width: '100%',
-                                    height: '600px',
+                                    height: {
+                                        xs: '300px',
+                                        sm: '350px',
+                                        md: '450px',
+                                        lg: '550px',
+                                        xl: '650px'
+                                    },
                                     borderRadius: 3,
                                     overflow: 'hidden',
                                     display: 'flex',
                                     mb: 4,
                                     background: 'linear-gradient(135deg, #1B1B48 0%, #333679 50%, #663399 100%)',
                                     boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-                                    border: '1px solid rgba(255,255,255,0.1)'
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    minHeight: '300px',
+                                    '@media (max-width: 1200px)': {
+                                        height: '400px'
+                                    },
+                                    '@media (max-width: 1000px)': {
+                                        height: '350px'
+                                    }
                                 }}
                             >
                                 {/* Left Side - Enhanced Content Area */}
                                 <Box
                                     sx={{
-                                        width: '65%',
+                                        width: {
+                                            xs: '65%',
+                                            sm: '62%',
+                                            md: '60%',
+                                            lg: '65%',
+                                            xl: '70%'
+                                        },
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         alignItems: 'flex-start',
-                                        p: 8,
+                                        p: {
+                                            xs: 2,
+                                            sm: 3,
+                                            md: 4,
+                                            lg: 6,
+                                            xl: 8
+                                        },
                                         position: 'relative',
                                         zIndex: 2,
                                         background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
                                         backdropFilter: 'blur(10px)',
-                                        borderRight: '1px solid rgba(255,255,255,0.1)'
+                                        borderRight: '1px solid rgba(255,255,255,0.1)',
+                                        minHeight: '100%',
+                                        '@media (max-width: 1200px)': {
+                                            width: '65%'
+                                        },
+                                        '@media (max-width: 1000px)': {
+                                            width: '70%'
+                                        }
                                     }}
                                 >
                                     {/* Triple 8 Academy Logo - Larger Size */}
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 8 }}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        mb: { md: 4, lg: 6, xl: 8 },
+                                        flexWrap: 'wrap',
+                                        gap: 2
+                                    }}>
                                         <Box
                                             sx={{
-                                                width: 100,
-                                                height: 100,
+                                                width: { md: 80, lg: 100, xl: 120 },
+                                                height: { md: 80, lg: 100, xl: 120 },
                                                 backgroundImage: 'url(/src/assets/images/logo.png)',
                                                 backgroundSize: 'contain',
                                                 backgroundPosition: 'center',
                                                 backgroundRepeat: 'no-repeat',
-                                                mr: 4,
+                                                mr: { md: 2, lg: 3, xl: 4 },
                                                 filter: 'brightness(0) invert(1)',
                                                 boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
                                                 borderRadius: '50%',
-                                                border: '3px solid rgba(255, 255, 255, 0.2)'
+                                                border: '3px solid rgba(255, 255, 255, 0.2)',
+                                                flexShrink: 0
                                             }}
                                         />
-                                        <Box>
+                                        <Box sx={{ minWidth: 0, flex: 1 }}>
                                             <Typography
                                                 sx={{
                                                     color: 'white',
-                                                    fontSize: '32px',
+                                                    fontSize: { md: '24px', lg: '28px', xl: '32px' },
                                                     fontWeight: 'bold',
-                                                    lineHeight: 1,
+                                                    lineHeight: 1.1,
                                                     mb: 1,
-                                                    textShadow: '0 3px 6px rgba(0,0,0,0.4)'
+                                                    textShadow: '0 3px 6px rgba(0,0,0,0.4)',
+                                                    wordBreak: 'break-word'
                                                 }}
                                             >
                                                 أكاديمية الثلاثي 8
@@ -116,7 +173,7 @@ const CourseDetailCard = ({
                                             <Typography
                                                 sx={{
                                                     color: 'rgba(255, 255, 255, 0.9)',
-                                                    fontSize: '16px',
+                                                    fontSize: { md: '14px', lg: '15px', xl: '16px' },
                                                     lineHeight: 1.2,
                                                     fontWeight: 500,
                                                     textShadow: '0 2px 4px rgba(0,0,0,0.3)'
@@ -128,12 +185,18 @@ const CourseDetailCard = ({
                                     </Box>
 
                                     {/* Enhanced Course Title with JavaScript Theme */}
-                                    <Box sx={{ mb: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <Box sx={{
+                                        mb: { md: 4, lg: 5, xl: 6 },
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: { md: 2, lg: 3, xl: 4 },
+                                        flexWrap: 'wrap'
+                                    }}>
                                         {/* Enhanced JavaScript Logo */}
                                         <Box
                                             sx={{
-                                                width: '120px',
-                                                height: '120px',
+                                                width: { md: '80px', lg: '100px', xl: '120px' },
+                                                height: { md: '80px', lg: '100px', xl: '120px' },
                                                 borderRadius: '50%',
                                                 background: 'linear-gradient(135deg, #F7DF1E 0%, #F0DB4F 50%, #FFD700 100%)',
                                                 display: 'flex',
@@ -160,7 +223,7 @@ const CourseDetailCard = ({
                                             <Typography
                                                 sx={{
                                                     color: '#000',
-                                                    fontSize: '36px',
+                                                    fontSize: { md: '24px', lg: '30px', xl: '36px' },
                                                     fontWeight: 'bold',
                                                     fontFamily: 'monospace',
                                                     textShadow: '0 2px 4px rgba(0,0,0,0.2)'
@@ -171,11 +234,11 @@ const CourseDetailCard = ({
                                         </Box>
 
                                         {/* Enhanced Arabic Title Text */}
-                                        <Box sx={{ flex: 1 }}>
+                                        <Box sx={{ flex: 1, minWidth: 0 }}>
                                             <Typography
                                                 sx={{
                                                     color: 'white',
-                                                    fontSize: { xs: '2.5rem', md: '3.5rem' },
+                                                    fontSize: { md: '1.8rem', lg: '2.5rem', xl: '3.5rem' },
                                                     fontWeight: 'bold',
                                                     lineHeight: 1.1,
                                                     textAlign: 'right',
@@ -185,7 +248,12 @@ const CourseDetailCard = ({
                                                     background: 'linear-gradient(45deg, #ffffff, #f0f0f0)',
                                                     backgroundClip: 'text',
                                                     WebkitBackgroundClip: 'text',
-                                                    WebkitTextFillColor: 'transparent'
+                                                    WebkitTextFillColor: 'transparent',
+                                                    wordBreak: 'break-word',
+                                                    overflow: 'hidden',
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical'
                                                 }}
                                             >
                                                 {course?.title || 'إتقان الطب الباطني لامتحانات الترخيص'}
@@ -197,7 +265,13 @@ const CourseDetailCard = ({
                                 {/* Right Side - Redesigned Image Section */}
                                 <Box
                                     sx={{
-                                        width: '35%',
+                                        width: {
+                                            xs: '35%',
+                                            sm: '38%',
+                                            md: '40%',
+                                            lg: '35%',
+                                            xl: '30%'
+                                        },
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -206,6 +280,13 @@ const CourseDetailCard = ({
                                         overflow: 'hidden',
                                         borderLeft: '1px solid rgba(255,255,255,0.1)',
                                         background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)',
+                                        minHeight: '100%',
+                                        '@media (max-width: 1200px)': {
+                                            width: '35%'
+                                        },
+                                        '@media (max-width: 1000px)': {
+                                            width: '30%'
+                                        },
                                         '&::before': {
                                             content: '""',
                                             position: 'absolute',
@@ -227,8 +308,8 @@ const CourseDetailCard = ({
                                         sx={{
                                             position: 'relative',
                                             zIndex: 2,
-                                            width: '90%',
-                                            height: '80%',
+                                            width: { md: '85%', lg: '90%', xl: '95%' },
+                                            height: { md: '70%', lg: '80%', xl: '85%' },
                                             borderRadius: '20px',
                                             overflow: 'hidden',
                                             boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
@@ -238,6 +319,7 @@ const CourseDetailCard = ({
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
+                                            minHeight: '200px',
                                             '&::before': {
                                                 content: '""',
                                                 position: 'absolute',
@@ -316,35 +398,88 @@ const CourseDetailCard = ({
                                 </Box>
                             </Box>
 
-                            {/* Floating Card - Positioned to the right side of screen */}
+                            {/* Floating Card - Positioned to the left side of screen */}
                             <Box sx={{
                                 position: 'absolute',
                                 top: '50%',
-                                right: "105%",
+                                left: {
+                                    xs: '-40px',
+                                    sm: '-50px',
+                                    md: '-100px',
+                                    lg: '-140px',
+                                    xl: '-170px'
+                                },
                                 transform: 'translateY(-50%)',
                                 zIndex: 1000,
-                                width: '350px'
+                                width: {
+                                    xs: '280px',
+                                    sm: '300px',
+                                    md: '320px',
+                                    lg: '340px',
+                                    xl: '360px'
+                                },
+                                display: { xs: 'block', sm: 'block', md: 'block' },
+                                maxWidth: '90vw',
+                                '@media (max-width: 1200px)': {
+                                    left: '-90px',
+                                    width: '300px'
+                                },
+                                '@media (max-width: 1000px)': {
+                                    left: '-70px',
+                                    width: '280px'
+                                },
+                                '@media (max-width: 768px)': {
+                                    left: '-50px',
+                                    width: '260px'
+                                }
                             }}>
                                 <Paper
-                                    elevation={3}
+                                    elevation={8}
                                     sx={{
-                                        borderRadius: 2,
+                                        borderRadius: 3,
                                         overflow: 'hidden',
-                                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                                        border: '1px solid #e0e0e0',
+                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)',
+                                        border: '2px solid rgba(255, 255, 255, 0.8)',
                                         height: 'fit-content',
                                         width: '100%',
-                                        animation: 'float 4s ease-in-out infinite'
+                                        animation: 'float 4s ease-in-out infinite',
+                                        background: 'rgba(255, 255, 255, 0.95)',
+                                        backdropFilter: 'blur(10px)',
+                                        minHeight: '400px',
+                                        '@media (max-width: 1200px)': {
+                                            minHeight: '350px'
+                                        },
+                                        '@media (max-width: 1000px)': {
+                                            minHeight: '320px'
+                                        }
                                     }}
                                 >
                                     {/* Small Thumbnail */}
                                     <Box
                                         sx={{
                                             position: 'relative',
-                                            height: '120px',
+                                            height: {
+                                                xs: '120px',
+                                                sm: '130px',
+                                                md: '140px',
+                                                lg: '150px',
+                                                xl: '160px'
+                                            },
                                             backgroundImage: 'url(/src/assets/images/coursedetailMGE.jpeg)',
                                             backgroundSize: 'cover',
                                             backgroundPosition: 'center',
+                                            backgroundRepeat: 'no-repeat',
+                                            overflow: 'hidden',
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                background: 'linear-gradient(135deg, rgba(27, 27, 72, 0.1) 0%, rgba(51, 54, 121, 0.1) 50%, rgba(102, 51, 153, 0.1) 100%)',
+                                                zIndex: 1
+                                            },
                                             '&::after': {
                                                 content: '""',
                                                 position: 'absolute',
@@ -352,59 +487,151 @@ const CourseDetailCard = ({
                                                 left: 0,
                                                 width: '40%',
                                                 bottom: 0,
-                                                background: 'linear-gradient(135deg, #1B1B48 0%, #333679 50%, #663399 100%)'
+                                                background: 'linear-gradient(135deg, #1B1B48 0%, #333679 50%, #663399 100%)',
+                                                zIndex: 2
                                             }
                                         }}
-                                    />
-
-                                    {/* Content */}
-                                    <Box sx={{ p: 3 }}>
-                                        {/* Price */}
-                                        <Typography
-                                            variant="h4"
+                                    >
+                                        {/* Course Badge on Image */}
+                                        <Box
                                             sx={{
-                                                color: '#333',
-                                                fontWeight: 'bold',
-                                                mb: 3,
-                                                fontSize: '2rem',
-                                                textAlign: 'center'
+                                                position: 'absolute',
+                                                top: '10px',
+                                                right: '10px',
+                                                zIndex: 3,
+                                                background: 'rgba(255, 255, 255, 0.9)',
+                                                borderRadius: '12px',
+                                                px: 1.5,
+                                                py: 0.5,
+                                                backdropFilter: 'blur(10px)'
                                             }}
                                         >
-                                            ${course?.price || '74.00'}
-                                        </Typography>
+                                            <Typography
+                                                sx={{
+                                                    color: '#333679',
+                                                    fontSize: { xs: '10px', sm: '11px', md: '12px' },
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.5px'
+                                                }}
+                                            >
+                                                دورة جديدة
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Content */}
+                                    <Box sx={{
+                                        p: {
+                                            xs: 2,
+                                            sm: 2.25,
+                                            md: 2.5,
+                                            lg: 3,
+                                            xl: 3.5
+                                        },
+                                        minHeight: '200px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between'
+                                    }}>
+                                        {/* Price */}
+                                        <Box sx={{ textAlign: 'center', mb: 2 }}>
+                                            <Typography
+                                                variant="h4"
+                                                sx={{
+                                                    color: '#333679',
+                                                    fontWeight: 'bold',
+                                                    fontSize: {
+                                                        xs: '1.5rem',
+                                                        sm: '1.75rem',
+                                                        md: '2rem',
+                                                        lg: '2.25rem',
+                                                        xl: '2.5rem'
+                                                    },
+                                                    textAlign: 'center',
+                                                    background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
+                                                    WebkitBackgroundClip: 'text',
+                                                    WebkitTextFillColor: 'transparent',
+                                                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                }}
+                                            >
+                                                ${course?.price || '74.00'}
+                                            </Typography>
+                                            <Typography
+                                                sx={{
+                                                    color: '#666',
+                                                    fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+                                                    mt: 0.5
+                                                }}
+                                            >
+                                                سعر الدورة
+                                            </Typography>
+                                        </Box>
 
                                         {/* Course Information */}
-                                        <Box sx={{ mb: 3 }}>
+                                        <Box sx={{
+                                            mb: { xs: 2, sm: 2.25, md: 2.5, lg: 3, xl: 3.5 },
+                                            flex: 1
+                                        }}>
                                             <Box sx={{
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                mb: 2,
+                                                mb: { xs: 1.5, sm: 1.75, md: 2, lg: 2.25, xl: 2.5 },
                                                 pb: 1,
-                                                borderBottom: '1px dotted #e0e0e0'
+                                                borderBottom: '1px solid rgba(0,0,0,0.1)'
                                             }}>
-                                                <PeopleAltOutlined sx={{ color: '#666', fontSize: 18, mr: 2 }} />
-                                                <Typography sx={{ color: '#333', fontSize: '14px' }}>
-                                                    <span style={{ color: '#666' }}>المدرب:</span> <span style={{ color: '#4A90E2' }}>{course?.instructor || 'إليانور فانت'}</span>
+                                                <PeopleAltOutlined sx={{
+                                                    color: '#333679',
+                                                    fontSize: { xs: 16, sm: 17, md: 18, lg: 19, xl: 20 },
+                                                    mr: 1.5
+                                                }} />
+                                                <Typography sx={{
+                                                    color: '#333',
+                                                    fontSize: { xs: '11px', sm: '12px', md: '13px', lg: '14px', xl: '15px' },
+                                                    wordBreak: 'break-word',
+                                                    fontWeight: 500
+                                                }}>
+                                                    <span style={{ color: '#666' }}>المدرب:</span> <span style={{ color: '#333679', fontWeight: 'bold' }}>{course?.instructor || 'إليانور فانت'}</span>
                                                 </Typography>
                                             </Box>
 
                                             <Box sx={{
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                mb: 2,
+                                                mb: { xs: 1.5, sm: 1.75, md: 2, lg: 2.25, xl: 2.5 },
                                                 pb: 1,
-                                                borderBottom: '1px dotted #e0e0e0'
+                                                borderBottom: '1px solid rgba(0,0,0,0.1)'
                                             }}>
-                                                <PlayCircleOutline sx={{ color: '#666', fontSize: 18, mr: 2 }} />
-                                                <Typography sx={{ color: '#333', fontSize: '14px' }}>
-                                                    <span style={{ color: '#666' }}>الفيديوهات:</span> <span style={{ color: '#4A90E2' }}>{course?.videoCount || '14'}</span>
+                                                <PlayCircleOutline sx={{
+                                                    color: '#4DBFB3',
+                                                    fontSize: { xs: 16, sm: 17, md: 18, lg: 19, xl: 20 },
+                                                    mr: 1.5
+                                                }} />
+                                                <Typography sx={{
+                                                    color: '#333',
+                                                    fontSize: { xs: '11px', sm: '12px', md: '13px', lg: '14px', xl: '15px' },
+                                                    fontWeight: 500
+                                                }}>
+                                                    <span style={{ color: '#666' }}>الفيديوهات:</span> <span style={{ color: '#4DBFB3', fontWeight: 'bold' }}>{course?.videoCount || '14'}</span>
                                                 </Typography>
                                             </Box>
 
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                                <AccessTime sx={{ color: '#666', fontSize: 18, mr: 2 }} />
-                                                <Typography sx={{ color: '#333', fontSize: '14px' }}>
-                                                    <span style={{ color: '#666' }}>المدة:</span> <span style={{ color: '#4A90E2' }}>{course?.duration || '6 ساعات'}</span>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                mb: { xs: 1.5, sm: 1.75, md: 2, lg: 2.25, xl: 2.5 }
+                                            }}>
+                                                <AccessTime sx={{
+                                                    color: '#FF6B6B',
+                                                    fontSize: { xs: 16, sm: 17, md: 18, lg: 19, xl: 20 },
+                                                    mr: 1.5
+                                                }} />
+                                                <Typography sx={{
+                                                    color: '#333',
+                                                    fontSize: { xs: '11px', sm: '12px', md: '13px', lg: '14px', xl: '15px' },
+                                                    fontWeight: 500
+                                                }}>
+                                                    <span style={{ color: '#666' }}>المدة:</span> <span style={{ color: '#FF6B6B', fontWeight: 'bold' }}>{course?.duration || '6 ساعات'}</span>
                                                 </Typography>
                                             </Box>
                                         </Box>
@@ -413,18 +640,36 @@ const CourseDetailCard = ({
                                         <Button
                                             variant="contained"
                                             size="large"
-                                            endIcon={<ArrowForward sx={{ fontSize: 18 }} />}
+                                            endIcon={<ArrowForward sx={{
+                                                fontSize: { xs: 16, sm: 17, md: 18, lg: 19, xl: 20 }
+                                            }} />}
                                             sx={{
-                                                backgroundColor: '#2D4A3E', // Dark green matching the left side
+                                                background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                                                 color: 'white',
                                                 fontWeight: 'bold',
-                                                py: 2,
-                                                borderRadius: '8px',
+                                                py: { xs: 1.25, sm: 1.5, md: 1.75, lg: 2, xl: 2.25 },
+                                                px: { xs: 2, sm: 2.5, md: 3, lg: 3.5, xl: 4 },
+                                                borderRadius: '12px',
                                                 textTransform: 'none',
-                                                fontSize: '16px',
+                                                fontSize: { xs: '13px', sm: '14px', md: '15px', lg: '16px', xl: '17px' },
                                                 width: '100%',
+                                                minHeight: { xs: '44px', sm: '48px', md: '52px', lg: '56px', xl: '60px' },
+                                                boxShadow: '0 4px 15px rgba(51, 54, 121, 0.3)',
+                                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                                 '&:hover': {
-                                                    backgroundColor: '#1e3328'
+                                                    background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
+                                                    transform: 'translateY(-2px)',
+                                                    boxShadow: '0 8px 25px rgba(51, 54, 121, 0.4)'
+                                                },
+                                                '&:active': {
+                                                    transform: 'translateY(0px)',
+                                                    boxShadow: '0 4px 15px rgba(51, 54, 121, 0.3)'
+                                                },
+                                                '&:disabled': {
+                                                    background: '#ccc',
+                                                    color: '#666',
+                                                    transform: 'none',
+                                                    boxShadow: 'none'
                                                 }
                                             }}
                                             onClick={handleAddToCart}
@@ -438,21 +683,34 @@ const CourseDetailCard = ({
                                 {/* Decorative Dots */}
                                 <Box sx={{
                                     position: 'absolute',
-                                    right: '-20px',
+                                    right: { xs: '-25px', sm: '-28px', md: '-30px', lg: '-35px', xl: '-40px' },
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: 1
+                                    gap: { xs: 0.75, sm: 1, md: 1.25, lg: 1.5, xl: 1.75 },
+                                    zIndex: 1001
                                 }}>
                                     {[...Array(5)].map((_, index) => (
                                         <Box
                                             key={index}
                                             sx={{
-                                                width: 4,
-                                                height: 4,
-                                                backgroundColor: '#666',
-                                                borderRadius: '50%'
+                                                width: { xs: 3, sm: 4, md: 5, lg: 6, xl: 7 },
+                                                height: { xs: 3, sm: 4, md: 5, lg: 6, xl: 7 },
+                                                backgroundColor: '#4DBFB3',
+                                                borderRadius: '50%',
+                                                opacity: 0.6 + (index * 0.1),
+                                                animation: `pulse 2s ease-in-out infinite ${index * 0.2}s`,
+                                                '@keyframes pulse': {
+                                                    '0%, 100%': {
+                                                        opacity: 0.6 + (index * 0.1),
+                                                        transform: 'scale(1)'
+                                                    },
+                                                    '50%': {
+                                                        opacity: 1,
+                                                        transform: 'scale(1.2)'
+                                                    }
+                                                }
                                             }}
                                         />
                                     ))}
