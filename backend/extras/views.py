@@ -16,6 +16,7 @@ from courses.models import Course
 from .models import Banner, CourseCollection
 from .serializers import (
     BannerSerializer,
+    BannerByTypeSerializer,
     CourseCollectionListSerializer,
     CourseCollectionDetailSerializer
 )
@@ -102,6 +103,88 @@ class BannerViewSet(viewsets.ModelViewSet):
         queryset = queryset.order_by('display_order', '-created_at')
         
         serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def by_type(self, request, *args, **kwargs):
+        """
+        Get banners by specific type (header, main, about_us, why_choose_us, etc.)
+        """
+        banner_type = request.query_params.get('type')
+        if not banner_type:
+            return Response(
+                {'error': 'يجب تحديد نوع البانر'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate banner type
+        valid_types = [choice[0] for choice in Banner.BANNER_TYPES]
+        if banner_type not in valid_types:
+            return Response(
+                {'error': f'نوع البانر غير صالح. الأنواع المتاحة: {", ".join(valid_types)}'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        now = timezone.now()
+        queryset = self.get_queryset().filter(
+            banner_type=banner_type,
+            is_active=True,
+            start_date__lte=now,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=now))
+        
+        # Order by display_order and then by creation date
+        queryset = queryset.order_by('display_order', '-created_at')
+        
+        # Use simplified serializer for public API
+        serializer = BannerByTypeSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def header(self, request, *args, **kwargs):
+        """
+        Get header banners specifically
+        """
+        now = timezone.now()
+        queryset = self.get_queryset().filter(
+            banner_type='header',
+            is_active=True,
+            start_date__lte=now,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=now))
+        
+        queryset = queryset.order_by('display_order', '-created_at')
+        serializer = BannerByTypeSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def about_us(self, request, *args, **kwargs):
+        """
+        Get about us banners specifically
+        """
+        now = timezone.now()
+        queryset = self.get_queryset().filter(
+            banner_type='about_us',
+            is_active=True,
+            start_date__lte=now,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=now))
+        
+        queryset = queryset.order_by('display_order', '-created_at')
+        serializer = BannerByTypeSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def why_choose_us(self, request, *args, **kwargs):
+        """
+        Get why choose us banners specifically
+        """
+        now = timezone.now()
+        queryset = self.get_queryset().filter(
+            banner_type='why_choose_us',
+            is_active=True,
+            start_date__lte=now,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=now))
+        
+        queryset = queryset.order_by('display_order', '-created_at')
+        serializer = BannerByTypeSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
 

@@ -20,12 +20,12 @@ class ModuleProgressSerializer(serializers.ModelSerializer):
         model = ModuleProgress
         fields = [
             'id', 'user', 'module', 'module_title', 'course_title',
-            'is_completed', 'completed_at', 'last_accessed', 'created_at',
+            'is_completed', 'completed_at', 'last_accessed', 'started_at',
             'total_lessons', 'completed_lessons', 'progress_percentage'
         ]
         read_only_fields = [
             'id', 'user', 'module_title', 'course_title', 'completed_at',
-            'last_accessed', 'created_at', 'total_lessons', 'completed_lessons',
+            'last_accessed', 'started_at', 'total_lessons', 'completed_lessons',
             'progress_percentage'
         ]
     

@@ -236,62 +236,35 @@ const CourseDetail = () => {
 
     // Review states
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const [submittingReview, setSubmittingReview] = useState(false);
     const [reviewForm, setReviewForm] = useState({
         rating: 5,
+        title: '',
+        content: '',
         comment: ''
     });
-    const [submittingReview, setSubmittingReview] = useState(false);
 
-
-    // Toggle module expansion
-    const toggleModule = (moduleId) => {
-        setExpandedModules(prev => ({
-            ...prev,
-            [moduleId]: !prev[moduleId]
-        }));
-    };
-
-    // Preview dialog handlers
-    const handleClosePreview = () => setIsPreviewOpen(false);
-
-    // Choose lesson icon by status/type
-    const getLessonIcon = (lesson) => {
-        if (lesson?.completed) {
-            return <CheckCircle htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'video') {
-            return <VideoIcon htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'article') {
-            return <InsertDriveFileIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'quiz') {
-            return <QuizIconFilled htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'assignment') {
-            return <AssignmentIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'exam') {
-            return <QuizIcon htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'file') {
-            return <DownloadIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'project') {
-            return <CodeIcon htmlColor="#333679" />;
-        }
-        if (lesson?.type === 'exercise') {
-            return <AssignmentTurnedInIcon htmlColor="#4DBFB3" />;
-        }
-        if (lesson?.type === 'case-study') {
-            return <InfoIcon htmlColor="#333679" />;
-        }
-        if (lesson?.isPreview) {
-            return <PlayCircleOutline htmlColor="#333679" />;
-        }
-        return <DescriptionOutlined htmlColor="#333679" />;
-    };
-
+    // Mock related courses
+    const mockRelatedCourses = [
+        {
+            id: 2,
+            title: 'React Hooks in Depth',
+            instructor: 'John Doe',
+            image: 'https://source.unsplash.com/random/400x200?react',
+            rating: 4.7,
+            students: 1245,
+            price: 79.99,
+        },
+        {
+            id: 3,
+            title: 'Mastering Redux',
+            instructor: 'Alex Johnson',
+            image: 'https://source.unsplash.com/random/400x200?javascript',
+            rating: 4.9,
+            students: 987,
+            price: 89.99,
+        },
+    ];
 
     // Initialize all modules as collapsed by default
     const initializeExpandedModules = (modules) => {
@@ -1022,6 +995,57 @@ const CourseDetail = () => {
         console.log('transformModulesData result:', result);
         return result;
     };
+
+
+    // Toggle module expansion
+    const toggleModule = (moduleId) => {
+        setExpandedModules(prev => ({
+            ...prev,
+            [moduleId]: !prev[moduleId]
+        }));
+    };
+
+    // Preview dialog handlers
+    const handleClosePreview = () => setIsPreviewOpen(false);
+
+    // Choose lesson icon by status/type
+    const getLessonIcon = (lesson) => {
+        if (lesson?.completed) {
+            return <CheckCircle htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'video') {
+            return <VideoIcon htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'article') {
+            return <InsertDriveFileIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'quiz') {
+            return <QuizIconFilled htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'assignment') {
+            return <AssignmentIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'exam') {
+            return <QuizIcon htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'file') {
+            return <DownloadIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'project') {
+            return <CodeIcon htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'exercise') {
+            return <AssignmentTurnedInIcon htmlColor="#4DBFB3" />;
+        }
+        if (lesson?.type === 'case-study') {
+            return <InfoIcon htmlColor="#333679" />;
+        }
+        if (lesson?.isPreview) {
+            return <PlayCircleOutline htmlColor="#333679" />;
+        }
+        return <DescriptionOutlined htmlColor="#333679" />;
+    };
+
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);

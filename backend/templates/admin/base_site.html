@@ -577,7 +577,7 @@
         </li>
         
         <!-- Permissions -->
-        <li class="menu-section">
+        <!-- <li class="menu-section">
             <span>الصلاحيات</span>
         </li>
         <li>
@@ -585,7 +585,7 @@
                 <i class="fas fa-user-shield"></i>
                 <span>صلاحيات المستخدمين</span>
             </a>
-        </li>
+        </li> -->
         
         <!-- Users Section -->
         <li class="menu-section">
@@ -656,14 +656,14 @@
                 <i class="fas fa-tasks"></i>
                 <span>الواجبات</span>
             </a>
-        </li>
+        </li> -->
         <li>
             <a href="{% url 'admin:assignments_quiz_changelist' %}" class="{% if '/admin/assignments/quiz/' in request.path %}active{% endif %}">
                 <i class="fas fa-question-circle"></i>
                 <span>الاختبارات</span>
             </a>
         </li>
-        <li>
+        <!-- <li>
             <a href="{% url 'admin:assignments_exam_changelist' %}" class="{% if '/admin/assignments/exam/' in request.path %}active{% endif %}">
                 <i class="fas fa-file-alt"></i>
                 <span>الامتحانات</span>

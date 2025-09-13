@@ -231,7 +231,7 @@ const ExamList = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '---';
-    return new Date(dateString).toLocaleDateString('ar-EG');
+    return new Date(dateString).toLocaleDateString('en-US');
   };
 
   if (loading) {

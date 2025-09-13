@@ -11,13 +11,14 @@ api.interceptors.request.use(
     console.log('Request URL:', config.url);
     console.log('Request method:', config.method);
     
-    // Log request data for review creation
-    if (config.url && config.url.includes('/reviews/create/') && config.method === 'post') {
-      console.log('=== REQUEST INTERCEPTOR DEBUG ===');
-      console.log('Review creation request detected');
-      console.log('Request data:', config.data);
-      console.log('Request headers:', config.headers);
-      console.log('==================================');
+    // Log request data for assessment API calls
+    if (config.url && config.url.includes('/assessment/')) {
+      console.log('=== ASSESSMENT API REQUEST DEBUG ===');
+      console.log('Assessment API request detected');
+      console.log('Request URL:', config.url);
+      console.log('Request method:', config.method);
+      console.log('Token exists:', !!token);
+      console.log('=====================================');
     }
     
     if (token) {
@@ -253,6 +254,22 @@ export const courseAPI = {
              data.data ? data.data : [];
     } catch (error) {
       console.error('Error fetching categories:', error);
+      return [];
+    }
+  },
+
+  // Get subcategories
+  getSubCategories: async (categoryId = null) => {
+    try {
+      const params = categoryId ? { category: categoryId } : {};
+      const response = await api.get('/api/courses/subcategories/', { params });
+      // Ensure we return an array
+      const data = response.data;
+      return Array.isArray(data) ? data : 
+             data.results ? data.results : 
+             data.data ? data.data : [];
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
       return [];
     }
   },

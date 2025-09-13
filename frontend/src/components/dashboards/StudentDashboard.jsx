@@ -263,7 +263,7 @@ const StudentDashboard = () => {
 
         {/* Stats Cards - مطابقة لشكل المعلم */}
         <Box sx={{ mb: 5, px: 1 }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ '& .MuiGrid-root': { paddingTop: '0 !important' } }}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card

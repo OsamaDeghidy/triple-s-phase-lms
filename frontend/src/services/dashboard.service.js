@@ -139,6 +139,22 @@ class DashboardService {
       return [];
     }
   }
+
+  // إحصائيات بنك الأسئلة
+  async getQuestionBankStats() {
+    try {
+      const response = await apiService.get('/api/assessment/questions/stats/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching question bank stats:', error);
+      return {
+        total_questions: 0,
+        questions_by_type: {},
+        questions_by_difficulty: {},
+        most_used_questions: []
+      };
+    }
+  }
 }
 
 export default new DashboardService();

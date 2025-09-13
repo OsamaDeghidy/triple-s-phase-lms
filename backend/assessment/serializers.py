@@ -16,8 +16,9 @@ class QuestionBankSerializer(serializers.ModelSerializer):
     is_mcq = serializers.ReadOnlyField()
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
     lesson_title = serializers.CharField(source='lesson.title', read_only=True)
-    course_title = serializers.CharField(source='course.title', read_only=True)
-    module_title = serializers.CharField(source='module.title', read_only=True)
+    course_title = serializers.CharField(source='lesson.module.course.title', read_only=True)
+    module_title = serializers.CharField(source='lesson.module.title', read_only=True)
+    course = serializers.IntegerField(source='lesson.module.course.id', read_only=True)
     
     class Meta:
         model = QuestionBank
@@ -25,7 +26,7 @@ class QuestionBankSerializer(serializers.ModelSerializer):
             'id', 'question_text', 'question_type', 'difficulty_level',
             'options', 'correct_answer', 'explanation', 'tags',
             'image', 'audio', 'video', 'lesson', 'lesson_title',
-            'course_title', 'module_title', 'created_by', 'created_by_name',
+            'course', 'course_title', 'module_title', 'created_by', 'created_by_name',
             'created_at', 'updated_at', 'options_list', 'is_mcq'
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']

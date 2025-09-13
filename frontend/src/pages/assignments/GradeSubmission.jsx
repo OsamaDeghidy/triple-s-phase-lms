@@ -162,7 +162,7 @@ const GradeSubmission = () => {
         }
       >
         <p style={{ fontSize: 15, color: '#333', marginBottom: 8 }}>
-          <b>وقت التسليم:</b> {new Date(submission.submitted_at).toLocaleString('ar-EG')}
+          <b>وقت التسليم:</b> {new Date(submission.submitted_at).toLocaleString('en-US')}
         </p>
         <Tag color={submission.is_late ? 'red' : 'blue'} style={{ fontSize: 15, borderRadius: 8 }}>
           {submission.is_late ? 'متأخر' : 'مُرسل'}

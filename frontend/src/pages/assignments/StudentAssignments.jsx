@@ -515,7 +515,7 @@ const StudentAssignments = () => {
                           {new Date(assignment.due_date).toLocaleDateString('en-GB')}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {new Date(assignment.due_date).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(assignment.due_date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </Typography>
                       </Box>
                     </TableCell>
@@ -754,7 +754,7 @@ const StudentAssignments = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                           <CalendarTodayIcon sx={{ color: '#666' }} />
                           <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                            تاريخ التسليم: {new Date(selectedAssignment.due_date).toLocaleString('ar-SA')}
+                            تاريخ التسليم: {new Date(selectedAssignment.due_date).toLocaleString('en-US')}
                           </Typography>
                         </Box>
                         {selectedAssignment.allow_late_submissions && (
@@ -769,14 +769,14 @@ const StudentAssignments = () => {
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                             <AssignmentTurnedInIcon sx={{ color: '#2e7d32' }} />
                             <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                              تاريخ التسليم: {new Date(selectedAssignment.submission_date).toLocaleString('ar-SA')}
+                              تاريخ التسليم: {new Date(selectedAssignment.submission_date).toLocaleString('en-US')}
                             </Typography>
                           </Box>
                         )}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                           <AccessTimeIcon sx={{ color: '#666' }} />
                           <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                            تاريخ الإنشاء: {new Date(selectedAssignment.created_at).toLocaleString('ar-SA')}
+                            تاريخ الإنشاء: {new Date(selectedAssignment.created_at).toLocaleString('en-US')}
                           </Typography>
                         </Box>
                       </Box>

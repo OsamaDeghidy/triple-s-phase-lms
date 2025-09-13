@@ -685,7 +685,7 @@ const AssignmentSubmissions = () => {
                             }
                             secondary={
                               <Typography variant="body2" color="text.secondary">
-                                {new Date(selectedSubmission.submitted_at).toLocaleString('ar-SA')}
+                                {new Date(selectedSubmission.submitted_at).toLocaleString('en-US')}
                               </Typography>
                             }
                         />

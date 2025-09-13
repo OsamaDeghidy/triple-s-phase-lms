@@ -9,8 +9,11 @@ class Banner(models.Model):
     """Model for managing banners on the website"""
     BANNER_TYPES = [
         ('main', 'Main Banner'),
+        ('header', 'Header Banner'),
         ('sidebar', 'Sidebar Banner'),
         ('promo', 'Promotional Banner'),
+        ('about_us', 'About Us Banner'),
+        ('why_choose_us', 'Why Choose Us Banner'),
     ]
     
     title = models.CharField(max_length=200, verbose_name='عنوان البانر')
@@ -33,6 +36,13 @@ class Banner(models.Model):
     display_order = models.PositiveIntegerField(default=0, verbose_name='ترتيب العرض')
     start_date = models.DateTimeField(default=timezone.now, verbose_name='تاريخ البدء')
     end_date = models.DateTimeField(blank=True, null=True, verbose_name='تاريخ الانتهاء')
+    
+    # Additional fields for specific banner types
+    button_text = models.CharField(max_length=100, blank=True, null=True, verbose_name='نص الزر')
+    button_url = models.URLField(max_length=500, blank=True, null=True, verbose_name='رابط الزر')
+    background_color = models.CharField(max_length=7, blank=True, null=True, verbose_name='لون الخلفية')
+    text_color = models.CharField(max_length=7, blank=True, null=True, verbose_name='لون النص')
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -54,6 +64,37 @@ class Banner(models.Model):
         if self.end_date and self.end_date < now:
             return False
         return True
+    
+    @classmethod
+    def get_active_banners_by_type(cls, banner_type):
+        """Get active banners by type"""
+        return cls.objects.filter(
+            banner_type=banner_type,
+            is_active=True,
+            start_date__lte=timezone.now()
+        ).filter(
+            models.Q(end_date__isnull=True) | models.Q(end_date__gte=timezone.now())
+        ).order_by('display_order', '-created_at')
+    
+    @classmethod
+    def get_header_banners(cls):
+        """Get active header banners"""
+        return cls.get_active_banners_by_type('header')
+    
+    @classmethod
+    def get_main_banners(cls):
+        """Get active main banners"""
+        return cls.get_active_banners_by_type('main')
+    
+    @classmethod
+    def get_about_us_banners(cls):
+        """Get active about us banners"""
+        return cls.get_active_banners_by_type('about_us')
+    
+    @classmethod
+    def get_why_choose_us_banners(cls):
+        """Get active why choose us banners"""
+        return cls.get_active_banners_by_type('why_choose_us')
 
 
 class CourseCollection(models.Model):

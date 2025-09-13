@@ -45,8 +45,6 @@ import {
   Comment as CommentIcon,
   FilterList as FilterIcon,
   Sort as SortIcon,
-  GridView as GridViewIcon,
-  ViewList as ViewListIcon,
   Star as StarIcon,
   Share as ShareIcon,
   ArrowForward as ArrowForwardIcon,
@@ -283,7 +281,6 @@ const ArticlesList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('created_at');
-  const [viewMode, setViewMode] = useState('grid');
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -429,7 +426,7 @@ const ArticlesList = () => {
   });
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -1047,35 +1044,10 @@ const ArticlesList = () => {
             </Box>
           </Box>
           
-          <Divider sx={{ my: 2 }} />
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-              {sortedArticles.length} مقالة {searchQuery && `مطابقة لـ "${searchQuery}"`}
-            </Typography>
-            
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Tooltip title="عرض شبكي">
-                <IconButton
-                  onClick={() => setViewMode('grid')}
-                  color={viewMode === 'grid' ? 'primary' : 'default'}
-                >
-                  <GridViewIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="عرض قائمة">
-                <IconButton
-                  onClick={() => setViewMode('list')}
-                  color={viewMode === 'list' ? 'primary' : 'default'}
-                >
-                  <ViewListIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Box>
         </HeaderContainer>
 
-        {sortedArticles.length > 0 ? (
+        <Box sx={{ mt: 3 }}>
+          {sortedArticles.length > 0 ? (
           <Box>
             <AnimatePresence>
               <Grid container spacing={3} sx={{ width: '100%' }}>
@@ -1114,6 +1086,7 @@ const ArticlesList = () => {
             </motion.div>
           </Box>
         )}
+        </Box>
       </Container>
 
 

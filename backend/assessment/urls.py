@@ -15,5 +15,5 @@ router.register(r'flashcards', FlashcardViewSet, basename='flashcard')
 router.register(r'flashcard-progress', StudentFlashcardProgressViewSet, basename='flashcard-progress')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
 ]

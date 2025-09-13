@@ -683,7 +683,7 @@ const TeacherMeetings = () => {
       )}
 
       {/* Meetings Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={1.25}>
         {filteredMeetings.map((meeting) => {
           const status = getMeetingStatus(meeting);
           

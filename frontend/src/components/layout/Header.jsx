@@ -189,7 +189,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const NavButton = styled(Button)(({ theme, isHome, scrolled }) => ({
+const NavButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'isHome' && prop !== 'scrolled',
+})(({ theme, isHome, scrolled }) => ({
   color: isHome ? '#FFD700' : '#FFFFFF',
   margin: theme.spacing(0, 1),
   fontWeight: '500',
@@ -466,7 +468,7 @@ const Header = () => {
       icon: <MenuBookIcon />,
       dropdown: categories.map(category => ({
         text: category.courses_count ? `${category.name} (${category.courses_count})` : category.name,
-        path: `/courses?category=${category.slug}`,
+        path: `/courses?category=${category.slug || category.id || 'all'}`,
       }))
     },
     {
@@ -988,9 +990,9 @@ const Header = () => {
                             <CircularProgress size={24} sx={{ color: '#663399' }} />
                           </Box>
                         ) : item.dropdown.length > 0 ? (
-                          item.dropdown.map((subItem) => (
+                          item.dropdown.map((subItem, index) => (
                             <MenuItem
-                              key={subItem.path}
+                              key={`${subItem.path}-${index}`}
                               component={RouterLink}
                               to={subItem.path}
                               onClick={handleClose}

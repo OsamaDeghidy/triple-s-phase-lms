@@ -514,7 +514,7 @@ const ArticlesPage = () => {
   const paginatedArticles = sortedArticles.slice((currentPage - 1) * 6, currentPage * 6);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
