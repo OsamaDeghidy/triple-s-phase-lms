@@ -25,7 +25,8 @@ import {
   Home as HomeIcon,
   Quiz as QuizIcon,
   VideoCall as VideoCallIcon,
-  Article as ArticleIcon
+  Article as ArticleIcon,
+  Psychology as PsychologyIcon
 } from '@mui/icons-material';
 
 const drawerWidth = 270;
@@ -36,6 +37,7 @@ const teacherNavItems = [
   { text: 'لوحة التحكم', icon: <DashboardIcon />, path: '/teacher/dashboard' },
   { text: 'كورساتي', icon: <ClassIcon />, path: '/teacher/my-courses' },
   { text: 'بنك الأسئلة', icon: <QuizIcon />, path: '/teacher/question-bank' },
+  { text: 'البطاقات التعليمية', icon: <PsychologyIcon />, path: '/teacher/flashcards' },
   // { text: 'الواجبات', icon: <AssignmentIcon />, path: '/teacher/assignments' },
   // { text: 'الكويزات', icon: <AssessmentIcon />, path: '/teacher/quizzes' },
   // { text: 'الامتحانات', icon: <AssessmentIcon />, path: '/teacher/exams' },

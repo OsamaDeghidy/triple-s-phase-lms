@@ -19,6 +19,12 @@ const ASSESSMENT_API = {
   // Search and filters
   SEARCH: '/api/assessment/questions/search/',
   FILTER: '/api/assessment/questions/filter/',
+  
+  // Flashcards API
+  FLASHCARDS: '/api/assessment/flashcards/',
+  FLASHCARD_DETAIL: (id) => `/api/assessment/flashcards/${id}/`,
+  FLASHCARD_REVIEW: (id) => `/api/assessment/flashcards/${id}/review/`,
+  FLASHCARD_PROGRESS: '/api/assessment/flashcard-progress/',
 };
 
 class AssessmentService {
@@ -458,6 +464,217 @@ class AssessmentService {
     }
 
     return formattedData;
+  }
+
+  // ==================== FLASHCARDS ====================
+  
+  /**
+   * Get all flashcards with optional filters
+   * @param {Object} params - Query parameters
+   * @returns {Promise<Object>} Flashcards data with pagination
+   */
+  async getFlashcards(params = {}) {
+    try {
+      console.log('Fetching flashcards with params:', params);
+      const response = await api.get(ASSESSMENT_API.FLASHCARDS, { params });
+      console.log('Flashcards response:', response.data);
+      return {
+        success: true,
+        data: response.data.results || response.data,
+        pagination: {
+          count: response.data.count,
+          next: response.data.next,
+          previous: response.data.previous,
+          page: response.data.page || 1,
+          totalPages: Math.ceil(response.data.count / (params.page_size || 20))
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching flashcards:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message,
+        data: []
+      };
+    }
+  }
+
+  /**
+   * Get flashcard by ID
+   * @param {string|number} id - Flashcard ID
+   * @returns {Promise<Object>} Flashcard data
+   */
+  async getFlashcard(id) {
+    try {
+      const response = await api.get(ASSESSMENT_API.FLASHCARD_DETAIL(id));
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error fetching flashcard:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message
+      };
+    }
+  }
+
+  /**
+   * Create new flashcard
+   * @param {Object} flashcardData - Flashcard data
+   * @returns {Promise<Object>} Created flashcard data
+   */
+  async createFlashcard(flashcardData) {
+    try {
+      const formData = this.formatFlashcardData(flashcardData);
+      const response = await api.post(ASSESSMENT_API.FLASHCARDS, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error creating flashcard:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message
+      };
+    }
+  }
+
+  /**
+   * Update flashcard
+   * @param {string|number} id - Flashcard ID
+   * @param {Object} flashcardData - Updated flashcard data
+   * @returns {Promise<Object>} Updated flashcard data
+   */
+  async updateFlashcard(id, flashcardData) {
+    try {
+      const formData = this.formatFlashcardData(flashcardData);
+      const response = await api.patch(ASSESSMENT_API.FLASHCARD_DETAIL(id), formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error updating flashcard:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message
+      };
+    }
+  }
+
+  /**
+   * Delete flashcard
+   * @param {string|number} id - Flashcard ID
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteFlashcard(id) {
+    try {
+      await api.delete(ASSESSMENT_API.FLASHCARD_DETAIL(id));
+      return {
+        success: true,
+        message: 'Flashcard deleted successfully'
+      };
+    } catch (error) {
+      console.error('Error deleting flashcard:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message
+      };
+    }
+  }
+
+  /**
+   * Record flashcard review
+   * @param {string|number} id - Flashcard ID
+   * @param {Object} reviewData - Review data (correct, difficulty, etc.)
+   * @returns {Promise<Object>} Review result
+   */
+  async reviewFlashcard(id, reviewData) {
+    try {
+      const response = await api.post(ASSESSMENT_API.FLASHCARD_REVIEW(id), reviewData);
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error reviewing flashcard:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message
+      };
+    }
+  }
+
+  /**
+   * Get flashcard progress for student
+   * @param {Object} params - Query parameters
+   * @returns {Promise<Object>} Progress data
+   */
+  async getFlashcardProgress(params = {}) {
+    try {
+      const response = await api.get(ASSESSMENT_API.FLASHCARD_PROGRESS, { params });
+      return {
+        success: true,
+        data: response.data.results || response.data,
+        pagination: {
+          count: response.data.count,
+          next: response.data.next,
+          previous: response.data.previous
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching flashcard progress:', error);
+      return {
+        success: false,
+        error: error.response?.data || error.message,
+        data: []
+      };
+    }
+  }
+
+  /**
+   * Format flashcard data for API submission
+   * @param {Object} flashcardData - Raw flashcard data
+   * @returns {FormData} Formatted data
+   */
+  formatFlashcardData(flashcardData) {
+    const formData = new FormData();
+
+    // Add basic fields
+    Object.keys(flashcardData).forEach(key => {
+      const value = flashcardData[key];
+      
+      if (key === 'front_image' && value instanceof File) {
+        formData.append('front_image', value);
+      } else if (key === 'back_image' && value instanceof File) {
+        formData.append('back_image', value);
+      } else if (key === 'tags' && Array.isArray(value)) {
+        // Handle tags array
+        value.forEach((tag, index) => {
+          formData.append(`tags[${index}]`, tag);
+        });
+      } else if (value !== null && value !== undefined && value !== '') {
+        // Handle other fields
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
+      }
+    });
+
+    return formData;
   }
 }
 

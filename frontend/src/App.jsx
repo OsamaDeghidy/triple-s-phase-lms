@@ -104,6 +104,7 @@ import PaymentPage from './pages/payment/PaymentPage';
 
 // Question Bank Components
 import QuestionBankPage from './pages/teacher/QuestionBankPage';
+import FlashcardsPage from './pages/teacher/FlashcardsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -346,6 +347,7 @@ const AppContent = () => {
                           <Route path="courses/:courseId/units/:unitId/lessons/:lessonId/edit" element={<LessonForm isEdit />} />
                           <Route path="courses/:courseId/units/:unitId/lessons/:lessonId" element={<LessonDetail />} />
                           <Route path="question-bank" element={<QuestionBankPage />} />
+                          <Route path="flashcards" element={<FlashcardsPage />} />
                           <Route path="assignments" element={<TeacherAssignments />} />
                           <Route path="assignments/new" element={<CreateAssignment />} />
                           <Route path="assignments/:assignmentId/edit" element={<EditAssignment />} />

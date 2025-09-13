@@ -349,11 +349,11 @@ class StudentSubmissionViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         # Students can only see their own submissions
-        if hasattr(user, 'profile') and user.profile.role == 'student':
+        if hasattr(user, 'profile') and user.profile.status == 'Student':
             queryset = queryset.filter(student=user)
         
         # Teachers can see submissions for their assessments
-        elif hasattr(user, 'profile') and user.profile.role == 'teacher':
+        elif hasattr(user, 'profile') and user.profile.status == 'Instructor':
             queryset = queryset.filter(assessment__created_by=user)
         
         return queryset.select_related('student', 'assessment', 'graded_by').prefetch_related('answers__question')
@@ -458,11 +458,11 @@ class StudentAnswerViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         # Students can only see their own answers
-        if hasattr(user, 'profile') and user.profile.role == 'student':
+        if hasattr(user, 'profile') and user.profile.status == 'Student':
             queryset = queryset.filter(submission__student=user)
         
         # Teachers can see answers for their assessments
-        elif hasattr(user, 'profile') and user.profile.role == 'teacher':
+        elif hasattr(user, 'profile') and user.profile.status == 'Instructor':
             queryset = queryset.filter(submission__assessment__created_by=user)
         
         return queryset.select_related('submission', 'question')
@@ -487,7 +487,7 @@ class FlashcardViewSet(viewsets.ModelViewSet):
         user = self.request.user
         
         # Students can see flashcards from published assessments
-        if hasattr(user, 'profile') and user.profile.role == 'student':
+        if hasattr(user, 'profile') and user.profile.status == 'Student':
             queryset = queryset.filter(
                 related_question__assessment_questions__assessment__status='published'
             ).distinct()
@@ -543,7 +543,7 @@ class StudentFlashcardProgressViewSet(viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         
         # Students can only see their own progress
-        if hasattr(user, 'profile') and user.profile.role == 'student':
+        if hasattr(user, 'profile') and user.profile.status == 'Student':
             queryset = queryset.filter(student=user)
         
         return queryset.select_related('student', 'flashcard')

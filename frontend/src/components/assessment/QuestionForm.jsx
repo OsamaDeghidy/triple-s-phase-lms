@@ -25,7 +25,11 @@ import {
   FormHelperText,
   Paper,
   Container,
-  Stack
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -38,7 +42,8 @@ import {
   School as SchoolIcon,
   Book as BookIcon,
   Tag as TagIcon,
-  AttachFile as AttachFileIcon
+  AttachFile as AttachFileIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
 import { useTheme, alpha, styled } from '@mui/material/styles';
 
@@ -208,7 +213,7 @@ const FormSection = styled(Box)(({ theme }) => ({
   direction: 'rtl',
 }));
 
-const QuestionForm = ({ question, onSubmit, onCancel, lessons = [] }) => {
+const QuestionForm = ({ open = true, onClose, question, onSubmit, onCancel, lessons = [] }) => {
   const theme = useTheme();
   
   // Ensure lessons is an array
@@ -577,18 +582,46 @@ const QuestionForm = ({ question, onSubmit, onCancel, lessons = [] }) => {
   };
 
   return (
-    <FormContainer component="form" onSubmit={handleSubmit}>
-      <FormCard>
-        <CardContent sx={{ p: 3 }}>
-          {/* Header */}
-          <Box sx={{ mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0', direction: 'rtl' }}>
-            <Typography variant="h5" sx={{ fontWeight: 600, color: '#333333', display: 'flex', alignItems: 'center', gap: 1, textAlign: 'right' }}>
-              <QuizIcon sx={{ color: '#1976d2', fontSize: 28 }} />
-              {question ? 'تعديل السؤال' : 'إنشاء سؤال جديد'}
-            </Typography>
-          </Box>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth={false}
+      fullWidth
+      dir="rtl"
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          minHeight: '85vh',
+          maxHeight: '90vh',
+          width: '95vw',
+          maxWidth: '1200px'
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        background: 'linear-gradient(135deg, #1976d2, #1565c0)',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        py: 3,
+        px: 4
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <QuizIcon />
+          <Typography variant="h6" fontWeight={600}>
+            {question ? 'تعديل السؤال' : 'إنشاء سؤال جديد'}
+          </Typography>
+        </Box>
+        <IconButton onClick={onClose} sx={{ color: 'white' }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-          <Stack spacing={3}>
+      <DialogContent sx={{ p: 0, bgcolor: '#fafbfc' }}>
+        <Container maxWidth={false} sx={{ py: 3, px: 4, maxWidth: '1200px', mx: 'auto' }}>
+
+          <Stack spacing={3} component="form" onSubmit={handleSubmit}>
             {/* Question Text */}
             <FormSection>
               <SectionTitle>
@@ -913,33 +946,26 @@ const QuestionForm = ({ question, onSubmit, onCancel, lessons = [] }) => {
               </Box>
             </FormSection>
 
-            {/* Action Buttons */}
-              <Box sx={{ 
-              p: 2, 
-              borderRadius: '4px', 
-              backgroundColor: '#f8f9fa',
-              border: '1px solid #e0e0e0',
-              direction: 'rtl'
-            }}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-start', flexWrap: 'wrap', direction: 'rtl' }}>
-                <FormButton 
-                    variant="outlined" 
-                    onClick={onCancel}
-                  >
-                    إلغاء
-                </FormButton>
-                <FormButton 
-                    type="submit" 
-                    variant="contained"
-                  >
-                    {question ? 'تحديث السؤال' : 'إنشاء السؤال'}
-                </FormButton>
-                </Box>
-              </Box>
           </Stack>
-        </CardContent>
-      </FormCard>
-    </FormContainer>
+        </Container>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 4, bgcolor: '#f8f9fa', borderRadius: '0 0 12px 12px' }}>
+        <FormButton 
+          variant="outlined" 
+          onClick={onCancel}
+        >
+          إلغاء
+        </FormButton>
+        <FormButton 
+          type="submit" 
+          variant="contained"
+          onClick={handleSubmit}
+        >
+          {question ? 'تحديث السؤال' : 'إنشاء السؤال'}
+        </FormButton>
+      </DialogActions>
+    </Dialog>
   );
 };
 
