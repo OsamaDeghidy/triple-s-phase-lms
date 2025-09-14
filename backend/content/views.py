@@ -12,6 +12,8 @@ from content.serializers import (
     ModuleDetailSerializer, ModuleCreateSerializer, ProgressUpdateSerializer,
     LessonSerializer, LessonDetailSerializer, LessonCreateUpdateSerializer, LessonResourceSerializer
 )
+from assessment.models import QuestionBank, Flashcard
+from assessment.serializers import QuestionBankSerializer, FlashcardSerializer
 
 
 class ModuleViewSet(ModelViewSet):
@@ -328,5 +330,299 @@ class LessonResourceViewSet(ModelViewSet):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# New APIs for course content
+class CourseModulesWithLessonsViewSet(ModelViewSet):
+    """Get all modules with their lessons for a specific course"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def list(self, request, course_id=None):
+        try:
+            # Get the course
+            course = get_object_or_404(Course, id=course_id)
+            
+            # Check if user is enrolled or is instructor/admin
+            user = request.user
+            is_enrolled = course.enrollments.filter(student=user, status__in=['active', 'completed']).exists()
+            is_instructor_or_admin = False
+            
+            try:
+                profile = user.profile
+                is_instructor_or_admin = (
+                    profile.role in ['instructor', 'admin'] or 
+                    course.instructor == user
+                )
+            except:
+                pass
+            
+            if not (is_enrolled or is_instructor_or_admin):
+                return Response({
+                    'error': 'ليس لديك صلاحية للوصول إلى هذا الكورس'
+                }, status=status.HTTP_403_FORBIDDEN)
+            
+            # Get modules with lessons
+            modules = Module.objects.filter(course=course, is_active=True).prefetch_related('lessons').order_by('order')
+            
+            modules_data = []
+            for module in modules:
+                module_data = {
+                    'id': module.id,
+                    'title': module.name,
+                    'description': module.description,
+                    'order': module.order,
+                    'video_duration': module.video_duration,
+                    'lessons': []
+                }
+                
+                # Get lessons for this module
+                lessons = module.lessons.filter(is_active=True).order_by('order')
+                for lesson in lessons:
+                    # Format duration
+                    duration_text = ""
+                    if lesson.duration_minutes > 0:
+                        hours = lesson.duration_minutes // 60
+                        minutes = lesson.duration_minutes % 60
+                        if hours > 0:
+                            duration_text = f"{hours}س {minutes}د" if minutes > 0 else f"{hours}س"
+                        else:
+                            duration_text = f"{minutes}د"
+                    
+                    lesson_data = {
+                        'id': lesson.id,
+                        'title': lesson.title,
+                        'content_type': lesson.lesson_type,
+                        'duration': duration_text,
+                        'order': lesson.order,
+                        'is_completed': False  # This should be calculated based on user progress
+                    }
+                    module_data['lessons'].append(lesson_data)
+                
+                modules_data.append(module_data)
+            
+            return Response({
+                'modules': modules_data,
+                'course': {
+                    'id': course.id,
+                    'title': course.title,
+                    'description': course.description
+                }
+            })
+            
+        except Course.DoesNotExist:
+            return Response({
+                'error': 'الكورس غير موجود'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                'error': 'حدث خطأ أثناء جلب البيانات',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CourseQuestionBankViewSet(ModelViewSet):
+    """Get all question banks for all lessons in a specific course"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def list(self, request, course_id=None):
+        try:
+            # Get the course
+            course = get_object_or_404(Course, id=course_id)
+            
+            # Check if user is enrolled or is instructor/admin
+            user = request.user
+            is_enrolled = course.enrollments.filter(student=user, status__in=['active', 'completed']).exists()
+            is_instructor_or_admin = False
+            
+            try:
+                profile = user.profile
+                is_instructor_or_admin = (
+                    profile.role in ['instructor', 'admin'] or 
+                    course.instructor == user
+                )
+            except:
+                pass
+            
+            if not (is_enrolled or is_instructor_or_admin):
+                return Response({
+                    'error': 'ليس لديك صلاحية للوصول إلى هذا الكورس'
+                }, status=status.HTTP_403_FORBIDDEN)
+            
+            # Get all questions for all lessons in this course
+            questions = QuestionBank.objects.filter(
+                lesson__module__course=course,
+                lesson__is_active=True,
+                lesson__module__is_active=True
+            ).select_related('lesson', 'lesson__module').order_by('lesson__module__order', 'lesson__order', 'id')
+            
+            # Group questions by modules
+            modules_data = {}
+            for question in questions:
+                if question.lesson and question.lesson.module:
+                    module_id = question.lesson.module.id
+                    module_name = question.lesson.module.name
+                    
+                    if module_id not in modules_data:
+                        modules_data[module_id] = {
+                            'id': module_id,
+                            'name': module_name,
+                            'order': question.lesson.module.order,
+                            'lessons': {}
+                        }
+                    
+                    lesson_id = question.lesson.id
+                    lesson_title = question.lesson.title
+                    
+                    if lesson_id not in modules_data[module_id]['lessons']:
+                        modules_data[module_id]['lessons'][lesson_id] = {
+                            'id': lesson_id,
+                            'title': lesson_title,
+                            'order': question.lesson.order,
+                            'questions': []
+                        }
+                    
+                    question_data = {
+                        'id': question.id,
+                        'question': question.question_text,
+                        'type': question.question_type,
+                        'difficulty': question.difficulty_level,
+                        'options': question.options,
+                        'correct_answer': question.correct_answer,
+                        'explanation': question.explanation,
+                        'tags': question.tags
+                    }
+                    modules_data[module_id]['lessons'][lesson_id]['questions'].append(question_data)
+            
+            # Convert to list format
+            modules_list = []
+            for module in sorted(modules_data.values(), key=lambda x: x['order']):
+                module['lessons'] = list(module['lessons'].values())
+                modules_list.append(module)
+            
+            return Response({
+                'modules': modules_list,
+                'course': {
+                    'id': course.id,
+                    'title': course.title,
+                    'description': course.description
+                },
+                'total_questions': sum(len(lesson['questions']) for module in modules_list for lesson in module['lessons'])
+            })
+            
+        except Course.DoesNotExist:
+            return Response({
+                'error': 'الكورس غير موجود'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                'error': 'حدث خطأ أثناء جلب البيانات',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CourseFlashcardsViewSet(ModelViewSet):
+    """Get all flashcards for all questions in all lessons of a specific course"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def list(self, request, course_id=None):
+        try:
+            # Get the course
+            course = get_object_or_404(Course, id=course_id)
+            
+            # Check if user is enrolled or is instructor/admin
+            user = request.user
+            is_enrolled = course.enrollments.filter(student=user, status__in=['active', 'completed']).exists()
+            is_instructor_or_admin = False
+            
+            try:
+                profile = user.profile
+                is_instructor_or_admin = (
+                    profile.role in ['instructor', 'admin'] or 
+                    course.instructor == user
+                )
+            except:
+                pass
+            
+            if not (is_enrolled or is_instructor_or_admin):
+                return Response({
+                    'error': 'ليس لديك صلاحية للوصول إلى هذا الكورس'
+                }, status=status.HTTP_403_FORBIDDEN)
+            
+            # Get all flashcards for all lessons in this course
+            flashcards = Flashcard.objects.filter(
+                lesson__module__course=course,
+                lesson__is_active=True,
+                lesson__module__is_active=True
+            ).select_related(
+                'lesson', 
+                'lesson__module'
+            ).order_by(
+                'lesson__module__order', 
+                'lesson__order', 
+                'id'
+            )
+            
+            # Group flashcards by modules
+            modules_data = {}
+            for flashcard in flashcards:
+                if flashcard.lesson and flashcard.lesson.module:
+                    module_id = flashcard.lesson.module.id
+                    module_name = flashcard.lesson.module.name
+                    
+                    if module_id not in modules_data:
+                        modules_data[module_id] = {
+                            'id': module_id,
+                            'name': module_name,
+                            'order': flashcard.lesson.module.order,
+                            'lessons': {}
+                        }
+                    
+                    lesson_id = flashcard.lesson.id
+                    lesson_title = flashcard.lesson.title
+                    
+                    if lesson_id not in modules_data[module_id]['lessons']:
+                        modules_data[module_id]['lessons'][lesson_id] = {
+                            'id': lesson_id,
+                            'title': lesson_title,
+                            'order': flashcard.lesson.order,
+                            'flashcards': []
+                        }
+                    
+                    flashcard_data = {
+                        'id': flashcard.id,
+                        'front': flashcard.front_text,
+                        'back': flashcard.back_text,
+                        'front_image': flashcard.front_image.url if flashcard.front_image else None,
+                        'back_image': flashcard.back_image.url if flashcard.back_image else None,
+                        'category': module_name
+                    }
+                    modules_data[module_id]['lessons'][lesson_id]['flashcards'].append(flashcard_data)
+            
+            # Convert to list format
+            modules_list = []
+            for module in sorted(modules_data.values(), key=lambda x: x['order']):
+                module['lessons'] = list(module['lessons'].values())
+                modules_list.append(module)
+            
+            return Response({
+                'modules': modules_list,
+                'course': {
+                    'id': course.id,
+                    'title': course.title,
+                    'description': course.description
+                },
+                'total_flashcards': sum(len(lesson['flashcards']) for module in modules_list for lesson in module['lessons'])
+            })
+            
+        except Course.DoesNotExist:
+            return Response({
+                'error': 'الكورس غير موجود'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                'error': 'حدث خطأ أثناء جلب البيانات',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 # Add this to the end of the file to make the mixin available for import
-__all__ = ['ModuleViewSet', 'CourseProgressMixin', 'LessonViewSet', 'LessonResourceViewSet']
+__all__ = ['ModuleViewSet', 'CourseProgressMixin', 'LessonViewSet', 'LessonResourceViewSet', 
+           'CourseModulesWithLessonsViewSet', 'CourseQuestionBankViewSet', 'CourseFlashcardsViewSet']

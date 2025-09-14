@@ -10,7 +10,14 @@ import {
   Tooltip,
   useTheme,
   alpha,
-  Button
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Backdrop,
+  Slide,
+  CircularProgress
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -19,9 +26,29 @@ import {
   Person as PersonIcon,
   AccessTime as TimeIcon,
   FlipToBack as FlipIcon,
-  FlipToFront as UnflipIcon
+  FlipToFront as UnflipIcon,
+  Warning as WarningIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { keyframes } from '@mui/system';
+
+// Animation keyframes
+const shake = keyframes`
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+`;
+
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+`;
+
+const scaleIn = keyframes`
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+`;
 
 const FlashcardCard = ({ 
   flashcard, 
@@ -31,6 +58,10 @@ const FlashcardCard = ({
 }) => {
   const theme = useTheme();
   const [isFlipped, setIsFlipped] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState({
+    open: false,
+    loading: false
+  });
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -42,9 +73,23 @@ const FlashcardCard = ({
   };
 
   const handleDelete = () => {
-    if (window.confirm('هل أنت متأكد من حذف هذه البطاقة التعليمية؟')) {
-      onDelete(flashcard.id);
+    setDeleteDialog({ open: true, loading: false });
+  };
+
+  const confirmDelete = async () => {
+    setDeleteDialog(prev => ({ ...prev, loading: true }));
+    
+    try {
+      await onDelete(flashcard.id);
+      setDeleteDialog({ open: false, loading: false });
+    } catch (error) {
+      console.error('Error deleting flashcard:', error);
+      setDeleteDialog(prev => ({ ...prev, loading: false }));
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialog({ open: false, loading: false });
   };
 
 
@@ -269,21 +314,229 @@ const FlashcardCard = ({
                 </Box>
               </Box>
 
-              {flashcard.related_question_text && (
-                <Chip
-                  label="مرتبط بسؤال"
-                  size="small"
-                  sx={{ 
-                    bgcolor: alpha('#333679', 0.1),
-                    color: '#333679',
-                    fontSize: '0.7rem'
-                  }}
-                />
-              )}
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {flashcard.lesson_title && (
+                  <Chip
+                    label={`درس: ${flashcard.lesson_title}`}
+                    size="small"
+                    sx={{ 
+                      bgcolor: alpha('#2e7d32', 0.1),
+                      color: '#2e7d32',
+                      fontSize: '0.7rem'
+                    }}
+                  />
+                )}
+                {flashcard.related_question_text && (
+                  <Chip
+                    label="مرتبط بسؤال"
+                    size="small"
+                    sx={{ 
+                      bgcolor: alpha('#333679', 0.1),
+                      color: '#333679',
+                      fontSize: '0.7rem'
+                    }}
+                  />
+                )}
+              </Box>
             </Box>
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialog.open}
+        onClose={cancelDelete}
+        maxWidth="sm"
+        fullWidth
+        TransitionComponent={Slide}
+        TransitionProps={{ direction: 'up' }}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+            animation: `${scaleIn} 0.3s ease-out`,
+            border: '1px solid rgba(192,57,43,0.2)'
+          }
+        }}
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(8px)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          textAlign: 'center', 
+          pb: 2,
+          background: 'linear-gradient(135deg, #ff6b6b, #ee5a52)',
+          color: 'white',
+          borderRadius: '12px 12px 0 0',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <Box sx={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+            animation: `${pulse} 3s ease-in-out infinite`
+          }} />
+          <WarningIcon 
+            sx={{ 
+              fontSize: 48, 
+              mb: 2,
+              animation: `${shake} 0.5s ease-in-out infinite`,
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+            }} 
+          />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', position: 'relative', zIndex: 1 }}>
+            تأكيد الحذف
+          </Typography>
+        </DialogTitle>
+        
+        <DialogContent sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="h6" sx={{ mb: 2, color: '#333', fontWeight: 500 }}>
+            هل أنت متأكد من حذف هذه البطاقة التعليمية؟
+          </Typography>
+          
+          <Box sx={{ 
+            mb: 3,
+            p: 3,
+            background: 'linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%)',
+            border: '2px dashed #ff6b6b',
+            borderRadius: 2,
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Avatar sx={{ bgcolor: '#333679', width: 40, height: 40 }}>
+                <QuestionIcon />
+              </Avatar>
+              <Typography variant="body1" sx={{ 
+                fontWeight: 'bold', 
+                color: '#d63031',
+                flex: 1,
+                textAlign: 'right'
+              }}>
+                بطاقة تعليمية
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              background: 'white', 
+              p: 2, 
+              borderRadius: 1, 
+              border: '1px solid #eee',
+              mb: 2
+            }}>
+              <Typography variant="body2" sx={{ color: '#666', mb: 1, textAlign: 'right' }}>
+                <strong>الوجه الأمامي:</strong>
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                color: '#333', 
+                maxHeight: 40,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                textAlign: 'right'
+              }}>
+                {flashcard.front_text}
+              </Typography>
+            </Box>
+
+            <Box sx={{
+              position: 'absolute',
+              top: -10,
+              right: -10,
+              width: 40,
+              height: 40,
+              background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
+              borderRadius: '50%',
+              opacity: 0.1,
+              animation: `${pulse} 2s ease-in-out infinite`
+            }} />
+          </Box>
+          
+          <Typography variant="body2" sx={{ color: '#666', lineHeight: 1.6 }}>
+            ⚠️ <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه. سيتم حذف البطاقة التعليمية وجميع البيانات المرتبطة بها نهائياً.
+          </Typography>
+        </DialogContent>
+        
+        <DialogActions sx={{ 
+          justifyContent: 'center', 
+          gap: 2, 
+          p: 3,
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          borderRadius: '0 0 12px 12px'
+        }}>
+          <Button
+            onClick={cancelDelete}
+            variant="outlined"
+            size="large"
+            disabled={deleteDialog.loading}
+            sx={{
+              minWidth: 120,
+              py: 1.5,
+              borderRadius: 2,
+              borderColor: '#6c757d',
+              color: '#6c757d',
+              fontWeight: 'bold',
+              '&:hover': {
+                borderColor: '#495057',
+                backgroundColor: 'rgba(108,117,125,0.1)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(108,117,125,0.3)'
+              },
+              transition: 'all 0.3s ease'
+            }}
+          >
+            إلغاء
+          </Button>
+          
+          <Button
+            onClick={confirmDelete}
+            variant="contained"
+            size="large"
+            disabled={deleteDialog.loading}
+            sx={{
+              minWidth: 120,
+              py: 1.5,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
+              fontWeight: 'bold',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #c82333 0%, #a71e2a 100%)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px rgba(220,53,69,0.4)'
+              },
+              '&:disabled': {
+                background: 'linear-gradient(135deg, #6c757d 0%, #5a6268 100%)',
+                transform: 'none'
+              },
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {deleteDialog.loading ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={20} sx={{ color: 'white' }} />
+                <span>جاري الحذف...</span>
+              </Box>
+            ) : (
+              <>
+                <DeleteIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
+                حذف نهائي
+              </>
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

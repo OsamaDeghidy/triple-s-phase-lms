@@ -690,6 +690,7 @@ def my_enrolled_courses(request):
                 'totalModules': total_modules,
                 'completedModules': completed_modules,
                 'category': enrollment.course.category.name if enrollment.course.category else 'غير محدد',
+                'subcategory': enrollment.course.subcategory.name if enrollment.course.subcategory else 'غير محدد',
                 'enrollment_date': enrollment.enrollment_date,
                 'completion_date': enrollment.completion_date,
                 'status': enrollment.status,

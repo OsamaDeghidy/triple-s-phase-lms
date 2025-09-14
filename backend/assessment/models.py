@@ -422,6 +422,14 @@ class Flashcard(models.Model):
         related_name='flashcards',
         verbose_name=_('Related Question')
     )
+    lesson = models.ForeignKey(
+        'content.Lesson', 
+        on_delete=models.CASCADE, 
+        related_name='flashcards',
+        verbose_name=_('Lesson'),
+        help_text=_('The lesson this flashcard belongs to'),
+        blank=True, null=True
+    )
     
     # Media
     front_image = models.ImageField(upload_to='flashcards/front/', blank=True, null=True, verbose_name=_('Front Image'))
@@ -444,6 +452,16 @@ class Flashcard(models.Model):
     
     def __str__(self):
         return f"{self.front_text[:30]}..."
+    
+    @property
+    def course(self):
+        """Get the course through the lesson"""
+        return self.lesson.module.course if self.lesson and self.lesson.module else None
+    
+    @property
+    def module(self):
+        """Get the module through the lesson"""
+        return self.lesson.module if self.lesson else None
 
 
 class StudentFlashcardProgress(models.Model):

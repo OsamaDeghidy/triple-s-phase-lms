@@ -219,6 +219,7 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
     front_text: '',
     back_text: '',
     related_question: '',
+    lesson: '',
     front_image: null,
     back_image: null,
     front_image_preview: null,
@@ -227,17 +228,20 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
   });
 
   const [questions, setQuestions] = useState([]);
+  const [lessons, setLessons] = useState([]);
   const [errors, setErrors] = useState({});
   const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
     if (open) {
       loadQuestions();
+      loadLessons();
       if (flashcard) {
         setFormData({
           front_text: flashcard.front_text || '',
           back_text: flashcard.back_text || '',
           related_question: flashcard.related_question || '',
+          lesson: flashcard.lesson || '',
           front_image: null,
           back_image: null,
           front_image_preview: flashcard.front_image || null,
@@ -263,11 +267,23 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
     }
   };
 
+  const loadLessons = async () => {
+    try {
+      const result = await assessmentService.getLessons({ page_size: 100 });
+      if (result.success) {
+        setLessons(result.data);
+      }
+    } catch (err) {
+      console.error('Error loading lessons:', err);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       front_text: '',
       back_text: '',
       related_question: '',
+      lesson: '',
       front_image: null,
       back_image: null,
       front_image_preview: null,
@@ -359,6 +375,7 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
           front_text: formData.front_text,
           back_text: formData.back_text,
           related_question: formData.related_question || null,
+          lesson: formData.lesson || null,
           tags: formData.tags || [],
           ...(formData.front_image && { front_image: formData.front_image }),
           ...(formData.back_image && { back_image: formData.back_image })
@@ -435,6 +452,40 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
           )}
 
           <Stack spacing={3} component="form" onSubmit={handleSubmit}>
+
+            {/* Lesson Selection */}
+            <FormSection>
+              <SectionTitle>
+                <BookIcon sx={{ fontSize: 20 }} />
+                ربط بالدرس
+              </SectionTitle>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ 
+                  color: '#666666', 
+                  fontSize: '14px', 
+                  fontWeight: 500, 
+                  mb: 1,
+                  textAlign: 'right'
+                }}>
+                  ربط البطاقة بالدرس *
+                </Typography>
+                <FormSelect fullWidth>
+                  <Select
+                    value={formData.lesson}
+                    onChange={(e) => handleInputChange('lesson', e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value="">لا يوجد ربط</MenuItem>
+                    {lessons.map((lesson) => (
+                      <MenuItem key={lesson.id} value={lesson.id}>
+                        {lesson.title} - {lesson.module?.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormSelect>
+              </Box>
+            </FormSection>
 
             {/* Related Question */}
             <FormSection>

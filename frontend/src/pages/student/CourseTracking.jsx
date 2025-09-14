@@ -2187,7 +2187,8 @@ const CourseTracking = () => {
                       variant="outlined" 
                       disabled={!currentLesson}
                       onClick={navigateToPreviousLesson}
-                      startIcon={<ArrowBack />}
+                      endIcon={<ArrowForward />}
+                      
                       sx={{
                         minWidth: 120,
                         height: 40,
@@ -2217,7 +2218,7 @@ const CourseTracking = () => {
                       variant="outlined"
                       disabled={!currentLesson}
                       onClick={navigateToNextLesson}
-                      endIcon={<ArrowForward />}
+                      startIcon={<ArrowBack />}
                       sx={{
                         minWidth: 120,
                         height: 40,

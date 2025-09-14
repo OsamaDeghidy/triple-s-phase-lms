@@ -85,10 +85,35 @@ export const courseAPI = {
   getCategories: async () => {
     try {
       const response = await api.get('/api/courses/categories/');
-      return response.data;
+      console.log('Categories API response:', response.data);
+      // Ensure we return an array
+      const data = response.data;
+      console.log('Raw categories data:', data);
+      return Array.isArray(data) ? data : 
+             data.results ? data.results : 
+             data.data ? data.data : [];
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw error;
+    }
+  },
+
+  // Get subcategories
+  getSubCategories: async (categoryId = null) => {
+    try {
+      const params = categoryId ? { category: categoryId } : {};
+      console.log('Fetching subcategories with params:', params);
+      const response = await api.get('/api/courses/subcategories/', { params });
+      console.log('Subcategories API response:', response.data);
+      // Ensure we return an array
+      const data = response.data;
+      console.log('Raw subcategories data:', data);
+      return Array.isArray(data) ? data : 
+             data.results ? data.results : 
+             data.data ? data.data : [];
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+      return [];
     }
   },
 
@@ -139,8 +164,17 @@ export const courseAPI = {
   // Get my courses (enrolled courses)
   getMyCourses: async () => {
     try {
-      const response = await api.get('/api/courses/courses/my_courses/');
-      return response.data;
+      const response = await api.get('/api/courses/my-enrolled-courses/');
+      console.log('My courses API response:', response.data);
+      // The API returns { enrolled_courses: [...], completed_courses: [...] }
+      const data = response.data;
+      console.log('Raw my courses data:', data);
+      // Return both enrolled and completed courses
+      const allCourses = [
+        ...(data.enrolled_courses || []),
+        ...(data.completed_courses || [])
+      ];
+      return allCourses;
     } catch (error) {
       console.error('Error fetching my courses:', error);
       throw error;
@@ -231,6 +265,17 @@ export const courseAPI = {
       return response.data;
     } catch (error) {
       console.error('Error fetching course progress:', error);
+      throw error;
+    }
+  },
+
+  // Delete course
+  deleteCourse: async (courseId) => {
+    try {
+      const response = await api.delete(`/api/courses/courses/${courseId}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting course:', error);
       throw error;
     }
   },

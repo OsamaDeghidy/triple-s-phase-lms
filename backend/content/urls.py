@@ -35,4 +35,15 @@ urlpatterns = [
     
     # Search and filtering
     path('search/', ContentSearchView.as_view(), name='content-search'),
+    
+    # New course content APIs
+    path('course/<int:course_id>/modules-with-lessons/', 
+         views.CourseModulesWithLessonsViewSet.as_view({'get': 'list'}), 
+         name='course-modules-with-lessons'),
+    path('course/<int:course_id>/question-bank/', 
+         views.CourseQuestionBankViewSet.as_view({'get': 'list'}), 
+         name='course-question-bank'),
+    path('course/<int:course_id>/flashcards/', 
+         views.CourseFlashcardsViewSet.as_view({'get': 'list'}), 
+         name='course-flashcards'),
 ]

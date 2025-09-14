@@ -166,6 +166,22 @@ export const contentAPI = {
       throw new Error('حدث خطأ أثناء حذف المورد');
     }
   },
+
+  // New course content APIs
+  getCourseModulesWithLessons: async (courseId) => {
+    const response = await api.get(`/api/content/course/${courseId}/modules-with-lessons/`);
+    return response.data;
+  },
+
+  getCourseQuestionBank: async (courseId) => {
+    const response = await api.get(`/api/content/course/${courseId}/question-bank/`);
+    return response.data;
+  },
+
+  getCourseFlashcards: async (courseId) => {
+    const response = await api.get(`/api/content/course/${courseId}/flashcards/`);
+    return response.data;
+  },
 };
 
 export default contentAPI;

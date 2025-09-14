@@ -25,7 +25,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination
+  TablePagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Backdrop,
+  Slide
 } from '@mui/material';
 import { 
   School as SchoolIcon, 
@@ -38,7 +44,8 @@ import {
   Delete as DeleteIcon,
   LibraryBooks as LibraryBooksIcon,
   FilterList,
-  Clear
+  Clear,
+  Warning as WarningIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@mui/system';
@@ -63,6 +70,17 @@ const slideIn = keyframes`
   to { transform: translateY(0); opacity: 1; }
 `;
 
+const shake = keyframes`
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+`;
+
+const scaleIn = keyframes`
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+`;
+
 
 const MyCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -78,6 +96,12 @@ const MyCourses = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [deleteDialog, setDeleteDialog] = useState({
+    open: false,
+    courseId: null,
+    courseName: '',
+    loading: false
+  });
   const navigate = useNavigate();
 
   // Debug: log categories state
@@ -405,29 +429,57 @@ const MyCourses = () => {
     );
   }
 
-  // Handle delete course
-  const handleDeleteCourse = async (courseId) => {
-      if (window.confirm('هل أنت متأكد من حذف هذا الكورس؟')) {
-        try {
-          // TODO: Implement actual delete API call
-        // await courseAPI.deleteCourse(courseId);
-          setSnackbar({
-            open: true,
-            message: 'تم حذف الكورس بنجاح',
-            severity: 'success'
-          });
-          // Remove course from local state
-        setCourses(prevCourses => prevCourses.filter(c => c.id !== courseId));
-        setAllCourses(prevCourses => prevCourses.filter(c => c.id !== courseId));
-        } catch (error) {
-          console.error('Error deleting course:', error);
-          setSnackbar({
-            open: true,
-            message: 'خطأ في حذف الكورس',
-            severity: 'error'
-          });
-        }
-      }
+  // Handle delete course - open confirmation dialog
+  const handleDeleteCourse = (courseId, courseName) => {
+    setDeleteDialog({
+      open: true,
+      courseId,
+      courseName,
+      loading: false
+    });
+  };
+
+  // Confirm delete course
+  const confirmDeleteCourse = async () => {
+    setDeleteDialog(prev => ({ ...prev, loading: true }));
+    
+    try {
+      await courseAPI.deleteCourse(deleteDialog.courseId);
+      setSnackbar({
+        open: true,
+        message: 'تم حذف الكورس بنجاح',
+        severity: 'success'
+      });
+      // Remove course from local state
+      setCourses(prevCourses => prevCourses.filter(c => c.id !== deleteDialog.courseId));
+      setAllCourses(prevCourses => prevCourses.filter(c => c.id !== deleteDialog.courseId));
+      
+      // Close dialog
+      setDeleteDialog({
+        open: false,
+        courseId: null,
+        courseName: '',
+        loading: false
+      });
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      setSnackbar({
+        open: true,
+        message: 'خطأ في حذف الكورس',
+        severity: 'error'
+      });
+      setDeleteDialog(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Cancel delete
+  const cancelDelete = () => {
+    setDeleteDialog({
+      open: false,
+      courseId: null,
+      courseName: '',
+      loading: false
+    });
   };
 
   return (
@@ -989,7 +1041,7 @@ const MyCourses = () => {
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteCourse(course.id);
+                                  handleDeleteCourse(course.id, course.title);
                                 }}
                               >
                                 <DeleteIcon sx={{ color: '#c0392b', fontSize: '1rem' }} />
@@ -1025,6 +1077,170 @@ const MyCourses = () => {
           </Card>
         )}
     </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialog.open}
+        onClose={cancelDelete}
+        maxWidth="sm"
+        fullWidth
+        TransitionComponent={Slide}
+        TransitionProps={{ direction: 'up' }}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+            animation: `${scaleIn} 0.3s ease-out`,
+            border: '1px solid rgba(192,57,43,0.2)'
+          }
+        }}
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(8px)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          textAlign: 'center', 
+          pb: 2,
+          background: 'linear-gradient(135deg, #ff6b6b, #ee5a52)',
+          color: 'white',
+          borderRadius: '12px 12px 0 0',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <Box sx={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+            animation: `${pulse} 3s ease-in-out infinite`
+          }} />
+          <WarningIcon 
+            sx={{ 
+              fontSize: 48, 
+              mb: 2,
+              animation: `${shake} 0.5s ease-in-out infinite`,
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+            }} 
+          />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', position: 'relative', zIndex: 1 }}>
+            تأكيد الحذف
+          </Typography>
+        </DialogTitle>
+        
+        <DialogContent sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="h6" sx={{ mb: 2, color: '#333', fontWeight: 500 }}>
+            هل أنت متأكد من حذف هذا الكورس؟
+          </Typography>
+          
+          <Paper sx={{ 
+            p: 3, 
+            mb: 3,
+            background: 'linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%)',
+            border: '2px dashed #ff6b6b',
+            borderRadius: 2,
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <Typography variant="body1" sx={{ 
+              fontWeight: 'bold', 
+              color: '#d63031',
+              position: 'relative',
+              zIndex: 1
+            }}>
+              "{deleteDialog.courseName}"
+            </Typography>
+            <Box sx={{
+              position: 'absolute',
+              top: -10,
+              right: -10,
+              width: 40,
+              height: 40,
+              background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
+              borderRadius: '50%',
+              opacity: 0.1,
+              animation: `${pulse} 2s ease-in-out infinite`
+            }} />
+          </Paper>
+          
+          <Typography variant="body2" sx={{ color: '#666', lineHeight: 1.6 }}>
+            ⚠️ <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الكورس وجميع البيانات المرتبطة به نهائياً.
+          </Typography>
+        </DialogContent>
+        
+        <DialogActions sx={{ 
+          justifyContent: 'center', 
+          gap: 2, 
+          p: 3,
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          borderRadius: '0 0 12px 12px'
+        }}>
+          <Button
+            onClick={cancelDelete}
+            variant="outlined"
+            size="large"
+            sx={{
+              minWidth: 120,
+              py: 1.5,
+              borderRadius: 2,
+              borderColor: '#6c757d',
+              color: '#6c757d',
+              fontWeight: 'bold',
+              '&:hover': {
+                borderColor: '#495057',
+                backgroundColor: 'rgba(108,117,125,0.1)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(108,117,125,0.3)'
+              },
+              transition: 'all 0.3s ease'
+            }}
+          >
+            إلغاء
+          </Button>
+          
+          <Button
+            onClick={confirmDeleteCourse}
+            variant="contained"
+            size="large"
+            disabled={deleteDialog.loading}
+            sx={{
+              minWidth: 120,
+              py: 1.5,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
+              fontWeight: 'bold',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #c82333 0%, #a71e2a 100%)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px rgba(220,53,69,0.4)'
+              },
+              '&:disabled': {
+                background: 'linear-gradient(135deg, #6c757d 0%, #5a6268 100%)',
+                transform: 'none'
+              },
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {deleteDialog.loading ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={20} sx={{ color: 'white' }} />
+                <span>جاري الحذف...</span>
+              </Box>
+            ) : (
+              <>
+                <DeleteIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
+                حذف نهائي
+              </>
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackbar.open}

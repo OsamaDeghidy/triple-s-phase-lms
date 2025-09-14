@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout as logoutAction } from '../../store/slices/authSlice';
@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import profileImage from '../../assets/images/profile.jpg';
 import {
   Box, Drawer, AppBar, Toolbar, Typography, IconButton, List, ListItemButton, ListItemIcon, ListItemText,
-  Avatar, Divider, Badge, InputBase, Paper
+  Avatar, Divider, Badge, InputBase, Paper, Select, MenuItem, FormControl, Chip, Collapse
 } from '@mui/material';
 import {
   Menu as MenuIcon, 
@@ -26,8 +26,13 @@ import {
   Quiz as QuizIcon,
   VideoCall as VideoCallIcon,
   Article as ArticleIcon,
-  Psychology as PsychologyIcon
+  Psychology as PsychologyIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+  Category as CategoryIcon,
+  Subject as SubjectIcon
 } from '@mui/icons-material';
+import { courseAPI } from '../../services/courseService';
 
 const drawerWidth = 270;
 
@@ -50,7 +55,7 @@ const teacherNavItems = [
 const studentNavItems = [
   { text: 'الرئيسية', icon: <HomeIcon />, path: '/', exact: true },
   { text: 'لوحة التحكم', icon: <DashboardIcon />, path: '/student/dashboard' },
-  { text: 'كورساتي', icon: <ClassIcon />, path: '/student/my-courses' },
+  { text: 'كورساتي', icon: <ClassIcon />, path: '/student/my-courses', isDropdown: true },
   // { text: 'واجباتي', icon: <AssignmentIcon />, path: '/student/assignments' },
   { text: 'محاضراتي', icon: <VideoCallIcon />, path: '/student/meetings' },
   { text: 'شهاداتي', icon: <SchoolIcon />, path: '/student/certificates' },
@@ -66,6 +71,16 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const profileRef = useRef(null);
   const notifRef = useRef(null);
+  
+  // State for categories and subcategories
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [myCourses, setMyCourses] = useState([]);
+  const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [loadingCourses, setLoadingCourses] = useState(false);
 
   // Sample notifications data
   const notifications = [
@@ -118,6 +133,154 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
     navigate('/login');
     handleMenuClose();
   };
+
+  // Handle category selection
+  const handleCategoryChange = (event) => {
+    console.log('Category changed to:', event.target.value);
+    setSelectedCategory(event.target.value);
+    // Reset subcategory when category changes
+    setSelectedSubcategory('');
+  };
+
+  // Handle subcategory selection
+  const handleSubcategoryChange = (event) => {
+    console.log('Subcategory changed to:', event.target.value);
+    setSelectedSubcategory(event.target.value);
+  };
+
+  // Handle courses dropdown toggle
+  const handleCoursesDropdownToggle = () => {
+    console.log('Courses dropdown toggled:', !coursesDropdownOpen);
+    setCoursesDropdownOpen(!coursesDropdownOpen);
+  };
+
+  // Filter courses based on selected category and subcategory
+  const filteredCourses = useMemo(() => {
+    let filtered = myCourses;
+    
+    console.log('Filtering courses:', {
+      totalCourses: myCourses.length,
+      selectedCategory,
+      selectedSubcategory,
+      courses: myCourses.map(c => ({
+        id: c.id,
+        title: c.title,
+        category: c.category,
+        subcategory: c.subcategory
+      }))
+    });
+    
+    if (selectedCategory) {
+      // Find the selected category name
+      const selectedCategoryName = categories.find(cat => cat.id == selectedCategory)?.name;
+      console.log('Selected category name:', selectedCategoryName);
+      console.log('Available categories:', categories);
+      
+      filtered = filtered.filter(course => {
+        // The API returns category as a string (name), not object
+        const courseCategoryName = course.category;
+        const matches = courseCategoryName === selectedCategoryName;
+        console.log(`Course ${course.title} category match:`, {
+          courseCategoryName,
+          selectedCategoryName,
+          matches
+        });
+        return matches;
+      });
+    }
+    
+    if (selectedSubcategory) {
+      // Find the selected subcategory name
+      const selectedSubcategoryName = subcategories.find(sub => sub.id == selectedSubcategory)?.name;
+      console.log('Selected subcategory name:', selectedSubcategoryName);
+      console.log('Available subcategories:', subcategories);
+      console.log('Selected subcategory ID:', selectedSubcategory);
+      
+      filtered = filtered.filter(course => {
+        // The API returns subcategory as a string (name), not object
+        const courseSubcategoryName = course.subcategory;
+        const matches = courseSubcategoryName === selectedSubcategoryName;
+        console.log(`Course ${course.title} subcategory match:`, {
+          courseSubcategoryName,
+          selectedSubcategoryName,
+          selectedSubcategoryId: selectedSubcategory,
+          matches
+        });
+        return matches;
+      });
+    }
+    
+    console.log('Filtered courses result:', filtered.length);
+    return filtered;
+  }, [myCourses, selectedCategory, selectedSubcategory, categories, subcategories]);
+
+  // Fetch categories and my courses on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoadingCategories(true);
+        const categoriesData = await courseAPI.getCategories();
+        console.log('Categories data:', categoriesData);
+        // The API returns an array directly for categories
+        const categoriesArray = Array.isArray(categoriesData) ? categoriesData : categoriesData.results || [];
+        console.log('Categories array:', categoriesArray);
+        setCategories(categoriesArray);
+        
+        // Fetch my courses if user is a student
+        if (getUserRole() === 'student') {
+          setLoadingCourses(true);
+          const coursesData = await courseAPI.getMyCourses();
+          console.log('My courses data:', coursesData);
+          // The API returns an array of courses directly
+          const coursesArray = Array.isArray(coursesData) ? coursesData : [];
+          console.log('Courses array:', coursesArray);
+          setMyCourses(coursesArray);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoadingCategories(false);
+        setLoadingCourses(false);
+      }
+    };
+
+    fetchData();
+  }, [getUserRole]);
+
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      if (selectedCategory) {
+        try {
+          console.log('Fetching subcategories for category:', selectedCategory);
+          const subcategoriesData = await courseAPI.getSubCategories(selectedCategory);
+          console.log('Subcategories data:', subcategoriesData);
+          // The API returns an array directly for subcategories
+          const subcategoriesArray = Array.isArray(subcategoriesData) ? subcategoriesData : subcategoriesData.results || [];
+          console.log('Subcategories array:', subcategoriesArray);
+          setSubcategories(subcategoriesArray);
+        } catch (error) {
+          console.error('Error fetching subcategories:', error);
+          setSubcategories([]);
+        }
+      } else {
+        setSubcategories([]);
+      }
+      setSelectedSubcategory('');
+    };
+
+    fetchSubcategories();
+  }, [selectedCategory]);
+
+  // Debug filtered courses when filters change
+  useEffect(() => {
+    console.log('Filtered courses updated:', {
+      selectedCategory,
+      selectedSubcategory,
+      totalCourses: myCourses.length,
+      filteredCount: filteredCourses.length
+    });
+  }, [selectedCategory, selectedSubcategory, myCourses, filteredCourses]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -193,6 +356,103 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
       <List sx={{ width: '100%' }}>
         {navItems.map((item) => {
           const active = isActive(item.path, item.exact);
+          
+          // Special handling for courses dropdown (student only)
+          if (item.isDropdown && userRole === 'student') {
+            return (
+              <Box key={item.text} sx={{ mb: 1 }}>
+                <ListItemButton
+                  onClick={handleCoursesDropdownToggle}
+                  sx={{
+                    borderRadius: 2,
+                    color: active ? '#333679' : '#757575',
+                    background: active ? 'linear-gradient(90deg, rgba(14,81,129,0.1) 0%, #fff 100%)' : 'none',
+                    boxShadow: active ? '0 2px 8px 0 rgba(14,81,129,0.10)' : 'none',
+                    '&:hover': {
+                      background: 'linear-gradient(90deg, rgba(14,81,129,0.05) 0%, #fff 100%)',
+                      color: '#333679'
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{
+                    minWidth: 36,
+                    color: active ? '#333679' : '#bdbdbd',
+                    fontSize: 24
+                  }}>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.text} sx={{ fontWeight: 600 }} />
+                  <Badge 
+                    badgeContent={filteredCourses.length} 
+                    color="primary" 
+                    sx={{ 
+                      mr: 1,
+                      '& .MuiBadge-badge': {
+                        background: 'linear-gradient(45deg, #4DBFB3, #333679)',
+                        fontSize: '10px',
+                        fontWeight: 700
+                      }
+                    }} 
+                  />
+                  {coursesDropdownOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+                
+                {/* Courses Dropdown */}
+                <Collapse in={coursesDropdownOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding sx={{ pr: 2 }}>
+                    {loadingCourses ? (
+                      <ListItemButton disabled>
+                        <ListItemText primary="جاري التحميل..." sx={{ fontSize: '14px', color: '#999' }} />
+                      </ListItemButton>
+                    ) : filteredCourses.length > 0 ? (
+                      filteredCourses.map((course) => (
+                        <ListItemButton
+                          key={course.id}
+                          onClick={() => {
+                            // Navigate to my-courses with course ID as query parameter
+                            navigate(`/student/my-courses?courseId=${course.id}`);
+                          }}
+                          sx={{
+                            borderRadius: 1,
+                            mb: 0.5,
+                            color: '#666',
+                            fontSize: '13px',
+                            '&:hover': {
+                              background: 'rgba(77, 191, 179, 0.1)',
+                              color: '#333679'
+                            },
+                            '&.active': {
+                              background: 'rgba(77, 191, 179, 0.15)',
+                              color: '#333679',
+                              fontWeight: 600
+                            }
+                          }}
+                        >
+                          <ListItemText 
+                            primary={course.title} 
+                            sx={{ 
+                              fontSize: '14px',
+                              '& .MuiListItemText-primary': {
+                                fontSize: '14px',
+                                fontWeight: 600
+                              }
+                            }} 
+                          />
+                        </ListItemButton>
+                      ))
+                    ) : (
+                      <ListItemButton disabled>
+                        <ListItemText 
+                          primary="لا توجد كورسات متاحة" 
+                          sx={{ fontSize: '14px', color: '#999' }} 
+                        />
+                      </ListItemButton>
+                    )}
+                  </List>
+                </Collapse>
+              </Box>
+            );
+          }
+          
+          // Regular navigation items
           return (
             <NavLink
               key={item.text}
@@ -304,7 +564,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
         height: '100%',
         overflow: 'hidden',
         width: '100%', // Changed to take full width
-        '& > *:first-child': { // AppBar
+        '& > *:first-of-type': { // AppBar
           flexShrink: 0
         },
         '& > *:last-child': { // Content area
@@ -315,12 +575,17 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
           pt: 2,
           maxWidth: '100%', // Ensure content doesn't overflow
           '&::-webkit-scrollbar': {
-            width: '6px',
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: 'rgba(0,0,0,0.05)',
+            borderRadius: '4px',
           },
           '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(0,0,0,0.1)',
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            borderRadius: '4px',
             '&:hover': {
-              backgroundColor: 'rgba(0,0,0,0.15)',
+              backgroundColor: 'rgba(0,0,0,0.3)',
             },
           },
         }
@@ -350,54 +615,148 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
           }
         }}>
           <Toolbar sx={{ justifyContent: 'space-between', py: 1, position: 'relative', zIndex: 2 }}>
-            {/* Search Bar with Enhanced Design */}
-            <Paper
-              component="form"
-              sx={{ 
-                p: '4px 12px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                width: 300, 
-                background: 'rgba(255,255,255,0.9)', 
-                borderRadius: 3, 
-                boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
-                border: '1px solid rgba(77, 191, 179, 0.2)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  boxShadow: '0 6px 25px rgba(14,81,129,0.15)',
-                  border: '1px solid rgba(77, 191, 179, 0.3)',
-                  transform: 'translateY(-1px)'
-                },
-                '&:focus-within': {
-                  boxShadow: '0 8px 30px rgba(14,81,129,0.2)',
-                  border: '1px solid #4DBFB3',
-                  transform: 'translateY(-2px)'
-                }
-              }}
-            >
-              <InputBase 
+            {/* Search Bar and Filters */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              {/* Search Bar with Enhanced Design */}
+              <Paper
+                component="form"
                 sx={{ 
-                  ml: 1, 
-                  flex: 1,
-                  fontSize: '14px',
-                  '& input': {
-                    '&::placeholder': {
-                      color: '#999',
-                      opacity: 1
+                  p: '4px 12px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  width: 300, 
+                  background: 'rgba(255,255,255,0.9)', 
+                  borderRadius: 3, 
+                  boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
+                  border: '1px solid rgba(77, 191, 179, 0.2)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    boxShadow: '0 6px 25px rgba(14,81,129,0.15)',
+                    border: '1px solid rgba(77, 191, 179, 0.3)',
+                    transform: 'translateY(-1px)'
+                  },
+                  '&:focus-within': {
+                    boxShadow: '0 8px 30px rgba(14,81,129,0.2)',
+                    border: '1px solid #4DBFB3',
+                    transform: 'translateY(-2px)'
+                  }
+                }}
+              >
+                <InputBase 
+                  sx={{ 
+                    ml: 1, 
+                    flex: 1,
+                    fontSize: '14px',
+                    '& input': {
+                      '&::placeholder': {
+                        color: '#999',
+                        opacity: 1
+                      }
+                    }
+                  }} 
+                  placeholder="ابحث عن الكورسات، الدروس، أو أي شيء..." 
+                  inputProps={{ 'aria-label': 'بحث' }} 
+                />
+                <Box sx={{ 
+                  width: 8, 
+                  height: 8, 
+                  borderRadius: '50%', 
+                  background: 'linear-gradient(45deg, #4DBFB3, #333679)',
+                  mr: 1
+                }} />
+              </Paper>
+
+              {/* Category Filter */}
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 150,
+                  '& .MuiOutlinedInput-root': {
+                    background: 'rgba(255,255,255,0.9)',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
+                    border: '1px solid rgba(77, 191, 179, 0.2)',
+                    '&:hover': {
+                      boxShadow: '0 6px 25px rgba(14,81,129,0.15)',
+                      border: '1px solid rgba(77, 191, 179, 0.3)',
+                    },
+                    '&.Mui-focused': {
+                      boxShadow: '0 8px 30px rgba(14,81,129,0.2)',
+                      border: '1px solid #4DBFB3',
                     }
                   }
-                }} 
-                placeholder="ابحث عن الكورسات، الدروس، أو أي شيء..." 
-                inputProps={{ 'aria-label': 'بحث' }} 
-              />
-              <Box sx={{ 
-                width: 8, 
-                height: 8, 
-                borderRadius: '50%', 
-                background: 'linear-gradient(45deg, #4DBFB3, #333679)',
-                mr: 1
-              }} />
-            </Paper>
+                }}
+              >
+                <Select
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                  displayEmpty
+                  startAdornment={<CategoryIcon sx={{ color: '#4DBFB3', mr: 1, fontSize: 20 }} />}
+                  sx={{
+                    '& .MuiSelect-select': {
+                      fontSize: '14px',
+                      color: selectedCategory ? '#333' : '#999',
+                      fontWeight: 600
+                    }
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>جميع الفئات</em>
+                  </MenuItem>
+                  {categories.map((category) => (
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Subcategory Filter */}
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 150,
+                  '& .MuiOutlinedInput-root': {
+                    background: 'rgba(255,255,255,0.9)',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
+                    border: '1px solid rgba(77, 191, 179, 0.2)',
+                    '&:hover': {
+                      boxShadow: '0 6px 25px rgba(14,81,129,0.15)',
+                      border: '1px solid rgba(77, 191, 179, 0.3)',
+                    },
+                    '&.Mui-focused': {
+                      boxShadow: '0 8px 30px rgba(14,81,129,0.2)',
+                      border: '1px solid #4DBFB3',
+                    }
+                  }
+                }}
+              >
+                <Select
+                  value={selectedSubcategory}
+                  onChange={handleSubcategoryChange}
+                  displayEmpty
+                  disabled={!selectedCategory}
+                  startAdornment={<SubjectIcon sx={{ color: '#4DBFB3', mr: 1, fontSize: 20 }} />}
+                  sx={{
+                    '& .MuiSelect-select': {
+                      fontSize: '14px',
+                      color: selectedSubcategory ? '#333' : '#999',
+                      fontWeight: 600
+                    }
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>جميع الفئات الفرعية</em>
+                  </MenuItem>
+                  {subcategories.map((subcategory) => (
+                    <MenuItem key={subcategory.id} value={subcategory.id}>
+                      {subcategory.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
               {/* Notification Dropdown with Enhanced Design */}
@@ -789,8 +1148,31 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
         </AppBar>
         </Box>
         {/* Main Dashboard Content */}
-        <Box component="main" sx={{ flexGrow: 1, p: 0, pt: 0, width: '100%' }}>
-          {children}
+        <Box component="main" sx={{ 
+          flexGrow: 1, 
+          p: 0, 
+          pt: 0, 
+          width: '100%',
+          height: '100%',
+          overflow: 'auto',
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: 'rgba(0,0,0,0.05)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            borderRadius: '4px',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.3)',
+            },
+          },
+        }}>
+          <Box sx={{ pb: 10 }}>
+            {children}
+          </Box>
         </Box>
       </Box>
     </Box>

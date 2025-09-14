@@ -207,17 +207,17 @@ class FlashcardAdmin(admin.ModelAdmin):
     """Admin interface for Flashcard model"""
     
     list_display = [
-        'front_text_short', 'back_text_short', 'related_question', 
+        'front_text_short', 'back_text_short', 'lesson', 'related_question', 
         'created_by', 'created_at'
     ]
-    list_filter = ['created_by', 'created_at']
-    search_fields = ['front_text', 'back_text', 'created_by__username']
+    list_filter = ['lesson__module__course', 'lesson', 'created_by', 'created_at']
+    search_fields = ['front_text', 'back_text', 'lesson__title', 'created_by__username']
     readonly_fields = ['created_at', 'updated_at']
     date_hierarchy = 'created_at'
     
     fieldsets = (
         ('Flashcard Content', {
-            'fields': ('front_text', 'back_text', 'related_question')
+            'fields': ('front_text', 'back_text', 'lesson', 'related_question')
         }),
         ('Media', {
             'fields': ('front_image', 'back_image'),
@@ -240,7 +240,7 @@ class FlashcardAdmin(admin.ModelAdmin):
     back_text_short.short_description = 'Back Text'
     
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('created_by', 'related_question')
+        return super().get_queryset(request).select_related('lesson', 'lesson__module', 'lesson__module__course', 'related_question', 'created_by')
     
     def save_model(self, request, obj, form, change):
         if not change:  # Creating new object
