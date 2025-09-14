@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -241,6 +241,10 @@ import {
 
   EmojiEvents,
 
+  Psychology,
+
+  VisibilityOff,
+
 } from '@mui/icons-material';
 
 import { Quiz as QuizIcon } from '@mui/icons-material';
@@ -250,6 +254,8 @@ import QuizStart from './quiz/QuizStart';
 import QuizResult from './quiz/QuizResult';
 
 import { courseAPI } from '../../services/api.service';
+
+import { contentAPI } from '../../services/content.service';
 
 import { API_CONFIG } from '../../config/api.config';
 
@@ -433,8 +439,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
 
 
-  // Check if URL is valid
-
+  // Check if URL is valid for direct video files
   const isValidVideoUrl = processedUrl && (
 
     processedUrl.includes('.mp4') ||
@@ -459,9 +464,104 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
   );
 
+  // Check if URL is external video (YouTube, Vimeo, etc.)
+  const isExternalVideoUrl = processedUrl && (
+    processedUrl.includes('youtube.com') ||
+    processedUrl.includes('youtu.be') ||
+    processedUrl.includes('vimeo.com') ||
+    processedUrl.includes('dailymotion.com') ||
+    processedUrl.includes('twitch.tv') ||
+    processedUrl.includes('facebook.com') ||
+    processedUrl.includes('instagram.com')
+  );
+
+  // Convert external video URLs to embed format
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    
+    // YouTube URLs
+    if (url.includes('youtube.com/watch?v=')) {
+      const videoId = url.split('v=')[1]?.split('&')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    }
+    
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    }
+    
+    // Vimeo URLs
+    if (url.includes('vimeo.com/')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : url;
+    }
+    
+    // DailyMotion URLs
+    if (url.includes('dailymotion.com/video/')) {
+      const videoId = url.split('dailymotion.com/video/')[1]?.split('?')[0];
+      return videoId ? `https://www.dailymotion.com/embed/video/${videoId}` : url;
+    }
+    
+    // Twitch URLs (for VODs)
+    if (url.includes('twitch.tv/videos/')) {
+      const videoId = url.split('twitch.tv/videos/')[1]?.split('?')[0];
+      return videoId ? `https://player.twitch.tv/?video=${videoId}` : url;
+    }
+    
+    // For other platforms, return original URL
+    return url;
+  };
 
 
 
+
+
+  // If it's an external video URL, display it in an iframe
+  if (isExternalVideoUrl) {
+    const embedUrl = getEmbedUrl(processedUrl);
+    console.log('External video detected:', processedUrl);
+    console.log('Embed URL:', embedUrl);
+    
+    return (
+      <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+        {/* External video indicator */}
+        <Box sx={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          zIndex: 10,
+          bgcolor: 'rgba(0,0,0,0.7)',
+          color: 'white',
+          px: 2,
+          py: 1,
+          borderRadius: 1,
+          fontSize: '0.75rem',
+          fontWeight: 'bold'
+        }}>
+          فيديو خارجي
+        </Box>
+        
+        <iframe
+          src={embedUrl}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            backgroundColor: '#000'
+          }}
+          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          title="External Video"
+          onError={(e) => {
+            console.error('Iframe error:', e);
+          }}
+        />
+      </Box>
+    );
+  }
 
   if (!isValidVideoUrl) {
 
@@ -1544,21 +1644,57 @@ const getFileTypeColor = (fileName, fileType) => {
 
 
 
-const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, currentLessonId, setActiveQuizId, setOpenQuiz, setShowQuizResult, quizzes, isSidebarExpanded }) => {
+const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, currentLessonId, setActiveQuizId, setOpenQuiz, setShowQuizResult, quizzes, isSidebarExpanded, activeTab, questions, flashcards, selectedModuleId, onQuestionClick }) => {
   const theme = useTheme();
+
+  // Filter content based on active tab and selected module
+  const getFilteredContent = () => {
+    if (activeTab === 'lessons') {
+      // Return all lessons from all modules
+      const allLessons = [];
+      (modules || []).forEach((module, moduleIndex) => {
+        if (module.lessons && module.lessons.length > 0) {
+          module.lessons.forEach((lesson, lessonIndex) => {
+            allLessons.push({
+              ...lesson,
+              moduleTitle: module.title,
+              moduleIndex: moduleIndex + 1,
+              lessonIndex: lessonIndex + 1,
+              moduleId: module.id
+            });
+          });
+        }
+      });
+      return allLessons;
+    } else if (activeTab === 'questions') {
+      if (selectedModuleId) {
+        return questions.filter(q => q.module_id == selectedModuleId);
+      }
+      return questions;
+    } else if (activeTab === 'flashcards') {
+      if (selectedModuleId) {
+        return flashcards.filter(f => f.module_id == selectedModuleId);
+      }
+      return flashcards;
+    } else {
+      // Default to modules
+      return modules || [];
+    }
+  };
+
+  const filteredContent = getFilteredContent();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSidebarExpanded ? 0.75 : 0.5, p: isSidebarExpanded ? 0.25 : 0.125 }}>
-      {(modules || []).map((module, moduleIndex) => {
-        const isSelected = expandedModule === module.id;
-        const isQuiz = module.title?.toLowerCase().includes('quiz');
-        const hasProgress = isQuiz && module.completedLessons > 0;
-        const progressPercentage = hasProgress ? (module.completedLessons / module.totalLessons) * 100 : 0;
+      {activeTab === 'lessons' ? (
+        // Display all lessons from all modules
+        filteredContent.map((lesson, index) => {
+            const isSelected = currentLessonId === lesson.id;
 
         return (
           <Box
-            key={module.id}
-            onClick={() => onModuleClick(module.id)}
+                key={lesson.id}
+                onClick={() => onLessonClick(lesson.moduleId, lesson.id)}
             sx={{
               p: isSidebarExpanded ? 1 : 0.75,
               bgcolor: isSelected ? 'white' : 'rgba(255,255,255,0.08)',
@@ -1603,7 +1739,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                 )}
               </Box>
 
-              {/* Module Number or Icon */}
+                  {/* Lesson Icon */}
               <Box
                 sx={{
                   width: isSidebarExpanded ? 18 : 14,
@@ -1614,18 +1750,20 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: isSelected ? '#3b82f6' : 'rgba(255,255,255,0.8)',
-                  fontSize: isSidebarExpanded ? '0.65rem' : '0.55rem',
-                  fontWeight: 'bold'
                 }}
               >
-                {isQuiz ? (
+                    {lesson.type === 'video' ? (
+                      <VideoLibrary sx={{ fontSize: isSidebarExpanded ? 10 : 8 }} />
+                    ) : lesson.type === 'quiz' ? (
                   <Quiz sx={{ fontSize: isSidebarExpanded ? 10 : 8 }} />
+                    ) : lesson.type === 'assignment' ? (
+                      <Assignment sx={{ fontSize: isSidebarExpanded ? 10 : 8 }} />
                 ) : (
-                  moduleIndex + 1
+                      <MenuBook sx={{ fontSize: isSidebarExpanded ? 10 : 8 }} />
                 )}
               </Box>
 
-              {/* Module Content */}
+                  {/* Lesson Content */}
               {isSidebarExpanded && (
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body1" sx={{
@@ -1635,45 +1773,116 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                     mb: 0.2,
                     lineHeight: 1.2
                   }}>
-                    {module.title}
+                        {lesson.title}
                   </Typography>
                   <Typography variant="body2" sx={{
                     color: isSelected ? 'rgba(30, 64, 175, 0.8)' : 'rgba(255,255,255,0.8)',
                     fontSize: '0.65rem',
                     fontWeight: 500
                   }}>
-                    {isQuiz ? `${module.completedLessons}/${module.totalLessons}` : (() => {
-                      const totalMinutes = module.lessons?.reduce((sum, lesson) => sum + (lesson.durationMinutes || 0), 0) || 0;
-                      const hours = Math.floor(totalMinutes / 60);
-                      const minutes = totalMinutes % 60;
-                      return `${hours}:${minutes.toString().padStart(2, '0')}`;
-                    })()}
+                        {lesson.moduleTitle} • {lesson.duration || '0:00'}
                   </Typography>
                 </Box>
               )}
             </Box>
 
-            {/* Progress Bar for Quiz Modules */}
-            {isQuiz && hasProgress && isSidebarExpanded && (
-              <Box sx={{ mt: 0.6 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={progressPercentage}
-                  sx={{
-                    height: 2.5,
-                    borderRadius: 1.25,
-                    bgcolor: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255,255,255,0.2)',
-                    '& .MuiLinearProgress-bar': {
-                      borderRadius: 1.25,
-                      background: 'linear-gradient(90deg, #10b981 0%, #34d399 100%)',
-                    }
-                  }}
-                />
+                {/* Completion Indicator */}
+                {lesson.completed && isSidebarExpanded && (
+                  <Box sx={{ 
+                    position: 'absolute', 
+                    top: 4, 
+                    right: 4,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: '#10b981'
+                  }} />
+                )}
               </Box>
-            )}
+            );
+        })
+      ) : activeTab === 'questions' ? (
+        // Questions display
+        filteredContent.map((question, index) => (
+          <Box
+            key={question.id || index}
+            onClick={() => onQuestionClick && onQuestionClick(question, index)}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              p: 1.5,
+              borderRadius: 2,
+              bgcolor: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,0.2)',
+                transform: 'translateX(4px)'
+              }
+            }}
+          >
+            <Quiz sx={{ color: '#4CAF50', fontSize: 20, mr: 1.5 }} />
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="body2" sx={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '0.75rem',
+                mb: 0.2,
+                lineHeight: 1.2
+              }}>
+                {question.question?.substring(0, 50)}...
+              </Typography>
+              <Typography variant="caption" sx={{
+                color: 'rgba(255,255,255,0.7)',
+                fontSize: '0.65rem'
+              }}>
+                {question.module_name || 'عام'} • {question.type === 'mcq' ? 'اختيار من متعدد' : question.type === 'true_false' ? 'صح أو خطأ' : question.type === 'essay' ? 'مقالي' : 'اختيار من متعدد'}
+              </Typography>
+              </Box>
           </Box>
-        );
-      })}
+        ))
+      ) : activeTab === 'flashcards' ? (
+        // Flashcards display
+        filteredContent.map((flashcard, index) => (
+          <Box
+            key={flashcard.id || index}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              p: 1.5,
+              borderRadius: 2,
+              bgcolor: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,0.2)',
+                transform: 'translateX(4px)'
+              }
+            }}
+          >
+            <Psychology sx={{ color: '#9C27B0', fontSize: 20, mr: 1.5 }} />
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="body2" sx={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '0.75rem',
+                mb: 0.2,
+                lineHeight: 1.2
+              }}>
+                {flashcard.front?.substring(0, 40)}...
+              </Typography>
+              <Typography variant="caption" sx={{
+                color: 'rgba(255,255,255,0.7)',
+                fontSize: '0.65rem'
+              }}>
+                {flashcard.module_name || flashcard.category || 'عام'}
+              </Typography>
+            </Box>
+          </Box>
+        ))
+      ) : null}
     </Box>
   );
 };
@@ -1687,6 +1896,8 @@ const CourseTracking = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const theme = useTheme();
 
@@ -1710,7 +1921,19 @@ const CourseTracking = () => {
 
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState('lessons');
+
+  const [selectedModuleId, setSelectedModuleId] = useState(null);
+
+  const [questions, setQuestions] = useState([]);
+
+  const [flashcards, setFlashcards] = useState([]);
+
+  // Question display states
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   const [videoProgress, setVideoProgress] = useState(0);
 
@@ -1735,6 +1958,24 @@ const CourseTracking = () => {
   const [imagePreview, setImagePreview] = useState({ open: false, url: '', title: '' });
 
 
+
+  // Handle URL parameters for tab and module selection
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    const moduleId = searchParams.get('moduleId');
+    
+    if (tab) {
+      setActiveTab(tab);
+    } else {
+      // Default to lessons tab if no tab specified
+      setActiveTab('lessons');
+    }
+    
+    if (moduleId) {
+      setSelectedModuleId(moduleId);
+      setExpandedModule(moduleId);
+    }
+  }, [searchParams]);
 
   // Fetch course data on component mount
 
@@ -1950,7 +2191,89 @@ const CourseTracking = () => {
 
       setCourseData(transformedData);
 
+      // Fetch questions and flashcards
+      try {
+        // Fetch questions using the content API
+        const questionsResponse = await contentAPI.getCourseQuestionBank(courseId);
+        console.log('Questions response:', questionsResponse);
+        
+        // Extract questions from modules structure
+        const allQuestions = [];
+        const questionsModules = questionsResponse.modules || [];
+        questionsModules.forEach(module => {
+          if (module.lessons) {
+            module.lessons.forEach(lesson => {
+              if (lesson.questions) {
+                // Add module information to each question and parse options
+                const questionsWithModule = lesson.questions.map(question => {
+                  // Parse options if they are a JSON string
+                  let parsedOptions = question.options;
+                  if (typeof question.options === 'string') {
+                    try {
+                      parsedOptions = JSON.parse(question.options);
+                    } catch (e) {
+                      console.error('Error parsing options for question:', question.id, e);
+                      parsedOptions = [];
+                    }
+                  }
+                  
+                  // Convert string options to objects if needed
+                  if (Array.isArray(parsedOptions) && parsedOptions.length > 0) {
+                    parsedOptions = parsedOptions.map((option, index) => {
+                      if (typeof option === 'string') {
+                        return {
+                          text: option,
+                          is_correct: false, // Will be determined by correct_answer
+                          index: index
+                        };
+                      }
+                      return option;
+                    });
+                  }
+                  
+                  return {
+                    ...question,
+                    options: parsedOptions,
+                    module_name: module.name,
+                    module_id: module.id
+                  };
+                });
+                allQuestions.push(...questionsWithModule);
+              }
+            });
+          }
+        });
+        console.log('All questions with parsed options:', allQuestions);
+        setQuestions(allQuestions);
 
+        // Fetch flashcards using the content API
+        const flashcardsResponse = await contentAPI.getCourseFlashcards(courseId);
+        console.log('Flashcards response:', flashcardsResponse);
+        
+        // Extract flashcards from modules structure
+        const allFlashcards = [];
+        const flashcardsModules = flashcardsResponse.modules || [];
+        flashcardsModules.forEach(module => {
+          if (module.lessons) {
+            module.lessons.forEach(lesson => {
+              if (lesson.flashcards) {
+                // Add module information to each flashcard
+                const flashcardsWithModule = lesson.flashcards.map(flashcard => ({
+                  ...flashcard,
+                  module_name: module.name,
+                  module_id: module.id
+                }));
+                allFlashcards.push(...flashcardsWithModule);
+              }
+            });
+          }
+        });
+        setFlashcards(allFlashcards);
+      } catch (error) {
+        console.error('Error fetching questions and flashcards:', error);
+        setQuestions([]);
+        setFlashcards([]);
+      }
 
       // Set initial expanded module to first module
 
@@ -2106,6 +2429,80 @@ const CourseTracking = () => {
 
     }
 
+  };
+
+  // Handle question selection
+  const handleQuestionClick = (question, index) => {
+    console.log('Selected question:', question);
+    console.log('Question type:', question.type);
+    console.log('Question options (raw):', question.options);
+    
+    // Parse options if they are a JSON string
+    let parsedOptions = question.options;
+    if (typeof question.options === 'string') {
+      try {
+        parsedOptions = JSON.parse(question.options);
+        console.log('Parsed options:', parsedOptions);
+      } catch (e) {
+        console.error('Error parsing options:', e);
+        parsedOptions = [];
+      }
+    }
+    
+    // Convert string options to objects if needed
+    if (Array.isArray(parsedOptions) && parsedOptions.length > 0) {
+      parsedOptions = parsedOptions.map((option, index) => {
+        if (typeof option === 'string') {
+          return {
+            text: option,
+            is_correct: false, // Will be determined by correct_answer
+            index: index
+          };
+        }
+        return option;
+      });
+    }
+    
+    // Update question with parsed options
+    const questionWithParsedOptions = {
+      ...question,
+      options: parsedOptions
+    };
+    
+    console.log('Question with parsed options:', questionWithParsedOptions);
+    setSelectedQuestion(questionWithParsedOptions);
+    setCurrentQuestionIndex(index);
+    setShowAnswer(false);
+    setSelectedAnswer(null);
+    setCurrentLesson(null); // Clear current lesson when viewing questions
+  };
+
+  // Navigate to next/previous question
+  const navigateToNextQuestion = () => {
+    const filteredQuestions = selectedModuleId 
+      ? questions.filter(q => q.module_id == selectedModuleId)
+      : questions;
+    
+    if (currentQuestionIndex < filteredQuestions.length - 1) {
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      setSelectedQuestion(filteredQuestions[nextIndex]);
+      setShowAnswer(false);
+      setSelectedAnswer(null);
+    }
+  };
+
+  const navigateToPreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      const filteredQuestions = selectedModuleId 
+        ? questions.filter(q => q.module_id == selectedModuleId)
+        : questions;
+      const prevIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex(prevIndex);
+      setSelectedQuestion(filteredQuestions[prevIndex]);
+      setShowAnswer(false);
+      setSelectedAnswer(null);
+    }
   };
 
 
@@ -2972,26 +3369,40 @@ const CourseTracking = () => {
           {isSidebarExpanded && (
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', gap: 0.4 }}>
-                <Box sx={{
+                <Box 
+                  onClick={() => {
+                    setActiveTab('lessons');
+                    setSearchParams({ tab: 'lessons' });
+                  }}
+                  sx={{
                   px: 1.25,
                   py: 0.6,
                   borderRadius: 1.25,
-                  bgcolor: 'rgba(255,255,255,0.2)',
+                    bgcolor: activeTab === 'lessons' ? 'rgba(255,255,255,0.2)' : 'transparent',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                    }
                 }}>
                   <Typography variant="body2" sx={{
-                    color: 'white',
-                    fontWeight: 'bold',
+                    color: activeTab === 'lessons' ? 'white' : 'rgba(255,255,255,0.7)',
+                    fontWeight: activeTab === 'lessons' ? 'bold' : 500,
                     fontSize: '0.7rem'
                   }}>
-                    All
+                    الدروس
                   </Typography>
                 </Box>
-                <Box sx={{
+                <Box 
+                  onClick={() => {
+                    setActiveTab('questions');
+                    setSearchParams({ tab: 'questions' });
+                  }}
+                  sx={{
                   px: 1.25,
                   py: 0.6,
                   borderRadius: 1.25,
+                    bgcolor: activeTab === 'questions' ? 'rgba(255,255,255,0.2)' : 'transparent',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   '&:hover': {
@@ -2999,17 +3410,23 @@ const CourseTracking = () => {
                   }
                 }}>
                   <Typography variant="body2" sx={{
-                    color: 'rgba(255,255,255,0.7)',
-                    fontWeight: 500,
+                    color: activeTab === 'questions' ? 'white' : 'rgba(255,255,255,0.7)',
+                    fontWeight: activeTab === 'questions' ? 'bold' : 500,
                     fontSize: '0.7rem'
                   }}>
-                    Videos
+                    الأسئلة
                   </Typography>
                 </Box>
-                <Box sx={{
+                <Box 
+                  onClick={() => {
+                    setActiveTab('flashcards');
+                    setSearchParams({ tab: 'flashcards' });
+                  }}
+                  sx={{
                   px: 1.25,
                   py: 0.6,
                   borderRadius: 1.25,
+                    bgcolor: activeTab === 'flashcards' ? 'rgba(255,255,255,0.2)' : 'transparent',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   '&:hover': {
@@ -3017,11 +3434,11 @@ const CourseTracking = () => {
                   }
                 }}>
                   <Typography variant="body2" sx={{
-                    color: 'rgba(255,255,255,0.7)',
-                    fontWeight: 500,
+                    color: activeTab === 'flashcards' ? 'white' : 'rgba(255,255,255,0.7)',
+                    fontWeight: activeTab === 'flashcards' ? 'bold' : 500,
                     fontSize: '0.7rem'
                   }}>
-                    Quizzes
+                    البطاقات
                   </Typography>
                 </Box>
               </Box>
@@ -3112,6 +3529,16 @@ const CourseTracking = () => {
 
               isSidebarExpanded={isSidebarExpanded}
 
+              activeTab={activeTab}
+
+              questions={questions}
+
+              flashcards={flashcards}
+
+              selectedModuleId={selectedModuleId}
+
+              onQuestionClick={handleQuestionClick}
+
             />
 
           </Box>
@@ -3188,7 +3615,7 @@ const CourseTracking = () => {
               </Typography>
             </Box>
 
-            {/* Video Player Container */}
+            {/* Main Content Container */}
             <Box sx={{
               position: 'relative',
               width: '100%',
@@ -3199,7 +3626,574 @@ const CourseTracking = () => {
               justifyContent: 'center',
               mt: 8 // Add margin to account for fixed header
             }}>
-              {currentLesson ? (
+              {selectedQuestion ? (
+                // Question Display
+                <Box sx={{
+                  width: '100%',
+                  height: '100%',
+                  p: 2,
+                  pt: 5,
+                  overflow: 'hidden',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)',
+                  color: 'text.primary',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  borderRadius: 2,
+                  boxSizing: 'border-box'
+                }}>
+                  {/* Question Header */}
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 2,
+                    pb: 1.5,
+                    borderBottom: '1px solid #e0e0e0',
+                    flexShrink: 0
+                  }}>
+                    <Typography variant="h5" sx={{
+                      fontWeight: 'bold',
+                      color: '#1976d2',
+                      textAlign: 'right',
+                      fontSize: '1.5rem'
+                    }}>
+                      السؤال {currentQuestionIndex + 1}
+                    </Typography>
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2
+                    }}>
+                      {/* Show Answer Button - Top */}
+                      <IconButton
+                        onClick={() => setShowAnswer(!showAnswer)}
+                        sx={{
+                          background: showAnswer 
+                            ? 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)' 
+                            : 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                          color: 'white',
+                          width: 40,
+                          height: 40,
+                          borderRadius: 2,
+                          boxShadow: '0 3px 10px rgba(0,0,0,0.2)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          '&:hover': {
+                            background: showAnswer 
+                              ? 'linear-gradient(135deg, #e55a2b 0%, #e0851a 100%)' 
+                              : 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+                            boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+                            transform: 'translateY(-1px)'
+                          },
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }}
+                      >
+                        {showAnswer ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                      
+                      <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                      }}>
+                        <Chip 
+                          label={selectedQuestion.type === 'mcq' ? 'اختيار من متعدد' : selectedQuestion.type === 'true_false' ? 'صح أو خطأ' : selectedQuestion.type === 'essay' ? 'مقالي' : 'اختيار من متعدد'}
+                          color="primary"
+                          size="small"
+                        />
+                        <Chip 
+                          label={selectedQuestion.module_name || 'عام'}
+                          color="secondary"
+                          size="small"
+                        />
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  {/* Question Content */}
+                  <Box sx={{
+                    flex: 1,
+                    overflow: 'auto',
+                    mb: 2,
+                    pr: 1,
+                    '&::-webkit-scrollbar': {
+                      width: '4px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      background: 'rgba(0,0,0,0.05)',
+                      borderRadius: '2px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: 'rgba(0,0,0,0.2)',
+                      borderRadius: '2px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      background: 'rgba(0,0,0,0.3)',
+                    },
+                  }}>
+                    <Typography variant="h6" sx={{
+                      mb: 2,
+                      lineHeight: 1.6,
+                      textAlign: 'right',
+                      fontSize: '1.1rem',
+                      fontWeight: 600
+                    }}>
+                      {selectedQuestion.question}
+                    </Typography>
+
+                    {/* Multiple Choice Options */}
+                    {(() => {
+                      console.log('Rendering options check:', {
+                        type: selectedQuestion.type,
+                        hasOptions: !!selectedQuestion.options,
+                        optionsLength: selectedQuestion.options?.length,
+                        options: selectedQuestion.options,
+                        isArray: Array.isArray(selectedQuestion.options),
+                        correctAnswer: selectedQuestion.correct_answer
+                      });
+                      
+                      // Check if it's MCQ and has options
+                      const isMCQ = selectedQuestion.type === 'mcq';
+                      const hasOptions = selectedQuestion.options && selectedQuestion.options.length > 0;
+                      
+                      console.log('MCQ check:', { isMCQ, hasOptions });
+                      
+                      return isMCQ && hasOptions;
+                    })() ? (
+                      <Box sx={{ mb: 1.5 }}>
+                        {selectedQuestion.options.map((option, index) => {
+                          const isSelected = selectedAnswer === index;
+                          // Check if this option is correct by comparing with correct_answer
+                          const isCorrect = selectedQuestion.correct_answer === option || 
+                                          selectedQuestion.correct_answer === option.text ||
+                                          selectedQuestion.correct_answer === String(index) ||
+                                          option.is_correct === true;
+                          const isWrong = isSelected && !isCorrect && showAnswer;
+                          
+                          console.log('Option check:', {
+                            option,
+                            index,
+                            correctAnswer: selectedQuestion.correct_answer,
+                            isCorrect,
+                            isSelected
+                          });
+                          
+                          return (
+                          <Box
+                            key={index}
+                              onClick={() => !showAnswer && setSelectedAnswer(index)}
+                            sx={{
+                                p: 1.2,
+                                mb: 0.8,
+                                borderRadius: 1.5,
+                                border: showAnswer && isCorrect ? '2px solid #4caf50' : 
+                                        isWrong ? '2px solid #f44336' :
+                                        isSelected ? '2px solid #2196f3' : '1px solid #e0e0e0',
+                                background: showAnswer && isCorrect ? 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)' :
+                                           isWrong ? 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)' :
+                                           isSelected ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' :
+                                           'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
+                                boxShadow: showAnswer && isCorrect ? '0 2px 8px rgba(76, 175, 80, 0.2)' :
+                                           isWrong ? '0 2px 8px rgba(244, 67, 54, 0.2)' :
+                                           isSelected ? '0 2px 8px rgba(33, 150, 243, 0.2)' :
+                                           '0 1px 4px rgba(0,0,0,0.05)',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                cursor: showAnswer ? 'default' : 'pointer',
+                              '&:hover': {
+                                  transform: showAnswer ? 'none' : 'translateY(-1px)',
+                                  boxShadow: showAnswer ? 'inherit' :
+                                             isSelected ? '0 4px 12px rgba(33, 150, 243, 0.3)' :
+                                             '0 2px 8px rgba(0,0,0,0.1)'
+                                }
+                              }}
+                            >
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Typography sx={{
+                              textAlign: 'right',
+                                  fontWeight: (showAnswer && isCorrect) || isSelected ? 'bold' : 'normal',
+                                  color: showAnswer && isCorrect ? '#2e7d32' : 
+                                         isWrong ? '#d32f2f' :
+                                         isSelected ? '#1976d2' : 'inherit',
+                                  flex: 1,
+                                  fontSize: '0.85rem'
+                            }}>
+                              {String.fromCharCode(65 + index)}. {option.text || option}
+                            </Typography>
+                                
+                                {/* Selection indicator */}
+                                <Box sx={{
+                                  width: 16,
+                                  height: 16,
+                                  borderRadius: '50%',
+                                  border: `2px solid ${isSelected ? '#2196f3' : '#e0e0e0'}`,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  bgcolor: isSelected ? '#2196f3' : 'transparent',
+                                  ml: 1
+                                }}>
+                                  {isSelected && (
+                                    <Box sx={{
+                                      width: 5,
+                                      height: 5,
+                                      borderRadius: '50%',
+                                      bgcolor: 'white'
+                                    }} />
+                                  )}
+                                </Box>
+                              </Box>
+                              
+                              {showAnswer && isCorrect && (
+                              <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
+                                  mt: 0.5
+                              }}>
+                                  <CheckCircle sx={{ color: '#4caf50', mr: 0.5, fontSize: 16 }} />
+                                  <Typography variant="caption" sx={{ color: '#4caf50', fontWeight: 'bold', fontSize: '0.7rem' }}>
+                                  الإجابة الصحيحة
+                                </Typography>
+                              </Box>
+                            )}
+                              
+                              {isWrong && (
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'flex-end',
+                                  mt: 0.5
+                                }}>
+                                  <Close sx={{ color: '#f44336', mr: 0.5, fontSize: 16 }} />
+                                  <Typography variant="caption" sx={{ color: '#f44336', fontWeight: 'bold', fontSize: '0.7rem' }}>
+                                    إجابة خاطئة
+                                  </Typography>
+                          </Box>
+                              )}
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    ) : selectedQuestion.type === 'mcq' ? (
+                      <Box sx={{ 
+                        p: 2, 
+                        bgcolor: 'rgba(255, 193, 7, 0.1)', 
+                        border: '1px solid #ffc107', 
+                        borderRadius: 2, 
+                        textAlign: 'center',
+                        mb: 1.5 
+                      }}>
+                        <Typography sx={{ color: '#f57c00', fontWeight: 'bold' }}>
+                          لا توجد خيارات متاحة لهذا السؤال
+                        </Typography>
+                      </Box>
+                    ) : null}
+
+                    {/* True/False Options */}
+                    {selectedQuestion.type === 'true_false' && (
+                      <Box sx={{ mb: 1.5 }}>
+                        <Box sx={{
+                          display: 'flex',
+                          gap: 1.5,
+                          justifyContent: 'center'
+                        }}>
+                          {['صح', 'خطأ'].map((option, index) => {
+                            const isSelected = selectedAnswer === index;
+                            
+                            // Check if this option is correct by comparing with correct_answer
+                            // Support multiple formats: boolean, string, or Arabic text
+                            const isCorrect = (index === 0 && (
+                              selectedQuestion.correct_answer === true ||
+                              selectedQuestion.correct_answer === 'true' ||
+                              selectedQuestion.correct_answer === 'صح' ||
+                              selectedQuestion.correct_answer === 'True' ||
+                              selectedQuestion.correct_answer === 'TRUE'
+                            )) || (index === 1 && (
+                              selectedQuestion.correct_answer === false ||
+                              selectedQuestion.correct_answer === 'false' ||
+                              selectedQuestion.correct_answer === 'خطأ' ||
+                              selectedQuestion.correct_answer === 'False' ||
+                              selectedQuestion.correct_answer === 'FALSE'
+                            ));
+                            
+                            const isWrong = isSelected && !isCorrect && showAnswer;
+                            
+                            console.log('True/False check:', {
+                              option,
+                              index,
+                              correctAnswer: selectedQuestion.correct_answer,
+                              isCorrect,
+                              isSelected,
+                              isWrong
+                            });
+                            
+                            return (
+                              <Box
+                                key={index}
+                                onClick={() => !showAnswer && setSelectedAnswer(index)}
+                                sx={{
+                                  p: 1.8,
+                                  borderRadius: 2,
+                                  border: showAnswer && isCorrect ? '2px solid #4caf50' : 
+                                          isWrong ? '2px solid #f44336' :
+                                          isSelected ? '2px solid #2196f3' : '1px solid #e0e0e0',
+                                  background: showAnswer && isCorrect 
+                                    ? 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)' 
+                                    : isWrong ? 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)'
+                                    : isSelected ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)'
+                                    : 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
+                                  boxShadow: showAnswer && isCorrect 
+                                    ? '0 4px 12px rgba(76, 175, 80, 0.3)' 
+                                    : isWrong ? '0 4px 12px rgba(244, 67, 54, 0.3)'
+                                    : isSelected ? '0 4px 12px rgba(33, 150, 243, 0.3)'
+                                    : '0 2px 8px rgba(0,0,0,0.08)',
+                                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                  cursor: showAnswer ? 'default' : 'pointer',
+                                  minWidth: 100,
+                                  textAlign: 'center',
+                                  position: 'relative',
+                                  '&:hover': {
+                                    transform: showAnswer ? 'none' : 'translateY(-2px) scale(1.02)',
+                                    boxShadow: showAnswer ? 'inherit' :
+                                               isSelected ? '0 6px 18px rgba(33, 150, 243, 0.4)' 
+                                               : '0 4px 12px rgba(0,0,0,0.15)'
+                                  }
+                                }}
+                              >
+                                <Typography sx={{
+                                  fontSize: '0.9rem',
+                                  fontWeight: 'bold',
+                                  color: showAnswer && isCorrect ? '#2e7d32' : 
+                                         isWrong ? '#d32f2f' :
+                                         isSelected ? '#1976d2' : 'inherit'
+                                }}>
+                                  {option}
+                                </Typography>
+                                
+                                {/* Selection indicator */}
+                                {isSelected && (
+                                  <Box sx={{
+                                    position: 'absolute',
+                                    top: 4,
+                                    right: 4,
+                                    width: 14,
+                                    height: 14,
+                                    borderRadius: '50%',
+                                    bgcolor: '#2196f3',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}>
+                                    <Box sx={{
+                                      width: 4,
+                                      height: 4,
+                                      borderRadius: '50%',
+                                      bgcolor: 'white'
+                                    }} />
+                                  </Box>
+                                )}
+                                
+                                {showAnswer && isCorrect && (
+                                  <CheckCircle sx={{ 
+                                    color: '#4caf50', 
+                                    fontSize: 18, 
+                                    mt: 0.5 
+                                  }} />
+                                )}
+                                
+                                {isWrong && (
+                                  <Close sx={{ 
+                                    color: '#f44336', 
+                                    fontSize: 18, 
+                                    mt: 0.5 
+                                  }} />
+                                )}
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      </Box>
+                    )}
+
+                    {/* Answer Section */}
+                    {showAnswer && (
+                      <Box sx={{
+                        p: 1.5,
+                        borderRadius: 2,
+                        background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
+                        border: '1px solid #1976d2',
+                        mb: 1.5,
+                        boxShadow: '0 2px 8px rgba(25, 118, 210, 0.1)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: '2px',
+                          background: 'linear-gradient(90deg, #1976d2 0%, #7c4dff 100%)'
+                        }
+                      }}>
+                        <Typography variant="h6" sx={{
+                          color: '#1976d2',
+                          fontWeight: 'bold',
+                          mb: 1,
+                          textAlign: 'right',
+                          fontSize: '1rem'
+                        }}>
+                          الإجابة الصحيحة:
+                        </Typography>
+                        
+                        {/* Display correct answer based on question type */}
+                        {selectedQuestion.type === 'mcq' && selectedQuestion.options ? (
+                          <Box sx={{ mb: 2 }}>
+                            {selectedQuestion.options.map((option, index) => {
+                              // Check if this option is correct using the same logic as above
+                              const isCorrect = selectedQuestion.correct_answer === option || 
+                                              selectedQuestion.correct_answer === option.text ||
+                                              selectedQuestion.correct_answer === String(index) ||
+                                              option.is_correct === true;
+                              
+                              if (isCorrect) {
+                                return (
+                                  <Box key={index} sx={{
+                                    p: 1.5,
+                                    borderRadius: 2,
+                                    bgcolor: '#e8f5e8',
+                                    border: '2px solid #4caf50',
+                                    mb: 1
+                                  }}>
+                        <Typography sx={{
+                          textAlign: 'right',
+                                      fontWeight: 'bold',
+                                      color: '#2e7d32',
+                                      fontSize: '0.95rem'
+                        }}>
+                                      {String.fromCharCode(65 + index)}. {option.text || option}
+                        </Typography>
+                      </Box>
+                                );
+                              }
+                              return null;
+                            })}
+                            
+                            {/* If no option was found as correct, show the correct_answer directly */}
+                            {!selectedQuestion.options.some((option, index) => {
+                              const isCorrect = selectedQuestion.correct_answer === option || 
+                                              selectedQuestion.correct_answer === option.text ||
+                                              selectedQuestion.correct_answer === String(index) ||
+                                              option.is_correct === true;
+                              return isCorrect;
+                            }) && (
+                              <Box sx={{
+                                p: 1.5,
+                                borderRadius: 2,
+                                bgcolor: '#e8f5e8',
+                                border: '2px solid #4caf50',
+                                mb: 1
+                              }}>
+                                <Typography sx={{
+                                  textAlign: 'right',
+                                  fontWeight: 'bold',
+                                  color: '#2e7d32',
+                                  fontSize: '0.95rem'
+                                }}>
+                                  {selectedQuestion.correct_answer}
+                                </Typography>
+                              </Box>
+                            )}
+                  </Box>
+                        ) : selectedQuestion.type === 'true_false' ? (
+                          <Box sx={{ mb: 2 }}>
+                            <Typography sx={{
+                              textAlign: 'right',
+                              fontWeight: 'bold',
+                              color: '#2e7d32',
+                              fontSize: '1rem',
+                              p: 1.5,
+                              borderRadius: 2,
+                              bgcolor: '#e8f5e8',
+                              border: '2px solid #4caf50'
+                            }}>
+                              {(() => {
+                                const correctAnswer = selectedQuestion.correct_answer;
+                                
+                                // Check if the answer is true (in various formats)
+                                if (correctAnswer === true || 
+                                    correctAnswer === 'true' || 
+                                    correctAnswer === 'صح' || 
+                                    correctAnswer === 'True' || 
+                                    correctAnswer === 'TRUE') {
+                                  return 'صح';
+                                }
+                                
+                                // Check if the answer is false (in various formats)
+                                if (correctAnswer === false || 
+                                    correctAnswer === 'false' || 
+                                    correctAnswer === 'خطأ' || 
+                                    correctAnswer === 'False' || 
+                                    correctAnswer === 'FALSE') {
+                                  return 'خطأ';
+                                }
+                                
+                                // If none of the above, return the answer as is
+                                return correctAnswer || 'غير محدد';
+                              })()}
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Typography sx={{
+                            textAlign: 'right',
+                            lineHeight: 1.5,
+                            fontSize: '0.95rem',
+                            mb: 1.5,
+                            p: 1.5,
+                            borderRadius: 2,
+                            bgcolor: '#e8f5e8',
+                            border: '2px solid #4caf50'
+                          }}>
+                            {selectedQuestion.correct_answer_text || selectedQuestion.correct_answer || 'لا توجد إجابة صحيحة محددة'}
+                          </Typography>
+                        )}
+
+                        {/* Display explanation if available */}
+                        {(selectedQuestion.explanation || selectedQuestion.correct_answer_text) && (
+                  <Box sx={{
+                            mt: 1.5,
+                            p: 1.5,
+                            borderRadius: 2,
+                            bgcolor: 'rgba(255,255,255,0.8)',
+                            border: '1px solid #1976d2'
+                          }}>
+                            <Typography variant="h6" sx={{
+                              color: '#1976d2',
+                              fontWeight: 'bold',
+                              mb: 1,
+                              textAlign: 'right',
+                              fontSize: '1rem'
+                            }}>
+                              الشرح:
+                            </Typography>
+                            <Typography sx={{
+                              textAlign: 'right',
+                              lineHeight: 1.4,
+                              fontSize: '0.85rem'
+                            }}>
+                              {selectedQuestion.explanation || selectedQuestion.correct_answer_text || 'لا يوجد شرح متاح'}
+                            </Typography>
+                  </Box>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+
+                </Box>
+              ) : currentLesson ? (
+                // Video Player
                 <VideoPlayer
                   ref={playerRef}
                   url={currentLesson?.videoUrl}
@@ -3222,6 +4216,7 @@ const CourseTracking = () => {
                   }}
                 />
               ) : (
+                // Default message
                 <Box sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -3229,7 +4224,7 @@ const CourseTracking = () => {
                   color: 'white',
                   textAlign: 'center'
                 }}>
-                  <Typography variant="h5">اختر درسًا لبدء المشاهدة</Typography>
+                  <Typography variant="h5">اختر درسًا أو سؤالاً لبدء المشاهدة</Typography>
                 </Box>
               )}
 
@@ -3255,86 +4250,157 @@ const CourseTracking = () => {
             alignItems: 'center',
             gap: 2
           }}>
-            <Button
-              variant="outlined"
-              disabled={!currentLesson}
-              onClick={navigateToPreviousLesson}
-              sx={{
-                width: 40,
-                height: 40,
-                minWidth: 40,
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-                borderRadius: 2,
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                },
-                '&:disabled': {
-                  bgcolor: 'rgba(255, 255, 255, 0.05)',
-                  color: 'rgba(255, 255, 255, 0.3)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
-              <ArrowForward />
-            </Button>
+            {selectedQuestion ? (
+              // Question navigation buttons
+              <>
+                <Button
+                  variant="outlined"
+                  disabled={currentQuestionIndex === 0}
+                  onClick={navigateToPreviousQuestion}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <ArrowForward />
+                </Button>
 
-            <Button
-              variant="outlined"
-              disabled={!currentLesson}
-              onClick={navigateToNextLesson}
-              sx={{
-                width: 40,
-                height: 40,
-                minWidth: 40,
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-                borderRadius: 2,
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                },
-                '&:disabled': {
-                  bgcolor: 'rgba(255, 255, 255, 0.05)',
-                  color: 'rgba(255, 255, 255, 0.3)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
-              <ArrowBack />
-            </Button>
+                <Button
+                  variant="outlined"
+                  disabled={currentQuestionIndex >= (selectedModuleId ? questions.filter(q => q.module_id == selectedModuleId).length : questions.length) - 1}
+                  onClick={navigateToNextQuestion}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <ArrowBack />
+                </Button>
 
-            <Button
-              variant="contained"
-              disabled={!currentLesson}
-              onClick={markLessonAsCompleted}
-              sx={{
-                minWidth: 200,
-                height: 40,
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 600,
-                backdropFilter: 'blur(5px)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%)',
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                  boxShadow: '0 4px 15px rgba(255, 255, 255, 0.2)',
-                },
-                '&:disabled': {
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'rgba(255, 255, 255, 0.3)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
-              Complete and Continue
-            </Button>
+                <Typography variant="body2" sx={{
+                  color: 'white',
+                  px: 2,
+                  py: 1,
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: 1,
+                  fontSize: '0.875rem'
+                }}>
+                  {currentQuestionIndex + 1} / {selectedModuleId ? questions.filter(q => q.module_id == selectedModuleId).length : questions.length}
+                </Typography>
+              </>
+            ) : (
+              // Lesson navigation buttons
+              <>
+                <Button
+                  variant="outlined"
+                  disabled={!currentLesson}
+                  onClick={navigateToPreviousLesson}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <ArrowForward />
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  disabled={!currentLesson}
+                  onClick={navigateToNextLesson}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <ArrowBack />
+                </Button>
+
+                <Button
+                  variant="contained"
+                  disabled={!currentLesson}
+                  onClick={markLessonAsCompleted}
+                  sx={{
+                    minWidth: 200,
+                    height: 40,
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    backdropFilter: 'blur(5px)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                      boxShadow: '0 4px 15px rgba(255, 255, 255, 0.2)',
+                    },
+                    '&:disabled': {
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  Complete and Continue
+                </Button>
+              </>
+            )}
           </Box>
 
         </Box>
@@ -3737,4 +4803,5 @@ const CourseTracking = () => {
 
 
 export default CourseTracking;
+
 

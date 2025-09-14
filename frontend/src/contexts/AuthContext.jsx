@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, logout as logoutAction, getProfile } from '../store/slices/authSlice';
+import { login, logout as logoutAction, getProfile, validateToken } from '../store/slices/authSlice';
 
 // Create the auth context
 export const AuthContext = createContext();
@@ -20,13 +20,13 @@ export const AuthProvider = ({ children }) => {
         const userData = localStorage.getItem('user');
         
         if (token && userData) {
-          // If we have a token but no user or profile in Redux, try to get profile
+          // If we have a token but no user or profile in Redux, validate the token
           if (!user || !profile) {
             try {
-              await dispatch(getProfile());
+              await dispatch(validateToken());
             } catch (error) {
-              console.error('Error getting profile:', error);
-              // If getting profile fails, clear localStorage
+              console.error('Token validation failed:', error);
+              // If token validation fails, clear localStorage
               localStorage.removeItem('token');
               localStorage.removeItem('user');
               localStorage.removeItem('userRole');

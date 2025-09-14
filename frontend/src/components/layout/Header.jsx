@@ -601,7 +601,7 @@ const Header = () => {
             {user?.name || 'المستخدم'}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {user?.email || 'user@example.com'}
+            {user?.email || ''}
           </Typography>
         </Box>
         <Divider />
@@ -866,7 +866,7 @@ const Header = () => {
                         {user?.name || 'المستخدم'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {user?.email || 'user@example.com'}
+                        {user?.email || ''}
                       </Typography>
                     </Box>
                     <Divider />

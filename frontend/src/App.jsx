@@ -321,7 +321,7 @@ const AppContent = () => {
                   } />
                   
                   {/* Course Tracking - Standalone Page */}
-                  <Route path="/student/courses/:id" element={
+                  <Route path="/student/courses/:id/tracking" element={
                     <ProtectedRoute allowedRoles={['student']}>
                       <CourseTracking />
                     </ProtectedRoute>

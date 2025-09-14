@@ -1482,6 +1482,7 @@ const ModuleLessons = ({ moduleId, lessons = [], course = null }) => {
 
 // Course Detail Page Component
 const CourseDetailPage = ({ course, onBack }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [modules, setModules] = useState([]);
   const [expandedModules, setExpandedModules] = useState({});
@@ -1999,6 +2000,7 @@ const CourseDetailPage = ({ course, onBack }) => {
                       {/* Start Button */}
                       <Button
                         variant="contained"
+                        onClick={() => navigate(`/student/courses/${course.id}/tracking?tab=modules&moduleId=${module.id}`)}
                         sx={{
                           background: '#4DBFB3',
                           color: 'white',
@@ -2172,6 +2174,7 @@ const CourseDetailPage = ({ course, onBack }) => {
                         {/* Start Button */}
                                           <Button
                                             variant="contained"
+                                            onClick={() => navigate(`/student/courses/${course.id}/tracking?tab=questions&moduleId=${moduleData.module_id}`)}
                                             sx={{
                                               background: '#1976d2',
                                               color: 'white',
@@ -2291,6 +2294,7 @@ const CourseDetailPage = ({ course, onBack }) => {
                         {/* Start Button */}
                       <Button
                           variant="contained"
+                          onClick={() => navigate(`/student/courses/${course.id}/tracking?tab=flashcards&moduleId=${moduleData.module_id}`)}
                         sx={{
                             background: '#4caf50',
                             color: 'white',

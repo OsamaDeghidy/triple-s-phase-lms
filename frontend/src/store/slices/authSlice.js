@@ -114,12 +114,50 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+export const validateToken = createAsyncThunk(
+  'auth/validateToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.getProfile();
+      return response;
+    } catch (error) {
+      // If token is invalid, clear storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userRole');
+      return rejectWithValue('Invalid token');
+    }
+  }
+);
+
+// Helper function to check if token exists and is valid
+const getStoredUser = () => {
+  try {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
+      const parsedUser = JSON.parse(user);
+      return { token, user: parsedUser };
+    }
+    return { token: null, user: null };
+  } catch (error) {
+    // If there's an error parsing user data, clear storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+    return { token: null, user: null };
+  }
+};
+
+const { token, user } = getStoredUser();
+
 const initialState = {
-  user: null,
+  user: user,
   profile: null,
   user_details: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  token: token,
+  isAuthenticated: !!(token && user && user.id),
   loading: false,
   error: null,
 };
@@ -234,6 +272,27 @@ const authSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'فشل في تحديث الملف الشخصي';
+      })
+      // Validate Token
+      .addCase(validateToken.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(validateToken.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.profile = action.payload.profile;
+        state.user_details = action.payload.user_details;
+        state.error = null;
+      })
+      .addCase(validateToken.rejected, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.profile = null;
+        state.user_details = null;
+        state.token = null;
+        state.error = null;
       });
   },
 });
