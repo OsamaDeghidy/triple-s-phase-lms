@@ -2239,10 +2239,10 @@ const CourseTracking = () => {
                   }
                   
                   return {
-                    ...question,
+                  ...question,
                     options: parsedOptions,
-                    module_name: module.name,
-                    module_id: module.id
+                  module_name: module.name,
+                  module_id: module.id
                   };
                 });
                 allQuestions.push(...questionsWithModule);
@@ -2423,6 +2423,12 @@ const CourseTracking = () => {
           ...lesson
 
         });
+
+        // Clear other content when selecting a lesson
+        setSelectedQuestion(null);
+        setSelectedFlashcard(null);
+        setShowAnswer(false);
+        setSelectedAnswer(null);
 
         setIsPlaying(true);
 
@@ -3290,7 +3296,7 @@ const CourseTracking = () => {
             mb: isSidebarExpanded ? 2 : 1
           }}>
             <IconButton
-              onClick={toggleSidebar}
+              onClick={() => navigate('/student/dashboard')}
               sx={{
                 color: 'white',
                 bgcolor: 'rgba(255,255,255,0.1)',
@@ -3644,15 +3650,45 @@ const CourseTracking = () => {
               background: 'linear-gradient(135deg, rgba(102, 51, 153, 0.95) 0%, rgba(51, 54, 121, 0.95) 50%, rgba(27, 27, 72, 0.95) 100%)',
               backdropFilter: 'blur(10px)',
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              color: 'white'
+              color: 'white',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
             }}>
+              <IconButton
+                onClick={() => {
+                  // Clear all content and reset to default state
+                  setCurrentLesson(null);
+                  setSelectedQuestion(null);
+                  setSelectedFlashcard(null);
+                  setShowAnswer(false);
+                  setSelectedAnswer(null);
+                  setCurrentQuestionIndex(0);
+                  setCurrentFlashcardIndex(0);
+                }}
+                sx={{
+                  color: 'white',
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                  }
+                }}
+              >
+                <Close sx={{ fontSize: 20 }} />
+              </IconButton>
+              
               <Typography variant="h4" sx={{
                 fontWeight: 'bold',
                 fontSize: '2rem',
                 mb: 0.5,
                 textAlign: 'right',
                 color: 'white',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                flex: 1,
+                mx: 2
               }}>
                 {courseData?.title || 'Biological Chemistry'}
               </Typography>

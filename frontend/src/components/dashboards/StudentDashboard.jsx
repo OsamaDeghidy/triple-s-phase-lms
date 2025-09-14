@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Button, Grid, Avatar, LinearProgress, useTheme, Chip, Skeleton, Card, CardContent, IconButton, Tabs, Tab } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { DashboardCard, StatCard, DashboardSection, ProgressCard, ActivityItem, pulse } from './DashboardLayout';
 import { 
   School as SchoolIcon, 
   Assignment as AssignmentIcon, 
@@ -25,13 +24,7 @@ import {
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import dashboardService from '../../services/dashboard.service';
-import { 
-  EnhancedStatCard, 
-  EnhancedCourseCard, 
-  EnhancedAchievementCard, 
-  EnhancedActivityItem 
-} from './DashboardComponents';
-import './index.css';
+import { contentAPI } from '../../services/content.service';
 
 // Animation variants
 const container = {
@@ -70,6 +63,7 @@ const StudentDashboard = () => {
   const [upcomingAssignments, setUpcomingAssignments] = useState([]);
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
   const [upcomingLectures, setUpcomingLectures] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -98,16 +92,56 @@ const StudentDashboard = () => {
 
       setStats(statsData);
       
+      // Set loading state for courses
+      setCoursesLoading(true);
+      
       // Process and validate course data from API
-      const processedCourses = coursesData.length > 0 ? coursesData.map(course => ({
-        ...course,
-        progress: Math.min(Math.max(course.progress || 0, 0), 100),
-        total_lessons: course.total_lessons || course.totalLessons || 0,
-        completed_lessons: course.completed_lessons || course.completedLessons || Math.floor(((course.progress || 0) / 100) * (course.total_lessons || course.totalLessons || 0)),
-        duration: course.duration || course.total_duration || "0د"
+      const processedCourses = coursesData.length > 0 ? await Promise.all(coursesData.map(async (course) => {
+        try {
+          console.log(`Fetching content for course ${course.id}:`, course.title);
+          
+          // Fetch questions and flashcards count for each course
+          const [questionsData, flashcardsData] = await Promise.all([
+            contentAPI.getCourseQuestionBank(course.id).catch((err) => {
+              console.log(`No questions found for course ${course.id}:`, err.message);
+              return { results: [] };
+            }),
+            contentAPI.getCourseFlashcards(course.id).catch((err) => {
+              console.log(`No flashcards found for course ${course.id}:`, err.message);
+              return { results: [] };
+            })
+          ]);
+          
+          const questionCount = questionsData?.results?.length || questionsData?.length || 0;
+          const flashcardCount = flashcardsData?.results?.length || flashcardsData?.length || 0;
+          
+          console.log(`Course ${course.id} - Questions: ${questionCount}, Flashcards: ${flashcardCount}`);
+          
+          return {
+            ...course,
+            progress: Math.min(Math.max(course.progress || 0, 0), 100),
+            total_lessons: course.total_lessons || course.totalLessons || 0,
+            completed_lessons: course.completed_lessons || course.completedLessons || Math.floor(((course.progress || 0) / 100) * (course.total_lessons || course.totalLessons || 0)),
+            duration: course.duration || course.total_duration || "0د",
+            question_count: questionCount,
+            flashcard_count: flashcardCount
+          };
+        } catch (error) {
+          console.error(`Error fetching content for course ${course.id}:`, error);
+          return {
+            ...course,
+            progress: Math.min(Math.max(course.progress || 0, 0), 100),
+            total_lessons: course.total_lessons || course.totalLessons || 0,
+            completed_lessons: course.completed_lessons || course.completedLessons || Math.floor(((course.progress || 0) / 100) * (course.total_lessons || course.totalLessons || 0)),
+            duration: course.duration || course.total_duration || "0د",
+            question_count: 0,
+            flashcard_count: 0
+          };
+        }
       })) : [];
       
       setCourses(processedCourses);
+      setCoursesLoading(false);
       
       // إضافة بيانات وهمية للإنجازات إذا لم تكن موجودة
       const mockAchievements = achievementsData.length > 0 ? achievementsData : [
@@ -155,7 +189,7 @@ const StudentDashboard = () => {
   };
 
   const handleCourseContinue = (courseId) => {
-    navigate(`/student/courses/${courseId}`);
+    navigate(`/student/my-courses?courseId=${courseId}`);
   };
 
   const handleCourseView = (courseId) => {
@@ -534,24 +568,15 @@ const StudentDashboard = () => {
                  تابع تقدمك في المقررات
                     </Typography>
                 </Box>
-                  <Button 
-                    variant="contained" 
-                    size="small" 
-               endIcon={<TrendingUpIcon />}
-                    sx={{ 
-                      borderRadius: 3,
-                      background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                      '&:hover': {
-                        background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                      }
-                    }}
-               onClick={() => navigate('/student/courses')}
-                  >
-               عرض الكل
-                  </Button>
                 </Box>
 
-         {courses.length > 0 ? (
+         {coursesLoading ? (
+           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+             {[1, 2, 3].map((item) => (
+               <Skeleton key={item} variant="rectangular" height={120} sx={{ borderRadius: 3 }} />
+             ))}
+           </Box>
+         ) : courses.length > 0 ? (
            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
              {courses.map((course, index) => (
                <motion.div key={course.id} variants={item}>
@@ -560,112 +585,116 @@ const StudentDashboard = () => {
                      borderRadius: 3,
                      background: 'white',
                      border: '1px solid #e0e0e0',
-                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
                      transition: 'all 0.3s ease',
+                     cursor: 'pointer',
                      '&:hover': {
-                       boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+                       boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
                        transform: 'translateY(-2px)',
+                       borderColor: '#333679'
                      }
                    }}
+                   onClick={() => handleCourseContinue(course.id)}
                  >
                    <CardContent sx={{ p: 3 }}>
-                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                       {/* Left side - Course number and info */}
-                       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flex: 1 }}>
-                         {/* Course number */}
+                     {/* Header with course info */}
+                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                         {/* Course icon */}
                          <Box
                            sx={{
-                             width: 40,
-                             height: 40,
+                             width: 48,
+                             height: 48,
                              borderRadius: 2,
-                             background: '#f5f5f5',
+                             background: 'linear-gradient(135deg, #333679, #1a6ba8)',
                              display: 'flex',
                              alignItems: 'center',
                              justifyContent: 'center',
-                             fontSize: '1.2rem',
-                             fontWeight: 700,
-                             color: '#666',
                              flexShrink: 0
                            }}
                          >
-                           {index + 1}
+                           <SchoolIcon sx={{ color: 'white', fontSize: 22 }} />
                          </Box>
                          
-                         {/* Course details */}
-                         <Box sx={{ flex: 1 }}>
-                           <Typography variant="h6" fontWeight={600} sx={{ mb: 1.5, color: '#333' }}>
+                         {/* Course title and progress */}
+                         <Box>
+                           <Typography variant="h6" fontWeight={600} sx={{ color: '#333', fontSize: '1.1rem', mb: 0.5 }}>
                              {course.title}
                            </Typography>
-                           
-                           {/* Progress bar */}
-                           <Box sx={{ mb: 1.5 }}>
-                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                               <Typography variant="caption" sx={{ color: '#666', fontSize: '11px', fontWeight: 500 }}>
-                                 التقدم
-                               </Typography>
-                               <Typography variant="caption" sx={{ color: '#333679', fontSize: '11px', fontWeight: 600 }}>
-                                 {Math.round(course.progress || 0)}%
-                               </Typography>
-                             </Box>
-                             <LinearProgress 
-                               variant="determinate" 
-                               value={course.progress || 0} 
-                               sx={{ 
-                                 height: 8, 
-                                 borderRadius: 4,
-                                 backgroundColor: '#f0f0f0',
-                                 '& .MuiLinearProgress-bar': {
-                                   background: (course.progress || 0) >= 100 
-                                     ? 'linear-gradient(45deg, #4caf50, #66bb6a)' 
-                                     : 'linear-gradient(45deg, #333679, #1a6ba8)',
-                                   borderRadius: 4
-                                 }
-                               }} 
-                             />
-                           </Box>
-                           
-                           {/* Course info */}
-                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                             <Typography variant="body2" color="text.secondary">
-                               {course.completed_lessons || 0} من {course.total_lessons || 20} درس مكتمل
-                             </Typography>
-                             <Typography variant="body2" color="text.secondary">
-                               {course.duration || '1س 34د 44ث'} مدة التشغيل
-                             </Typography>
-                             <Typography variant="body2" sx={{ color: '#333679', fontWeight: 500 }}>
-                               التقدم: {Math.round(course.progress || 0)}%
-                             </Typography>
-                           </Box>
+                           <Typography variant="body2" sx={{ color: '#666', fontSize: '0.85rem' }}>
+                             {course.completed_lessons || 0} من {course.total_lessons || 0} درس مكتمل
+                           </Typography>
                          </Box>
                        </Box>
                        
-                       {/* Right side - Start button */}
-                       <Box sx={{ ml: 2, flexShrink: 0 }}>
-                         <Button
-                           variant="contained"
-                           size="large"
-                           sx={{
-                             minWidth: 100,
-                             height: 48,
-                             borderRadius: 3,
-                             background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                             color: 'white',
-                             fontWeight: 600,
-                             fontSize: '1rem',
-                             textTransform: 'none',
-                             boxShadow: '0 4px 12px rgba(14, 81, 129, 0.3)',
-                             '&:hover': {
-                               background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                               boxShadow: '0 6px 16px rgba(14, 81, 129, 0.4)',
-                               transform: 'translateY(-1px)',
-                             },
-                             transition: 'all 0.3s ease'
-                           }}
-                           onClick={() => handleCourseContinue(course.id)}
-                         >
-                           {(course.progress || 0) > 0 ? 'متابعة' : 'ابدأ'}
-                         </Button>
+                       {/* Progress percentage */}
+                       <Box sx={{ textAlign: 'right' }}>
+                         <Typography variant="h6" fontWeight={700} sx={{ color: '#333679', fontSize: '1.2rem' }}>
+                           {Math.round(course.progress || 0)}%
+                         </Typography>
+                         <Typography variant="caption" sx={{ color: '#666', fontSize: '0.75rem' }}>
+                           مكتمل
+                         </Typography>
                        </Box>
+                     </Box>
+                     
+                     {/* Progress bar */}
+                     <Box sx={{ mb: 2 }}>
+                       <LinearProgress 
+                         variant="determinate" 
+                         value={Math.min(course.progress || 0, 100)} 
+                         sx={{ 
+                           height: 8, 
+                           borderRadius: 4,
+                           backgroundColor: '#f0f0f0',
+                           '& .MuiLinearProgress-bar': {
+                             background: 'linear-gradient(90deg, #333679, #1a6ba8)',
+                             borderRadius: 4
+                           }
+                         }} 
+                       />
+                     </Box>
+                     
+                     {/* Course stats */}
+                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                       <Box sx={{ display: 'flex', gap: 3 }}>
+                         <Box sx={{ textAlign: 'center' }}>
+                           <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
+                             الأسئلة
+                           </Typography>
+                           <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
+                             {course.question_count !== undefined ? course.question_count : '...'}
+                           </Typography>
+                         </Box>
+                         <Box sx={{ textAlign: 'center' }}>
+                           <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
+                             البطاقات التعليمية
+                           </Typography>
+                           <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
+                             {course.flashcard_count !== undefined ? course.flashcard_count : '...'}
+                           </Typography>
+                         </Box>
+                       </Box>
+                       
+                       {/* Continue button */}
+                       <Button
+                         variant="contained"
+                         size="small"
+                         sx={{
+                           background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                           borderRadius: 2,
+                           px: 2,
+                           py: 0.5,
+                           fontSize: '0.8rem',
+                           fontWeight: 600,
+                           textTransform: 'none',
+                           '&:hover': {
+                             background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                           }
+                         }}
+                       >
+                         متابعة
+                       </Button>
                      </Box>
                    </CardContent>
                  </Card>
@@ -714,7 +743,7 @@ const StudentDashboard = () => {
         </Box>
               )}
 
-              {/* Calendar Tab */}
+              {/* Calendar Tab - جدول المحاضرات والواجبات */}
               {activeTab === 1 && (
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

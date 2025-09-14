@@ -1052,7 +1052,7 @@ const LearningMethodsSection = () => {
             </CategoryIcon>
 
             <MainTitle variant="h2" component="h2">
-              تصفح افضل التصنيفات
+              كل شيء في مكان واحد
             </MainTitle>
 
             <ViewAllButton
