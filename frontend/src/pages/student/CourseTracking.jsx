@@ -253,6 +253,8 @@ import QuizStart from './quiz/QuizStart';
 
 import QuizResult from './quiz/QuizResult';
 
+import FlashcardViewer from '../../components/assessment/FlashcardViewer';
+
 import { courseAPI } from '../../services/api.service';
 
 import { contentAPI } from '../../services/content.service';
@@ -1644,7 +1646,7 @@ const getFileTypeColor = (fileName, fileType) => {
 
 
 
-const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, currentLessonId, setActiveQuizId, setOpenQuiz, setShowQuizResult, quizzes, isSidebarExpanded, activeTab, questions, flashcards, selectedModuleId, onQuestionClick }) => {
+const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, currentLessonId, setActiveQuizId, setOpenQuiz, setShowQuizResult, quizzes, isSidebarExpanded, activeTab, questions, flashcards, selectedModuleId, onQuestionClick, onFlashcardClick }) => {
   const theme = useTheme();
 
   // Filter content based on active tab and selected module
@@ -1847,6 +1849,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
         filteredContent.map((flashcard, index) => (
           <Box
             key={flashcard.id || index}
+            onClick={() => onFlashcardClick && onFlashcardClick(flashcard, index)}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -1871,7 +1874,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                 mb: 0.2,
                 lineHeight: 1.2
               }}>
-                {flashcard.front?.substring(0, 40)}...
+                {(flashcard.front_text || flashcard.front || 'بطاقة تعليمية').substring(0, 40)}...
               </Typography>
               <Typography variant="caption" sx={{
                 color: 'rgba(255,255,255,0.7)',
@@ -1934,6 +1937,10 @@ const CourseTracking = () => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  // Flashcard display states
+  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
+  const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
 
   const [videoProgress, setVideoProgress] = useState(0);
 
@@ -2475,6 +2482,16 @@ const CourseTracking = () => {
     setShowAnswer(false);
     setSelectedAnswer(null);
     setCurrentLesson(null); // Clear current lesson when viewing questions
+    setSelectedFlashcard(null); // Clear flashcard when viewing questions
+  };
+
+  // Handle flashcard selection
+  const handleFlashcardClick = (flashcard, index) => {
+    console.log('Selected flashcard:', flashcard);
+    setSelectedFlashcard(flashcard);
+    setCurrentFlashcardIndex(index);
+    setCurrentLesson(null); // Clear current lesson when viewing flashcards
+    setSelectedQuestion(null); // Clear question when viewing flashcards
   };
 
   // Navigate to next/previous question
@@ -2502,6 +2519,30 @@ const CourseTracking = () => {
       setSelectedQuestion(filteredQuestions[prevIndex]);
       setShowAnswer(false);
       setSelectedAnswer(null);
+    }
+  };
+
+  // Navigate to next/previous flashcard
+  const navigateToNextFlashcard = () => {
+    const filteredFlashcards = selectedModuleId 
+      ? flashcards.filter(f => f.module_id == selectedModuleId)
+      : flashcards;
+    
+    if (currentFlashcardIndex < filteredFlashcards.length - 1) {
+      const nextIndex = currentFlashcardIndex + 1;
+      setCurrentFlashcardIndex(nextIndex);
+      setSelectedFlashcard(filteredFlashcards[nextIndex]);
+    }
+  };
+
+  const navigateToPreviousFlashcard = () => {
+    if (currentFlashcardIndex > 0) {
+      const filteredFlashcards = selectedModuleId 
+        ? flashcards.filter(f => f.module_id == selectedModuleId)
+        : flashcards;
+      const prevIndex = currentFlashcardIndex - 1;
+      setCurrentFlashcardIndex(prevIndex);
+      setSelectedFlashcard(filteredFlashcards[prevIndex]);
     }
   };
 
@@ -3539,6 +3580,8 @@ const CourseTracking = () => {
 
               onQuestionClick={handleQuestionClick}
 
+              onFlashcardClick={handleFlashcardClick}
+
             />
 
           </Box>
@@ -3626,7 +3669,20 @@ const CourseTracking = () => {
               justifyContent: 'center',
               mt: 8 // Add margin to account for fixed header
             }}>
-              {selectedQuestion ? (
+              {selectedFlashcard ? (
+                // Flashcard Display
+                <FlashcardViewer
+                  flashcards={selectedModuleId 
+                    ? flashcards.filter(f => f.module_id == selectedModuleId)
+                    : flashcards
+                  }
+                  currentIndex={currentFlashcardIndex}
+                  onNext={navigateToNextFlashcard}
+                  onPrevious={navigateToPreviousFlashcard}
+                  onClose={() => setSelectedFlashcard(null)}
+                  isLoading={false}
+                />
+              ) : selectedQuestion ? (
                 // Question Display
                 <Box sx={{
                   width: '100%',
@@ -4250,7 +4306,73 @@ const CourseTracking = () => {
             alignItems: 'center',
             gap: 2
           }}>
-            {selectedQuestion ? (
+            {selectedFlashcard ? (
+              // Flashcard navigation buttons
+              <>
+                <Button
+                  variant="outlined"
+                  disabled={currentFlashcardIndex === 0}
+                  onClick={navigateToPreviousFlashcard}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <ArrowForward />
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  disabled={currentFlashcardIndex >= (selectedModuleId ? flashcards.filter(f => f.module_id == selectedModuleId).length : flashcards.length) - 1}
+                  onClick={navigateToNextFlashcard}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: 'rgba(255, 255, 255, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <ArrowBack />
+                </Button>
+
+                <Typography variant="body2" sx={{
+                  color: 'white',
+                  px: 2,
+                  py: 1,
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: 1,
+                  fontSize: '0.875rem'
+                }}>
+                  {currentFlashcardIndex + 1} / {selectedModuleId ? flashcards.filter(f => f.module_id == selectedModuleId).length : flashcards.length}
+                </Typography>
+              </>
+            ) : selectedQuestion ? (
               // Question navigation buttons
               <>
                 <Button
