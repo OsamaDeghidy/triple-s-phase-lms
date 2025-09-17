@@ -123,6 +123,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 2000,
     target: 'es2015',
   },
+  base: '/',
   define: {
     'process.env': {}
   },

@@ -1,0 +1,17 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://www.triplesacademy.com/api/:splat"
+  status = 200
+  headers = { Access-Control-Allow-Origin = "*" }
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  VITE_API_BASE_URL = "https://www.triplesacademy.com"

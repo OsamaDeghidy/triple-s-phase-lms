@@ -11,8 +11,26 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "https://www.triplesacademy.com/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
+    },
+    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/index.html"
     }
-  ]
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://www.triplesacademy.com/api/$1"
+    }
+  ],
+  "env": {
+    "VITE_API_BASE_URL": "https://www.triplesacademy.com"
+  }
 }

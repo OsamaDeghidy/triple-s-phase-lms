@@ -372,6 +372,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8080",
     "http://localhost:5173",  # Vite development server
     "http://127.0.0.1:5173",
+    "https://triplesacademy.vercel.app",  # Vercel production URL
+    "https://www.triplesacademy.com",  # Production domain
 ]
 CORS_ALLOW_HEADERS = [
     'accept',
