@@ -10,7 +10,7 @@ import {
   ArrowForwardIos, Circle, Star, School, EmojiEvents,
   ArrowForward, Refresh
 } from '@mui/icons-material';
-import api from '../../services/api.service';
+import { bannerAPI } from '../../services/api.service';
 
 // Import background images
 // import home1Image from '../../assets/images/home1.png';
@@ -523,25 +523,28 @@ const FloatingIcon = styled('div')(({ theme, top, left, size = 40, delay }) => (
   },
 }));
 
-// Fallback background slides data (local images) - used when no banners are available
+// Fallback main banners data - used when no main banners are available
 const fallbackSlides = [
   {
-    id: 'fallback-1',
-    image: '/static/images/placeholder-banner-1.jpg',
+    id: 'fallback-main-1',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
     title: 'التعلم الطبي، أصبح أسهل',
-    subtitle: 'تعلم بوتيرتك الخاصة، بإرشاد الخبراء'
+    subtitle: 'تعلم بوتيرتك الخاصة، بإرشاد الخبراء',
+    banner_type: 'main'
   },
   {
-    id: 'fallback-2',
-    image: '/static/images/placeholder-banner-2.jpg',
+    id: 'fallback-main-2',
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
     title: 'تعلم بوتيرتك الخاصة',
-    subtitle: 'التعليم الطبي المهني'
+    subtitle: 'التعليم الطبي المهني',
+    banner_type: 'main'
   },
   {
-    id: 'fallback-3',
-    image: '/static/images/placeholder-banner-3.jpg',
+    id: 'fallback-main-3',
+    image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
     title: 'دورات بقيادة الخبراء',
-    subtitle: 'التدريب الطبي الشامل'
+    subtitle: 'التدريب الطبي الشامل',
+    banner_type: 'main'
   }
 ];
 
@@ -559,46 +562,95 @@ const HeroBanner = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fetch banners from API
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) {
+      return 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+    }
+
+    if (typeof image === 'string') {
+      // If it's already a full URL, return it
+      if (image.startsWith('http')) return image;
+
+      // If it's a relative path, construct full URL
+      return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+    }
+
+    return 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+  };
+
+  // Fetch main banners from API
   useEffect(() => {
-    const fetchBanners = async () => {
+    const fetchMainBanners = async () => {
       try {
-        console.log('Fetching banners from API...');
-        console.log('API base URL:', api.defaults.baseURL);
-        console.log('Full URL:', `${api.defaults.baseURL}/api/extras/banners/active/`);
+        console.log('🔄 Fetching main banners from API...');
+        setLoading(true);
 
-        const response = await api.get('/api/extras/banners/active/');
-        console.log('API Response:', response.data);
+        // Try to get main banners specifically
+        let bannersData;
+        try {
+          console.log('🔍 Trying to fetch main banners...');
+          bannersData = await bannerAPI.getMainBanners();
+          console.log('✅ Main banners received:', bannersData);
+        } catch (mainBannerError) {
+          console.log('⚠️ Main banners failed, trying by type...');
+          try {
+            bannersData = await bannerAPI.getBannersByType('main');
+            console.log('✅ Main banners by type received:', bannersData);
+          } catch (byTypeError) {
+            console.log('⚠️ By type failed, trying active banners...');
+            bannersData = await bannerAPI.getActiveBanners();
+            console.log('✅ Active banners received:', bannersData);
+          }
+        }
 
-        // Check if response has results property (paginated response)
-        const bannersData = response.data.results || response.data;
-        console.log('Banners data:', bannersData);
+        // Filter to only main type banners
+        let filteredBanners = [];
+        if (Array.isArray(bannersData)) {
+          filteredBanners = bannersData.filter(banner => banner.banner_type === 'main');
+        } else if (bannersData?.results) {
+          filteredBanners = bannersData.results.filter(banner => banner.banner_type === 'main');
+        } else if (bannersData?.data) {
+          filteredBanners = bannersData.data.filter(banner => banner.banner_type === 'main');
+        }
+
+        console.log('📊 Filtered main banners:', filteredBanners.length);
 
         // Transform the data to match the expected format
-        const transformedSlides = bannersData.map(banner => ({
+        const transformedSlides = filteredBanners.map(banner => ({
           id: banner.id,
           title: banner.title,
           subtitle: banner.description || '',
-          image: banner.image_url,
+          image: getImageUrl(banner.image || banner.image_url),
           url: banner.url || null,
           banner_type: banner.banner_type || 'main'
         }));
-        console.log('Transformed slides:', transformedSlides);
-        setSlides(transformedSlides);
+
+        console.log('📊 Transformed main banner slides:', transformedSlides);
+
+        if (transformedSlides.length > 0) {
+          setSlides(transformedSlides);
+          console.log('✅ Main banners set successfully');
+        } else {
+          console.log('⚠️ No main banners found, using fallback data');
+          setSlides(fallbackSlides);
+        }
+
       } catch (error) {
-        console.error('Error fetching banners:', error);
-        console.error('Error details:', error.response?.data || error.message);
-        console.error('Error status:', error.response?.status);
-        console.error('Error config:', error.config);
-        console.error('Error headers:', error.response?.headers);
+        console.error('❌ Error fetching main banners:', error);
+        console.error('❌ Error details:', error.response?.data || error.message);
+        console.error('❌ Error status:', error.response?.status);
+
         // Use fallback slides if API fails
+        console.log('🔄 Using fallback main banner slides');
         setSlides(fallbackSlides);
       } finally {
         setLoading(false);
+        console.log('🏁 Main banners fetch completed');
       }
     };
 
-    fetchBanners();
+    fetchMainBanners();
   }, [refreshKey]);
 
   // Auto slide functionality for dynamic slides
@@ -692,7 +744,7 @@ const HeroBanner = () => {
             gap: 2
           }}>
             <Typography variant="h6" sx={{ color: '#fff' }}>
-              جاري تحميل البانرات...
+              جاري تحميل البانرات الرئيسية...
             </Typography>
             <Box sx={{
               width: 40,
@@ -715,7 +767,14 @@ const HeroBanner = () => {
   // Use fallback slides if no banners are available
   const displaySlides = slides.length > 0 ? slides : fallbackSlides;
 
-
+  // Debug logging
+  console.log('🔍 HeroBanner render state:', {
+    loading,
+    slidesCount: slides.length,
+    displaySlidesCount: displaySlides.length,
+    activeSlide,
+    currentSlideTitle: displaySlides[activeSlide]?.title || 'No title'
+  });
 
   const currentSlide = displaySlides[activeSlide] || { title: '', subtitle: '' };
 

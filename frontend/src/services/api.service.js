@@ -10,7 +10,7 @@ api.interceptors.request.use(
     console.log('Request interceptor - Token exists:', !!token);
     console.log('Request URL:', config.url);
     console.log('Request method:', config.method);
-    
+
     // Log request data for assessment API calls
     if (config.url && config.url.includes('/assessment/')) {
       console.log('=== ASSESSMENT API REQUEST DEBUG ===');
@@ -20,7 +20,7 @@ api.interceptors.request.use(
       console.log('Token exists:', !!token);
       console.log('=====================================');
     }
-    
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       console.log('Authorization header added');
@@ -43,7 +43,7 @@ api.interceptors.response.use(
   },
   (error) => {
     console.log('Response interceptor - Error:', error.response?.status, error.response?.data, error.config?.url);
-    
+
     if (error.response?.status === 401) {
       // Check if this is a public endpoint that shouldn't require authentication
       const publicEndpoints = [
@@ -53,16 +53,16 @@ api.interceptors.response.use(
         '/api/articles/',
         '/api/certificates/verify/'
       ];
-      
-      const isPublicEndpoint = publicEndpoints.some(endpoint => 
+
+      const isPublicEndpoint = publicEndpoints.some(endpoint =>
         error.config?.url?.includes(endpoint)
       );
-      
+
       if (isPublicEndpoint) {
         console.log('Public endpoint 401 - not redirecting to login');
         return Promise.reject(error);
       }
-      
+
       console.log('Unauthorized access - redirecting to login');
       // Handle unauthorized access
       localStorage.removeItem('token');
@@ -152,7 +152,7 @@ export const courseAPI = {
   // Create new course
   createCourse: async (courseData) => {
     const formData = new FormData();
-    
+
     // Add basic fields
     Object.keys(courseData).forEach(key => {
       if (key === 'tags' && Array.isArray(courseData[key])) {
@@ -183,16 +183,16 @@ export const courseAPI = {
         try {
           const coursesResponse = await api.get('/api/courses/courses/');
           const coursesData = coursesResponse.data;
-          const coursesArray = Array.isArray(coursesData) ? coursesData : 
-                             coursesData.results ? coursesData.results : 
-                             coursesData.data ? coursesData.data : [];
-          
+          const coursesArray = Array.isArray(coursesData) ? coursesData :
+            coursesData.results ? coursesData.results :
+              coursesData.data ? coursesData.data : [];
+
           // Look for a course with the same title and subtitle
-          const createdCourse = coursesArray.find(course => 
-            course.title === courseData.title && 
+          const createdCourse = coursesArray.find(course =>
+            course.title === courseData.title &&
             course.subtitle === courseData.subtitle
           );
-          
+
           if (createdCourse) {
             // Course was created successfully, return it
             return createdCourse;
@@ -208,7 +208,7 @@ export const courseAPI = {
   // Update course
   updateCourse: async (id, courseData) => {
     const formData = new FormData();
-    
+
     // Add basic fields
     Object.keys(courseData).forEach(key => {
       if (key === 'tags' && Array.isArray(courseData[key])) {
@@ -249,9 +249,9 @@ export const courseAPI = {
       const response = await api.get('/api/courses/categories/');
       // Ensure we return an array
       const data = response.data;
-      return Array.isArray(data) ? data : 
-             data.results ? data.results : 
-             data.data ? data.data : [];
+      return Array.isArray(data) ? data :
+        data.results ? data.results :
+          data.data ? data.data : [];
     } catch (error) {
       console.error('Error fetching categories:', error);
       return [];
@@ -265,9 +265,9 @@ export const courseAPI = {
       const response = await api.get('/api/courses/subcategories/', { params });
       // Ensure we return an array
       const data = response.data;
-      return Array.isArray(data) ? data : 
-             data.results ? data.results : 
-             data.data ? data.data : [];
+      return Array.isArray(data) ? data :
+        data.results ? data.results :
+          data.data ? data.data : [];
     } catch (error) {
       console.error('Error fetching subcategories:', error);
       return [];
@@ -438,7 +438,7 @@ export const paymentAPI = {
     const response = await api.post('/api/store/payment/moyasar/create/');
     return response.data; // { url, invoice }
   },
-  
+
   // Create Moyasar hosted payment for a specific course
   createCoursePayment: async (courseId) => {
     const response = await api.post(`/api/store/payment/moyasar/course/${courseId}/create/`);
@@ -491,7 +491,7 @@ export const articleAPI = {
   // Create new article
   createArticle: async (articleData) => {
     const formData = new FormData();
-    
+
     // Add basic fields
     Object.keys(articleData).forEach(key => {
       if (key === 'tags' && Array.isArray(articleData[key])) {
@@ -519,7 +519,7 @@ export const articleAPI = {
   // Update article
   updateArticle: async (id, articleData) => {
     const formData = new FormData();
-    
+
     // Add basic fields
     Object.keys(articleData).forEach(key => {
       if (key === 'tags' && Array.isArray(articleData[key])) {
@@ -621,7 +621,7 @@ export const articleAPI = {
   getAuthorProfile: async (authorId) => {
     try {
       console.log('Fetching author profile for ID:', authorId);
-      
+
       // Try different endpoints to get user profile data
       let response;
       const endpoints = [
@@ -632,7 +632,7 @@ export const articleAPI = {
         `/api/instructors/${authorId}/`,
         `/api/teachers/${authorId}/`
       ];
-      
+
       for (const endpoint of endpoints) {
         try {
           console.log(`Trying endpoint: ${endpoint}`);
@@ -644,17 +644,17 @@ export const articleAPI = {
           continue;
         }
       }
-      
+
       if (!response) {
         console.error('All endpoints failed for author profile');
         return null;
       }
-      
+
       console.log('Author profile response:', response.data);
-      
+
       // Transform the response to include profile data if it's nested
       let profileData = response.data;
-      
+
       // If the response has a profile field, use it
       if (response.data.profile) {
         profileData = {
@@ -668,7 +668,7 @@ export const articleAPI = {
           user_username: response.data.username
         };
       }
-      
+
       // If the response is directly a profile, add user info if available
       if (response.data.user) {
         profileData = {
@@ -680,7 +680,7 @@ export const articleAPI = {
           user_username: response.data.user.username
         };
       }
-      
+
       return profileData;
     } catch (error) {
       console.error('Error fetching author profile:', error);
@@ -862,6 +862,139 @@ export const articleAPI = {
       throw error;
     }
   },
+};
+
+// Banners API methods
+export const bannerAPI = {
+  // Get all banners
+  getBanners: async (params = {}) => {
+    try {
+      const response = await api.get('/api/extras/banners/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching banners:', error);
+      throw error;
+    }
+  },
+
+  // Get banners by type
+  getBannersByType: async (bannerType) => {
+    try {
+      console.log(`🔍 Fetching banners for type: ${bannerType}`);
+      const response = await api.get('/api/extras/banners/by_type/', {
+        params: { type: bannerType }
+      });
+      console.log(`✅ Banners for ${bannerType}:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching banners for type ${bannerType}:`, error);
+      throw error;
+    }
+  },
+
+  // Get active banners
+  getActiveBanners: async (params = {}) => {
+    try {
+      const response = await api.get('/api/extras/banners/active/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching active banners:', error);
+      throw error;
+    }
+  },
+
+  // Get promotional banners
+  getPromotionalBanners: async () => {
+    try {
+      const response = await api.get('/api/extras/banners/promotional/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching promotional banners:', error);
+      throw error;
+    }
+  },
+
+  // Get header banners
+  getHeaderBanners: async () => {
+    try {
+      const response = await api.get('/api/extras/banners/header/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching header banners:', error);
+      throw error;
+    }
+  },
+
+  // Get main banners
+  getMainBanners: async () => {
+    try {
+      const response = await api.get('/api/extras/banners/main/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching main banners:', error);
+      throw error;
+    }
+  },
+
+  // Get about us banners
+  getAboutUsBanners: async () => {
+    try {
+      const response = await api.get('/api/extras/banners/about_us/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching about us banners:', error);
+      throw error;
+    }
+  },
+
+  // Get why choose us banners
+  getWhyChooseUsBanners: async () => {
+    try {
+      console.log('🔍 Fetching why choose us banners...');
+      const response = await api.get('/api/extras/banners/why_choose_us/');
+      console.log('✅ Why choose us banners:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching why choose us banners:', error);
+      throw error;
+    }
+  },
+
+  // Get banner by ID
+  getBanner: async (id) => {
+    try {
+      const response = await api.get(`/api/extras/banners/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching banner:', error);
+      throw error;
+    }
+  }
+};
+
+// Course Collections API methods
+export const collectionAPI = {
+  // Get all collections
+  getCollections: async (params = {}) => {
+    try {
+      const response = await api.get('/api/extras/collections/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+      throw error;
+    }
+  },
+
+  // Get collection by ID
+  getCollection: async (id) => {
+    try {
+      const response = await api.get(`/api/extras/collections/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching collection:', error);
+      throw error;
+    }
+  }
 };
 
 export default api;
