@@ -376,8 +376,8 @@ const CourseCollections = () => {
       <Container maxWidth="lg">
         {collections.map((collection, collectionIndex) => (
           <Box key={collection.id} sx={{ mb: 6 }}>
-            {/* <SliderHeader> */}
-            {/* <Box>
+            <SliderHeader>
+              <Box>
                 <SectionTitle variant="h4" component="h2">
                   {collection.name}
                 </SectionTitle>
@@ -386,8 +386,8 @@ const CourseCollections = () => {
                     {collection.description}
                   </Typography>
                 )}
-              </Box> */}
-            {/* <Button
+              </Box>
+              <Button
                 variant="outlined"
                 color="primary"
                 component={RouterLink}
@@ -408,8 +408,8 @@ const CourseCollections = () => {
                 }}
               >
                 عرض الكل
-              </Button> */}
-            {/* </SliderHeader> */}
+              </Button>
+            </SliderHeader>
 
             {collection.courses && collection.courses.length > 0 ? (
               <Box
