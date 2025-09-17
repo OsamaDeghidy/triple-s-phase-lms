@@ -121,7 +121,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'axes.middleware.AxesMiddleware',
     # 'lms_core.middleware.AdminMiddleware',  # Temporarily disabled
-    #'allauth.account.middleware.AccountMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     # 'silk.middleware.SilkyMiddleware',
 ]
 
