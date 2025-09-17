@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Container,
@@ -17,6 +17,7 @@ import {
     Chat,
     KeyboardArrowUp
 } from '@mui/icons-material';
+import { bannerAPI } from '../../services/api.service';
 
 const fadeInUp = keyframes`
   from {
@@ -314,9 +315,147 @@ const BackgroundDots = styled(Box)(({ theme }) => ({
 }));
 
 const AboutAcademySection = () => {
+    // State for banner data
+    const [bannerData, setBannerData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Helper function to get image URL
+    const getImageUrl = (image) => {
+        if (!image) {
+            return null;
+        }
+
+        if (typeof image === 'string') {
+            // If it's already a full URL, return it
+            if (image.startsWith('http')) return image;
+
+            // If it's a relative path, construct full URL
+            return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+        }
+
+        return null;
+    };
+
+    // Fetch about_us banners from API (following HeroBanner pattern)
+    useEffect(() => {
+        const fetchAboutUsBanners = async () => {
+            try {
+                console.log('🔄 Fetching about us banners from API...');
+                setLoading(true);
+
+                // Try to get about_us banners specifically
+                let bannersData;
+                try {
+                    console.log('🔍 Trying to fetch about us banners...');
+                    bannersData = await bannerAPI.getAboutUsBanners();
+                    console.log('✅ About us banners received:', bannersData);
+                } catch (aboutUsError) {
+                    console.log('⚠️ About us banners failed, trying by type...');
+                    try {
+                        bannersData = await bannerAPI.getBannersByType('about_us');
+                        console.log('✅ About us banners by type received:', bannersData);
+                    } catch (byTypeError) {
+                        console.log('⚠️ By type failed, trying active banners...');
+                        bannersData = await bannerAPI.getActiveBanners();
+                        console.log('✅ Active banners received:', bannersData);
+                    }
+                }
+
+                // Filter to only about_us type banners
+                let filteredBanners = [];
+                if (Array.isArray(bannersData)) {
+                    filteredBanners = bannersData.filter(banner => banner.banner_type === 'about_us');
+                } else if (bannersData?.results) {
+                    filteredBanners = bannersData.results.filter(banner => banner.banner_type === 'about_us');
+                } else if (bannersData?.data) {
+                    filteredBanners = bannersData.data.filter(banner => banner.banner_type === 'about_us');
+                }
+
+                console.log('📊 Filtered about us banners:', filteredBanners.length);
+
+                // Get the first banner if multiple banners exist
+                if (filteredBanners.length > 0) {
+                    const firstBanner = filteredBanners[0];
+                    setBannerData({
+                        id: firstBanner.id,
+                        title: firstBanner.title,
+                        description: firstBanner.description,
+                        image_url: getImageUrl(firstBanner.image || firstBanner.image_url),
+                        url: firstBanner.url || null,
+                        banner_type: firstBanner.banner_type || 'about_us'
+                    });
+                    console.log('✅ About us banner set successfully');
+                } else {
+                    console.log('⚠️ No about us banners found');
+                    setBannerData(null);
+                }
+
+            } catch (error) {
+                console.error('❌ Error fetching about us banners:', error);
+                console.error('❌ Error details:', error.response?.data || error.message);
+                console.error('❌ Error status:', error.response?.status);
+
+                setBannerData(null);
+                setError(error.message || 'Failed to fetch banner data');
+            } finally {
+                setLoading(false);
+                console.log('🏁 About us banners fetch completed');
+            }
+        };
+
+        fetchAboutUsBanners();
+    }, []);
+
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    // Show loading state
+    if (loading) {
+        return (
+            <SectionContainer>
+                <Container maxWidth="lg">
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 2,
+                        minHeight: '500px',
+                        justifyContent: 'center'
+                    }}>
+                        <Typography variant="h6" sx={{ color: '#6f42c1' }}>
+                            جاري تحميل قسم عن الأكاديمية...
+                        </Typography>
+                        <Box sx={{
+                            width: 40,
+                            height: 40,
+                            border: '3px solid rgba(111, 66, 193, 0.3)',
+                            borderTop: '3px solid #6f42c1',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                            '@keyframes spin': {
+                                '0%': { transform: 'rotate(0deg)' },
+                                '100%': { transform: 'rotate(360deg)' }
+                            }
+                        }} />
+                    </Box>
+                </Container>
+            </SectionContainer>
+        );
+    }
+
+    // Show error state
+    if (error) {
+        console.warn('Banner data not available:', error);
+    }
+
+    // Debug logging
+    console.log('🔍 AboutAcademySection render state:', {
+        loading,
+        bannerDataAvailable: !!bannerData,
+        bannerTitle: bannerData?.title || 'No title'
+    });
 
     return (
         <SectionContainer>
@@ -329,8 +468,8 @@ const AboutAcademySection = () => {
                             <DecorativeElement />
                             <MainImage>
                                 <img
-                                    src="/src/assets/images/about3.jpeg"
-                                    alt="Online Education Professional"
+                                    src={bannerData?.image_url || "/src/assets/images/about3.jpeg"}
+                                    alt={bannerData?.title || "Online Education Professional"}
                                     onError={(e) => {
                                         e.target.src = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80';
                                     }}
@@ -345,7 +484,7 @@ const AboutAcademySection = () => {
                                     }}
                                 />
                             </OverlayImage>
-                            
+
                             <StatisticsCard>
                                 <CardContentStyled>
                                     <School sx={{ fontSize: '2rem', color: '#6f42c1', mb: 1 }} />
@@ -362,17 +501,13 @@ const AboutAcademySection = () => {
                             <School />
                             <span>عن اكاديميتنا</span>
                         </SectionLabel>
-                        
+
                         <MainTitle>
-                            مرحباً بكم في <span>اكاديمية تريبلز</span>
+                            {bannerData?.title || "مرحباً بكم في أكاديمية تريبلز"}
                         </MainTitle>
 
                         <DescriptionText>
-                            تتعاون أكاديميتنا في تبسيط الشبكات سهلة الاستخدام، مع التركيز على طرق التمكين الفعالة، وتوزيع الأسواق المتخصصة، وتحقيق الموقع السوقي، والجاهزية للويب بعد التطبيقات المستهلكة للموارد.
-                        </DescriptionText>
-
-                        <DescriptionText>
-                            التعليم الإلكتروني، المعروف أيضاً باسم التعلم عبر الإنترنت، هو طريقة للتعلم تتم عبر الإنترنت، والتي توفر للأفراد الفرصة لاكتساب المعرفة والمهارات من أي مكان وفي أي وقت.
+                            {bannerData?.description || "تتعاون أكاديميتنا في تبسيط الشبكات سهلة الاستخدام، مع التركيز على طرق التمكين الفعالة، وتوزيع الأسواق المتخصصة، وتحقيق الموقع السوقي، والجاهزية للويب بعد التطبيقات المستهلكة للموارد."}
                         </DescriptionText>
 
                         <BenefitsList>
