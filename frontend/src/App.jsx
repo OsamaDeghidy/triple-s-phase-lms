@@ -106,6 +106,11 @@ import PaymentPage from './pages/payment/PaymentPage';
 import QuestionBankPage from './pages/teacher/QuestionBankPage';
 import FlashcardsPage from './pages/teacher/FlashcardsPage';
 
+// Public Home Page Component (accessible to all users)
+const PublicHomePage = ({ children }) => {
+  return children; // Always show the home page regardless of auth status
+};
+
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user, loading, getUserRole } = useAuth();
@@ -284,7 +289,11 @@ const AppContent = () => {
                   } />
                   
                   {/* Public Routes - Accessible to all */}
-                  <Route path="/" element={<HomePage />} />
+                  <Route path="/" element={
+                    <PublicHomePage>
+                      <HomePage />
+                    </PublicHomePage>
+                  } />
                   <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/courses" element={<Courses />} />
                   <Route path="/courses/:id" element={<CourseDetail />} />

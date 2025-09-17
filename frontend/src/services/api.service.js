@@ -63,12 +63,12 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      console.log('Unauthorized access - redirecting to login');
+      console.log('Unauthorized access - clearing auth data');
       // Handle unauthorized access
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('userRole');
-      window.location.href = '/login';
+      // Don't redirect automatically - let the app handle it
     }
     return Promise.reject(error);
   }
