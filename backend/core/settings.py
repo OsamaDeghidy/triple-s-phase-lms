@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%9l()dc43djrz=dnah3&#5vxtc7#z2fmh=e$-7m)r*(_svbc2n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1','142.93.95.121','triplesacademy.com','www.triplesacademy.com']
 
@@ -199,7 +199,7 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+#STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -209,6 +209,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Added for production
 
 # CKEDITOR_UPLOAD_PATH = 'uploads/'  # Old CKEditor 4 setting
+
 
 # CKEditor 5 Configuration
 customColorPalette = [
@@ -373,7 +374,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite development server
     "http://127.0.0.1:5173",
     "https://triplesacademy.vercel.app",  # Vercel production URL
-    "https://www.triplesacademy.com",  # Production domain
+    "https://www.triplesacademy.com",
+    "http://localhost:8000",
+    "http://localhost:5173",
+      # Production domain
 ]
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -395,6 +399,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8080",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://localhost:5173",
 ]
 
 # Session settings for CSRF

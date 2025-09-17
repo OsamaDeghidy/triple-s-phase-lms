@@ -1,15 +1,57 @@
-# React + Vite
+# Triple S Academy - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Local Development Setup / إعداد التطوير المحلي
 
-Currently, two official plugins are available:
+### Quick Start / البدء السريع
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **Setup local environment / إعداد البيئة المحلية:**
+```bash
+npm run setup:local
+```
 
-## Expanding the ESLint configuration
+2. **Start development server / بدء خادم التطوير:**
+```bash
+npm run dev:local
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. **Or manually / أو يدوياً:**
+```bash
+npm run dev
+```
+
+### Environment Configuration / إعداد البيئة
+
+The application automatically detects development mode and connects to `http://localhost:8000` for the backend API.
+
+التطبيق يكتشف تلقائياً وضع التطوير ويتصل بـ `http://localhost:8000` لـ API الخاص بالـ backend.
+
+#### Manual Configuration / الإعداد اليدوي
+
+Create `.env.local` file in the frontend directory:
+أنشئ ملف `.env.local` في مجلد frontend:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000
+VITE_DEV_MODE=true
+VITE_DEBUG=true
+```
+
+### Available Scripts / الأوامر المتاحة
+
+- `npm run dev` - Start development server
+- `npm run dev:local` - Setup local environment and start dev server
+- `npm run setup:local` - Setup local environment only
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+
+### API Configuration / إعداد الـ API
+
+The application uses Vite proxy configuration to route API calls to the backend. All API calls are automatically proxied to the configured backend URL.
+
+يستخدم التطبيق إعداد Vite proxy لتوجيه استدعاءات الـ API إلى الـ backend. جميع استدعاءات الـ API يتم توجيهها تلقائياً إلى رابط الـ backend المُعد.
+
+For detailed setup instructions, see [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
+للحصول على تعليمات الإعداد التفصيلية، راجع [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
 
 
 Here are all the quiz-related routes we've created in the application:

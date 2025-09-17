@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "node setup-local.js && vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup:local": "node setup-local.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
