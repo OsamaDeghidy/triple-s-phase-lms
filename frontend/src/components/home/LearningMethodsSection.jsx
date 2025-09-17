@@ -34,7 +34,9 @@ import {
   LocalHospital,
   Description,
   NavigateNext,
-  NavigateBefore
+  NavigateBefore,
+  KeyboardArrowLeft,
+  KeyboardArrowRight
 } from '@mui/icons-material';
 import { courseAPI } from '../../services/api.service';
 
@@ -144,8 +146,13 @@ const MainTitle = styled(Typography)(({ theme }) => ({
   color: '#5C2D91',
   lineHeight: 1.2,
   marginBottom: theme.spacing(2),
+  whiteSpace: 'nowrap', // Prevent line breaks
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
   [theme.breakpoints.down('sm')]: {
     fontSize: '2rem',
+    whiteSpace: 'normal', // Allow wrapping on very small screens
+    textOverflow: 'unset',
   },
 }));
 
@@ -236,7 +243,10 @@ const SliderThumb = styled(Box)(({ theme, position }) => ({
 }));
 
 const CategoryCard = styled(Card)(({ theme }) => ({
-  width: '180px',
+  minWidth: '200px',
+  maxWidth: '220px',
+  width: '200px',
+  minHeight: '300px',
   borderRadius: '16px',
   boxShadow: '0 8px 25px rgba(0, 0, 0, 0.08)',
   border: '1px solid rgba(0, 0, 0, 0.05)',
@@ -244,21 +254,29 @@ const CategoryCard = styled(Card)(({ theme }) => ({
   cursor: 'pointer',
   overflow: 'hidden',
   backgroundColor: '#ffffff',
+  flexShrink: 0, // Prevent cards from shrinking
+  display: 'flex',
+  flexDirection: 'column',
   '&:hover': {
     transform: 'translateY(-8px)',
     boxShadow: '0 15px 35px rgba(0, 0, 0, 0.12)',
   },
   [theme.breakpoints.down('md')]: {
-    width: '100%',
-    maxWidth: '280px',
+    minWidth: '180px',
+    maxWidth: '180px',
+    width: '180px',
+    minHeight: '280px',
   },
 }));
 
 const CardHeader = styled(Box)(({ theme }) => ({
   background: 'transparent',
-  padding: theme.spacing(3, 2),
+  padding: theme.spacing(2, 2, 1, 2),
   textAlign: 'center',
   position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
   '& .MuiSvgIcon-root': {
     fontSize: '3rem',
     marginBottom: theme.spacing(1),
@@ -281,8 +299,9 @@ const CourseCount = styled(Typography)(({ theme }) => ({
 }));
 
 const CategoryCardContent = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
+  padding: theme.spacing(1, 2, 2, 2),
   textAlign: 'center',
+  marginTop: 'auto',
 }));
 
 const ReadMoreButton = styled(Button)(({ theme, color }) => ({
@@ -578,6 +597,7 @@ const LearningMethodsSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sliderValue, setSliderValue] = useState(0);
+  const [scrollContainer, setScrollContainer] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (event, newValue) => {
@@ -591,21 +611,73 @@ const LearningMethodsSection = () => {
     setSliderValue(newValue);
   };
 
+  // Scroll navigation functions
+  const scrollLeft = () => {
+    if (scrollContainer) {
+      // Scroll by exactly one card width + gap (16px)
+      const cardWidth = window.innerWidth >= 960 ? 200 + 16 : 180 + 16;
+      scrollContainer.scrollBy({
+        left: -cardWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainer) {
+      // Scroll by exactly one card width + gap (16px)
+      const cardWidth = window.innerWidth >= 960 ? 200 + 16 : 180 + 16;
+      scrollContainer.scrollBy({
+        left: cardWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) {
+      return null;
+    }
+
+    if (typeof image === 'string') {
+      // If it's already a full URL, return it
+      if (image.startsWith('http')) return image;
+
+      // If it's a relative path, construct full URL
+      return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+    }
+
+    return null;
+  };
+
   // Load categories from API
   const loadCategories = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Fetching categories from API...');
       const response = await courseAPI.getCategories();
-      setCategories(response);
-      if (response.length > 0) {
+      console.log('✅ Categories received:', response);
+
+      // Ensure we have an array and filter active categories
+      const categoriesData = Array.isArray(response) ? response : [];
+      const activeCategories = categoriesData.filter(category => category.is_active !== false);
+
+      console.log('📊 Active categories:', activeCategories.length);
+      setCategories(activeCategories);
+
+      if (activeCategories.length > 0) {
         // Load courses for the first category
-        await loadCoursesByCategory(response[0].id);
+        await loadCoursesByCategory(activeCategories[0].id);
       }
     } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('❌ Error loading categories:', error);
+      console.error('❌ Error details:', error.response?.data || error.message);
       setError('حدث خطأ في تحميل التصنيفات');
+      setCategories([]);
     } finally {
       setLoading(false);
+      console.log('🏁 Categories loading completed');
     }
   };
 
@@ -630,9 +702,18 @@ const LearningMethodsSection = () => {
 
   const getCategoryIcon = (categoryName) => {
     const name = categoryName?.toLowerCase() || '';
+
+    // Medical categories
+    if (name.includes('صيدلة') || name.includes('pharmacy')) return <LocalPharmacy />;
+    if (name.includes('طب') || name.includes('medicine') || name.includes('medical')) return <LocalHospital />;
+    if (name.includes('اسنان') || name.includes('dentistry') || name.includes('dental')) return <MedicalServices />;
+
+    // General categories
     if (name.includes('دورة') || name.includes('course')) return <School />;
     if (name.includes('تدريب') || name.includes('training')) return <Code />;
     if (name.includes('دبلوم') || name.includes('diploma')) return <MenuBook />;
+
+    // Default icon
     return <School />;
   };
 
@@ -1079,63 +1160,231 @@ const LearningMethodsSection = () => {
               </Box>
             ) : (
               <>
-                {/* Category Cards */}
+                {/* Dynamic Category Cards from API - Horizontal Scroll */}
                 <Box sx={{
-                  display: 'flex',
-                  gap: theme.spacing(3),
-                  justifyContent: 'center',
-                  mb: 3
+                  position: 'relative',
+                  mb: 3,
+                  maxWidth: '672px', // Exactly 3 cards: (200px + 16px gap) * 3 = 648px + 24px padding
+                  width: '100%',
+                  mx: 'auto',
+                  [theme.breakpoints.down('md')]: {
+                    maxWidth: '588px', // (180px + 16px gap) * 3 = 552px + 36px padding
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '60px',
+                    height: '100%',
+                    background: 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
+                    zIndex: 2,
+                    pointerEvents: 'none'
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    width: '60px',
+                    height: '100%',
+                    background: 'linear-gradient(270deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
+                    zIndex: 2,
+                    pointerEvents: 'none'
+                  }
                 }}>
-                  {/* Pharmacy Card */}
-                  <CategoryCard>
-                    <CardHeader>
-                      <LocalPharmacy />
-                      <CardTitle>الصيدلة</CardTitle>
-                      <CourseCount>كورس 1</CourseCount>
-                    </CardHeader>
-                    <CategoryCardContent>
-                      <ReadMoreButton
-                        onClick={() => navigate('/courses?category=pharmacy')}
-                        endIcon={<ArrowForward />}
-                      >
-                        إقرأ المزيد
-                      </ReadMoreButton>
-                    </CategoryCardContent>
-                  </CategoryCard>
+                  <Box
+                    ref={setScrollContainer}
+                    sx={{
+                      display: 'flex',
+                      gap: theme.spacing(2),
+                      overflowX: 'auto',
+                      overflowY: 'hidden',
+                      padding: theme.spacing(2, 0),
+                      scrollBehavior: 'smooth',
+                      '&::-webkit-scrollbar': {
+                        height: '6px',
+                      },
+                      '&::-webkit-scrollbar-track': {
+                        background: 'rgba(0,0,0,0.1)',
+                        borderRadius: '3px',
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        background: 'linear-gradient(90deg, #5C2D91 0%, #8A7BAA 100%)',
+                        borderRadius: '3px',
+                        '&:hover': {
+                          background: 'linear-gradient(90deg, #4a2475 0%, #7a6b9a 100%)',
+                        }
+                      },
+                      // Hide scrollbar on mobile
+                      [theme.breakpoints.down('md')]: {
+                        '&::-webkit-scrollbar': {
+                          display: 'none',
+                        },
+                        '-ms-overflow-style': 'none',
+                        'scrollbar-width': 'none',
+                      }
+                    }}
+                  >
+                    {categories.map((category, index) => (
+                      <CategoryCard key={category.id}>
+                        {/* Image Section at Top Center */}
+                        <Box sx={{
+                          width: '100%',
+                          height: '140px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}>
+                          <Box sx={{
+                            width: '100px',
+                            height: '100px',
+                            borderRadius: '18px',
+                            background: 'linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
+                            border: '4px solid #ffffff'
+                          }}>
+                            {getImageUrl(category.image) ? (
+                              <img
+                                src={getImageUrl(category.image)}
+                                alt={category.name}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                  borderRadius: '14px'
+                                }}
+                                onError={(e) => {
+                                  // Fallback to icon if image fails to load
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'flex';
+                                }}
+                              />
+                            ) : null}
+                            <Box sx={{
+                              display: getImageUrl(category.image) ? 'none' : 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '100%',
+                              height: '100%',
+                              color: '#ffffff'
+                            }}>
+                              {getCategoryIcon(category.name)}
+                            </Box>
+                          </Box>
+                        </Box>
 
-                  {/* Dentistry Card */}
-                  <CategoryCard>
-                    <CardHeader>
-                      <MedicalServices />
-                      <CardTitle>طب الاسنان</CardTitle>
-                      <CourseCount>كورس 2</CourseCount>
-                    </CardHeader>
-                    <CategoryCardContent>
-                      <ReadMoreButton
-                        onClick={() => navigate('/courses?category=dentistry')}
-                        endIcon={<ArrowForward />}
-                      >
-                        إقرأ المزيد
-                      </ReadMoreButton>
-                    </CategoryCardContent>
-                  </CategoryCard>
+                        {/* Content Section */}
+                        <CardHeader>
+                          <CardTitle>{category.name}</CardTitle>
+                          <CourseCount>{category.active_courses_count || 0} كورس</CourseCount>
+                        </CardHeader>
 
-                  {/* Medicine Card */}
-                  <CategoryCard>
-                    <CardHeader>
-                      <LocalHospital />
-                      <CardTitle>الطب</CardTitle>
-                      <CourseCount>كورس 2</CourseCount>
-                    </CardHeader>
-                    <CategoryCardContent>
-                      <ReadMoreButton
-                        onClick={() => navigate('/courses?category=medicine')}
-                        endIcon={<ArrowForward />}
+                        <CategoryCardContent>
+                          <ReadMoreButton
+                            onClick={() => navigate(`/courses?category=${category.slug || category.id}`)}
+                            endIcon={<ArrowForward />}
+                          >
+                            إقرأ المزيد
+                          </ReadMoreButton>
+                        </CategoryCardContent>
+                      </CategoryCard>
+                    ))}
+
+                    {/* Show message if no categories */}
+                    {categories.length === 0 && !loading && (
+                      <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 2,
+                        py: 4,
+                        px: 3,
+                        textAlign: 'center'
+                      }}>
+                        <Box sx={{
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '50%',
+                          bgcolor: 'rgba(92, 45, 145, 0.1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mb: 2
+                        }}>
+                          <School sx={{ fontSize: '2rem', color: '#5C2D91' }} />
+                        </Box>
+                        <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                          لا توجد تصنيفات متاحة حالياً
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          سيتم إضافة تصنيفات جديدة قريباً
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+
+                  {/* Navigation Buttons */}
+                  {categories.length > 3 && (
+                    <>
+                      <IconButton
+                        onClick={scrollLeft}
+                        sx={{
+                          position: 'absolute',
+                          left: '-20px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          backgroundColor: '#ffffff',
+                          color: '#5C2D91',
+                          width: '40px',
+                          height: '40px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                          zIndex: 3,
+                          '&:hover': {
+                            backgroundColor: '#f8f9fa',
+                            transform: 'translateY(-50%) scale(1.1)',
+                          },
+                          [theme.breakpoints.down('md')]: {
+                            display: 'none', // Hide on mobile
+                          }
+                        }}
                       >
-                        إقرأ المزيد
-                      </ReadMoreButton>
-                    </CategoryCardContent>
-                  </CategoryCard>
+                        <KeyboardArrowLeft />
+                      </IconButton>
+
+                      <IconButton
+                        onClick={scrollRight}
+                        sx={{
+                          position: 'absolute',
+                          right: '-20px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          backgroundColor: '#ffffff',
+                          color: '#5C2D91',
+                          width: '40px',
+                          height: '40px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                          zIndex: 3,
+                          '&:hover': {
+                            backgroundColor: '#f8f9fa',
+                            transform: 'translateY(-50%) scale(1.1)',
+                          },
+                          [theme.breakpoints.down('md')]: {
+                            display: 'none', // Hide on mobile
+                          }
+                        }}
+                      >
+                        <KeyboardArrowRight />
+                      </IconButton>
+                    </>
+                  )}
                 </Box>
 
               </>
