@@ -32,8 +32,9 @@ pdt-admin.com
 #DB_NAME=defaultdb
 
 alisthomepros.com
-# ssh root@142.93.95.121
-# osam0Esmael
+################################## run my server
+# ssh root@142.93.95.121     username
+# osam0Esmael                password
  su sammy
  cd ~/myprojectdir
  source myprojectenv/bin/activate
@@ -45,11 +46,14 @@ alisthomepros.com
 # sudo snap install --classic certbot
 # sudo ln -s /snap/bin/certbot/usr/bin/certbot
 # sudo certbot --nginx
+
+# لما غيرت الداتا بيز connection
+###################################
 sudo systemctl restart gunicorn
 sudo systemctl daemon-reload 
 sudo systemctl restart gunicorn.socket gunicorn.service
-
-sudo nginx -t && sudo systemctl restart nginx
+c
+###################################
 sudo nano /etc/nginx/nginx.conf
 pip freeze > requirements.txt
 
@@ -58,6 +62,7 @@ python test_email.py
 python network_test.py
 python django_email_test.py
 sudo nano /etc/nginx/nginx.conf
+
 # sudo nano /etc/nginx/sites-available/myproject
 # sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
 custrus.com
@@ -102,7 +107,7 @@ http {
 ###############
 server {
     listen 80;
-    server_name 142.93.95.121 pdt-admin.com  www.pdt-admin.com;
+    server_name 142.93.95.121 triplesacademy.com  www.triplesacademy.com;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     # Static files

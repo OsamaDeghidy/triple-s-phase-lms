@@ -12,7 +12,7 @@ const getBaseURL = () => {
     return 'http://127.0.0.1:8000';
   }
   // In production, use the production URL
-  return import.meta.env.VITE_API_BASE_URL || 'https://www.pdt-admin.com';
+  return import.meta.env.VITE_API_BASE_URL || 'https://www.triplesacademy.com';
 };
 
 export const API_CONFIG = {
