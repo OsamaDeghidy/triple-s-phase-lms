@@ -26,6 +26,7 @@ import { ArrowBack as ArrowBackIcon, Save as SaveIcon, DeleteOutline as DeleteIc
 import { styled } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
 import BunnyVideoSelector from '../../../components/BunnyVideoSelector';
+import { testAuth, testBunnyAPI } from '../../../utils/authTest';
 
 const Wrapper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -229,23 +230,62 @@ const LessonForm = ({ isEdit = false }) => {
             onChange={(e) => handleChange('duration_minutes', Number(e.target.value || 0))}
           />
 
-          {/* Bunny CDN Video Selector */}
-          <BunnyVideoSelector
-            value={form.bunny_video_id}
-            onChange={(value) => handleChange('bunny_video_id', value)}
-            label="Bunny Video ID"
-            placeholder="أدخل Bunny Video ID"
-            onVideoSelect={handleBunnyVideoSelect}
-            showPreview={true}
-          />
+          {/* Bunny CDN Video Section */}
+          <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+              Bunny CDN Video
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                label="Bunny video ID"
+                value={form.bunny_video_id}
+                onChange={(e) => handleChange('bunny_video_id', e.target.value)}
+                placeholder="أدخل Bunny CDN video ID"
+                helperText="Bunny CDN video ID for external video hosting"
+                fullWidth
+              />
+              
+              <TextField
+                label="Bunny video URL"
+                value={form.bunny_video_url}
+                onChange={(e) => handleChange('bunny_video_url', e.target.value)}
+                placeholder="https://vz-c239d8b2-f7d.b-cdn.net/..."
+                helperText="Direct URL to the video on Bunny CDN"
+                fullWidth
+              />
+            </Box>
+            
+            {/* Bunny CDN Video Selector */}
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                أو استخدم Bunny Video Selector
+              </Typography>
+              <BunnyVideoSelector
+                value={form.bunny_video_id}
+                onChange={(value) => handleChange('bunny_video_id', value)}
+                label="Bunny Video ID"
+                placeholder="أدخل Bunny Video ID"
+                onVideoSelect={handleBunnyVideoSelect}
+                showPreview={true}
+              />
+            </Box>
+          </Box>
           
           {/* Fallback: External Video URL */}
-          <TextField
-            label="رابط الفيديو الخارجي (اختياري)"
-            value={form.video_url}
-            onChange={(e) => handleChange('video_url', e.target.value)}
-            sx={{ mt: 2 }}
-          />
+          <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'secondary.main' }}>
+              External Video URL (Fallback)
+            </Typography>
+            <TextField
+              label="رابط الفيديو الخارجي (اختياري)"
+              value={form.video_url}
+              onChange={(e) => handleChange('video_url', e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=..."
+              helperText="رابط فيديو خارجي كبديل (YouTube, Vimeo, etc.)"
+              fullWidth
+            />
+          </Box>
         </Box>
 
         <FormControlLabel
@@ -377,6 +417,35 @@ const LessonForm = ({ isEdit = false }) => {
             />
           </Box>
         )}
+
+        {/* Debug Section */}
+        <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+            Debug Tools
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Button 
+              variant="outlined" 
+              size="small"
+              onClick={() => {
+                const auth = testAuth();
+                console.log('Auth Status:', auth);
+              }}
+            >
+              Test Auth
+            </Button>
+            <Button 
+              variant="outlined" 
+              size="small"
+              onClick={async () => {
+                const result = await testBunnyAPI();
+                console.log('Bunny API Test:', result);
+              }}
+            >
+              Test Bunny API
+            </Button>
+          </Box>
+        </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 3 }}>
           <Button variant="outlined" onClick={() => navigate(-1)} disabled={saving}>إلغاء</Button>

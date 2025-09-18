@@ -271,12 +271,19 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
   const videoRef = React.useRef(null);
 
-
+  // Check if lesson has Bunny CDN video
+  const hasBunnyVideo = lessonData?.bunny_video_id && lessonData?.bunny_video_url;
+  
+  // Get the appropriate video URL
+  const getVideoUrl = () => {
+    if (hasBunnyVideo) {
+      return lessonData.bunny_video_url;
+    }
+    return url;
+  };
 
   // Process URL to ensure it's absolute (for videos)
-
   const processVideoUrl = (videoUrl) => {
-
     if (!videoUrl) return null;
 
 
@@ -317,15 +324,16 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
 
 
-  const processedUrl = processVideoUrl(url);
+  const processedUrl = processVideoUrl(getVideoUrl());
 
 
 
   // Debug logging
-
   console.log('VideoPlayer - Original URL:', url);
-
   console.log('VideoPlayer - Processed URL:', processedUrl);
+  console.log('VideoPlayer - Has Bunny Video:', hasBunnyVideo);
+  console.log('VideoPlayer - Bunny Video ID:', lessonData?.bunny_video_id);
+  console.log('VideoPlayer - Bunny Video URL:', lessonData?.bunny_video_url);
 
   console.log('VideoPlayer - isValidVideoUrl:', processedUrl && (
 
@@ -466,20 +474,47 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
   );
 
-  // Check if URL is external video (YouTube, Vimeo, etc.)
-  const isExternalVideoUrl = processedUrl && (
+  // Check if URL is external video (YouTube, Vimeo, Bunny CDN, etc.)
+  const isExternalVideoUrl = (processedUrl && (
     processedUrl.includes('youtube.com') ||
     processedUrl.includes('youtu.be') ||
     processedUrl.includes('vimeo.com') ||
     processedUrl.includes('dailymotion.com') ||
     processedUrl.includes('twitch.tv') ||
     processedUrl.includes('facebook.com') ||
-    processedUrl.includes('instagram.com')
-  );
+    processedUrl.includes('instagram.com') ||
+    processedUrl.includes('mediadelivery.net') ||
+    processedUrl.includes('b-cdn.net')
+  )) || hasBunnyVideo;
 
   // Convert external video URLs to embed format
   const getEmbedUrl = (url) => {
     if (!url) return '';
+    
+    // Bunny CDN URLs
+    if (url.includes('mediadelivery.net') || url.includes('b-cdn.net')) {
+      // If it's already an embed URL, return as is
+      if (url.includes('/embed/')) {
+        return url;
+      }
+      
+      // If it's a direct video URL, try to convert to embed format
+      if (url.includes('b-cdn.net')) {
+        // Extract video ID from Bunny CDN URL
+        const urlParts = url.split('/');
+        const videoId = urlParts[urlParts.length - 1]?.split('?')[0];
+        if (videoId) {
+          return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
+        }
+      }
+      
+      return url;
+    }
+    
+    // Check if we have a Bunny video ID from lessonData
+    if (lessonData?.bunny_video_id) {
+      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
+    }
     
     // YouTube URLs
     if (url.includes('youtube.com/watch?v=')) {
@@ -521,8 +556,10 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   // If it's an external video URL, display it in an iframe
   if (isExternalVideoUrl) {
     const embedUrl = getEmbedUrl(processedUrl);
+    const isBunnyVideo = processedUrl.includes('mediadelivery.net') || processedUrl.includes('b-cdn.net');
     console.log('External video detected:', processedUrl);
     console.log('Embed URL:', embedUrl);
+    console.log('Is Bunny CDN:', isBunnyVideo);
     
     return (
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -532,7 +569,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           top: 10,
           right: 10,
           zIndex: 10,
-          bgcolor: 'rgba(0,0,0,0.7)',
+          bgcolor: isBunnyVideo ? 'rgba(76, 175, 80, 0.9)' : 'rgba(0,0,0,0.7)',
           color: 'white',
           px: 2,
           py: 1,
@@ -540,7 +577,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           fontSize: '0.75rem',
           fontWeight: 'bold'
         }}>
-          فيديو خارجي
+          {isBunnyVideo ? 'Bunny CDN' : 'فيديو خارجي'}
         </Box>
         
         <iframe

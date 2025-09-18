@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([IsAuthenticated])
 def validate_bunny_video(request):
     """
     Validate a Bunny CDN video ID
@@ -74,7 +74,7 @@ def validate_bunny_video(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([IsAuthenticated])
 def update_module_bunny_video_view(request, module_id):
     """
     Update a module with Bunny CDN video
@@ -86,6 +86,9 @@ def update_module_bunny_video_view(request, module_id):
     """
     module = get_object_or_404(Module, id=module_id)
     video_id = request.data.get('video_id')
+    
+    # Note: Any authenticated user can update modules
+    # Add specific permission checks here if needed
     
     if not video_id:
         return Response({
@@ -122,7 +125,7 @@ def update_module_bunny_video_view(request, module_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([IsAuthenticated])
 def update_lesson_bunny_video_view(request, lesson_id):
     """
     Update a lesson with Bunny CDN video
@@ -134,6 +137,9 @@ def update_lesson_bunny_video_view(request, lesson_id):
     """
     lesson = get_object_or_404(Lesson, id=lesson_id)
     video_id = request.data.get('video_id')
+    
+    # Note: Any authenticated user can update lessons
+    # Add specific permission checks here if needed
     
     if not video_id:
         return Response({
@@ -326,7 +332,7 @@ def remove_bunny_video_from_lesson(request, lesson_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([IsAuthenticated])
 def update_course_bunny_promotional_video_view(request, course_id):
     """
     Update a course with Bunny CDN promotional video

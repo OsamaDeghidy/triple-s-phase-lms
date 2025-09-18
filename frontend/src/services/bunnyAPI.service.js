@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 // Create axios instance with default config
-const bunnyAPI = axios.create({
+const bunnyAxios = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ const bunnyAPI = axios.create({
 });
 
 // Add request interceptor to include auth token
-bunnyAPI.interceptors.request.use(
+bunnyAxios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
     if (token) {
@@ -25,7 +25,7 @@ bunnyAPI.interceptors.request.use(
 );
 
 // Add response interceptor for error handling
-bunnyAPI.interceptors.response.use(
+bunnyAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
@@ -42,7 +42,7 @@ export const bunnyAPI = {
   // Validate Bunny video ID
   validateVideo: async (videoId) => {
     try {
-      const response = await bunnyAPI.post('/content/bunny/validate/', {
+      const response = await bunnyAxios.post('/content/bunny/validate/', {
         video_id: videoId,
       });
       return response.data;
@@ -54,7 +54,7 @@ export const bunnyAPI = {
   // Get Bunny video information
   getVideoInfo: async (videoId) => {
     try {
-      const response = await bunnyAPI.get(`/content/bunny/video/${videoId}/`);
+      const response = await bunnyAxios.get(`/content/bunny/video/${videoId}/`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'خطأ في الحصول على معلومات الفيديو');
@@ -64,7 +64,7 @@ export const bunnyAPI = {
   // Get Bunny embed URL
   getEmbedUrl: async (videoId) => {
     try {
-      const response = await bunnyAPI.get(`/content/bunny/embed/${videoId}/`);
+      const response = await bunnyAxios.get(`/content/bunny/embed/${videoId}/`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'خطأ في الحصول على رابط التضمين');
@@ -74,7 +74,7 @@ export const bunnyAPI = {
   // Update module with Bunny video
   updateModuleVideo: async (moduleId, videoId) => {
     try {
-      const response = await bunnyAPI.post(`/content/modules/${moduleId}/bunny-video/`, {
+      const response = await bunnyAxios.post(`/content/modules/${moduleId}/bunny-video/`, {
         video_id: videoId,
       });
       return response.data;
@@ -86,7 +86,7 @@ export const bunnyAPI = {
   // Update lesson with Bunny video
   updateLessonVideo: async (lessonId, videoId) => {
     try {
-      const response = await bunnyAPI.post(`/content/lessons/${lessonId}/bunny-video/`, {
+      const response = await bunnyAxios.post(`/content/lessons/${lessonId}/bunny-video/`, {
         video_id: videoId,
       });
       return response.data;
@@ -98,7 +98,7 @@ export const bunnyAPI = {
   // Update course with Bunny promotional video
   updateCoursePromotionalVideo: async (courseId, videoId) => {
     try {
-      const response = await bunnyAPI.post(`/content/courses/${courseId}/bunny-promotional-video/`, {
+      const response = await bunnyAxios.post(`/content/courses/${courseId}/bunny-promotional-video/`, {
         video_id: videoId,
       });
       return response.data;
@@ -110,7 +110,7 @@ export const bunnyAPI = {
   // Remove Bunny video from module
   removeModuleVideo: async (moduleId) => {
     try {
-      const response = await bunnyAPI.delete(`/content/modules/${moduleId}/bunny-video/`);
+      const response = await bunnyAxios.delete(`/content/modules/${moduleId}/bunny-video/`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'خطأ في إزالة الفيديو من الوحدة');
@@ -120,7 +120,7 @@ export const bunnyAPI = {
   // Remove Bunny video from lesson
   removeLessonVideo: async (lessonId) => {
     try {
-      const response = await bunnyAPI.delete(`/content/lessons/${lessonId}/bunny-video/`);
+      const response = await bunnyAxios.delete(`/content/lessons/${lessonId}/bunny-video/`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'خطأ في إزالة الفيديو من الدرس');
@@ -130,7 +130,7 @@ export const bunnyAPI = {
   // Remove Bunny promotional video from course
   removeCoursePromotionalVideo: async (courseId) => {
     try {
-      const response = await bunnyAPI.delete(`/content/courses/${courseId}/bunny-promotional-video/`);
+      const response = await bunnyAxios.delete(`/content/courses/${courseId}/bunny-promotional-video/`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || 'خطأ في إزالة الفيديو التعريفي من الكورس');
