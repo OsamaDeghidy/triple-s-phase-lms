@@ -41,7 +41,7 @@ import {
   Error as ErrorIcon
 } from '@mui/icons-material';
 import { styled, alpha, useTheme } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -521,13 +521,14 @@ const AnimatedBackgroundComponent = () => (
 const Courses = () => {
   const theme = useTheme();
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [tabValue, setTabValue] = useState('all');
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'all');
   const [cartItems, setCartItems] = useState({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [headerBanner, setHeaderBanner] = useState(null);
@@ -611,6 +612,16 @@ const Courses = () => {
 
     fetchHeaderBanner();
   }, []);
+
+  // Update activeCategory when URL changes
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl && categoryFromUrl !== activeCategory) {
+      setActiveCategory(categoryFromUrl);
+    } else if (!categoryFromUrl && activeCategory !== 'all') {
+      setActiveCategory('all');
+    }
+  }, [searchParams, activeCategory]);
 
   // Fetch courses and categories from API
   useEffect(() => {
@@ -723,6 +734,15 @@ const Courses = () => {
   const handleCategoryChange = (categoryId) => {
     console.log('Category changed to:', categoryId);
     setActiveCategory(categoryId);
+
+    // Update URL parameters
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (categoryId === 'all') {
+      newSearchParams.delete('category');
+    } else {
+      newSearchParams.set('category', categoryId);
+    }
+    setSearchParams(newSearchParams);
   };
 
   const toggleCartItem = async (courseId, e) => {
@@ -1042,6 +1062,7 @@ const Courses = () => {
                       setSearchTerm('');
                       setActiveCategory('all');
                       setTabValue('all');
+                      setSearchParams({});
                     }}
                     startIcon={<FilterList />}
                     sx={{
@@ -1377,6 +1398,7 @@ const Courses = () => {
                     setSearchTerm('');
                     setActiveCategory('all');
                     setTabValue('all');
+                    setSearchParams({});
                   }}
                   startIcon={<FilterList />}
                   sx={{ mt: 2 }}

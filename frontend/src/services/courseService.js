@@ -13,6 +13,19 @@ export const courseAPI = {
     }
   },
 
+  // Get courses by category ID
+  getCoursesByCategory: async (categoryId, params = {}) => {
+    try {
+      const response = await api.get('/api/courses/public/', {
+        params: { category: categoryId, ...params }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching courses by category:', error);
+      throw error;
+    }
+  },
+
   // Get a specific course by ID
   getCourseById: async (courseId) => {
     try {
@@ -38,8 +51,8 @@ export const courseAPI = {
   // Search courses
   searchCourses: async (query, params = {}) => {
     try {
-      const response = await api.get('/api/courses/search/', { 
-        params: { query, ...params } 
+      const response = await api.get('/api/courses/search/', {
+        params: { query, ...params }
       });
       return response.data;
     } catch (error) {
@@ -89,33 +102,33 @@ export const courseAPI = {
       // Ensure we return an array
       const data = response.data;
       console.log('Raw categories data:', data);
-      return Array.isArray(data) ? data : 
-             data.results ? data.results : 
-             data.data ? data.data : [];
+      return Array.isArray(data) ? data :
+        data.results ? data.results :
+          data.data ? data.data : [];
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw error;
     }
   },
 
-  // Get subcategories
-  getSubCategories: async (categoryId = null) => {
-    try {
-      const params = categoryId ? { category: categoryId } : {};
-      console.log('Fetching subcategories with params:', params);
-      const response = await api.get('/api/courses/subcategories/', { params });
-      console.log('Subcategories API response:', response.data);
-      // Ensure we return an array
-      const data = response.data;
-      console.log('Raw subcategories data:', data);
-      return Array.isArray(data) ? data : 
-             data.results ? data.results : 
-             data.data ? data.data : [];
-    } catch (error) {
-      console.error('Error fetching subcategories:', error);
-      return [];
-    }
-  },
+  // // Get subcategories
+  // getSubCategories: async (categoryId = null) => {
+  //   try {
+  //     const params = categoryId ? { category: categoryId } : {};
+  //     console.log('Fetching subcategories with params:', params);
+  //     const response = await api.get('/api/courses/subcategories/', { params });
+  //     console.log('Subcategories API response:', response.data);
+  //     // Ensure we return an array
+  //     const data = response.data;
+  //     console.log('Raw subcategories data:', data);
+  //     return Array.isArray(data) ? data : 
+  //            data.results ? data.results : 
+  //            data.data ? data.data : [];
+  //   } catch (error) {
+  //     console.error('Error fetching subcategories:', error);
+  //     return [];
+  //   }
+  // },
 
   // Get tags
   getTags: async () => {
@@ -351,7 +364,7 @@ export const paymentAPI = {
       throw error;
     }
   },
-  
+
   // Create Moyasar hosted payment for a specific course
   createCoursePayment: async (courseId) => {
     try {
