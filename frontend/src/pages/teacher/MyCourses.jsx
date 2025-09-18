@@ -234,7 +234,6 @@ const MyCourses = () => {
     console.log('=== APPLYING FILTERS ===');
     console.log('Search query:', searchQuery);
     console.log('Selected category:', selectedCategory);
-    console.log('Selected subcategory:', selectedSubcategory);
     console.log('Selected status:', selectedStatus);
     console.log('Selected level:', selectedLevel);
     console.log('All courses count:', allCourses.length);
@@ -250,10 +249,7 @@ const MyCourses = () => {
         const descMatch = course.description?.toLowerCase().includes(searchQuery.toLowerCase());
         const categoryNameMatch = course.category_name?.toLowerCase().includes(searchQuery.toLowerCase());
         const categoryMatch = course.category?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-        const subcategoryNameMatch = course.subcategory_name?.toLowerCase().includes(searchQuery.toLowerCase());
-        const subcategoryMatch = course.subcategory?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-        
-        return titleMatch || descMatch || categoryNameMatch || categoryMatch || subcategoryNameMatch || subcategoryMatch;
+        return titleMatch || descMatch || categoryNameMatch || categoryMatch;
       });
       console.log('After search filter:', filtered.length);
     }
@@ -281,28 +277,6 @@ const MyCourses = () => {
       console.log('After category filter:', filtered.length);
     }
 
-    // Subcategory filter
-    if (selectedSubcategory) {
-      filtered = filtered.filter(course => {
-        // Try different ways to get subcategory ID
-        const courseSubcategoryId = course.subcategory?.id || 
-                                   course.subcategory_id || 
-                                   course.subcategory?.pk ||
-                                   course.subcategory;
-        
-        // Convert both to numbers for comparison
-        const courseId = parseInt(courseSubcategoryId);
-        const selectedId = parseInt(selectedSubcategory);
-        
-        const match = courseId === selectedId;
-        console.log(`Course ${course.id}: subcategoryId=${courseSubcategoryId} (${courseId}), selected=${selectedSubcategory} (${selectedId}), match=${match}`);
-        console.log('Course subcategory object:', course.subcategory);
-        console.log('Course subcategory_id:', course.subcategory_id);
-        console.log('Course subcategory_name:', course.subcategory_name);
-        return match;
-      });
-      console.log('After subcategory filter:', filtered.length);
-    }
 
     // Status filter
     if (selectedStatus) {
@@ -569,27 +543,6 @@ const MyCourses = () => {
                 </Select>
               </FormControl>
               
-              {/* Subcategory Filter */}
-              <FormControl size="small" sx={{ minWidth: 140 }}>
-                <InputLabel>التصنيف الفرعي</InputLabel>
-                <Select
-                  value={selectedSubcategory}
-                  onChange={(e) => setSelectedSubcategory(e.target.value)}
-                  label="التصنيف الفرعي"
-                  disabled={!selectedCategory}
-                  sx={{ 
-                    borderRadius: 2,
-                    backgroundColor: 'white'
-                  }}
-                >
-                  <MenuItem value="">الكل</MenuItem>
-                  {subcategories.map((subcategory) => (
-                      <MenuItem key={subcategory.id} value={subcategory.id}>
-                        {subcategory.name}
-                      </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
               
               {/* Status Filter */}
               <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -920,18 +873,6 @@ const MyCourses = () => {
                               fontSize: '0.75rem'
                             }}
                           />
-                          {course.subcategory?.name || course.subcategory_name ? (
-                            <Chip 
-                              label={course.subcategory?.name || course.subcategory_name} 
-                              size="small" 
-                              sx={{ 
-                                fontWeight: 'normal',
-                                bgcolor: '#95a5a6',
-                                color: 'white',
-                                fontSize: '0.65rem'
-                              }}
-                            />
-                          ) : null}
                         </Box>
                         </Box>
                       </TableCell>

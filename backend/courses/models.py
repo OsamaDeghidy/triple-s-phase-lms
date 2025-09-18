@@ -62,52 +62,6 @@ class Category(models.Model):
     
 
 
-class SubCategory(models.Model):
-    """Sub-categories for organizing courses within main categories"""
-    name = models.CharField(max_length=255, verbose_name=_('Name'))
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True, verbose_name=_('Slug'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='subcategories',
-        verbose_name=_('Category')
-    )
-    image = models.ImageField(upload_to='subcategories/', blank=True, null=True, verbose_name=_('Image'))
-    is_active = models.BooleanField(default=True, verbose_name=_('Is Active'))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
-    order = models.PositiveIntegerField(default=0, verbose_name=_('Order'))
-
-    class Meta:
-        verbose_name = _('SubCategory')
-        verbose_name_plural = _('SubCategories')
-        ordering = ['category', 'order', 'name']
-        unique_together = ['category', 'name']
-
-    def __str__(self):
-        return f"{self.category.name} - {self.name}" if self.category else self.name
-
-    def save(self, *args, **kwargs):
-        if not self.slug and self.name:
-            base_slug = slugify(self.name)
-            slug = base_slug
-            counter = 1
-            
-            # Check for existing slugs and generate unique one
-            while SubCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            
-            self.slug = slug
-        super().save(*args, **kwargs)
-
-    @property
-    def active_courses_count(self):
-        """Return count of active, published courses in this subcategory"""
-        return self.courses.filter(is_active=True, status='published').count()
-
-
 class Tag(models.Model):
     """Tags for categorizing and searching courses"""
     name = models.CharField(max_length=100, unique=True, verbose_name=_('Name'))
@@ -188,15 +142,6 @@ class Course(models.Model):
         blank=True,
         related_name='courses',
         verbose_name=_('Category')
-    )
-    subcategory = models.ForeignKey(
-        SubCategory,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='courses',
-        verbose_name=_('SubCategory'),
-        help_text=_('Optional subcategory for more specific course organization')
     )
     tags = models.ManyToManyField(
         Tag,
@@ -336,10 +281,6 @@ class Course(models.Model):
         return self.title or self.slug or str(self.id)
     
     def save(self, *args, **kwargs):
-        # Validate subcategory belongs to the same category
-        if self.subcategory and self.category and self.subcategory.category != self.category:
-            raise ValueError("SubCategory must belong to the same Category as the course")
-        
         # Set published_at when status changes to published
         if self.status == 'published' and not self.published_at:
             self.published_at = timezone.now()

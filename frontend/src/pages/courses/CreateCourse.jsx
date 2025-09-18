@@ -156,7 +156,6 @@ const CreateCourse = () => {
     level: 'beginner',
     language: 'ar',
     category: '',
-    subcategory: '',
     tags: [],
     
     // Pricing
@@ -213,21 +212,12 @@ const CreateCourse = () => {
           const subcategoriesData = await courseAPI.getSubCategories(courseData.category);
           console.log('Subcategories API response:', subcategoriesData);
           setSubcategories(subcategoriesData);
-          // Reset subcategory selection when category changes
-          setCourseData(prev => ({
-            ...prev,
-            subcategory: ''
-          }));
         } catch (error) {
           console.error('Error fetching subcategories:', error);
           setSubcategories([]);
         }
       } else {
         setSubcategories([]);
-        setCourseData(prev => ({
-          ...prev,
-          subcategory: ''
-        }));
       }
     };
 
@@ -276,19 +266,6 @@ const CreateCourse = () => {
       // This is the final step, handle form submission
       setLoading(true);
       try {
-        // Validate subcategory belongs to selected category
-        if (courseData.subcategory && courseData.category) {
-          const selectedSubcategory = subcategories.find(sub => sub.id === parseInt(courseData.subcategory));
-          if (selectedSubcategory && selectedSubcategory.category !== parseInt(courseData.category)) {
-            setSnackbar({
-              open: true,
-              message: 'التصنيف الفرعي يجب أن ينتمي إلى التصنيف المحدد',
-              severity: 'error'
-            });
-            setLoading(false);
-            return;
-          }
-        }
 
         console.log('Submitting course data:', courseData);
         const response = await courseAPI.createCourse(courseData);
@@ -627,26 +604,6 @@ const CreateCourse = () => {
                 </Select>
               </FormControl>
               
-              <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                <InputLabel>التصنيف الفرعي</InputLabel>
-                <Select
-                  name="subcategory"
-                  value={courseData.subcategory}
-                  onChange={handleChange}
-                  label="التصنيف الفرعي"
-                  disabled={!courseData.category}
-                  sx={{ textAlign: 'right' }}
-                >
-                  <MenuItem value="">
-                    <em>اختر تصنيفاً فرعياً</em>
-                  </MenuItem>
-                  {Array.isArray(subcategories) && subcategories.map((subcategory) => (
-                    <MenuItem key={subcategory.id} value={subcategory.id}>
-                      {subcategory.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
               
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>الوسوم</Typography>

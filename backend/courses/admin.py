@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Avg
 
-from .models import Category, SubCategory, Tags, Course, Enrollment
+from .models import Category, Tags, Course, Enrollment
 
 # Unregister any models that might be registered by default or other apps
 try:
@@ -12,10 +12,6 @@ try:
 except Exception:
     pass
 
-try:
-    admin.site.unregister(SubCategory)
-except Exception:
-    pass
 
 try:
     admin.site.unregister(Tags)
@@ -84,24 +80,6 @@ class CategoryAdmin(admin.ModelAdmin):
         return actions
 
 
-@admin.register(SubCategory)
-class SubCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'course_count', 'is_active', 'created_at')
-    list_filter = ('category', 'is_active', 'created_at')
-    search_fields = ('name', 'description', 'category__name')
-    readonly_fields = ('created_at', 'updated_at')
-    list_editable = ('is_active',)
-    
-    def course_count(self, obj):
-        count = obj.courses.count()
-        if count > 0:
-            url = reverse('admin:courses_course_changelist') + f'?subcategory__id__exact={obj.id}'
-            return format_html('<a href="{}">{} دورة</a>', url, count)
-        return '0 دورة'
-    course_count.short_description = 'عدد الدورات'
-    course_count.admin_order_field = 'courses__count'
-
-
 @admin.register(Tags)
 class TagsAdmin(admin.ModelAdmin):
     list_display = ('name', 'course_count')
@@ -114,11 +92,11 @@ class TagsAdmin(admin.ModelAdmin):
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'get_instructors', 'get_category_name', 'get_subcategory_name', 'level', 'status', 'get_course_type', 'price', 
+        'title', 'get_instructors', 'get_category_name', 'level', 'status', 'get_course_type', 'price', 
         'enrollment_count_display', 'created_at'
     )
     list_filter = (
-        PublishedFilter, 'level', 'category', 'subcategory', 'status', 'is_active', 'is_featured', 'is_certified', 'is_complete_course'
+        PublishedFilter, 'level', 'category', 'status', 'is_active', 'is_featured', 'is_certified', 'is_complete_course'
     )
     search_fields = ('title', 'instructors__profile__name', 'description', 'short_description')
     filter_horizontal = ('tags', 'instructors')
@@ -130,7 +108,7 @@ class CourseAdmin(admin.ModelAdmin):
         ('Basic Information', {
             'fields': (
                 'title', 'slug', 'subtitle', 'description', 'short_description',
-                'category', 'subcategory', 'tags', 'instructors', 'organization'
+                'category', 'tags', 'instructors', 'organization'
             )
         }),
         ('Course Type', {
@@ -171,10 +149,6 @@ class CourseAdmin(admin.ModelAdmin):
     get_category_name.short_description = 'Category'
     get_category_name.admin_order_field = 'category__name'
     
-    def get_subcategory_name(self, obj):
-        return obj.subcategory.name if obj.subcategory else 'N/A'
-    get_subcategory_name.short_description = 'SubCategory'
-    get_subcategory_name.admin_order_field = 'subcategory__name'
     
     def get_course_type(self, obj):
         if obj.is_complete_course:
@@ -190,7 +164,7 @@ class CourseAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('category', 'subcategory', 'organization') \
+        return queryset.select_related('category', 'organization') \
             .prefetch_related('tags', 'instructors', 'instructors__profile') \
             .annotate(
                 enrollment_count=Count('students', distinct=True),

@@ -161,7 +161,6 @@ const EditCourse = () => {
     level: 'beginner',
     language: 'ar',
     category: '',
-    subcategory: '',
     tags: [],
     isFree: false,
     price: 0,
@@ -207,7 +206,6 @@ const EditCourse = () => {
             level: course.level || 'beginner',
             language: course.language || 'ar',
             category: course.category?.id || '',
-            subcategory: course.subcategory?.id || '',
             tags: course.tags?.map(tag => tag.name) || [],
             isFree: course.is_free || false,
             price: course.price || 0,
@@ -269,10 +267,6 @@ const EditCourse = () => {
         }
       } else {
         setSubcategories([]);
-        setCourseData(prev => ({
-          ...prev,
-          subcategory: ''
-        }));
       }
     };
 
@@ -353,14 +347,6 @@ const EditCourse = () => {
           return;
         }
         
-        // Validate subcategory belongs to selected category
-        if (courseData.subcategory && courseData.category) {
-          const selectedSubcategory = subcategories.find(sub => sub.id === parseInt(courseData.subcategory));
-          if (selectedSubcategory && selectedSubcategory.category !== parseInt(courseData.category)) {
-            setError('التصنيف الفرعي يجب أن ينتمي إلى التصنيف المحدد');
-            return;
-          }
-        }
         
         // Prepare data for API
         const apiData = {
@@ -569,26 +555,6 @@ const EditCourse = () => {
                 </Select>
               </FormControl>
               
-              <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                <InputLabel>التصنيف الفرعي</InputLabel>
-                <Select
-                  name="subcategory"
-                  value={courseData.subcategory}
-                  onChange={handleChange}
-                  label="التصنيف الفرعي"
-                  disabled={!courseData.category}
-                  sx={{ textAlign: 'right' }}
-                >
-                  <MenuItem value="">
-                    <em>اختر تصنيفاً فرعياً</em>
-                  </MenuItem>
-                  {Array.isArray(subcategories) && subcategories.map((subcategory) => (
-                    <MenuItem key={subcategory.id} value={subcategory.id}>
-                      {subcategory.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
               
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>الكلمات المفتاحية</Typography>

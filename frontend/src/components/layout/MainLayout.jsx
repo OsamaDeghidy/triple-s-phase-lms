@@ -72,11 +72,9 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
   const profileRef = useRef(null);
   const notifRef = useRef(null);
   
-  // State for categories and subcategories
+  // State for categories
   const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [myCourses, setMyCourses] = useState([]);
   const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -138,14 +136,6 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
   const handleCategoryChange = (event) => {
     console.log('Category changed to:', event.target.value);
     setSelectedCategory(event.target.value);
-    // Reset subcategory when category changes
-    setSelectedSubcategory('');
-  };
-
-  // Handle subcategory selection
-  const handleSubcategoryChange = (event) => {
-    console.log('Subcategory changed to:', event.target.value);
-    setSelectedSubcategory(event.target.value);
   };
 
   // Handle courses dropdown toggle
@@ -154,19 +144,17 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
     setCoursesDropdownOpen(!coursesDropdownOpen);
   };
 
-  // Filter courses based on selected category and subcategory
+  // Filter courses based on selected category
   const filteredCourses = useMemo(() => {
     let filtered = myCourses;
     
     console.log('Filtering courses:', {
       totalCourses: myCourses.length,
       selectedCategory,
-      selectedSubcategory,
       courses: myCourses.map(c => ({
         id: c.id,
         title: c.title,
-        category: c.category,
-        subcategory: c.subcategory
+        category: c.category
       }))
     });
     
@@ -189,30 +177,10 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
       });
     }
     
-    if (selectedSubcategory) {
-      // Find the selected subcategory name
-      const selectedSubcategoryName = subcategories.find(sub => sub.id == selectedSubcategory)?.name;
-      console.log('Selected subcategory name:', selectedSubcategoryName);
-      console.log('Available subcategories:', subcategories);
-      console.log('Selected subcategory ID:', selectedSubcategory);
-      
-      filtered = filtered.filter(course => {
-        // The API returns subcategory as a string (name), not object
-        const courseSubcategoryName = course.subcategory;
-        const matches = courseSubcategoryName === selectedSubcategoryName;
-        console.log(`Course ${course.title} subcategory match:`, {
-          courseSubcategoryName,
-          selectedSubcategoryName,
-          selectedSubcategoryId: selectedSubcategory,
-          matches
-        });
-        return matches;
-      });
-    }
     
     console.log('Filtered courses result:', filtered.length);
     return filtered;
-  }, [myCourses, selectedCategory, selectedSubcategory, categories, subcategories]);
+  }, [myCourses, selectedCategory, categories]);
 
   // Fetch categories and my courses on component mount
   useEffect(() => {
@@ -247,40 +215,15 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
     fetchData();
   }, [getUserRole]);
 
-  // Fetch subcategories when category changes
-  useEffect(() => {
-    const fetchSubcategories = async () => {
-      if (selectedCategory) {
-        try {
-          console.log('Fetching subcategories for category:', selectedCategory);
-          const subcategoriesData = await courseAPI.getSubCategories(selectedCategory);
-          console.log('Subcategories data:', subcategoriesData);
-          // The API returns an array directly for subcategories
-          const subcategoriesArray = Array.isArray(subcategoriesData) ? subcategoriesData : subcategoriesData.results || [];
-          console.log('Subcategories array:', subcategoriesArray);
-          setSubcategories(subcategoriesArray);
-        } catch (error) {
-          console.error('Error fetching subcategories:', error);
-          setSubcategories([]);
-        }
-      } else {
-        setSubcategories([]);
-      }
-      setSelectedSubcategory('');
-    };
-
-    fetchSubcategories();
-  }, [selectedCategory]);
 
   // Debug filtered courses when filters change
   useEffect(() => {
     console.log('Filtered courses updated:', {
       selectedCategory,
-      selectedSubcategory,
       totalCourses: myCourses.length,
       filteredCount: filteredCourses.length
     });
-  }, [selectedCategory, selectedSubcategory, myCourses, filteredCourses]);
+  }, [selectedCategory, myCourses, filteredCourses]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -711,51 +654,6 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                 </Select>
               </FormControl>
 
-              {/* Subcategory Filter */}
-              <FormControl 
-                size="small" 
-                sx={{ 
-                  minWidth: 150,
-                  '& .MuiOutlinedInput-root': {
-                    background: 'rgba(255,255,255,0.9)',
-                    borderRadius: 3,
-                    boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
-                    border: '1px solid rgba(77, 191, 179, 0.2)',
-                    '&:hover': {
-                      boxShadow: '0 6px 25px rgba(14,81,129,0.15)',
-                      border: '1px solid rgba(77, 191, 179, 0.3)',
-                    },
-                    '&.Mui-focused': {
-                      boxShadow: '0 8px 30px rgba(14,81,129,0.2)',
-                      border: '1px solid #4DBFB3',
-                    }
-                  }
-                }}
-              >
-                <Select
-                  value={selectedSubcategory}
-                  onChange={handleSubcategoryChange}
-                  displayEmpty
-                  disabled={!selectedCategory}
-                  startAdornment={<SubjectIcon sx={{ color: '#4DBFB3', mr: 1, fontSize: 20 }} />}
-                  sx={{
-                    '& .MuiSelect-select': {
-                      fontSize: '14px',
-                      color: selectedSubcategory ? '#333' : '#999',
-                      fontWeight: 600
-                    }
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>جميع الفئات الفرعية</em>
-                  </MenuItem>
-                  {subcategories.map((subcategory) => (
-                    <MenuItem key={subcategory.id} value={subcategory.id}>
-                      {subcategory.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
             </Box>
             
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
