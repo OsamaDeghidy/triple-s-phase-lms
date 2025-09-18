@@ -1,7 +1,8 @@
-import React from 'react';
-import { Box, Container, Typography, Button, useTheme, useMediaQuery, styled } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, Typography, Button, useTheme, useMediaQuery, styled, CircularProgress } from '@mui/material';
 import { ArrowForward, Phone } from '@mui/icons-material';
 import massageImage from '../../assets/images/massageImage.png';
+import { bannerAPI } from '../../services/api.service';
 
 const BannerContainer = styled(Box)(({ theme }) => ({
     position: 'relative',
@@ -245,27 +246,146 @@ const RightSection = styled(Box)(({ theme }) => ({
 const BannerFile = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [bannerData, setBannerData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Helper function to get image URL
+    const getImageUrl = (image) => {
+        if (!image) {
+            return null;
+        }
+
+        if (typeof image === 'string') {
+            // If it's already a full URL, return it
+            if (image.startsWith('http')) return image;
+
+            // If it's a relative path, construct full URL
+            return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+        }
+
+        return null;
+    };
+
+    // Fetch promotional banners from API
+    useEffect(() => {
+        const fetchPromoBanners = async () => {
+            try {
+                setLoading(true);
+                console.log('🔄 Fetching promotional banners from API...');
+
+                // Try to get promotional banners specifically
+                let bannersData;
+                try {
+                    console.log('🔍 Trying to fetch promotional banners...');
+                    bannersData = await bannerAPI.getBannersByType('promo');
+                    console.log('✅ Promotional banners received:', bannersData);
+                } catch (byTypeError) {
+                    console.log('⚠️ By type failed, trying active banners...');
+                    bannersData = await bannerAPI.getActiveBanners();
+                    console.log('✅ Active banners received:', bannersData);
+                }
+
+                // Filter to only promo type banners
+                let filteredBanners = [];
+                if (Array.isArray(bannersData)) {
+                    filteredBanners = bannersData.filter(banner => banner.banner_type === 'promo');
+                } else if (bannersData?.results) {
+                    filteredBanners = bannersData.results.filter(banner => banner.banner_type === 'promo');
+                } else if (bannersData?.data) {
+                    filteredBanners = bannersData.data.filter(banner => banner.banner_type === 'promo');
+                }
+
+                console.log('📊 Filtered promotional banners:', filteredBanners.length);
+
+                // Get the first promotional banner
+                if (filteredBanners.length > 0) {
+                    const promoBanner = filteredBanners[0];
+                    setBannerData({
+                        title: promoBanner.title,
+                        description: promoBanner.description,
+                        image_url: getImageUrl(promoBanner.image || promoBanner.image_url),
+                        button_text: promoBanner.button_text,
+                        button_url: promoBanner.button_url,
+                        url: promoBanner.url
+                    });
+                    console.log('✅ Promotional banner set successfully');
+                } else {
+                    console.log('⚠️ No promotional banners found');
+                    setBannerData(null);
+                }
+
+            } catch (error) {
+                console.error('❌ Error fetching promotional banners:', error);
+                console.error('❌ Error details:', error.response?.data || error.message);
+                setError('حدث خطأ في تحميل البيانات');
+                setBannerData(null);
+            } finally {
+                setLoading(false);
+                console.log('🏁 Promotional banners fetch completed');
+            }
+        };
+
+        fetchPromoBanners();
+    }, []);
+
+    // Show loading state
+    if (loading) {
+        return (
+            <BannerContainer>
+                <Container maxWidth="lg">
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '200px',
+                        gap: 2
+                    }}>
+                        <CircularProgress sx={{ color: '#fff' }} />
+                        <Typography variant="h6" sx={{ color: '#fff' }}>
+                            جاري تحميل البيانات...
+                        </Typography>
+                    </Box>
+                </Container>
+            </BannerContainer>
+        );
+    }
 
     return (
         <BannerContainer>
             <Container maxWidth="lg">
                 <ContentWrapper>
-                    <LeftSection />
+                    <LeftSection
+                        sx={{
+                            backgroundImage: bannerData?.image_url
+                                ? `url("${bannerData.image_url}")`
+                                : 'url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80")'
+                        }}
+                    />
 
                     <CenterSection>
                         <MainTitle variant="h2" component="h2">
-                            احصل على كورسات الاونلاين
+                            {bannerData?.title || 'احصل على كورسات الاونلاين'}
                         </MainTitle>
 
                         <Subtitle variant="body1">
-                            انضم إلى منصتنا التعليمية واستفد من مجموعة واسعة من الكورسات الأونلاين المصممة بعناية لتناسب جميع المستويات والاهتمامات.
+                            {bannerData?.description || 'انضم إلى منصتنا التعليمية واستفد من مجموعة واسعة من الكورسات الأونلاين المصممة بعناية لتناسب جميع المستويات والاهتمامات.'}
                         </Subtitle>
 
                         <RegisterButton
                             endIcon={<ArrowForward />}
-                            onClick={() => window.location.href = '/register'}
+                            onClick={() => {
+                                if (bannerData?.button_url) {
+                                    window.location.href = bannerData.button_url;
+                                } else if (bannerData?.url) {
+                                    window.location.href = bannerData.url;
+                                } else {
+                                    window.location.href = '/register';
+                                }
+                            }}
                         >
-                            سجل معنا
+                            {bannerData?.button_text || 'سجل معنا'}
                         </RegisterButton>
                     </CenterSection>
 
