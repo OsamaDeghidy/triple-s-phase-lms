@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Button, Grid, Avatar, LinearProgress, Chip, useTheme, Divider, alpha, Skeleton, Card, CardContent, IconButton, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { DashboardCard, StatCard, DashboardSection, ProgressCard, ActivityItem, AnnouncementCard } from './DashboardLayout';
-import { 
-  School as SchoolIcon, 
-  Group as GroupIcon, 
-  Assignment as AssignmentIcon, 
-  Event as EventIcon, 
-  Notifications as NotificationsIcon, 
+import {
+  School as SchoolIcon,
+  Group as GroupIcon,
+  Assignment as AssignmentIcon,
+  Event as EventIcon,
+  Notifications as NotificationsIcon,
   BarChart as BarChartIcon,
-  Class as ClassIcon, 
-  PersonAdd as PersonAddIcon, 
-  TrendingUp as TrendingUpIcon, 
+  Class as ClassIcon,
+  PersonAdd as PersonAddIcon,
+  TrendingUp as TrendingUpIcon,
   CheckCircle as CheckCircleIcon,
-  Message as MessageIcon, 
+  Message as MessageIcon,
   Schedule as ScheduleIcon,
   AttachMoney as MoneyIcon,
   Star as StarIcon,
@@ -31,11 +31,11 @@ import {
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import dashboardService from '../../services/dashboard.service';
-import { 
-  EnhancedStatCard, 
-  EnhancedCourseCard, 
-  EnhancedActivityItem, 
-  EnhancedAnnouncementCard 
+import {
+  EnhancedStatCard,
+  EnhancedCourseCard,
+  EnhancedActivityItem,
+  EnhancedAnnouncementCard
 } from './DashboardComponents';
 import './index.css';
 
@@ -85,7 +85,7 @@ const TeacherDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // تحميل البيانات الحقيقية من API
       const [
         statsData,
@@ -114,10 +114,10 @@ const TeacherDashboard = () => {
         recentEnrollments: statsData.recentEnrollments || 0,
         totalQuestions: questionBankStats?.total_questions || 0
       });
-      
+
       setCourses(coursesData || []);
       setStudentProgress(progressData || []);
-      
+
       // إضافة بيانات وهمية للنشاطات إذا لم تكن موجودة
       const mockActivity = activityData && activityData.length > 0 ? activityData : [
         {
@@ -137,9 +137,9 @@ const TeacherDashboard = () => {
           course: 'الأحياء'
         }
       ];
-      
+
       setRecentActivity(mockActivity);
-      
+
       // إضافة بيانات وهمية للإعلانات إذا لم تكن موجودة
       const mockAnnouncements = announcementsData && announcementsData.length > 0 ? announcementsData : [
         {
@@ -159,9 +159,9 @@ const TeacherDashboard = () => {
           course: 'الأحياء'
         }
       ];
-      
+
       setRecentAnnouncements(mockAnnouncements);
-      
+
       // بيانات وهمية للمحاضرات القادمة - مطابقة للصورة
       const mockLectures = [
         {
@@ -221,7 +221,7 @@ const TeacherDashboard = () => {
           color: '#333679'
         }
       ];
-      
+
       setUpcomingLectures(mockLectures);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -278,7 +278,7 @@ const TeacherDashboard = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <motion.div 
+      <motion.div
         initial="hidden"
         animate="show"
         variants={container}
@@ -286,9 +286,9 @@ const TeacherDashboard = () => {
         {/* Header Section */}
         <Box sx={{ mb: 5, px: 1 }}>
           <motion.div variants={item}>
-            <Typography 
-              variant="h4" 
-              sx={{ 
+            <Typography
+              variant="h4"
+              sx={{
                 fontWeight: 800,
                 mb: 2,
                 color: '#333679',
@@ -299,10 +299,10 @@ const TeacherDashboard = () => {
             </Typography>
           </motion.div>
           <motion.div variants={item}>
-            <Typography 
-              variant="h6" 
+            <Typography
+              variant="h6"
               color="text.secondary"
-              sx={{ 
+              sx={{
                 textAlign: 'center',
                 mb: 4
               }}
@@ -318,7 +318,7 @@ const TeacherDashboard = () => {
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -363,11 +363,11 @@ const TeacherDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -412,7 +412,7 @@ const TeacherDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+
             {/* <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
@@ -465,7 +465,7 @@ const TeacherDashboard = () => {
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -510,12 +510,12 @@ const TeacherDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+
             {/* Question Bank Stats Card */}
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -567,7 +567,7 @@ const TeacherDashboard = () => {
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -617,12 +617,12 @@ const TeacherDashboard = () => {
           </Grid>
         </Box>
 
-          
+
         {/* Main Content - نظام التبويبات */}
         <Box sx={{ px: 1, width: '100%' }}>
-            <motion.div variants={item}>
+          <motion.div variants={item}>
             <Card
-                sx={{
+              sx={{
                 borderRadius: 4,
                 background: 'white',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
@@ -630,8 +630,8 @@ const TeacherDashboard = () => {
               }}
             >
               {/* Tabs Header */}
-                <Box
-                  sx={{
+              <Box
+                sx={{
                   background: 'linear-gradient(135deg, #333679, #1a6ba8)',
                   borderRadius: '16px 16px 0 0',
                   p: 0
@@ -657,9 +657,9 @@ const TeacherDashboard = () => {
                     }
                   }}
                 >
-                  <Tab 
-                    label="مقرراتي" 
-                    icon={<SchoolIcon />} 
+                  <Tab
+                    label="مقرراتي"
+                    icon={<SchoolIcon />}
                     iconPosition="start"
                     sx={{
                       display: 'flex',
@@ -667,18 +667,18 @@ const TeacherDashboard = () => {
                       gap: 1
                     }}
                   />
-                  <Tab 
-                    label="جدول المحاضرات" 
-                    icon={<CalendarIcon />} 
+                  {/* <Tab
+                    label="جدول المحاضرات"
+                    icon={<CalendarIcon />}
                     iconPosition="start"
-                    sx={{ 
+                    sx={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 1
                     }}
-                  />
+                  /> */}
                 </Tabs>
-                </Box>
+              </Box>
 
               {/* Tab Content */}
               <Box sx={{ height: 600, overflow: 'auto' }}>
@@ -688,12 +688,12 @@ const TeacherDashboard = () => {
                     <Box sx={{ mb: 3 }}>
                       <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#333679' }}>
                         إدارة فصولك الدراسية
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
                         عرض وإدارة جميع مقرراتك
-                </Typography>
+                      </Typography>
                     </Box>
-                    
+
                     {courses.length > 0 ? (
                       <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                         <Table sx={{ minWidth: 650 }} aria-label="courses table">
@@ -721,16 +721,16 @@ const TeacherDashboard = () => {
                           </TableHead>
                           <TableBody>
                             {courses.map((course) => (
-                              <TableRow 
+                              <TableRow
                                 key={course.id}
-                sx={{
+                                sx={{
                                   '&:last-child td, &:last-child th': { border: 0 },
                                   '&:hover': { backgroundColor: '#f8f9fa' },
-                  cursor: 'pointer',
+                                  cursor: 'pointer',
                                   transition: 'background-color 0.2s ease'
-                }}
-                            onClick={() => handleCourseView(course.id)}
-              >
+                                }}
+                                onClick={() => handleCourseView(course.id)}
+                              >
                                 <TableCell component="th" scope="row" sx={{ textAlign: 'right', verticalAlign: 'top' }}>
                                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexDirection: 'row-reverse' }}>
                                     <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -741,24 +741,24 @@ const TeacherDashboard = () => {
                                         {course.description || 'لا يوجد وصف'}
                                       </Typography>
                                     </Box>
-                <Box
-                  sx={{
+                                    <Box
+                                      sx={{
                                         width: 40,
                                         height: 40,
-                                  borderRadius: 2,
-                                  background: 'linear-gradient(135deg, #333679, #1a6ba8)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
+                                        borderRadius: 2,
+                                        background: 'linear-gradient(135deg, #333679, #1a6ba8)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white',
                                         flexShrink: 0,
-                    '& svg': {
+                                        '& svg': {
                                           fontSize: '1.2rem'
-                    }
-                  }}
-                >
-                                <SchoolIcon />
-                </Box>
+                                        }
+                                      }}
+                                    >
+                                      <SchoolIcon />
+                                    </Box>
                                   </Box>
                                 </TableCell>
                                 <TableCell align="center">
@@ -766,7 +766,7 @@ const TeacherDashboard = () => {
                                     <GroupIcon sx={{ fontSize: 16, color: '#666' }} />
                                     <Typography variant="body2" fontWeight={500}>
                                       {course.students || 0}
-                </Typography>
+                                    </Typography>
                                   </Box>
                                 </TableCell>
                                 <TableCell align="center">
@@ -774,14 +774,14 @@ const TeacherDashboard = () => {
                                     <StarIcon sx={{ fontSize: 16, color: '#ffc107' }} />
                                     <Typography variant="body2" fontWeight={500}>
                                       {course.rating || 0}
-                </Typography>
-      </Box>
+                                    </Typography>
+                                  </Box>
                                 </TableCell>
                                 <TableCell align="center">
-                                  <Chip 
-                                    label={course.category || 'بدون تصنيف'} 
-                                    size="small" 
-                sx={{ 
+                                  <Chip
+                                    label={course.category || 'بدون تصنيف'}
+                                    size="small"
+                                    sx={{
                                       backgroundColor: '#e3f2fd',
                                       color: '#663399',
                                       fontWeight: 500
@@ -789,10 +789,10 @@ const TeacherDashboard = () => {
                                   />
                                 </TableCell>
                                 <TableCell align="center">
-                                  <Chip 
-                                    label={course.status === 'published' ? 'منشور' : 'مسودة'} 
+                                  <Chip
+                                    label={course.status === 'published' ? 'منشور' : 'مسودة'}
                                     size="small"
-                    sx={{
+                                    sx={{
                                       backgroundColor: course.status === 'published' ? '#e8f5e8' : '#fff3e0',
                                       color: course.status === 'published' ? '#2e7d32' : '#f57c00',
                                       fontWeight: 500
@@ -820,11 +820,11 @@ const TeacherDashboard = () => {
                                       <ViewIcon fontSize="small" />
                                     </IconButton>
                                     <IconButton
-              size="small" 
-                          sx={{
+                                      size="small"
+                                      sx={{
                                         color: '#4DBFB3',
                                         backgroundColor: 'rgba(229, 151, 139, 0.08)',
-                '&:hover': {
+                                        '&:hover': {
                                           backgroundColor: 'rgba(229, 151, 139, 0.15)',
                                           color: '#d17a6f'
                                         }
@@ -837,7 +837,7 @@ const TeacherDashboard = () => {
                                     >
                                       <EditIcon fontSize="small" />
                                     </IconButton>
-          </Box>
+                                  </Box>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -849,24 +849,24 @@ const TeacherDashboard = () => {
                         <SchoolIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
                         <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                           لا توجد مقررات بعد
-              </Typography>
-            <Button 
-              variant="contained" 
-                    sx={{ 
+                        </Typography>
+                        <Button
+                          variant="contained"
+                          sx={{
                             background: '#333679',
                             '&:hover': { background: '#1a6ba8' }
                           }}
                           onClick={() => navigate('/teacher/courses/new')}
                         >
                           إنشاء مقرر جديد
-            </Button>
-                </Box>
+                        </Button>
+                      </Box>
                     )}
-            </Box>
+                  </Box>
                 )}
 
                 {/* Calendar Tab - جدول المحاضرات */}
-                {activeTab === 1 && (
+                {/* {activeTab === 1 && (
                   <Box sx={{ p: 3 }}>
                     <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="h5" fontWeight={700} sx={{ color: '#333' }}>
@@ -882,33 +882,31 @@ const TeacherDashboard = () => {
                         </IconButton>
                         <Typography variant="body1" sx={{ minWidth: 120, textAlign: 'center', color: '#333', fontWeight: 600 }}>
                           {currentDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
-                      </Typography>
+                        </Typography>
                         <IconButton
-                        size="small"
+                          size="small"
                           sx={{ color: '#666' }}
                           onClick={() => setCurrentDate(new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000))}
                         >
                           <ChevronRightIcon />
                         </IconButton>
+                      </Box>
                     </Box>
-      </Box>
 
-                    {/* Calendar Grid - مطابق للصورة */}
-                  <Box sx={{ 
-                      border: '1px solid #e0e0e0', 
-                      borderRadius: 2, 
-                    overflow: 'hidden',
+                    <Box sx={{
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      overflow: 'hidden',
                       background: 'white'
                     }}>
-                      {/* Header Row */}
-                      <Box sx={{ 
-                        display: 'grid', 
+                      <Box sx={{
+                        display: 'grid',
                         gridTemplateColumns: '80px repeat(4, 1fr)',
                         borderBottom: '1px solid #e0e0e0',
                         background: '#f8f9fa'
                       }}>
-                        <Box sx={{ 
-                          p: 2, 
+                        <Box sx={{
+                          p: 2,
                           borderRight: '1px solid #e0e0e0',
                           display: 'flex',
                           alignItems: 'center',
@@ -916,11 +914,11 @@ const TeacherDashboard = () => {
                         }}>
                           <Typography variant="body2" fontWeight={600} color="text.secondary">
                             الأيام
-                      </Typography>
-                      </Box>
+                          </Typography>
+                        </Box>
                         {['الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'].map((day, index) => (
-                          <Box key={day} sx={{ 
-                            p: 2, 
+                          <Box key={day} sx={{
+                            p: 2,
                             borderRight: index < 3 ? '1px solid #e0e0e0' : 'none',
                             textAlign: 'center'
                           }}>
@@ -930,44 +928,40 @@ const TeacherDashboard = () => {
                             <Typography variant="caption" color="text.secondary">
                               {10 + index}
                             </Typography>
-                  </Box>
-                ))}
-              </Box>
+                          </Box>
+                        ))}
+                      </Box>
 
-                      {/* Time Rows */}
                       {['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00'].map((time, timeIndex) => (
-                        <Box key={time} sx={{ 
-                          display: 'grid', 
+                        <Box key={time} sx={{
+                          display: 'grid',
                           gridTemplateColumns: '80px repeat(4, 1fr)',
                           borderBottom: timeIndex < 6 ? '1px solid #e0e0e0' : 'none',
                           minHeight: 60
                         }}>
-                          {/* Time Column */}
-                  <Box sx={{ 
-                            p: 2, 
+                          <Box sx={{
+                            p: 2,
                             borderRight: '1px solid #e0e0e0',
-                    display: 'flex', 
-                    alignItems: 'center', 
+                            display: 'flex',
+                            alignItems: 'center',
                             justifyContent: 'center',
                             background: '#f8f9fa'
                           }}>
                             <Typography variant="caption" color="text.secondary" fontWeight={500}>
                               {time}
-                      </Typography>
-                    </Box>
+                            </Typography>
+                          </Box>
 
-                          {/* Day Columns */}
                           {[0, 1, 2, 3].map((dayIndex) => (
-                            <Box 
-                              key={dayIndex} 
-                            sx={{ 
-                                p: 1, 
+                            <Box
+                              key={dayIndex}
+                              sx={{
+                                p: 1,
                                 borderRight: dayIndex < 3 ? '1px solid #e0e0e0' : 'none',
                                 position: 'relative',
                                 minHeight: 60
                               }}
                             >
-                              {/* Lecture Blocks */}
                               {upcomingLectures
                                 .filter(lecture => {
                                   const lectureTime = lecture.time.split(' - ')[0];
@@ -978,46 +972,46 @@ const TeacherDashboard = () => {
                                 .map((lecture) => (
                                   <Box
                                     key={lecture.id}
-                    sx={{
+                                    sx={{
                                       position: 'absolute',
                                       top: 4,
                                       left: 4,
                                       right: 4,
                                       bottom: 4,
-                                        background: 'rgba(14, 81, 129, 0.08)',
+                                      background: 'rgba(14, 81, 129, 0.08)',
                                       borderRadius: 1,
                                       p: 1,
-                                        color: '#333679',
-                      display: 'flex',
+                                      color: '#333679',
+                                      display: 'flex',
                                       flexDirection: 'column',
-                      justifyContent: 'center',
-                                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                                        border: '1px solid rgba(14, 81, 129, 0.1)'
+                                      justifyContent: 'center',
+                                      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                      border: '1px solid rgba(14, 81, 129, 0.1)'
                                     }}
                                   >
                                     <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', lineHeight: 1.2 }}>
                                       {lecture.title}
-                    </Typography>
-                                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.6rem', lineHeight: 1.2 }}>
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.6rem', lineHeight: 1.2 }}>
                                       {lecture.time}
-                    </Typography>
-                  </Box>
+                                    </Typography>
+                                  </Box>
                                 ))}
-                </Box>
+                            </Box>
                           ))}
                         </Box>
                       ))}
-                      </Box>
-                    
+                    </Box>
+
                     {upcomingLectures.length === 0 && (
                       <Box sx={{ textAlign: 'center', py: 4 }}>
                         <CalendarIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
                         <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                           لا توجد محاضرات مجدولة
-                </Typography>
+                        </Typography>
                         <Button
                           variant="contained"
-                sx={{
+                          sx={{
                             background: '#4DBFB3',
                             '&:hover': { background: '#f0a8a0' }
                           }}
@@ -1025,14 +1019,14 @@ const TeacherDashboard = () => {
                         >
                           جدولة محاضرة
                         </Button>
-                  </Box>
+                      </Box>
                     )}
                   </Box>
-                )}
+                )} */}
 
-                </Box>
+              </Box>
             </Card>
-            </motion.div>
+          </motion.div>
         </Box>
       </motion.div>
     </Box>

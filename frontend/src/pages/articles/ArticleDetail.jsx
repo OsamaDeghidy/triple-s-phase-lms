@@ -54,9 +54,10 @@ import { useArticle } from '../../contexts/ArticleContext';
 const HeroSection = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, #333679 0%, #0a3d5f 50%, #333679 100%)`,
   color: 'white',
-  padding: theme.spacing(4, 0, 3),
+  padding: theme.spacing(8, 0, 6), // زيادة الـ padding لزيادة الارتفاع
   position: 'relative',
   overflow: 'hidden',
+  minHeight: '60vh', // إضافة ارتفاع أدنى للبانر
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -90,6 +91,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
   '& .content': {
     position: 'relative',
     zIndex: 2,
+    paddingTop: theme.spacing(8), // إضافة مسافة من الأعلى لإنزال النص
   },
   '& .stats-item': {
     display: 'flex',

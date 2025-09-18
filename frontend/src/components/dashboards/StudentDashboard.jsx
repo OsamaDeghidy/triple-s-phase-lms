@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Button, Grid, Avatar, LinearProgress, useTheme, Chip, Skeleton, Card, CardContent, IconButton, Tabs, Tab } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { 
-  School as SchoolIcon, 
-  Assignment as AssignmentIcon, 
-  Event as EventIcon, 
-  Grade as GradeIcon, 
-  MenuBook as MenuBookIcon, 
-  Quiz as QuizIcon, 
-  EmojiEvents as BadgeIcon, 
+import {
+  School as SchoolIcon,
+  Assignment as AssignmentIcon,
+  Event as EventIcon,
+  Grade as GradeIcon,
+  MenuBook as MenuBookIcon,
+  Quiz as QuizIcon,
+  EmojiEvents as BadgeIcon,
   Star as StarIcon,
-  TrendingUp as TrendingUpIcon, 
+  TrendingUp as TrendingUpIcon,
   CheckCircle as CheckCircleIcon,
   PlayArrow as PlayArrowIcon,
   VideoLibrary as VideoLibraryIcon,
@@ -72,7 +72,7 @@ const StudentDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // تحميل البيانات بالتوازي
       const [
         statsData,
@@ -91,15 +91,15 @@ const StudentDashboard = () => {
       ]);
 
       setStats(statsData);
-      
+
       // Set loading state for courses
       setCoursesLoading(true);
-      
+
       // Process and validate course data from API
       const processedCourses = coursesData.length > 0 ? await Promise.all(coursesData.map(async (course) => {
         try {
           console.log(`Fetching content for course ${course.id}:`, course.title);
-          
+
           // Fetch questions and flashcards count for each course
           const [questionsData, flashcardsData] = await Promise.all([
             contentAPI.getCourseQuestionBank(course.id).catch((err) => {
@@ -111,12 +111,12 @@ const StudentDashboard = () => {
               return { results: [] };
             })
           ]);
-          
+
           const questionCount = questionsData?.results?.length || questionsData?.length || 0;
           const flashcardCount = flashcardsData?.results?.length || flashcardsData?.length || 0;
-          
+
           console.log(`Course ${course.id} - Questions: ${questionCount}, Flashcards: ${flashcardCount}`);
-          
+
           return {
             ...course,
             progress: Math.min(Math.max(course.progress || 0, 0), 100),
@@ -139,10 +139,10 @@ const StudentDashboard = () => {
           };
         }
       })) : [];
-      
+
       setCourses(processedCourses);
       setCoursesLoading(false);
-      
+
       // إضافة بيانات وهمية للإنجازات إذا لم تكن موجودة
       const mockAchievements = achievementsData.length > 0 ? achievementsData : [
         {
@@ -173,12 +173,12 @@ const StudentDashboard = () => {
           reward: '50 نقطة'
         }
       ];
-      
+
       setAchievements(mockAchievements);
       setRecentActivity(activityData);
       setUpcomingAssignments(assignmentsData);
       setUpcomingMeetings(meetingsData);
-      
+
       // Set empty array for lectures if no data from API
       setUpcomingLectures([]);
     } catch (error) {
@@ -247,7 +247,7 @@ const StudentDashboard = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      <motion.div 
+      <motion.div
         initial="hidden"
         animate="show"
         variants={container}
@@ -255,9 +255,9 @@ const StudentDashboard = () => {
         {/* Header Section */}
         <Box sx={{ mb: 5, px: 1 }}>
           <motion.div variants={item}>
-            <Typography 
-              variant="h4" 
-              sx={{ 
+            <Typography
+              variant="h4"
+              sx={{
                 fontWeight: 800,
                 mb: 2,
                 background: theme.palette.mode === 'dark'
@@ -272,10 +272,10 @@ const StudentDashboard = () => {
             </Typography>
           </motion.div>
           <motion.div variants={item}>
-            <Typography 
-              variant="h6" 
+            <Typography
+              variant="h6"
               color="text.secondary"
-              sx={{ 
+              sx={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
@@ -301,7 +301,7 @@ const StudentDashboard = () => {
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -346,11 +346,11 @@ const StudentDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -395,11 +395,11 @@ const StudentDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -444,11 +444,11 @@ const StudentDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-            
+
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <motion.div variants={item}>
                 <Card
-                  sx={{ 
+                  sx={{
                     height: 100,
                     borderRadius: 3,
                     background: 'white',
@@ -497,8 +497,8 @@ const StudentDashboard = () => {
         </Box>
 
         {/* Main Content with Tabs */}
-         <motion.div variants={item}>
-          <Card sx={{ 
+        <motion.div variants={item}>
+          <Card sx={{
             width: '100%',
             background: 'white',
             borderRadius: 4,
@@ -506,15 +506,15 @@ const StudentDashboard = () => {
             border: '1px solid #e0e0e0'
           }}>
             {/* Tab Header */}
-            <Box sx={{ 
+            <Box sx={{
               background: 'linear-gradient(135deg, #333679, #1a6ba8)',
               borderRadius: '16px 16px 0 0',
               p: 0
             }}>
-              <Tabs 
-                value={activeTab} 
+              <Tabs
+                value={activeTab}
                 onChange={handleTabChange}
-                 sx={{ 
+                sx={{
                   '& .MuiTab-root': {
                     color: 'white',
                     fontWeight: 600,
@@ -531,26 +531,26 @@ const StudentDashboard = () => {
                   }
                 }}
               >
-                <Tab 
-                  icon={<SchoolIcon />} 
-                  label="مقرراتي" 
+                <Tab
+                  icon={<SchoolIcon />}
+                  label="مقرراتي"
                   iconPosition="start"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                    gap: 1
-                  }}
-                />
-                <Tab 
-                  icon={<CalendarIcon />} 
-                  label="جدول المحاضرات" 
-                  iconPosition="start"
-                  sx={{ 
+                  sx={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1
                   }}
                 />
+                {/* <Tab
+                  icon={<CalendarIcon />}
+                  label="جدول المحاضرات"
+                  iconPosition="start"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                /> */}
               </Tabs>
             </Box>
 
@@ -565,191 +565,191 @@ const StudentDashboard = () => {
                         مقرراتي النشطة
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                 تابع تقدمك في المقررات
-                    </Typography>
-                </Box>
-                </Box>
+                        تابع تقدمك في المقررات
+                      </Typography>
+                    </Box>
+                  </Box>
 
-         {coursesLoading ? (
-           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-             {[1, 2, 3].map((item) => (
-               <Skeleton key={item} variant="rectangular" height={120} sx={{ borderRadius: 3 }} />
-             ))}
-           </Box>
-         ) : courses.length > 0 ? (
-           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-             {courses.map((course, index) => (
-               <motion.div key={course.id} variants={item}>
-                 <Card
-                   sx={{
-                     borderRadius: 3,
-                     background: 'white',
-                     border: '1px solid #e0e0e0',
-                     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
-                     transition: 'all 0.3s ease',
-                     cursor: 'pointer',
-                     '&:hover': {
-                       boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
-                       transform: 'translateY(-2px)',
-                       borderColor: '#333679'
-                     }
-                   }}
-                   onClick={() => handleCourseContinue(course.id)}
-                 >
-                   <CardContent sx={{ p: 3 }}>
-                     {/* Header with course info */}
-                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                         {/* Course icon */}
-                         <Box
-                           sx={{
-                             width: 48,
-                             height: 48,
-                             borderRadius: 2,
-                             background: 'linear-gradient(135deg, #333679, #1a6ba8)',
-                             display: 'flex',
-                             alignItems: 'center',
-                             justifyContent: 'center',
-                             flexShrink: 0
-                           }}
-                         >
-                           <SchoolIcon sx={{ color: 'white', fontSize: 22 }} />
-                         </Box>
-                         
-                         {/* Course title and progress */}
-                         <Box>
-                           <Typography variant="h6" fontWeight={600} sx={{ color: '#333', fontSize: '1.1rem', mb: 0.5 }}>
-                             {course.title}
-                           </Typography>
-                           <Typography variant="body2" sx={{ color: '#666', fontSize: '0.85rem' }}>
-                             {course.completed_lessons || 0} من {course.total_lessons || 0} درس مكتمل
-                           </Typography>
-                         </Box>
-                       </Box>
-                       
-                       {/* Progress percentage */}
-                       <Box sx={{ textAlign: 'right' }}>
-                         <Typography variant="h6" fontWeight={700} sx={{ color: '#333679', fontSize: '1.2rem' }}>
-                           {Math.round(course.progress || 0)}%
-                         </Typography>
-                         <Typography variant="caption" sx={{ color: '#666', fontSize: '0.75rem' }}>
-                           مكتمل
-                         </Typography>
-                       </Box>
-                     </Box>
-                     
-                     {/* Progress bar */}
-                     <Box sx={{ mb: 2 }}>
-                       <LinearProgress 
-                         variant="determinate" 
-                         value={Math.min(course.progress || 0, 100)} 
-                         sx={{ 
-                           height: 8, 
-                           borderRadius: 4,
-                           backgroundColor: '#f0f0f0',
-                           '& .MuiLinearProgress-bar': {
-                             background: 'linear-gradient(90deg, #333679, #1a6ba8)',
-                             borderRadius: 4
-                           }
-                         }} 
-                       />
-                     </Box>
-                     
-                     {/* Course stats */}
-                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                       <Box sx={{ display: 'flex', gap: 3 }}>
-                         <Box sx={{ textAlign: 'center' }}>
-                           <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
-                             الأسئلة
-                           </Typography>
-                           <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
-                             {course.question_count !== undefined ? course.question_count : '...'}
-                           </Typography>
-                         </Box>
-                         <Box sx={{ textAlign: 'center' }}>
-                           <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
-                             البطاقات التعليمية
-                           </Typography>
-                           <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
-                             {course.flashcard_count !== undefined ? course.flashcard_count : '...'}
-                           </Typography>
-                         </Box>
-                       </Box>
-                       
-                       {/* Continue button */}
-                       <Button
-                         variant="contained"
-                         size="small"
-                         sx={{
-                           background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                           borderRadius: 2,
-                           px: 2,
-                           py: 0.5,
-                           fontSize: '0.8rem',
-                           fontWeight: 600,
-                           textTransform: 'none',
-                           '&:hover': {
-                             background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                           }
-                         }}
-                       >
-                         متابعة
-                       </Button>
-                     </Box>
-                   </CardContent>
-                 </Card>
-               </motion.div>
-             ))}
-           </Box>
-         ) : (
-           <Box sx={{ 
-             textAlign: 'center', 
-             py: 6,
-             px: 3,
-             background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
-             borderRadius: 3,
-             border: '2px dashed #e0e0e0'
-           }}>
-             <SchoolIcon sx={{ 
-               fontSize: 64, 
-               color: '#ccc', 
-               mb: 2,
-               opacity: 0.6
-             }} />
-             <Typography variant="h6" color="text.secondary" sx={{ mb: 1, fontWeight: 600 }}>
-               لا توجد مقررات مسجلة
-             </Typography>
-             <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
-               لم تسجل في أي مقررات بعد. ابدأ رحلتك التعليمية بالتسجيل في مقرر جديد
-             </Typography>
-             <Button 
-               variant="contained" 
-               size="large"
-               startIcon={<AddIcon />}
-               sx={{ 
-                 borderRadius: 3,
-                 background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                 '&:hover': {
-                   background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                 }
-               }}
-               onClick={() => navigate('/courses')}
-             >
-               تصفح المقررات
-             </Button>
-           </Box>
-         )}
+                  {coursesLoading ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {[1, 2, 3].map((item) => (
+                        <Skeleton key={item} variant="rectangular" height={120} sx={{ borderRadius: 3 }} />
+                      ))}
+                    </Box>
+                  ) : courses.length > 0 ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {courses.map((course, index) => (
+                        <motion.div key={course.id} variants={item}>
+                          <Card
+                            sx={{
+                              borderRadius: 3,
+                              background: 'white',
+                              border: '1px solid #e0e0e0',
+                              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                              transition: 'all 0.3s ease',
+                              cursor: 'pointer',
+                              '&:hover': {
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+                                transform: 'translateY(-2px)',
+                                borderColor: '#333679'
+                              }
+                            }}
+                            onClick={() => handleCourseContinue(course.id)}
+                          >
+                            <CardContent sx={{ p: 3 }}>
+                              {/* Header with course info */}
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  {/* Course icon */}
+                                  <Box
+                                    sx={{
+                                      width: 48,
+                                      height: 48,
+                                      borderRadius: 2,
+                                      background: 'linear-gradient(135deg, #333679, #1a6ba8)',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      flexShrink: 0
+                                    }}
+                                  >
+                                    <SchoolIcon sx={{ color: 'white', fontSize: 22 }} />
+                                  </Box>
 
-        </Box>
+                                  {/* Course title and progress */}
+                                  <Box>
+                                    <Typography variant="h6" fontWeight={600} sx={{ color: '#333', fontSize: '1.1rem', mb: 0.5 }}>
+                                      {course.title}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.85rem' }}>
+                                      {course.completed_lessons || 0} من {course.total_lessons || 0} درس مكتمل
+                                    </Typography>
+                                  </Box>
+                                </Box>
+
+                                {/* Progress percentage */}
+                                <Box sx={{ textAlign: 'right' }}>
+                                  <Typography variant="h6" fontWeight={700} sx={{ color: '#333679', fontSize: '1.2rem' }}>
+                                    {Math.round(course.progress || 0)}%
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: '#666', fontSize: '0.75rem' }}>
+                                    مكتمل
+                                  </Typography>
+                                </Box>
+                              </Box>
+
+                              {/* Progress bar */}
+                              <Box sx={{ mb: 2 }}>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={Math.min(course.progress || 0, 100)}
+                                  sx={{
+                                    height: 8,
+                                    borderRadius: 4,
+                                    backgroundColor: '#f0f0f0',
+                                    '& .MuiLinearProgress-bar': {
+                                      background: 'linear-gradient(90deg, #333679, #1a6ba8)',
+                                      borderRadius: 4
+                                    }
+                                  }}
+                                />
+                              </Box>
+
+                              {/* Course stats */}
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Box sx={{ display: 'flex', gap: 3 }}>
+                                  <Box sx={{ textAlign: 'center' }}>
+                                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
+                                      الأسئلة
+                                    </Typography>
+                                    <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
+                                      {course.question_count !== undefined ? course.question_count : '...'}
+                                    </Typography>
+                                  </Box>
+                                  <Box sx={{ textAlign: 'center' }}>
+                                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
+                                      البطاقات التعليمية
+                                    </Typography>
+                                    <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
+                                      {course.flashcard_count !== undefined ? course.flashcard_count : '...'}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+
+                                {/* Continue button */}
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  sx={{
+                                    background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                                    borderRadius: 2,
+                                    px: 2,
+                                    py: 0.5,
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                      background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                                    }
+                                  }}
+                                >
+                                  متابعة
+                                </Button>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Box sx={{
+                      textAlign: 'center',
+                      py: 6,
+                      px: 3,
+                      background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+                      borderRadius: 3,
+                      border: '2px dashed #e0e0e0'
+                    }}>
+                      <SchoolIcon sx={{
+                        fontSize: 64,
+                        color: '#ccc',
+                        mb: 2,
+                        opacity: 0.6
+                      }} />
+                      <Typography variant="h6" color="text.secondary" sx={{ mb: 1, fontWeight: 600 }}>
+                        لا توجد مقررات مسجلة
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
+                        لم تسجل في أي مقررات بعد. ابدأ رحلتك التعليمية بالتسجيل في مقرر جديد
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        startIcon={<AddIcon />}
+                        sx={{
+                          borderRadius: 3,
+                          background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                          '&:hover': {
+                            background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                          }
+                        }}
+                        onClick={() => navigate('/courses')}
+                      >
+                        تصفح المقررات
+                      </Button>
+                    </Box>
+                  )}
+
+                </Box>
               )}
 
               {/* Calendar Tab - جدول المحاضرات والواجبات */}
-              {activeTab === 1 && (
+              {/* {activeTab === 1 && (
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="h5" fontWeight={700} sx={{ color: '#333' }}>
                       جدول المحاضرات والواجبات
-               </Typography>
+                    </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <IconButton
                         size="small"
@@ -760,7 +760,7 @@ const StudentDashboard = () => {
                       </IconButton>
                       <Typography variant="body1" sx={{ minWidth: 120, textAlign: 'center', color: '#333', fontWeight: 600 }}>
                         {currentDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
-                    </Typography>
+                      </Typography>
                       <IconButton
                         size="small"
                         sx={{ color: '#666' }}
@@ -768,37 +768,35 @@ const StudentDashboard = () => {
                       >
                         <ChevronRightIcon />
                       </IconButton>
-                  </Box>
+                    </Box>
                   </Box>
 
-                  {/* Calendar Grid - مطابق للصورة */}
-                  <Box sx={{ 
-                    border: '1px solid #e0e0e0', 
-                    borderRadius: 2, 
+                  <Box sx={{
+                    border: '1px solid #e0e0e0',
+                    borderRadius: 2,
                     overflow: 'hidden',
                     background: 'white'
                   }}>
-                    {/* Header Row */}
-                    <Box sx={{ 
-                      display: 'grid', 
+                    <Box sx={{
+                      display: 'grid',
                       gridTemplateColumns: '80px repeat(4, 1fr)',
                       borderBottom: '1px solid #e0e0e0',
                       background: '#f8f9fa'
                     }}>
-                      <Box sx={{ 
-                        p: 2, 
+                      <Box sx={{
+                        p: 2,
                         borderRight: '1px solid #e0e0e0',
-               display: 'flex', 
-               alignItems: 'center', 
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'center'
                       }}>
                         <Typography variant="body2" fontWeight={600} color="text.secondary">
                           الأيام
-               </Typography>
-                  </Box>
+                        </Typography>
+                      </Box>
                       {['الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'].map((day, index) => (
-                        <Box key={day} sx={{ 
-                          p: 2, 
+                        <Box key={day} sx={{
+                          p: 2,
                           borderRight: index < 3 ? '1px solid #e0e0e0' : 'none',
                           textAlign: 'center'
                         }}>
@@ -808,44 +806,40 @@ const StudentDashboard = () => {
                           <Typography variant="caption" color="text.secondary">
                             {10 + index}
                           </Typography>
-                </Box>
+                        </Box>
                       ))}
-       </Box>
-      
-                    {/* Time Rows */}
+                    </Box>
+
                     {['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00'].map((time, timeIndex) => (
-                      <Box key={time} sx={{ 
-                        display: 'grid', 
+                      <Box key={time} sx={{
+                        display: 'grid',
                         gridTemplateColumns: '80px repeat(4, 1fr)',
                         borderBottom: timeIndex < 6 ? '1px solid #e0e0e0' : 'none',
                         minHeight: 60
                       }}>
-                        {/* Time Column */}
-                        <Box sx={{ 
-                          p: 2, 
+                        <Box sx={{
+                          p: 2,
                           borderRight: '1px solid #e0e0e0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           background: '#f8f9fa'
                         }}>
                           <Typography variant="caption" color="text.secondary" fontWeight={500}>
                             {time}
-                  </Typography>
-                </Box>
+                          </Typography>
+                        </Box>
 
-                        {/* Day Columns */}
                         {[0, 1, 2, 3].map((dayIndex) => (
-                          <Box 
-                            key={dayIndex} 
-                  sx={{
-                              p: 1, 
+                          <Box
+                            key={dayIndex}
+                            sx={{
+                              p: 1,
                               borderRight: dayIndex < 3 ? '1px solid #e0e0e0' : 'none',
                               position: 'relative',
                               minHeight: 60
                             }}
                           >
-                            {/* Lecture/Assignment Blocks */}
                             {upcomingLectures
                               .filter(lecture => {
                                 const lectureTime = lecture.time.split(' - ')[0];
@@ -881,32 +875,32 @@ const StudentDashboard = () => {
                                   </Typography>
                                 </Box>
                               ))}
-              </Box>
+                          </Box>
                         ))}
-                     </Box>
-                 ))}
-               </Box>
-                  
+                      </Box>
+                    ))}
+                  </Box>
+
                   {upcomingLectures.length === 0 && (
                     <Box sx={{ textAlign: 'center', py: 4 }}>
                       <CalendarIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
                       <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                         لا توجد محاضرات أو واجبات مجدولة
-                       </Typography>
-                     <Button 
-                       variant="contained" 
-                       sx={{ 
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        sx={{
                           background: '#4DBFB3',
                           '&:hover': { background: '#f0a8a0' }
-                       }}
-                       onClick={() => navigate('/student/calendar')}
-                     >
+                        }}
+                        onClick={() => navigate('/student/calendar')}
+                      >
                         عرض التقويم الكامل
-                     </Button>
-                   </Box>
+                      </Button>
+                    </Box>
                   )}
                 </Box>
-              )}
+              )} */}
             </Box>
           </Card>
         </motion.div>
