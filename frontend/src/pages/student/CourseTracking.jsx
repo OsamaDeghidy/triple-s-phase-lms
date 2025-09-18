@@ -565,6 +565,171 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     );
   }
 
+  // Check if URL is a file (not video)
+  const isFileUrl = processedUrl && (
+    processedUrl.includes('.pdf') ||
+    processedUrl.includes('.doc') ||
+    processedUrl.includes('.docx') ||
+    processedUrl.includes('.ppt') ||
+    processedUrl.includes('.pptx') ||
+    processedUrl.includes('.xls') ||
+    processedUrl.includes('.xlsx') ||
+    processedUrl.includes('.txt') ||
+    processedUrl.includes('.zip') ||
+    processedUrl.includes('.rar') ||
+    processedUrl.includes('.mp3') ||
+    processedUrl.includes('.wav') ||
+    processedUrl.includes('.ogg')
+  );
+
+  // If it's a file URL, display it in an iframe or download link
+  if (isFileUrl) {
+    const fileName = processedUrl.split('/').pop() || 'ملف';
+    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+    
+    console.log('File detected:', processedUrl);
+    console.log('File name:', fileName);
+    console.log('File extension:', fileExtension);
+    
+    return (
+      <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+        {/* File indicator */}
+        <Box sx={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          zIndex: 10,
+          bgcolor: 'rgba(0,0,0,0.7)',
+          color: 'white',
+          px: 2,
+          py: 1,
+          borderRadius: 1,
+          fontSize: '0.75rem',
+          fontWeight: 'bold'
+        }}>
+          ملف خارجي
+        </Box>
+        
+        {/* File content area */}
+        <Box sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#f5f5f5',
+          p: 3
+        }}>
+          {/* File icon and info */}
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mb: 3,
+            textAlign: 'center'
+          }}>
+            {getFileIcon(fileName, fileExtension)}
+            <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: '#333' }}>
+              {fileName}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+              نوع الملف: {fileExtension.toUpperCase()}
+            </Typography>
+          </Box>
+
+          {/* Action buttons */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* Preview button for supported files */}
+            {(fileExtension === 'pdf' || fileExtension === 'txt') && (
+              <Button
+                variant="contained"
+                startIcon={<Visibility />}
+                onClick={() => {
+                  const iframe = document.createElement('iframe');
+                  iframe.src = processedUrl;
+                  iframe.style.width = '100%';
+                  iframe.style.height = '100%';
+                  iframe.style.border = 'none';
+                  
+                  // Create a new window for preview
+                  const previewWindow = window.open('', '_blank', 'width=800,height=600');
+                  previewWindow.document.write(`
+                    <html>
+                      <head><title>معاينة ${fileName}</title></head>
+                      <body style="margin:0; padding:0;">
+                        ${iframe.outerHTML}
+                      </body>
+                    </html>
+                  `);
+                  previewWindow.document.close();
+                }}
+                sx={{
+                  bgcolor: '#1976d2',
+                  '&:hover': { bgcolor: '#1565c0' }
+                }}
+              >
+                معاينة
+              </Button>
+            )}
+            
+            {/* Download button */}
+            <Button
+              variant="contained"
+              startIcon={<Download />}
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = processedUrl;
+                link.download = fileName;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              sx={{
+                bgcolor: '#4caf50',
+                '&:hover': { bgcolor: '#45a049' }
+              }}
+            >
+              تحميل
+            </Button>
+            
+            {/* Open in new tab button */}
+            <Button
+              variant="outlined"
+              startIcon={<OpenInNew />}
+              onClick={() => window.open(processedUrl, '_blank')}
+              sx={{
+                borderColor: '#1976d2',
+                color: '#1976d2',
+                '&:hover': { 
+                  borderColor: '#1565c0',
+                  bgcolor: 'rgba(25, 118, 210, 0.04)'
+                }
+              }}
+            >
+              فتح في نافذة جديدة
+            </Button>
+          </Box>
+
+          {/* File URL info */}
+          <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(0,0,0,0.05)', borderRadius: 1, maxWidth: '100%' }}>
+            <Typography variant="caption" sx={{ 
+              color: '#666', 
+              wordBreak: 'break-all',
+              fontSize: '0.7rem'
+            }}>
+              رابط الملف: {processedUrl}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
+
   if (!isValidVideoUrl) {
 
     return (
@@ -729,6 +894,154 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
           </Box>
 
+        ) : lessonData?.resources && lessonData.resources.length > 0 ? (
+          // عرض الملفات إذا كانت متاحة
+          <Box sx={{
+            width: '100%',
+            height: '100%',
+            p: 3,
+            overflow: 'auto',
+            bgcolor: 'rgba(255,255,255,0.95)',
+            color: 'text.primary'
+          }}>
+            <Typography variant="h5" sx={{ 
+              textAlign: 'right', 
+              mb: 3, 
+              color: 'primary.main',
+              fontWeight: 'bold'
+            }}>
+              ملفات الدرس
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {lessonData.resources.map((resource, index) => {
+                const fileName = resource.title || resource.name || resource.file_url?.split('/').pop() || `ملف ${index + 1}`;
+                const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+                const fileUrl = resource.file_url || resource.url;
+                const processedFileUrl = processFileUrl(fileUrl);
+                
+                return (
+                  <Box
+                    key={index}
+                    sx={{
+                      p: 2,
+                      border: '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      bgcolor: 'white',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                        transform: 'translateY(-2px)'
+                      }
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      {/* File icon */}
+                      <Box sx={{ 
+                        p: 1, 
+                        borderRadius: 1, 
+                        bgcolor: 'rgba(25, 118, 210, 0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        {getFileIcon(fileName, fileExtension)}
+                      </Box>
+                      
+                      {/* File info */}
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6" sx={{ 
+                          fontWeight: 'bold', 
+                          color: '#333',
+                          mb: 0.5
+                        }}>
+                          {fileName}
+                        </Typography>
+                        <Typography variant="body2" sx={{ 
+                          color: '#666',
+                          mb: 1
+                        }}>
+                          نوع الملف: {fileExtension.toUpperCase()} • حجم الملف: {resource.file_size || 'غير محدد'}
+                        </Typography>
+                        {resource.description && (
+                          <Typography variant="body2" sx={{ 
+                            color: '#888',
+                            fontSize: '0.85rem'
+                          }}>
+                            {resource.description}
+                          </Typography>
+                        )}
+                      </Box>
+                      
+                      {/* Action buttons */}
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        {/* Preview button for supported files */}
+                        {(fileExtension === 'pdf' || fileExtension === 'txt') && (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<Visibility />}
+                            onClick={() => {
+                              const iframe = document.createElement('iframe');
+                              iframe.src = processedFileUrl;
+                              iframe.style.width = '100%';
+                              iframe.style.height = '100%';
+                              iframe.style.border = 'none';
+                              
+                              const previewWindow = window.open('', '_blank', 'width=800,height=600');
+                              previewWindow.document.write(`
+                                <html>
+                                  <head><title>معاينة ${fileName}</title></head>
+                                  <body style="margin:0; padding:0;">
+                                    ${iframe.outerHTML}
+                                  </body>
+                                </html>
+                              `);
+                              previewWindow.document.close();
+                            }}
+                            sx={{ minWidth: 'auto' }}
+                          >
+                            معاينة
+                          </Button>
+                        )}
+                        
+                        {/* Download button */}
+                        <Button
+                          size="small"
+                          variant="contained"
+                          startIcon={<Download />}
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = processedFileUrl;
+                            link.download = fileName;
+                            link.target = '_blank';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          sx={{ minWidth: 'auto' }}
+                        >
+                          تحميل
+                        </Button>
+                        
+                        {/* Open in new tab button */}
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<OpenInNew />}
+                          onClick={() => window.open(processedFileUrl, '_blank')}
+                          sx={{ minWidth: 'auto' }}
+                        >
+                          فتح
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
         ) : (
 
           <>
