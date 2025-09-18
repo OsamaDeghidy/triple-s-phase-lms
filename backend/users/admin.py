@@ -28,20 +28,21 @@ class StatusFilter(SimpleListFilter):
         return queryset
 
 
-class ProfileInline(admin.StackedInline):
-    model = Profile
-    can_delete = False
-    verbose_name_plural = 'الملف الشخصي'
-    fields = (
-        ('name', 'status'),
-        ('email', 'phone'),
-        'image_profile',
-        'shortBio',
-        'detail',
-        ('github', 'youtube'),
-        ('twitter', 'facebook'),
-        ('instagram', 'linkedin'),
-    )
+# ProfileInline removed from User admin - Profile is now managed separately
+# class ProfileInline(admin.StackedInline):
+#     model = Profile
+#     can_delete = False
+#     verbose_name_plural = 'الملف الشخصي'
+#     fields = (
+#         ('name', 'status'),
+#         ('email', 'phone'),
+#         'image_profile',
+#         'shortBio',
+#         'detail',
+#         ('github', 'youtube'),
+#         ('twitter', 'facebook'),
+#         ('instagram', 'linkedin'),
+#     )
 
 
 class InstructorInline(admin.StackedInline):
@@ -81,16 +82,39 @@ admin.site.unregister(User)
 
 @admin.register(User)
 class CustomUserAdmin(BaseUserAdmin):
-    inlines = (ProfileInline, InstructorInline, StudentInline) if hasattr(settings, 'SHOW_ALL_INLINES') else (ProfileInline,)
-    list_display = (
-        'username', 'email', 'first_name', 'last_name', 
-        'user_status', 'profile_image', 'is_active', 
-        'courses_count', 'date_joined'
-    )
-    list_filter = (
-        StatusFilter, 'is_active', 'is_staff', 'is_superuser', 'date_joined'
-    )
+    inlines = (InstructorInline, StudentInline) if hasattr(settings, 'SHOW_ALL_INLINES') else ()
+    def get_list_display(self, request):
+        """Hide permissions from list display for non-superusers"""
+        base_display = [
+            'username', 'email', 'first_name', 'last_name', 
+            'user_status', 'profile_image', 'is_active', 
+            'courses_count', 'date_joined'
+        ]
+        if request.user.is_superuser:
+            base_display.extend(['is_staff', 'is_superuser'])
+        return base_display
+    def get_list_filter(self, request):
+        """Hide permissions filters for non-superusers"""
+        base_filters = [StatusFilter, 'is_active', 'date_joined']
+        if request.user.is_superuser:
+            base_filters.extend(['is_staff', 'is_superuser'])
+        return base_filters
     search_fields = ('username', 'first_name', 'last_name', 'email', 'profile__name')
+    
+    # Hide permissions section from user edit form
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('معلومات شخصية', {'fields': ('first_name', 'last_name', 'email')}),
+        ('معلومات مهمة', {'fields': ('is_active', 'date_joined', 'last_login')}),
+    )
+    
+    # Remove permissions fieldsets
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2'),
+        }),
+    )
     
     def user_status(self, obj):
         try:
@@ -144,6 +168,35 @@ class CustomUserAdmin(BaseUserAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('profile').prefetch_related('course_enrollments')
+    
+    def get_fieldsets(self, request, obj=None):
+        """Hide permissions for non-superusers"""
+        if not request.user.is_superuser:
+            # For non-superusers, show only basic fields
+            return (
+                (None, {'fields': ('username', 'password')}),
+                ('معلومات شخصية', {'fields': ('first_name', 'last_name', 'email')}),
+                ('معلومات مهمة', {'fields': ('is_active', 'date_joined', 'last_login')}),
+            )
+        return super().get_fieldsets(request, obj)
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Make certain fields readonly for non-superusers"""
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if not request.user.is_superuser:
+            readonly_fields.extend(['is_staff', 'is_superuser', 'user_permissions', 'groups'])
+        return readonly_fields
+    
+    def get_add_fieldsets(self, request, obj=None):
+        """Customize add form fieldsets"""
+        if not request.user.is_superuser:
+            return (
+                (None, {
+                    'classes': ('wide',),
+                    'fields': ('username', 'password1', 'password2'),
+                }),
+            )
+        return super().get_add_fieldsets(request, obj)
 
 
 @admin.register(Profile)
