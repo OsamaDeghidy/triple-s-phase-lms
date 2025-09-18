@@ -51,6 +51,15 @@ class Module(models.Model):
         related_name='modules',
         verbose_name=_('course')
     )
+    submodule = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        related_name='submodules',
+        null=True,
+        blank=True,
+        verbose_name=_('submodule'),
+        help_text=_('Parent module if this is a submodule (optional)')
+    )
     description = models.TextField(
         _('description'),
         blank=True,
@@ -141,6 +150,18 @@ class Module(models.Model):
             raise ValidationError({
                 'is_active': _('A published module must be active')
             })
+        
+        # Validate submodule belongs to the same course
+        if self.submodule and self.submodule.course != self.course:
+            raise ValidationError({
+                'submodule': _('Submodule must belong to the same course')
+            })
+        
+        # Prevent circular references
+        if self.submodule and self.submodule == self:
+            raise ValidationError({
+                'submodule': _('A module cannot be its own submodule')
+            })
     
     def save(self, *args, **kwargs):
         """Override save to ensure clean is called.
@@ -170,6 +191,28 @@ class Module(models.Model):
         return self.lessons.aggregate(
             total=models.Sum('duration_minutes')
         )['total'] or 0
+    
+    @property
+    def is_submodule(self):
+        """Check if this module is a submodule"""
+        return self.submodule is not None
+    
+    @property
+    def parent_module(self):
+        """Get the parent module if this is a submodule"""
+        return self.submodule
+    
+    @property
+    def submodules_count(self):
+        """Get count of submodules"""
+        return self.submodules.count()
+    
+    def get_all_submodules(self):
+        """Get all submodules recursively"""
+        submodules = list(self.submodules.all())
+        for submodule in submodules:
+            submodules.extend(submodule.get_all_submodules())
+        return submodules
 
 
 class Lesson(models.Model):

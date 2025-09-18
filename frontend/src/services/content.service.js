@@ -54,7 +54,7 @@ export const contentAPI = {
     return response.data;
   },
 
-  createModule: async ({ courseId, name, title, description, order, isActive, status, durationMinutes, videoDurationSeconds, pdfFile, videoFile, note }) => {
+  createModule: async ({ courseId, name, title, description, order, isActive, status, durationMinutes, videoDurationSeconds, pdfFile, videoFile, note, submodule }) => {
     const formData = new FormData();
     formData.append('course', courseId);
     if (name || title) formData.append('name', name || title);
@@ -62,6 +62,7 @@ export const contentAPI = {
     if (typeof order !== 'undefined') formData.append('order', String(order));
     if (typeof isActive !== 'undefined') formData.append('is_active', isActive ? 'true' : 'false');
     if (status) formData.append('status', status); // draft/published/archived
+    if (submodule) formData.append('submodule', submodule); // Add submodule support
     // The model has video_duration (seconds). Prefer explicit seconds, else convert minutes
     const seconds = typeof videoDurationSeconds === 'number' ? videoDurationSeconds : (typeof durationMinutes === 'number' ? Math.round(durationMinutes * 60) : 0);
     if (seconds) formData.append('video_duration', String(seconds));
@@ -75,13 +76,14 @@ export const contentAPI = {
     return response.data;
   },
 
-  updateModule: async (moduleId, { name, title, description, order, isActive, status, durationMinutes, videoDurationSeconds, pdfFile, videoFile, note }) => {
+  updateModule: async (moduleId, { name, title, description, order, isActive, status, durationMinutes, videoDurationSeconds, pdfFile, videoFile, note, submodule }) => {
     const formData = new FormData();
     if (name || title) formData.append('name', name || title);
     if (description != null) formData.append('description', description);
     if (typeof order !== 'undefined') formData.append('order', String(order));
     if (typeof isActive !== 'undefined') formData.append('is_active', isActive ? 'true' : 'false');
     if (status) formData.append('status', status);
+    if (submodule !== undefined) formData.append('submodule', submodule || ''); // Add submodule support
     const seconds = typeof videoDurationSeconds === 'number' ? videoDurationSeconds : (typeof durationMinutes === 'number' ? Math.round(durationMinutes * 60) : undefined);
     if (typeof seconds !== 'undefined') formData.append('video_duration', String(seconds));
     if (note) formData.append('note', note);
@@ -92,6 +94,23 @@ export const contentAPI = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
+  },
+
+  deleteModule: async (moduleId) => {
+    try {
+      const response = await api.delete(`/api/content/modules/${moduleId}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting module:', error);
+      if (error.response?.data) {
+        const errorMessage = error.response.data.error || 
+                           error.response.data.details || 
+                           error.response.data.message ||
+                           'حدث خطأ أثناء حذف الوحدة';
+        throw new Error(errorMessage);
+      }
+      throw new Error('حدث خطأ أثناء حذف الوحدة');
+    }
   },
 
   // Lesson resources
@@ -180,6 +199,22 @@ export const contentAPI = {
 
   getCourseFlashcards: async (courseId) => {
     const response = await api.get(`/api/content/course/${courseId}/flashcards/`);
+    return response.data;
+  },
+
+  // Submodule specific APIs
+  getSubmodules: async (moduleId) => {
+    const response = await api.get(`/api/content/modules/${moduleId}/submodules/`);
+    return response.data;
+  },
+
+  getMainModules: async (courseId) => {
+    const response = await api.get('/api/content/modules/', {
+      params: { 
+        course_id: courseId, 
+        main_modules_only: 'true' 
+      },
+    });
     return response.data;
   },
 };

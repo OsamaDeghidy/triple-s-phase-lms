@@ -28,6 +28,7 @@ import {
   Avatar,
   Badge,
   LinearProgress,
+  CircularProgress,
   Alert,
   Snackbar,
   Menu,
@@ -69,10 +70,12 @@ import {
   RestoreFromTrash as RestoreIcon,
   AddCircleOutline,
   AddCircle,
+  SubdirectoryArrowRight as SubdirectoryArrowRightIcon,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
+import { courseAPI } from '../../../services/api.service';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -121,9 +124,11 @@ const Units = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [units, setUnits] = useState([]);
+  const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('order');
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -132,6 +137,17 @@ const Units = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // تحميل بيانات الكورس
+  const fetchCourse = async () => {
+    try {
+      const courseData = await courseAPI.getCourse(courseId);
+      setCourse(courseData);
+      console.log('Course loaded:', courseData);
+    } catch (error) {
+      console.error('Error fetching course:', error);
+    }
+  };
 
   // يتم الجلب من API بدلاً من البيانات الوهمية
 
@@ -157,6 +173,10 @@ const Units = () => {
           completedLessons: 0,
           createdAt: m.created_at,
           updatedAt: m.updated_at,
+          submodule: m.submodule || null,
+          submodule_name: m.submodule_name || null,
+          is_submodule: m.is_submodule || false,
+          submodules_count: m.submodules_count || 0,
         }));
         setUnits(mapped);
       } catch (error) {
@@ -171,17 +191,24 @@ const Units = () => {
       }
     };
 
+    fetchCourse();
     fetchUnits();
   }, [courseId]);
 
   const handleMenuOpen = (event, unit) => {
+    console.log('Menu opened for unit:', unit);
+    console.log('Setting selectedUnit to:', unit);
     setAnchorEl(event.currentTarget);
     setSelectedUnit(unit);
+    console.log('selectedUnit state updated');
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedUnit(null);
+    // Only clear selectedUnit if dialog is not open
+    if (!openDeleteDialog) {
+      setSelectedUnit(null);
+    }
   };
 
   const handleEditUnit = (unit) => {
@@ -206,18 +233,151 @@ const Units = () => {
   };
 
   const handleDeleteUnit = () => {
-    handleMenuClose();
+    console.log('handleDeleteUnit called for unit:', selectedUnit);
+    console.log('Setting openDeleteDialog to true');
+    // Don't close menu yet, keep selectedUnit for the dialog
+    setAnchorEl(null); // Close menu but keep selectedUnit
     setOpenDeleteDialog(true);
   };
 
-  const confirmDeleteUnit = () => {
+  const confirmDeleteUnit = async () => {
+    console.log('confirmDeleteUnit called');
+    console.log('selectedUnit:', selectedUnit);
+    console.log('selectedUnit type:', typeof selectedUnit);
+    console.log('selectedUnit is null:', selectedUnit === null);
+    console.log('selectedUnit is undefined:', selectedUnit === undefined);
+    
     if (selectedUnit) {
-      // Simulate API call
-      setUnits(prev => prev.filter(unit => unit.id !== selectedUnit.id));
+      try {
+        setLoading(true);
+        
+        console.log('Starting delete process for unit:', selectedUnit.id);
+        console.log('Token exists:', !!localStorage.getItem('token'));
+        console.log('Token value:', localStorage.getItem('token'));
+        console.log('Course data:', course);
+        
+        // Check authentication
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        if (!token || !user) {
+          setSnackbar({
+            open: true,
+            message: 'يجب تسجيل الدخول أولاً',
+            severity: 'error'
+          });
+          setOpenDeleteDialog(false);
+          setSelectedUnit(null);
+          setLoading(false);
+          return;
+        }
+        
+        // Parse user data to check role
+        try {
+          const userData = JSON.parse(user);
+          console.log('User data:', userData);
+          console.log('User profile:', userData.profile);
+          
+          // Get role from profile or user data
+          const userRole = userData.profile?.status || userData.role || 'student';
+          console.log('User role:', userRole);
+          
+          // Check if user is teacher, instructor, or admin
+          if (!['teacher', 'instructor', 'admin'].includes(userRole.toLowerCase())) {
+            setSnackbar({
+              open: true,
+              message: 'ليس لديك صلاحية لحذف الوحدات',
+              severity: 'error'
+            });
+            setOpenDeleteDialog(false);
+            setSelectedUnit(null);
+            setLoading(false);
+            return;
+          }
+          
+          // Check if user is the course owner (for teachers/instructors)
+          if (['teacher', 'instructor'].includes(userRole.toLowerCase()) && course && course.instructor_id !== userData.id) {
+            setSnackbar({
+              open: true,
+              message: 'يمكنك حذف وحدات الكورسات التي تملكها فقط',
+              severity: 'error'
+            });
+            setOpenDeleteDialog(false);
+            setSelectedUnit(null);
+            setLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          setSnackbar({
+            open: true,
+            message: 'خطأ في بيانات المستخدم',
+            severity: 'error'
+          });
+          setOpenDeleteDialog(false);
+          setSelectedUnit(null);
+          setLoading(false);
+          return;
+        }
+        
+        // Check if unit has submodules
+        if (selectedUnit.submodules_count > 0) {
+          setSnackbar({
+            open: true,
+            message: 'لا يمكن حذف الوحدة لأنها تحتوي على وحدات فرعية',
+            severity: 'error'
+          });
+          setOpenDeleteDialog(false);
+          setSelectedUnit(null);
+          setLoading(false);
+          return;
+        }
+        
+        console.log('Calling deleteModule API...');
+        // Call API to delete the unit
+        await contentAPI.deleteModule(selectedUnit.id);
+        console.log('Delete API call successful');
+        
+        // Update local state
+        setUnits(prev => prev.filter(unit => unit.id !== selectedUnit.id));
+        setSnackbar({
+          open: true,
+          message: 'تم حذف الوحدة بنجاح',
+          severity: 'success'
+        });
+      } catch (error) {
+        console.error('Error deleting unit:', error);
+        console.error('Error response:', error.response);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
+        
+        let errorMessage = 'حدث خطأ أثناء حذف الوحدة';
+        
+        if (error.response?.status === 401) {
+          errorMessage = 'يجب تسجيل الدخول أولاً';
+        } else if (error.response?.status === 403) {
+          errorMessage = 'ليس لديك صلاحية لحذف هذه الوحدة';
+        } else if (error.response?.status === 404) {
+          errorMessage = 'الوحدة غير موجودة';
+        } else if (error.response?.status === 400) {
+          errorMessage = error.response.data?.error || 'لا يمكن حذف هذه الوحدة';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        setSnackbar({
+          open: true,
+          message: errorMessage,
+          severity: 'error'
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      console.log('No selectedUnit found, cannot delete');
       setSnackbar({
         open: true,
-        message: 'تم حذف الوحدة بنجاح',
-        severity: 'success'
+        message: 'لم يتم تحديد وحدة للحذف',
+        severity: 'error'
       });
     }
     setOpenDeleteDialog(false);
@@ -258,7 +418,10 @@ const Units = () => {
     const matchesSearch = unit.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          unit.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || unit.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    const matchesType = filterType === 'all' || 
+                       (filterType === 'main' && !unit.is_submodule) ||
+                       (filterType === 'sub' && unit.is_submodule);
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   const sortedUnits = [...filteredUnits].sort((a, b) => {
@@ -278,6 +441,9 @@ const Units = () => {
 
   const getUnitIcon = (unit) => {
     // You can customize this based on unit type or content
+    if (unit.is_submodule) {
+      return <SubdirectoryArrowRightIcon />;
+    }
     return <ArticleIcon />;
   };
 
@@ -435,6 +601,19 @@ const Units = () => {
           </FormControl>
           
           <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>نوع الوحدة</InputLabel>
+            <Select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              label="نوع الوحدة"
+            >
+              <MenuItem value="all">الكل</MenuItem>
+              <MenuItem value="main">وحدات رئيسية</MenuItem>
+              <MenuItem value="sub">وحدات فرعية</MenuItem>
+            </Select>
+          </FormControl>
+          
+          <FormControl sx={{ minWidth: 150 }}>
             <InputLabel>ترتيب حسب</InputLabel>
             <Select
               value={sortBy}
@@ -473,11 +652,11 @@ const Units = () => {
                 <TableHead>
                   <TableRow sx={{ backgroundColor: theme.palette.primary.main }}>
                     <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>الوحدة</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>الوصف</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>المدة</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>عدد الدروس</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>الحالة</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>التقدم</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center', maxWidth: '200px' }}>الوصف</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 1, textAlign: 'center', width: '120px', minWidth: '120px' }}>الوحدة الرئيسية</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 2, textAlign: 'center', width: '100px', minWidth: '100px' }}>المدة</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 2, textAlign: 'center', width: '100px', minWidth: '100px' }}>عدد الدروس</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 2, textAlign: 'center', width: '120px', minWidth: '120px' }}>الحالة</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 600, py: 2, px: 3, textAlign: 'center' }}>الإجراءات</TableCell>
                   </TableRow>
                 </TableHead>
@@ -508,7 +687,7 @@ const Units = () => {
                           </Box>
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ py: 2, px: 3 }}>
+                      <TableCell sx={{ py: 2, px: 3, maxWidth: '200px' }}>
                         <Typography 
                           variant="body2" 
                           sx={{ 
@@ -522,19 +701,43 @@ const Units = () => {
                           {unit.description || 'لا يوجد وصف'}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ py: 2, px: 3, textAlign: 'center' }}>
+                      <TableCell sx={{ py: 2, px: 1, textAlign: 'center', width: '120px', minWidth: '120px' }}>
+                        {unit.is_submodule ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                            <Chip
+                              label={unit.submodule_name || 'وحدة فرعية'}
+                              color="secondary"
+                              size="small"
+                              variant="outlined"
+                              sx={{ 
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                height: '24px',
+                                '& .MuiChip-label': {
+                                  px: 1
+                                }
+                              }}
+                            />
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.8rem' }}>
+                            وحدة رئيسية
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ py: 2, px: 2, textAlign: 'center', width: '100px', minWidth: '100px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                          <AccessTimeIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {unit.duration} دقيقة
+                          <AccessTimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>
+                            {unit.duration} د
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ py: 2, px: 3, textAlign: 'center' }}>
+                      <TableCell sx={{ py: 2, px: 2, textAlign: 'center', width: '100px', minWidth: '100px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                          <ArticleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {unit.lessonsCount} درس
+                          <ArticleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>
+                            {unit.lessonsCount}
                           </Typography>
                         </Box>
                       </TableCell>
@@ -556,26 +759,6 @@ const Units = () => {
                               sx={{ fontWeight: 600, minWidth: 70 }}
                             />
                           )}
-                        </Box>
-                      </TableCell>
-                      <TableCell sx={{ py: 2, px: 3, textAlign: 'center' }}>
-                        <Box sx={{ width: 120, mx: 'auto' }}>
-                          <LinearProgress
-                            variant="determinate"
-                            value={unit.lessonsCount ? (unit.completedLessons / unit.lessonsCount) * 100 : 0}
-                            sx={{ 
-                              height: 8, 
-                              borderRadius: 4, 
-                              mb: 1,
-                              backgroundColor: 'grey.200',
-                              '& .MuiLinearProgress-bar': {
-                                borderRadius: 4,
-                              }
-                            }}
-                          />
-                          <Typography variant="caption" color="textSecondary" sx={{ fontSize: '0.75rem' }}>
-                            {unit.completedLessons} من {unit.lessonsCount}
-                          </Typography>
                         </Box>
                       </TableCell>
                       <TableCell sx={{ py: 2, px: 3, textAlign: 'center' }}>
@@ -673,7 +856,10 @@ const Units = () => {
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        onClose={() => {
+          console.log('Menu close clicked');
+          handleMenuClose();
+        }}
         PaperProps={{
           sx: {
             borderRadius: '12px',
@@ -681,26 +867,38 @@ const Units = () => {
           },
         }}
       >
-        <MenuItem onClick={() => handleViewUnit(selectedUnit)}>
+        <MenuItem onClick={() => {
+          console.log('View menu item clicked');
+          handleViewUnit(selectedUnit);
+        }}>
           <ListItemIcon>
             <VisibilityIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>عرض الوحدة</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => handleOpenLessons(selectedUnit)}>
+        <MenuItem onClick={() => {
+          console.log('Lessons menu item clicked');
+          handleOpenLessons(selectedUnit);
+        }}>
           <ListItemIcon>
             <LibraryBooksIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>الدروس</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => handleEditUnit(selectedUnit)}>
+        <MenuItem onClick={() => {
+          console.log('Edit menu item clicked');
+          handleEditUnit(selectedUnit);
+        }}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>تعديل الوحدة</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleDeleteUnit} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => {
+          console.log('Delete menu item clicked');
+          handleDeleteUnit();
+        }} sx={{ color: 'error.main' }}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" color="error" />
           </ListItemIcon>
@@ -711,7 +909,11 @@ const Units = () => {
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
+        onClose={() => {
+          console.log('Dialog close clicked');
+          setOpenDeleteDialog(false);
+          setSelectedUnit(null); // Clear selectedUnit when dialog closes
+        }}
         PaperProps={{
           sx: { borderRadius: '12px' },
         }}
@@ -721,13 +923,28 @@ const Units = () => {
           <Typography>
             هل أنت متأكد من حذف الوحدة "{selectedUnit?.title}"؟ هذا الإجراء لا يمكن التراجع عنه.
           </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            Unit ID: {selectedUnit?.id}
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>
+          <Button onClick={() => {
+            setOpenDeleteDialog(false);
+            setSelectedUnit(null);
+          }} disabled={loading}>
             إلغاء
           </Button>
-          <Button onClick={confirmDeleteUnit} color="error" variant="contained">
-            حذف
+          <Button 
+            onClick={() => {
+              console.log('Delete button clicked in dialog');
+              confirmDeleteUnit();
+            }} 
+            color="error" 
+            variant="contained"
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={16} /> : null}
+          >
+            {loading ? 'جاري الحذف...' : 'حذف'}
           </Button>
         </DialogActions>
       </Dialog>

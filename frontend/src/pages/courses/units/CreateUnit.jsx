@@ -160,6 +160,7 @@ const CreateUnit = () => {
     videoFile: null,
     pdfFile: null,
     order: 1,
+    submodule: '',
     lessons: [
       {
         id: Date.now(),
@@ -172,6 +173,8 @@ const CreateUnit = () => {
       },
     ],
   });
+
+  const [modules, setModules] = useState([]);
 
   // لا يوجد خطوات بعد الآن
 
@@ -196,6 +199,11 @@ const CreateUnit = () => {
       try {
         const data = await contentAPI.getModules(courseId);
         const items = Array.isArray(data?.results) ? data.results : Array.isArray(data) ? data : data?.modules || [];
+        
+        // Set modules for submodule selection (only main modules)
+        const mainModules = items.filter(m => !m.is_submodule);
+        setModules(mainModules);
+        
         const maxOrder = items.reduce((max, m) => (typeof m.order === 'number' && m.order > max ? m.order : max), 0);
         setUnitData(prev => ({ ...prev, order: maxOrder + 1 }));
       } catch (e) {
@@ -264,6 +272,7 @@ const CreateUnit = () => {
         isActive: true,
         status: 'published',
         order: unitData.order,
+        submodule: unitData.submodule || null, // Add submodule support
       };
       
       // Only add files if they exist
@@ -360,6 +369,28 @@ const CreateUnit = () => {
             multiline
             rows={4}
           />
+
+          <FormControl fullWidth>
+            <InputLabel>الوحدة الرئيسية (اختياري)</InputLabel>
+            <Select
+              name="submodule"
+              value={unitData.submodule}
+              onChange={handleChange}
+              label="الوحدة الرئيسية (اختياري)"
+            >
+              <MenuItem value="">
+                <em>لا توجد - وحدة رئيسية</em>
+              </MenuItem>
+              {modules.map((module) => (
+                <MenuItem key={module.id} value={module.id}>
+                  {module.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              اختر الوحدة الرئيسية إذا كانت هذه وحدة فرعية
+            </FormHelperText>
+          </FormControl>
 
           <StyledTextField
             fullWidth

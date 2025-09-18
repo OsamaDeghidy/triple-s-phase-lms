@@ -36,7 +36,7 @@ class ModuleProgressSerializer(serializers.ModelSerializer):
     def get_completed_lessons(self, obj):
         """Get number of completed lessons in the module"""
         return obj.module.lessons.filter(
-            userprogress__user=obj.user,
+            userprogress__user_id=obj.user.id,
             userprogress__is_completed=True
         ).count()
     
@@ -73,7 +73,7 @@ class ModuleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = [
-            'id', 'name', 'course', 'description', 'video',
+            'id', 'name', 'course', 'submodule', 'description', 'video',
             'video_duration', 'pdf', 'note', 'status', 'is_active', 'order'
         ]
         read_only_fields = ['id']
@@ -85,25 +85,40 @@ class ModuleCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'order': 'A module with this order already exists for this course.'
                 })
+        
+        # Validate submodule belongs to the same course
+        if data.get('submodule') and data.get('course'):
+            if data['submodule'].course != data['course']:
+                raise serializers.ValidationError({
+                    'submodule': 'Submodule must belong to the same course'
+                })
+        
         return data
 
 
 class ModuleBasicSerializer(serializers.ModelSerializer):
     """Basic serializer for Module model"""
     course_name = serializers.CharField(source='course.title', read_only=True)
+    submodule_name = serializers.CharField(source='submodule.name', read_only=True)
+    is_submodule = serializers.BooleanField(read_only=True)
+    submodules_count = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Module
         fields = [
-            'id', 'name', 'description', 'course', 'course_name',
-            'order', 'is_active', 'created_at', 'video_duration'
+            'id', 'name', 'description', 'course', 'course_name', 'submodule', 'submodule_name',
+            'order', 'is_active', 'created_at', 'video_duration', 'is_submodule', 'submodules_count'
         ]
-        read_only_fields = ['id', 'created_at', 'course_name']
+        read_only_fields = ['id', 'created_at', 'course_name', 'submodule_name', 'is_submodule', 'submodules_count']
 
 
 class ModuleDetailSerializer(serializers.ModelSerializer):
     """Detailed serializer for Module model with user progress"""
     course_name = serializers.CharField(source='course.title', read_only=True)
+    submodule_name = serializers.CharField(source='submodule.name', read_only=True)
+    is_submodule = serializers.BooleanField(read_only=True)
+    submodules_count = serializers.IntegerField(read_only=True)
+    submodules = serializers.SerializerMethodField()
     user_progress = serializers.SerializerMethodField()
     lessons = serializers.SerializerMethodField()
     # Expose file fields so edit form can load/show existing uploads and allow updating
@@ -113,11 +128,11 @@ class ModuleDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = [
-            'id', 'name', 'description', 'course', 'course_name', 'order',
-            'status', 'is_active', 'created_at', 'updated_at', 'user_progress',
-            'lessons', 'video_duration', 'video', 'pdf'
+            'id', 'name', 'description', 'course', 'course_name', 'submodule', 'submodule_name',
+            'order', 'status', 'is_active', 'created_at', 'updated_at', 'user_progress',
+            'lessons', 'video_duration', 'video', 'pdf', 'is_submodule', 'submodules_count', 'submodules'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'submodule_name', 'is_submodule', 'submodules_count', 'submodules']
 
     def update(self, instance, validated_data):
         """
@@ -143,41 +158,51 @@ class ModuleDetailSerializer(serializers.ModelSerializer):
     
     def get_user_progress(self, obj):
         request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            try:
-                progress = ModuleProgress.objects.get(
-                    user=request.user,
-                    module=obj
-                )
-                # Calculate progress percentage based on completed components
-                total_components = 4  # video, pdf, notes, quiz
-                completed_components = sum([
-                    progress.video_watched,
-                    progress.pdf_viewed,
-                    progress.notes_read,
-                    progress.quiz_completed
-                ])
-                progress_percentage = (completed_components / total_components) * 100 if total_components > 0 else 0
-                
-                return {
-                    'is_completed': progress.is_completed,
-                    'completed_at': progress.completed_at,
-                    'progress_percentage': round(progress_percentage, 2),
-                    'video_watched': progress.video_watched,
-                    'pdf_viewed': progress.pdf_viewed,
-                    'notes_read': progress.notes_read,
-                    'quiz_completed': progress.quiz_completed,
-                    'video_progress': progress.video_progress,
-                    'quiz_score': progress.quiz_score,
-                    'status': progress.status
-                }
-            except ModuleProgress.DoesNotExist:
-                pass
+        if not request or not hasattr(request, 'user'):
+            return None
+            
+        user = request.user
+        if not hasattr(user, 'is_authenticated') or not user.is_authenticated or user.is_anonymous:
+            return None
+            
+        try:
+            progress = ModuleProgress.objects.get(
+                user_id=user.id,
+                module=obj
+            )
+            # Calculate progress percentage based on completed components
+            total_components = 4  # video, pdf, notes, quiz
+            completed_components = sum([
+                progress.video_watched,
+                progress.pdf_viewed,
+                progress.notes_read,
+                progress.quiz_completed
+            ])
+            progress_percentage = (completed_components / total_components) * 100 if total_components > 0 else 0
+            
+            return {
+                'is_completed': progress.is_completed,
+                'completed_at': progress.completed_at,
+                'progress_percentage': round(progress_percentage, 2),
+                'video_watched': progress.video_watched,
+                'pdf_viewed': progress.pdf_viewed,
+                'notes_read': progress.notes_read,
+                'quiz_completed': progress.quiz_completed,
+                'video_progress': progress.video_progress,
+                'quiz_score': progress.quiz_score,
+                'status': progress.status
+            }
+        except ModuleProgress.DoesNotExist:
+            pass
         return None
     
     def get_lessons(self, obj):
         lessons = obj.lessons.all().order_by('order')
         return LessonSerializer(lessons, many=True, context=self.context).data
+    
+    def get_submodules(self, obj):
+        submodules = obj.submodules.all().order_by('order')
+        return ModuleBasicSerializer(submodules, many=True, context=self.context).data
 
 
 class LessonBasicSerializer(serializers.ModelSerializer):
@@ -226,7 +251,7 @@ class LessonDetailSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             try:
                 progress = ModuleProgress.objects.get(
-                    user=request.user,
+                    user_id=request.user.id,
                     module=obj.module
                 )
                 return {

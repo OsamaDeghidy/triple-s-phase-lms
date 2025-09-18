@@ -37,21 +37,22 @@ class ModuleProgressInline(admin.StackedInline):
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'course', 'status', 'is_active', 'order',
-        'lesson_count', 'created_at'
+        'name', 'course', 'submodule', 'status', 'is_active', 'order',
+        'lesson_count', 'submodules_count', 'created_at'
     ]
-    list_filter = ['status', 'is_active', 'created_at']
+    list_filter = ['status', 'is_active', 'submodule', 'created_at']
     search_fields = ['name', 'description', 'course__name']
     list_editable = ['status', 'is_active', 'order']
     readonly_fields = [
-        'created_at', 'updated_at', 'published_at', 'total_duration'
+        'created_at', 'updated_at', 'published_at', 'total_duration',
+        'submodules_count', 'is_submodule'
     ]
     inlines = [LessonInline, ModuleProgressInline]
     filter_horizontal = ['prerequisites']
     fieldsets = [
         (None, {
             'fields': [
-                'name', 'course', 'description', 'status', 'is_active', 'order'
+                'name', 'course', 'submodule', 'description', 'status', 'is_active', 'order'
             ]
         }),
         ('Content', {
@@ -75,6 +76,10 @@ class ModuleAdmin(admin.ModelAdmin):
     def lesson_count(self, obj):
         return obj.lessons.count()
     lesson_count.short_description = 'Lessons'
+    
+    def submodules_count(self, obj):
+        return obj.submodules.count()
+    submodules_count.short_description = 'Submodules'
 
 
 class LessonResourceInline(admin.TabularInline):

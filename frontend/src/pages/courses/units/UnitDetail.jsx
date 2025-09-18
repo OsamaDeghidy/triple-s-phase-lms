@@ -103,6 +103,10 @@ const UnitDetail = () => {
           order: data?.order,
           status: data?.status || (data?.is_active ? 'published' : 'draft'),
           isPreview: data?.is_active === false,
+          submodule: data?.submodule || null,
+          submodule_name: data?.submodule_name || null,
+          is_submodule: data?.is_submodule || false,
+          submodules_count: data?.submodules_count || 0,
           lessons: Array.isArray(data?.lessons)
             ? data.lessons.map((l) => ({
                 id: l.id,
@@ -278,6 +282,21 @@ const UnitDetail = () => {
                   variant="outlined"
                 />
               )}
+              {unit.is_submodule ? (
+                <Chip
+                  label={`وحدة فرعية: ${unit.submodule_name || 'غير محدد'}`}
+                  color="secondary"
+                  size="small"
+                  variant="outlined"
+                />
+              ) : (
+                <Chip
+                  label="وحدة رئيسية"
+                  color="info"
+                  size="small"
+                  variant="outlined"
+                />
+              )}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -292,6 +311,16 @@ const UnitDetail = () => {
                   {unit.lessons.length} درس
                 </Typography>
               </Box>
+              {!unit.is_submodule && unit.submodules_count > 0 && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Badge badgeContent={unit.submodules_count} color="secondary">
+                    <ArticleIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
+                  </Badge>
+                  <Typography variant="body2" color="textSecondary">
+                    {unit.submodules_count} وحدة فرعية
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>

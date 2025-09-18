@@ -8,8 +8,13 @@ import {
   Button,
   Box,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   FormControlLabel,
   Checkbox,
+  FormHelperText,
   InputAdornment,
   Alert,
   Snackbar,
@@ -109,32 +114,44 @@ const EditUnit = () => {
     videoUrl: '',
     pdfFile: null,
     pdfUrl: '',
+    submodule: '',
   });
 
+  const [modules, setModules] = useState([]);
+
   useEffect(() => {
-    const fetchUnitData = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await contentAPI.getModuleById(unitId);
+        // Fetch unit data
+        const unitData = await contentAPI.getModuleById(unitId);
+        
+        // Fetch all modules for submodule selection (only main modules)
+        const modulesData = await contentAPI.getModules(courseId);
+        const items = Array.isArray(modulesData?.results) ? modulesData.results : Array.isArray(modulesData) ? modulesData : modulesData?.modules || [];
+        const mainModules = items.filter(m => !m.is_submodule && m.id !== parseInt(unitId));
+        setModules(mainModules);
+        
         setUnitData(prev => ({
           ...prev,
-          title: data?.name || '',
-          description: data?.description || '',
-          duration: typeof data?.video_duration === 'number' ? Math.round(data.video_duration / 60) : '',
-          isPreview: Boolean(data?.is_active) === false,
-          videoUrl: data?.video || '',
-          pdfUrl: data?.pdf || '',
+          title: unitData?.name || '',
+          description: unitData?.description || '',
+          duration: typeof unitData?.video_duration === 'number' ? Math.round(unitData.video_duration / 60) : '',
+          isPreview: Boolean(unitData?.is_active) === false,
+          videoUrl: unitData?.video || '',
+          pdfUrl: unitData?.pdf || '',
+          submodule: unitData?.submodule || '',
         }));
       } catch (error) {
-        console.error('Error fetching unit data:', error);
-        setSnackbar({ open: true, message: 'حدث خطأ في تحميل بيانات الوحدة', severity: 'error' });
+        console.error('Error fetching data:', error);
+        setSnackbar({ open: true, message: 'حدث خطأ في تحميل البيانات', severity: 'error' });
       } finally {
         setLoading(false);
       }
     };
 
-    if (unitId) fetchUnitData();
-  }, [unitId]);
+    if (unitId && courseId) fetchData();
+  }, [unitId, courseId]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -165,6 +182,7 @@ const EditUnit = () => {
         status: unitData.isPreview ? 'draft' : undefined,
         videoFile: unitData.videoFile,
         pdfFile: unitData.pdfFile,
+        submodule: unitData.submodule || null, // Add submodule support
       };
       await contentAPI.updateModule(unitId, payload);
       setSnackbar({ open: true, message: 'تم حفظ الوحدة بنجاح وتم تحديث البيانات!', severity: 'success' });
@@ -233,6 +251,28 @@ const EditUnit = () => {
             multiline
             rows={4}
           />
+
+          <FormControl fullWidth>
+            <InputLabel>الوحدة الرئيسية (اختياري)</InputLabel>
+            <Select
+              name="submodule"
+              value={unitData.submodule}
+              onChange={handleChange}
+              label="الوحدة الرئيسية (اختياري)"
+            >
+              <MenuItem value="">
+                <em>لا توجد - وحدة رئيسية</em>
+              </MenuItem>
+              {modules.map((module) => (
+                <MenuItem key={module.id} value={module.id}>
+                  {module.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              اختر الوحدة الرئيسية إذا كانت هذه وحدة فرعية
+            </FormHelperText>
+          </FormControl>
 
           <StyledTextField
             fullWidth
