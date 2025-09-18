@@ -25,6 +25,7 @@ import {
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon, DeleteOutline as DeleteIcon, Edit as EditIcon, AttachFile as AttachFileIcon, Launch as LaunchIcon } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
+import BunnyVideoSelector from '../../../components/BunnyVideoSelector';
 
 const Wrapper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -49,6 +50,8 @@ const LessonForm = ({ isEdit = false }) => {
     duration_minutes: 0,
     is_free: false,
     video_url: '',
+    bunny_video_id: '',
+    bunny_video_url: '',
     content: '',
   });
 
@@ -81,6 +84,8 @@ const LessonForm = ({ isEdit = false }) => {
             duration_minutes: item.duration_minutes || 0,
             is_free: !!item.is_free,
             video_url: item.video_url || '',
+            bunny_video_id: item.bunny_video_id || '',
+            bunny_video_url: item.bunny_video_url || '',
             content: item.content || '',
           });
         } else {
@@ -123,6 +128,14 @@ const LessonForm = ({ isEdit = false }) => {
   };
 
   const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleBunnyVideoSelect = (videoInfo) => {
+    setForm(prev => ({
+      ...prev,
+      bunny_video_id: videoInfo.id,
+      bunny_video_url: videoInfo.playable_url || '',
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -216,10 +229,22 @@ const LessonForm = ({ isEdit = false }) => {
             onChange={(e) => handleChange('duration_minutes', Number(e.target.value || 0))}
           />
 
+          {/* Bunny CDN Video Selector */}
+          <BunnyVideoSelector
+            value={form.bunny_video_id}
+            onChange={(value) => handleChange('bunny_video_id', value)}
+            label="Bunny Video ID"
+            placeholder="أدخل Bunny Video ID"
+            onVideoSelect={handleBunnyVideoSelect}
+            showPreview={true}
+          />
+          
+          {/* Fallback: External Video URL */}
           <TextField
-            label="رابط الفيديو (اختياري)"
+            label="رابط الفيديو الخارجي (اختياري)"
             value={form.video_url}
             onChange={(e) => handleChange('video_url', e.target.value)}
+            sx={{ mt: 2 }}
           />
         </Box>
 

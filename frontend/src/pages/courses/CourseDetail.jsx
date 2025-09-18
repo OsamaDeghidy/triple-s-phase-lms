@@ -48,6 +48,7 @@ import CourseDescriptionTab from '../../components/courses/CourseDescriptionTab'
 import CourseContentTab from '../../components/courses/CourseContentTab';
 import CourseDemoTab from '../../components/courses/CourseDemoTab';
 import CourseReviewsTab from '../../components/courses/CourseReviewsTab';
+import CoursePromotionalVideo from '../../components/courses/CoursePromotionalVideo';
 import { courseAPI, cartAPI, paymentAPI } from '../../services/courseService';
 import { contentAPI } from '../../services/content.service';
 import { assignmentsAPI } from '../../services/assignment.service';
@@ -1301,6 +1302,11 @@ const CourseDetail = () => {
             <CourseDetailBanner
                 course={course}
             />
+
+            {/* Course Promotional Video */}
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <CoursePromotionalVideo course={course} />
+            </Container>
 
             {/* Course Detail Card with Image */}
             <CourseDetailCard

@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from .views_progress import ProgressViewSet
 from .views_search import ContentSearchView
+from . import views_bunny
 
 # Create a router for the ModuleViewSet
 router = DefaultRouter()
@@ -46,4 +47,12 @@ urlpatterns = [
     path('course/<int:course_id>/flashcards/', 
          views.CourseFlashcardsViewSet.as_view({'get': 'list'}), 
          name='course-flashcards'),
+    
+    # Bunny CDN integration endpoints
+    path('bunny/validate/', views_bunny.validate_bunny_video, name='validate-bunny-video'),
+    path('bunny/video/<str:video_id>/', views_bunny.get_bunny_video_info, name='bunny-video-info'),
+    path('bunny/embed/<str:video_id>/', views_bunny.get_bunny_embed_url_view, name='bunny-embed-url'),
+    path('modules/<int:module_id>/bunny-video/', views_bunny.update_module_bunny_video_view, name='module-bunny-video'),
+    path('lessons/<int:lesson_id>/bunny-video/', views_bunny.update_lesson_bunny_video_view, name='lesson-bunny-video'),
+    path('courses/<int:course_id>/bunny-promotional-video/', views_bunny.update_course_bunny_promotional_video_view, name='course-bunny-promotional-video'),
 ]

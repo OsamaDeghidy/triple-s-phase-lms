@@ -82,6 +82,20 @@ class Module(models.Model):
         default=0,
         help_text=_('Duration of the video in seconds')
     )
+    # Bunny CDN integration fields
+    bunny_video_id = models.CharField(
+        _('Bunny video ID'),
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text=_('Bunny CDN video ID for external video hosting')
+    )
+    bunny_video_url = models.URLField(
+        _('Bunny video URL'),
+        blank=True,
+        null=True,
+        help_text=_('Direct URL to the video on Bunny CDN')
+    )
     pdf = models.FileField(
         _('PDF file'),
         upload_to=module_pdf_upload_path,
@@ -213,6 +227,28 @@ class Module(models.Model):
         for submodule in submodules:
             submodules.extend(submodule.get_all_submodules())
         return submodules
+    
+    @property
+    def has_bunny_video(self):
+        """Check if this module has a Bunny CDN video"""
+        return bool(self.bunny_video_id and self.bunny_video_url)
+    
+    @property
+    def video_source(self):
+        """Get the video source type"""
+        if self.has_bunny_video:
+            return 'bunny'
+        elif self.video:
+            return 'uploaded'
+        return None
+    
+    def get_video_url(self):
+        """Get the appropriate video URL based on available sources"""
+        if self.has_bunny_video:
+            return self.bunny_video_url
+        elif self.video:
+            return self.video.url
+        return None
 
 
 class Lesson(models.Model):
@@ -278,6 +314,20 @@ class Lesson(models.Model):
         blank=True,
         null=True,
         help_text=_('URL to the video content (if any)')
+    )
+    # Bunny CDN integration fields
+    bunny_video_id = models.CharField(
+        _('Bunny video ID'),
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text=_('Bunny CDN video ID for external video hosting')
+    )
+    bunny_video_url = models.URLField(
+        _('Bunny video URL'),
+        blank=True,
+        null=True,
+        help_text=_('Direct URL to the video on Bunny CDN')
     )
     duration_minutes = models.PositiveIntegerField(
         _('duration in minutes'),
@@ -393,6 +443,28 @@ class Lesson(models.Model):
             order__lt=self.order,
             is_active=True
         ).order_by('-order').first()
+    
+    @property
+    def has_bunny_video(self):
+        """Check if this lesson has a Bunny CDN video"""
+        return bool(self.bunny_video_id and self.bunny_video_url)
+    
+    @property
+    def video_source(self):
+        """Get the video source type"""
+        if self.has_bunny_video:
+            return 'bunny'
+        elif self.video_url:
+            return 'external'
+        return None
+    
+    def get_video_url(self):
+        """Get the appropriate video URL based on available sources"""
+        if self.has_bunny_video:
+            return self.bunny_video_url
+        elif self.video_url:
+            return self.video_url
+        return None
 
 
 class UserProgress(models.Model):

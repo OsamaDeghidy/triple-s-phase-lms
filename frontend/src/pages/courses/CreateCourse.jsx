@@ -35,6 +35,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import { courseAPI } from '../../services/api.service';
+import BunnyVideoSelector from '../../components/BunnyVideoSelector';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -171,6 +172,8 @@ const CreateCourse = () => {
     // Media
     image: null,
     promotional_video: '',
+    bunny_promotional_video_id: '',
+    bunny_promotional_video_url: '',
     syllabus_pdf: null,
     materials_pdf: null,
   });
@@ -229,6 +232,14 @@ const CreateCourse = () => {
     setCourseData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleBunnyVideoSelect = (videoInfo) => {
+    setCourseData(prev => ({
+      ...prev,
+      bunny_promotional_video_id: videoInfo.id,
+      bunny_promotional_video_url: videoInfo.playable_url || '',
     }));
   };
   
@@ -499,19 +510,36 @@ const CreateCourse = () => {
                 </UploadArea>
               </Box>
               
-              <StyledTextField
-                fullWidth
-                label="رابط الفيديو التعريفي (اختياري)"
-                name="promotional_video"
-                value={courseData.promotional_video}
-                onChange={handleChange}
-                variant="outlined"
-                placeholder="https://www.youtube.com/watch?v=..."
-                InputProps={{
-                  startAdornment: <VideoLibraryIcon color="action" sx={{ ml: 1 }} />,
-                }}
-                sx={{ mb: 2 }}
-              />
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                  الفيديو التعريفي
+                </Typography>
+                
+                {/* Bunny CDN Video Selector */}
+                <BunnyVideoSelector
+                  value={courseData.bunny_promotional_video_id}
+                  onChange={(value) => setCourseData(prev => ({ ...prev, bunny_promotional_video_id: value }))}
+                  label="Bunny Video ID"
+                  placeholder="أدخل Bunny Video ID"
+                  onVideoSelect={handleBunnyVideoSelect}
+                  showPreview={true}
+                />
+                
+                {/* Fallback: External Video URL */}
+                <StyledTextField
+                  fullWidth
+                  label="رابط الفيديو التعريفي الخارجي (اختياري)"
+                  name="promotional_video"
+                  value={courseData.promotional_video}
+                  onChange={handleChange}
+                  variant="outlined"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  InputProps={{
+                    startAdornment: <VideoLibraryIcon color="action" sx={{ ml: 1 }} />,
+                  }}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
               
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>الملفات المرفقة</Typography>

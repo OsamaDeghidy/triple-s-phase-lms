@@ -557,3 +557,18 @@ ADMIN_REORDER = (
         'extras.CourseCollection',
     )},
 )
+
+# Bunny CDN Settings
+# Get these values from your Bunny CDN dashboard
+BUNNY_CDN_API_KEY = os.environ.get('BUNNY_CDN_API_KEY', '894c88da-efc1-4e5e-914f93f0c69e-77f3-4cd4')
+BUNNY_CDN_LIBRARY_ID = os.environ.get('BUNNY_CDN_LIBRARY_ID', '495146')
+
+# Bunny CDN Configuration
+BUNNY_CDN_CONFIG = {
+    'API_KEY': BUNNY_CDN_API_KEY,
+    'LIBRARY_ID': BUNNY_CDN_LIBRARY_ID,
+    'BASE_URL': f'https://video.bunnycdn.com/library/{BUNNY_CDN_LIBRARY_ID}' if BUNNY_CDN_LIBRARY_ID else '',
+    'EMBED_BASE_URL': 'https://iframe.mediadelivery.net/embed',
+    'STREAMING_BASE_URL': 'https://vz-c239d8b2-f7d.b-cdn.net',
+    'CDN_HOSTNAME': 'vz-c239d8b2-f7d.b-cdn.net',
+}

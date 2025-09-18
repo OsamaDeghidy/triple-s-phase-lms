@@ -74,7 +74,8 @@ class ModuleCreateSerializer(serializers.ModelSerializer):
         model = Module
         fields = [
             'id', 'name', 'course', 'submodule', 'description', 'video',
-            'video_duration', 'pdf', 'note', 'status', 'is_active', 'order'
+            'video_duration', 'pdf', 'note', 'status', 'is_active', 'order',
+            'bunny_video_id', 'bunny_video_url'
         ]
         read_only_fields = ['id']
 
@@ -130,7 +131,8 @@ class ModuleDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'course', 'course_name', 'submodule', 'submodule_name',
             'order', 'status', 'is_active', 'created_at', 'updated_at', 'user_progress',
-            'lessons', 'video_duration', 'video', 'pdf', 'is_submodule', 'submodules_count', 'submodules'
+            'lessons', 'video_duration', 'video', 'pdf', 'bunny_video_id', 'bunny_video_url',
+            'is_submodule', 'submodules_count', 'submodules'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'submodule_name', 'is_submodule', 'submodules_count', 'submodules']
 
@@ -224,7 +226,8 @@ class LessonSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = [
             'id', 'title', 'lesson_type', 'duration_minutes', 'order',
-            'content', 'is_free', 'video_url', 'is_active', 'created_at', 'updated_at'
+            'content', 'is_free', 'video_url', 'bunny_video_id', 'bunny_video_url',
+            'is_active', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
@@ -241,7 +244,7 @@ class LessonDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'module', 'module_title', 'order',
             'is_active', 'created_at', 'updated_at', 'duration_minutes',
-            'video_url', 'video_duration', 'content', 'resources', 'course_id',
+            'video_url', 'bunny_video_id', 'bunny_video_url', 'content', 'resources', 'course_id',
             'course_title', 'user_progress'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
@@ -272,7 +275,8 @@ class LessonCreateUpdateSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = [
             'id', 'module', 'title', 'description', 'lesson_type', 'difficulty',
-            'duration_minutes', 'order', 'is_active', 'is_free', 'video_url', 'content'
+            'duration_minutes', 'order', 'is_active', 'is_free', 'video_url', 
+            'bunny_video_id', 'bunny_video_url', 'content'
         ]
         read_only_fields = ['id']
 

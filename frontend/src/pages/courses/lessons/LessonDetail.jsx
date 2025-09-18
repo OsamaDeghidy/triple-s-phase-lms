@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
+import LessonVideoPlayer from '../../../components/lessons/LessonVideoPlayer';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
@@ -186,6 +187,9 @@ const LessonDetail = ({ open, onClose, courseId, unitId, lessonId }) => {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'primary.main' }}>
                 {lesson.title}
               </Typography>
+
+              {/* Lesson Video Player */}
+              <LessonVideoPlayer lesson={lesson} />
               
               <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
                 <Chip 

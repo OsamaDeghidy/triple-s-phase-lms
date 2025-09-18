@@ -24,6 +24,7 @@ import { ArrowBack as ArrowBackIcon, CloudUpload as CloudUploadIcon } from '@mui
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
+import BunnyVideoSelector from '../../../components/BunnyVideoSelector';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -112,6 +113,8 @@ const EditUnit = () => {
     isPreview: false,
     videoFile: null,
     videoUrl: '',
+    bunny_video_id: '',
+    bunny_video_url: '',
     pdfFile: null,
     pdfUrl: '',
     submodule: '',
@@ -139,6 +142,8 @@ const EditUnit = () => {
           duration: typeof unitData?.video_duration === 'number' ? Math.round(unitData.video_duration / 60) : '',
           isPreview: Boolean(unitData?.is_active) === false,
           videoUrl: unitData?.video || '',
+          bunny_video_id: unitData?.bunny_video_id || '',
+          bunny_video_url: unitData?.bunny_video_url || '',
           pdfUrl: unitData?.pdf || '',
           submodule: unitData?.submodule || '',
         }));
@@ -167,6 +172,14 @@ const EditUnit = () => {
       [`${type}File`]: file || null,
       ...(type === 'video' ? { videoUrl: file ? '' : prev.videoUrl } : {}),
       ...(type === 'pdf' ? { pdfUrl: file ? '' : prev.pdfUrl } : {}),
+    }));
+  };
+
+  const handleBunnyVideoSelect = (videoInfo) => {
+    setUnitData(prev => ({
+      ...prev,
+      bunny_video_id: videoInfo.id,
+      bunny_video_url: videoInfo.playable_url || '',
     }));
   };
 
@@ -289,29 +302,46 @@ const EditUnit = () => {
           {/* VIDEO */}
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>الفيديو</Typography>
-            {unitData.videoFile ? (
-              <Box>
-                <video src={URL.createObjectURL(unitData.videoFile)} controls style={{ width: '100%', maxHeight: 360, borderRadius: 8, border: `1px solid ${theme.palette.divider}` }} />
-                <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-                  <Button color="error" onClick={() => handleFileSelect('video', null)}>مسح الفيديو</Button>
+            
+            {/* Bunny CDN Video Selector */}
+            <BunnyVideoSelector
+              value={unitData.bunny_video_id}
+              onChange={(value) => setUnitData(prev => ({ ...prev, bunny_video_id: value }))}
+              label="Bunny Video ID"
+              placeholder="أدخل Bunny Video ID"
+              onVideoSelect={handleBunnyVideoSelect}
+              showPreview={true}
+            />
+            
+            {/* Fallback: Upload Video File */}
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                أو رفع فيديو محلي
+              </Typography>
+              {unitData.videoFile ? (
+                <Box>
+                  <video src={URL.createObjectURL(unitData.videoFile)} controls style={{ width: '100%', maxHeight: 360, borderRadius: 8, border: `1px solid ${theme.palette.divider}` }} />
+                  <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+                    <Button color="error" onClick={() => handleFileSelect('video', null)}>مسح الفيديو</Button>
+                  </Box>
                 </Box>
-              </Box>
-            ) : unitData.videoUrl ? (
-              <Box>
-                <video src={unitData.videoUrl} controls style={{ width: '100%', maxHeight: 360, borderRadius: 8, border: `1px solid ${theme.palette.divider}` }} />
-                <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-                  <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
-                    استبدال الفيديو
-                    <input hidden type="file" accept="video/*" onChange={(e) => handleFileSelect('video', e.target.files && e.target.files.length ? e.target.files[0] : null)} />
-                  </Button>
+              ) : unitData.videoUrl ? (
+                <Box>
+                  <video src={unitData.videoUrl} controls style={{ width: '100%', maxHeight: 360, borderRadius: 8, border: `1px solid ${theme.palette.divider}` }} />
+                  <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+                    <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
+                      استبدال الفيديو
+                      <input hidden type="file" accept="video/*" onChange={(e) => handleFileSelect('video', e.target.files && e.target.files.length ? e.target.files[0] : null)} />
+                    </Button>
+                  </Box>
                 </Box>
-              </Box>
-            ) : (
-              <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
-                رفع فيديو (MP4)
-                <input hidden type="file" accept="video/*" onChange={(e) => handleFileSelect('video', e.target.files && e.target.files.length ? e.target.files[0] : null)} />
-              </Button>
-            )}
+              ) : (
+                <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />} disabled={saving}>
+                  رفع فيديو (MP4)
+                  <input hidden type="file" accept="video/*" onChange={(e) => handleFileSelect('video', e.target.files && e.target.files.length ? e.target.files[0] : null)} />
+                </Button>
+              )}
+            </Box>
           </Box>
           
           {/* PDF */}

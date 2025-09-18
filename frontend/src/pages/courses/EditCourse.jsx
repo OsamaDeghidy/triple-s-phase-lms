@@ -36,6 +36,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import { courseAPI } from '../../services/api.service';
+import BunnyVideoSelector from '../../components/BunnyVideoSelector';
 
 // Reuse the same styled components from CreateCourse
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -170,6 +171,8 @@ const EditCourse = () => {
     isCertified: false,
     image: null,
     promotionalVideo: '',
+    bunnyPromotionalVideoId: '',
+    bunnyPromotionalVideoUrl: '',
     syllabusPdf: null,
     materialsPdf: null,
   });
@@ -215,6 +218,8 @@ const EditCourse = () => {
             isCertified: course.is_certified || false,
             image: null, // We'll handle image separately
             promotionalVideo: course.promotional_video || '',
+            bunnyPromotionalVideoId: course.bunny_promotional_video_id || '',
+            bunnyPromotionalVideoUrl: course.bunny_promotional_video_url || '',
             syllabusPdf: null, // We'll handle files separately
             materialsPdf: null,
             // Store original image/file URLs for display
@@ -278,6 +283,14 @@ const EditCourse = () => {
     setCourseData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleBunnyVideoSelect = (videoInfo) => {
+    setCourseData(prev => ({
+      ...prev,
+      bunnyPromotionalVideoId: videoInfo.id,
+      bunnyPromotionalVideoUrl: videoInfo.playable_url || '',
     }));
   };
   
@@ -365,6 +378,8 @@ const EditCourse = () => {
           is_featured: courseData.isFeatured,
           is_certified: courseData.isCertified,
           promotional_video: courseData.promotionalVideo.trim(),
+          bunny_promotional_video_id: courseData.bunnyPromotionalVideoId.trim(),
+          bunny_promotional_video_url: courseData.bunnyPromotionalVideoUrl.trim(),
         };
         
         // Add files if they exist
@@ -674,19 +689,36 @@ const EditCourse = () => {
                 </UploadArea>
               </Box>
               
-              <StyledTextField
-                fullWidth
-                label="رابط الفيديو التعريفي (اختياري)"
-                name="promotionalVideo"
-                value={courseData.promotionalVideo}
-                onChange={handleChange}
-                variant="outlined"
-                placeholder="https://www.youtube.com/watch?v=..."
-                InputProps={{
-                  startAdornment: <VideoLibraryIcon color="action" sx={{ ml: 1 }} />,
-                }}
-                sx={{ mb: 2 }}
-              />
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                  الفيديو التعريفي
+                </Typography>
+                
+                {/* Bunny CDN Video Selector */}
+                <BunnyVideoSelector
+                  value={courseData.bunnyPromotionalVideoId}
+                  onChange={(value) => setCourseData(prev => ({ ...prev, bunnyPromotionalVideoId: value }))}
+                  label="Bunny Video ID"
+                  placeholder="أدخل Bunny Video ID"
+                  onVideoSelect={handleBunnyVideoSelect}
+                  showPreview={true}
+                />
+                
+                {/* Fallback: External Video URL */}
+                <StyledTextField
+                  fullWidth
+                  label="رابط الفيديو التعريفي الخارجي (اختياري)"
+                  name="promotionalVideo"
+                  value={courseData.promotionalVideo}
+                  onChange={handleChange}
+                  variant="outlined"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  InputProps={{
+                    startAdornment: <VideoLibraryIcon color="action" sx={{ ml: 1 }} />,
+                  }}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
               
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>الملفات المرفقة</Typography>

@@ -60,6 +60,12 @@ class ModuleAdmin(admin.ModelAdmin):
                 'video', 'video_duration', 'pdf', 'note'
             ]
         }),
+        ('Bunny CDN Video', {
+            'fields': [
+                'bunny_video_id', 'bunny_video_url'
+            ],
+            'classes': ['collapse']
+        }),
         ('Relations', {
             'fields': [
                 'prerequisites'
@@ -121,6 +127,12 @@ class LessonAdmin(admin.ModelAdmin):
                 'order', 'is_active', 'is_free', 'requires_completion',
                 'duration_minutes', 'video_url'
             ]
+        }),
+        ('Bunny CDN Video', {
+            'fields': [
+                'bunny_video_id', 'bunny_video_url'
+            ],
+            'classes': ['collapse']
         }),
         ('Timestamps', {
             'fields': [

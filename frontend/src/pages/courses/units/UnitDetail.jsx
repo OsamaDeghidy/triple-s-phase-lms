@@ -48,6 +48,7 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
 import LessonDetail from '../lessons/LessonDetail';
+import UnitVideoPlayer from '../../../components/units/UnitVideoPlayer';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -328,6 +329,9 @@ const UnitDetail = () => {
         <Typography variant="body1" color="textSecondary" sx={{ mb: 3, lineHeight: 1.6 }}>
           {unit.description}
         </Typography>
+
+        {/* Unit Video Player */}
+        <UnitVideoPlayer unit={unit} />
 
                  {/* Unit Details */}
          <Grid container spacing={3} sx={{ mb: 3 }}>

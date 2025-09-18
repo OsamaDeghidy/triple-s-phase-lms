@@ -181,6 +181,20 @@ class Course(models.Model):
         null=True,
         verbose_name=_('Promotional Video URL')
     )
+    # Bunny CDN integration fields for promotional video
+    bunny_promotional_video_id = models.CharField(
+        _('Bunny promotional video ID'),
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text=_('Bunny CDN video ID for promotional video')
+    )
+    bunny_promotional_video_url = models.URLField(
+        _('Bunny promotional video URL'),
+        blank=True,
+        null=True,
+        help_text=_('Direct URL to the promotional video on Bunny CDN')
+    )
     syllabus_pdf = models.FileField(
         upload_to='courses/syllabus/', 
         null=True, 
@@ -365,6 +379,29 @@ class Course(models.Model):
     def get_tags_display(self):
         """Get comma-separated list of tag names"""
         return ", ".join([tag.name for tag in self.tags.all()])
+    
+    # Bunny CDN integration methods
+    @property
+    def has_bunny_promotional_video(self):
+        """Check if this course has a Bunny CDN promotional video"""
+        return bool(self.bunny_promotional_video_id and self.bunny_promotional_video_url)
+    
+    @property
+    def promotional_video_source(self):
+        """Get the promotional video source type"""
+        if self.has_bunny_promotional_video:
+            return 'bunny'
+        elif self.promotional_video:
+            return 'external'
+        return None
+    
+    def get_promotional_video_url(self):
+        """Get the appropriate promotional video URL based on available sources"""
+        if self.has_bunny_promotional_video:
+            return self.bunny_promotional_video_url
+        elif self.promotional_video:
+            return self.promotional_video
+        return None
 
 
 class Enrollment(models.Model):
