@@ -476,7 +476,7 @@ const Header = () => {
       path: '#',
       icon: <SchoolIcon />,
       dropdown: [
-        { text: 'عن الاكاديمية', path: '/about' },
+        { text: 'عن الاكاديمية', path: '/about-academy-detail' },
         { text: 'المدونة', path: '/articles' },
         { text: 'اتصل بنا', path: '/contact' },
       ]

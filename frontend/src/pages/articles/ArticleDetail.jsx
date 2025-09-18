@@ -48,6 +48,7 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { articleAPI } from '../../services/api.service';
 import { useAuth } from '../../contexts/AuthContext';
+import { useArticle } from '../../contexts/ArticleContext';
 
 // Styled components
 const HeroSection = styled(Box)(({ theme }) => ({
@@ -258,6 +259,7 @@ const ArticleDetail = () => {
   const { slug } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   const { isAuthenticated } = useAuth();
+  const { selectedArticleData, getArticleById, hasArticleData } = useArticle();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookmarked, setBookmarked] = useState(false);
@@ -277,32 +279,56 @@ const ArticleDetail = () => {
       try {
         setLoading(true);
         console.log('Fetching article with slug:', slug);
-        
-        // Try to get article by slug first, then by ID
+        console.log('📊 Selected article data from context:', selectedArticleData);
+        console.log('📊 Has article data:', hasArticleData);
+
+        // First, try to get article data from context (shared preferences)
+        let articleId = parseInt(slug);
+        if (isNaN(articleId)) {
+          articleId = slug;
+        }
+
+        let cachedArticle = null;
+        if (selectedArticleData && (selectedArticleData.id === articleId || selectedArticleData.slug === slug)) {
+          console.log('✅ Using cached article data from context');
+          cachedArticle = selectedArticleData;
+        } else {
+          console.log('🔍 Checking articles cache for ID:', articleId);
+          cachedArticle = getArticleById(articleId);
+        }
+
         let response;
-        try {
-          response = await articleAPI.getArticleBySlug(slug);
-        } catch (error) {
-          // If slug doesn't work, try to get by ID
-          const articleId = parseInt(slug);
-          if (!isNaN(articleId)) {
-            response = await articleAPI.getArticle(articleId);
-          } else {
-            throw error;
+        if (cachedArticle) {
+          console.log('✅ Found cached article data:', cachedArticle);
+          // Use cached data but still fetch fresh data from API for additional details
+          response = cachedArticle;
+        } else {
+          console.log('🌐 No cached data found, fetching from API...');
+          // Try to get article by slug first, then by ID
+          try {
+            response = await articleAPI.getArticleBySlug(slug);
+          } catch (error) {
+            // If slug doesn't work, try to get by ID
+            const articleId = parseInt(slug);
+            if (!isNaN(articleId)) {
+              response = await articleAPI.getArticle(articleId);
+            } else {
+              throw error;
+            }
           }
         }
-        
+
         console.log('Article API response:', response);
-        
+
         // Extract author information from different possible fields
         const authorId = response.author || response.author_id || response.created_by || response.user;
         const authorName = response.author_name || response.author?.name || response.author?.first_name || response.author?.last_name || response.created_by_name || response.user_name || 'مؤلف غير معروف';
         const authorAvatar = response.author_avatar || response.author?.avatar || response.author?.image_profile || response.created_by_avatar || response.user_avatar || `https://via.placeholder.com/120x120/1976d2/ffffff?text=${authorName.charAt(0)}`;
-        
+
         console.log('Extracted author info:', { authorId, authorName, authorAvatar });
         console.log('Full author response:', response.author);
         console.log('Author name from response:', response.author_name);
-        
+
         // Transform the response to match our component structure
         const transformedArticle = {
           id: response.id,
@@ -359,7 +385,7 @@ const ArticleDetail = () => {
                   articleAPI.checkArticleLike(response.id),
                   articleAPI.checkArticleBookmark(response.id)
                 ]);
-                
+
                 setLiked(likeResponse.liked || false);
                 setBookmarked(bookmarkResponse.bookmarked || false);
                 console.log('User interaction state:', { liked: likeResponse.liked, bookmarked: bookmarkResponse.bookmarked });
@@ -375,9 +401,9 @@ const ArticleDetail = () => {
             try {
               const commentsResponse = await articleAPI.getArticleComments(response.id);
               console.log('Comments API response:', commentsResponse);
-              
+
               let transformedComments = [];
-              
+
               if (Array.isArray(commentsResponse)) {
                 transformedComments = commentsResponse.map(comment => ({
                   id: comment.id,
@@ -404,10 +430,10 @@ const ArticleDetail = () => {
                   }));
                 }
               }
-              
+
               // Filter only approved comments
               transformedComments = transformedComments.filter(comment => comment.is_approved !== false);
-              
+
               // Add a test comment if no comments exist (for development)
               if (transformedComments.length === 0 && process.env.NODE_ENV === 'development') {
                 transformedComments = [{
@@ -422,7 +448,7 @@ const ArticleDetail = () => {
                 }];
                 console.log('Added test comment for development');
               }
-              
+
               setComments(transformedComments);
               console.log('Final transformed comments:', transformedComments);
             } catch (commentsError) {
@@ -433,7 +459,7 @@ const ArticleDetail = () => {
             // Fetch related articles
             const relatedResponse = await articleAPI.getRelatedArticles(response.id, response.category || response.category_name, 3);
             console.log('Related articles API response:', relatedResponse);
-            
+
             const transformedRelated = Array.isArray(relatedResponse) ? relatedResponse.map(article => ({
               id: article.id,
               title: article.title,
@@ -442,7 +468,7 @@ const ArticleDetail = () => {
               reading_time: article.reading_time || 5,
               image: article.image ? (article.image.startsWith('http') ? article.image : `http://localhost:8000${article.image}`) : null
             })) : [];
-            
+
             setRelatedArticles(transformedRelated);
 
             // Fetch author profile if author ID exists
@@ -481,7 +507,7 @@ const ArticleDetail = () => {
         };
 
         fetchAdditionalData();
-         setLoading(false);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching article:', error);
         setLoading(false);
@@ -495,7 +521,7 @@ const ArticleDetail = () => {
 
   const handleBookmark = async () => {
     if (!article) return;
-    
+
     try {
       if (bookmarked) {
         await articleAPI.removeBookmark(article.id);
@@ -511,7 +537,7 @@ const ArticleDetail = () => {
 
   const handleLike = async () => {
     if (!article) return;
-    
+
     try {
       if (liked) {
         await articleAPI.unlikeArticle(article.id);
@@ -554,9 +580,9 @@ const ArticleDetail = () => {
         const response = await articleAPI.createArticleComment(article.id, {
           content: comment
         });
-        
+
         console.log('Comment created:', response);
-        
+
         // Add the new comment to the list
         const newComment = {
           id: response.id,
@@ -567,10 +593,10 @@ const ArticleDetail = () => {
           likes: response.likes_count || 0,
           replies: []
         };
-        
+
         setComments([newComment, ...comments]);
         setComment('');
-        
+
         // Update comment count
         setArticle(prev => ({
           ...prev,
@@ -593,9 +619,9 @@ const ArticleDetail = () => {
           content: replyText,
           parent: commentId
         });
-        
+
         console.log('Reply created:', response);
-        
+
         // Add the reply to the specific comment
         const newReply = {
           id: response.id,
@@ -605,18 +631,18 @@ const ArticleDetail = () => {
           created_at: response.created_at,
           likes: response.likes_count || 0
         };
-        
-        setComments(prevComments => 
-          prevComments.map(comment => 
-            comment.id === commentId 
+
+        setComments(prevComments =>
+          prevComments.map(comment =>
+            comment.id === commentId
               ? { ...comment, replies: [...(comment.replies || []), newReply] }
               : comment
           )
         );
-        
+
         setReplyText('');
         setReplyTo(null);
-        
+
         // Update comment count
         setArticle(prev => ({
           ...prev,
@@ -636,9 +662,9 @@ const ArticleDetail = () => {
       // This would need a backend endpoint for liking comments
       console.log('Liking comment:', commentId);
       // For now, just update the UI
-      setComments(prevComments => 
-        prevComments.map(comment => 
-          comment.id === commentId 
+      setComments(prevComments =>
+        prevComments.map(comment =>
+          comment.id === commentId
             ? { ...comment, likes: comment.likes + 1, liked: true }
             : comment
         )
@@ -679,7 +705,7 @@ const ArticleDetail = () => {
               </Box>
             </Container>
           </HeroSection>
-          
+
           <Container sx={{ py: 4 }}>
             <Grid container spacing={4}>
               <Grid item xs={12} lg={8}>
@@ -722,7 +748,7 @@ const ArticleDetail = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      
+
       <Box component="main" sx={{ flex: 1 }}>
         <HeroSection>
           <div className="animated-bg"></div>
@@ -739,17 +765,17 @@ const ArticleDetail = () => {
                 <Typography color="inherit">{article.category}</Typography>
                 <Typography color="inherit">{article.title}</Typography>
               </Breadcrumbs>
-              
+
               <Typography variant="h3" component="h1" sx={{ fontWeight: 800, mb: 2, lineHeight: 1.2 }}>
                 {article.title}
               </Typography>
-              
+
               <Typography variant="body1" sx={{ opacity: 0.9, mb: 3, lineHeight: 1.5, fontSize: '1.1rem' }}>
                 {article.summary}
               </Typography>
-              
+
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
-                <Box className="stats-item" sx={{ 
+                <Box className="stats-item" sx={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
                   padding: '8px 12px',
                   borderRadius: '20px',
@@ -759,8 +785,8 @@ const ArticleDetail = () => {
                     border: '1px solid rgba(255, 255, 255, 0.6)',
                   }
                 }}>
-                  <Avatar src={article.author.avatar} sx={{ 
-                    width: 36, 
+                  <Avatar src={article.author.avatar} sx={{
+                    width: 36,
                     height: 36,
                     border: '1px solid rgba(255, 255, 255, 0.5)',
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
@@ -771,8 +797,8 @@ const ArticleDetail = () => {
                     <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.95rem' }}>
                       {article.author.name || 'مؤلف غير معروف'}
                     </Typography>
-                    <Typography variant="caption" sx={{ 
-                      opacity: 0.9, 
+                    <Typography variant="caption" sx={{
+                      opacity: 0.9,
                       fontWeight: 500,
                       backgroundColor: 'rgba(255, 255, 255, 0.2)',
                       padding: '1px 6px',
@@ -784,14 +810,14 @@ const ArticleDetail = () => {
                     </Typography>
                   </Box>
                 </Box>
-                
+
                 <Box className="stats-item">
                   <VisibilityIcon sx={{ fontSize: 16 }} />
                   <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
                     {article.views_count.toLocaleString()} مشاهدة
                   </Typography>
                 </Box>
-                
+
                 <Box className="stats-item">
                   <ScheduleIcon sx={{ fontSize: 16 }} />
                   <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
@@ -818,10 +844,10 @@ const ArticleDetail = () => {
         </HeroSection>
 
         <Container sx={{ py: 6 }}>
-          <Grid 
-            container 
-            spacing={4} 
-            sx={{ 
+          <Grid
+            container
+            spacing={4}
+            sx={{
               position: 'relative',
               flexDirection: { xs: 'column-reverse', lg: 'row' }, // Reverse on mobile, row on desktop
               minHeight: '100%' // Ensure grid takes full height
@@ -838,7 +864,7 @@ const ArticleDetail = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <ArticleImage sx={{ mb: 4 , height: '400px', width: '100%'}}>
+                <ArticleImage sx={{ mb: 4, height: '400px', width: '100%' }}>
                   <img
                     src={article.image}
                     alt={article.title}
@@ -858,7 +884,7 @@ const ArticleDetail = () => {
                     }}
                   />
                 </ArticleImage>
-                
+
                 <Paper sx={{ p: 3, mb: 4, borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                   <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                     <Button
@@ -869,9 +895,9 @@ const ArticleDetail = () => {
                     >
                       العودة للمقالات
                     </Button>
-                    
+
                     <Box sx={{ flexGrow: 1 }} />
-                    
+
                     {/* Stats Display */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -887,13 +913,13 @@ const ArticleDetail = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    
+
                     <Tooltip title="إعجاب">
                       <IconButton
                         onClick={handleLike}
                         color={liked ? 'primary' : 'default'}
-                        sx={{ 
-                          border: '1px solid', 
+                        sx={{
+                          border: '1px solid',
                           borderColor: 'divider',
                           backgroundColor: liked ? 'primary.main' : 'transparent',
                           color: liked ? 'white' : 'inherit',
@@ -907,13 +933,13 @@ const ArticleDetail = () => {
                         {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                       </IconButton>
                     </Tooltip>
-                    
+
                     <Tooltip title="حفظ">
                       <IconButton
                         onClick={handleBookmark}
                         color={bookmarked ? 'primary' : 'default'}
-                        sx={{ 
-                          border: '1px solid', 
+                        sx={{
+                          border: '1px solid',
                           borderColor: 'divider',
                           backgroundColor: bookmarked ? 'primary.main' : 'transparent',
                           color: bookmarked ? 'white' : 'inherit',
@@ -927,12 +953,12 @@ const ArticleDetail = () => {
                         {bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
                       </IconButton>
                     </Tooltip>
-                    
+
                     <Tooltip title="مشاركة">
                       <IconButton
                         onClick={handleShare}
-                        sx={{ 
-                          border: '1px solid', 
+                        sx={{
+                          border: '1px solid',
                           borderColor: 'divider',
                           '&:hover': {
                             backgroundColor: 'primary.main',
@@ -946,10 +972,10 @@ const ArticleDetail = () => {
                     </Tooltip>
                   </Box>
                 </Paper>
-                
+
                 <StyledCard sx={{ mb: 4 }}>
                   <CardContent sx={{ p: 4 }}>
-                    <div 
+                    <div
                       dangerouslySetInnerHTML={{ __html: article.content }}
                       style={{
                         lineHeight: 1.8,
@@ -959,7 +985,7 @@ const ArticleDetail = () => {
                     />
                   </CardContent>
                 </StyledCard>
-                
+
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
                     <TagIcon sx={{ mr: 1, color: 'primary.main' }} />
@@ -968,20 +994,20 @@ const ArticleDetail = () => {
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {article.tags && article.tags.length > 0 ? (
                       article.tags.map((tag, index) => (
-                      <Chip
+                        <Chip
                           key={index}
                           label={typeof tag === 'string' ? tag : tag.name || tag}
-                        variant="outlined"
-                        color="primary"
-                        sx={{ 
-                          fontWeight: 500,
-                          '&:hover': {
-                            backgroundColor: 'primary.main',
-                            color: 'white',
-                            transform: 'translateY(-2px)',
-                          }
-                        }}
-                      />
+                          variant="outlined"
+                          color="primary"
+                          sx={{
+                            fontWeight: 500,
+                            '&:hover': {
+                              backgroundColor: 'primary.main',
+                              color: 'white',
+                              transform: 'translateY(-2px)',
+                            }
+                          }}
+                        />
                       ))
                     ) : (
                       <Typography variant="body2" color="text.secondary">
@@ -990,20 +1016,20 @@ const ArticleDetail = () => {
                     )}
                   </Box>
                 </Box>
-                
+
                 {/* Enhanced Comments Section */}
                 <Box>
                   <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, display: 'flex', alignItems: 'center', color: 'primary.main' }}>
                     <CommentIcon sx={{ mr: 1.5, fontSize: 28 }} />
                     التعليقات ({comments.length})
                   </Typography>
-                  
+
                   {/* Debug Info */}
                   {process.env.NODE_ENV === 'development' && (
-                    <Box sx={{ 
-                      mb: 2, 
-                      p: 2, 
-                      backgroundColor: 'rgba(255, 193, 7, 0.1)', 
+                    <Box sx={{
+                      mb: 2,
+                      p: 2,
+                      backgroundColor: 'rgba(255, 193, 7, 0.1)',
                       borderRadius: 2,
                       border: '1px solid rgba(255, 193, 7, 0.3)'
                     }}>
@@ -1012,7 +1038,7 @@ const ArticleDetail = () => {
                       </Typography>
                     </Box>
                   )}
-                  
+
                   {/* Comment Form */}
                   {isAuthenticated ? (
                     <CommentForm>
@@ -1028,7 +1054,7 @@ const ArticleDetail = () => {
                           value={comment}
                           onChange={(e) => setComment(e.target.value)}
                           disabled={submittingComment}
-                          sx={{ 
+                          sx={{
                             mb: 2,
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
@@ -1044,7 +1070,7 @@ const ArticleDetail = () => {
                             variant="contained"
                             disabled={!comment.trim() || submittingComment}
                             endIcon={submittingComment ? null : <SendIcon />}
-                            sx={{ 
+                            sx={{
                               borderRadius: 2,
                               px: 3,
                               py: 1,
@@ -1064,9 +1090,9 @@ const ArticleDetail = () => {
                       </form>
                     </CommentForm>
                   ) : (
-                    <Box sx={{ 
-                      p: 3, 
-                      backgroundColor: 'rgba(25, 118, 210, 0.05)', 
+                    <Box sx={{
+                      p: 3,
+                      backgroundColor: 'rgba(25, 118, 210, 0.05)',
                       borderRadius: 2,
                       border: '1px solid rgba(25, 118, 210, 0.1)',
                       textAlign: 'center'
@@ -1086,7 +1112,7 @@ const ArticleDetail = () => {
                       </Button>
                     </Box>
                   )}
-                  
+
                   {/* Comments List */}
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                     {comments.length > 0 ? (
@@ -1094,10 +1120,10 @@ const ArticleDetail = () => {
                         <CommentCard key={comment.id}>
                           {/* Main Comment */}
                           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                            <Avatar 
-                              src={comment.avatar} 
-                              sx={{ 
-                                width: 48, 
+                            <Avatar
+                              src={comment.avatar}
+                              sx={{
+                                width: 48,
                                 height: 48,
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                               }}
@@ -1109,10 +1135,10 @@ const ArticleDetail = () => {
                                 <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                                   {comment.author}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" sx={{ 
-                                  backgroundColor: 'grey.100', 
-                                  px: 1, 
-                                  py: 0.25, 
+                                <Typography variant="caption" color="text.secondary" sx={{
+                                  backgroundColor: 'grey.100',
+                                  px: 1,
+                                  py: 0.25,
                                   borderRadius: 1,
                                   fontSize: '0.75rem'
                                 }}>
@@ -1124,13 +1150,13 @@ const ArticleDetail = () => {
                               </Typography>
                             </Box>
                           </Box>
-                          
+
                           {/* Comment Actions */}
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               onClick={() => handleLikeComment(comment.id)}
-                              sx={{ 
+                              sx={{
                                 color: comment.liked ? 'primary.main' : 'text.secondary',
                                 '&:hover': {
                                   color: 'primary.main',
@@ -1143,11 +1169,11 @@ const ArticleDetail = () => {
                             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                               {comment.likes} إعجاب
                             </Typography>
-                            
+
                             <Button
                               size="small"
                               onClick={() => setReplyTo(replyTo === comment.id ? null : comment.id)}
-                              sx={{ 
+                              sx={{
                                 color: 'primary.main',
                                 textTransform: 'none',
                                 fontWeight: 600,
@@ -1159,13 +1185,13 @@ const ArticleDetail = () => {
                               {replyTo === comment.id ? 'إلغاء الرد' : 'رد'}
                             </Button>
                           </Box>
-                          
+
                           {/* Reply Form */}
                           {replyTo === comment.id && (
-                            <Box sx={{ 
-                              mt: 2, 
-                              p: 2, 
-                              backgroundColor: 'rgba(25, 118, 210, 0.05)', 
+                            <Box sx={{
+                              mt: 2,
+                              p: 2,
+                              backgroundColor: 'rgba(25, 118, 210, 0.05)',
                               borderRadius: 2,
                               border: '1px solid rgba(25, 118, 210, 0.1)'
                             }}>
@@ -1206,7 +1232,7 @@ const ArticleDetail = () => {
                               </Box>
                             </Box>
                           )}
-                          
+
                           {/* Replies */}
                           {comment.replies && comment.replies.length > 0 && (
                             <Box sx={{ mt: 2, ml: 4 }}>
@@ -1214,19 +1240,19 @@ const ArticleDetail = () => {
                                 الردود ({comment.replies.length})
                               </Typography>
                               {comment.replies.map((reply) => (
-                                <Box key={reply.id} sx={{ 
-                                  display: 'flex', 
-                                  gap: 2, 
-                                  mb: 2, 
-                                  p: 2, 
-                                  backgroundColor: 'rgba(0,0,0,0.02)', 
+                                <Box key={reply.id} sx={{
+                                  display: 'flex',
+                                  gap: 2,
+                                  mb: 2,
+                                  p: 2,
+                                  backgroundColor: 'rgba(0,0,0,0.02)',
                                   borderRadius: 2,
                                   border: '1px solid rgba(0,0,0,0.05)'
                                 }}>
-                                  <Avatar 
-                                    src={reply.avatar} 
-                                    sx={{ 
-                                      width: 32, 
+                                  <Avatar
+                                    src={reply.avatar}
+                                    sx={{
+                                      width: 32,
                                       height: 32,
                                       fontSize: '0.8rem'
                                     }}
@@ -1253,8 +1279,8 @@ const ArticleDetail = () => {
                         </CommentCard>
                       ))
                     ) : (
-                      <Box sx={{ 
-                        textAlign: 'center', 
+                      <Box sx={{
+                        textAlign: 'center',
                         py: 4,
                         color: 'text.secondary'
                       }}>
@@ -1271,7 +1297,7 @@ const ArticleDetail = () => {
                 </Box>
               </motion.div>
             </Grid>
-            
+
             {/* Sidebar */}
             <Grid item sx={{
               width: { xs: '100%', lg: '380px' },
@@ -1288,17 +1314,17 @@ const ArticleDetail = () => {
               >
                 <StyledCard sx={{ mb: 3 }}>
                   <CardContent sx={{ p: 3 }}>
-                                         <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, display: 'flex', alignItems: 'center', color: 'primary.main' }}>
-                       <PersonIcon sx={{ mr: 1.5, fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, display: 'flex', alignItems: 'center', color: 'primary.main' }}>
+                      <PersonIcon sx={{ mr: 1.5, fontSize: 28 }} />
                       عن الكاتب
                     </Typography>
-                    
-                                                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-                      <Avatar 
-                        src={authorProfile?.image_profile || authorProfile?.avatar || authorProfile?.profile_image || authorProfile?.image || article.author.avatar} 
-                        sx={{ 
-                          width: 100, 
-                          height: 100, 
+
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+                      <Avatar
+                        src={authorProfile?.image_profile || authorProfile?.avatar || authorProfile?.profile_image || authorProfile?.image || article.author.avatar}
+                        sx={{
+                          width: 100,
+                          height: 100,
                           mb: 2,
                           border: '4px solid rgba(25, 118, 210, 0.2)',
                           boxShadow: '0 8px 24px rgba(25, 118, 210, 0.3)'
@@ -1306,23 +1332,23 @@ const ArticleDetail = () => {
                       >
                         {(authorProfile?.name || authorProfile?.user_first_name || authorProfile?.user_last_name || authorProfile?.user_username || article.author.name || 'م').charAt(0)}
                       </Avatar>
-                                            <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, textAlign: 'center' }}>
-                        {authorProfile?.name || 
-                         `${authorProfile?.user_first_name || ''} ${authorProfile?.user_last_name || ''}`.trim() || 
-                         authorProfile?.user_username || 
-                         article.author.name || 
-                         'مؤلف غير معروف'}
+                      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, textAlign: 'center' }}>
+                        {authorProfile?.name ||
+                          `${authorProfile?.user_first_name || ''} ${authorProfile?.user_last_name || ''}`.trim() ||
+                          authorProfile?.user_username ||
+                          article.author.name ||
+                          'مؤلف غير معروف'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 2, lineHeight: 1.6 }}>
                         {authorProfile?.shortBio || authorProfile?.bio || authorProfile?.biography || authorProfile?.description || authorProfile?.about || article.author.bio}
-                        </Typography>
-                      
+                      </Typography>
+
                       {/* Additional Info */}
                       {(authorProfile?.user_email || authorProfile?.email) && (
-                        <Box sx={{ 
-                          backgroundColor: 'rgba(25, 118, 210, 0.05)', 
-                          borderRadius: 2, 
-                          p: 2, 
+                        <Box sx={{
+                          backgroundColor: 'rgba(25, 118, 210, 0.05)',
+                          borderRadius: 2,
+                          p: 2,
                           mb: 2,
                           width: '100%',
                           textAlign: 'center',
@@ -1330,18 +1356,18 @@ const ArticleDetail = () => {
                         }}>
                           <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}>
                             البريد الإلكتروني
-                    </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
                             {authorProfile?.user_email || authorProfile?.email}
-                        </Typography>
-                      </Box>
+                          </Typography>
+                        </Box>
                       )}
-                      
+
                       {authorProfile?.user_id && (
-                        <Box sx={{ 
-                          backgroundColor: 'rgba(76, 175, 80, 0.05)', 
-                          borderRadius: 2, 
-                          p: 2, 
+                        <Box sx={{
+                          backgroundColor: 'rgba(76, 175, 80, 0.05)',
+                          borderRadius: 2,
+                          p: 2,
                           mb: 2,
                           width: '100%',
                           textAlign: 'center',
@@ -1350,162 +1376,162 @@ const ArticleDetail = () => {
                           <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main', mb: 0.5 }}>
                             معرف المستخدم
                           </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" color="text.secondary">
                             #{authorProfile?.user_id}
-                        </Typography>
-                      </Box>
-                      )}
-                       
-                       {/* Specialization */}
-                       <Box sx={{ 
-                         backgroundColor: 'rgba(25, 118, 210, 0.1)', 
-                         borderRadius: 2, 
-                         p: 2, 
-                         mb: 2,
-                         width: '100%',
-                         textAlign: 'center'
-                       }}>
-                         <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}>
-                           الحالة
-                    </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {authorProfile?.status || authorProfile?.specialization || authorProfile?.subject || authorProfile?.field || article.author.specialization}
-                        </Typography>
-                      </Box>
-                      
-                                                {/* Stats */}
-                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, width: '100%', mb: 3 }}>
-                          <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(76, 175, 80, 0.1)', borderRadius: 2 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
-                              {authorProfile?.experience || authorProfile?.experience_years || authorProfile?.teaching_experience || authorProfile?.years_of_experience || article.author.experience}
-                        </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              خبرة
                           </Typography>
                         </Box>
-                          <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(255, 152, 0, 0.1)', borderRadius: 2 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
-                              {authorProfile?.courses_count || authorProfile?.total_courses || authorProfile?.courses_created || authorProfile?.number_of_courses || article.author.courses_count}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              دورة
-                            </Typography>
-                          </Box>
-                          <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(156, 39, 176, 0.1)', borderRadius: 2 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main' }}>
-                              {(authorProfile?.students_count || authorProfile?.total_students || authorProfile?.students_enrolled || authorProfile?.number_of_students || article.author.students_count || 0).toLocaleString()}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              طالب
-                            </Typography>
-                          </Box>
-                          <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(255, 193, 7, 0.1)', borderRadius: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                              <StarIcon sx={{ color: 'warning.main', fontSize: 16 }} />
-                              <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
-                                {authorProfile?.rating || authorProfile?.average_rating || authorProfile?.teacher_rating || authorProfile?.overall_rating || article.author.rating || 4.5}
-                              </Typography>
-                            </Box>
-                            <Typography variant="caption" color="text.secondary">
-                              تقييم
-                            </Typography>
-                          </Box>
+                      )}
+
+                      {/* Specialization */}
+                      <Box sx={{
+                        backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                        borderRadius: 2,
+                        p: 2,
+                        mb: 2,
+                        width: '100%',
+                        textAlign: 'center'
+                      }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}>
+                          الحالة
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {authorProfile?.status || authorProfile?.specialization || authorProfile?.subject || authorProfile?.field || article.author.specialization}
+                        </Typography>
+                      </Box>
+
+                      {/* Stats */}
+                      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, width: '100%', mb: 3 }}>
+                        <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(76, 175, 80, 0.1)', borderRadius: 2 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
+                            {authorProfile?.experience || authorProfile?.experience_years || authorProfile?.teaching_experience || authorProfile?.years_of_experience || article.author.experience}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            خبرة
+                          </Typography>
                         </Box>
-                       
-                       {/* Social Links */}
-                       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                         {(authorProfile?.linkedin || article.author.social_links?.linkedin) && (
-                           <IconButton 
-                             size="small" 
-                             onClick={() => window.open(authorProfile?.linkedin || article.author.social_links?.linkedin, '_blank')}
-                             sx={{ 
-                               backgroundColor: 'rgba(25, 118, 210, 0.1)',
-                               color: 'primary.main',
-                               '&:hover': { backgroundColor: 'primary.main', color: 'white' }
-                             }}
-                           >
-                             <Box component="span" sx={{ fontSize: 16 }}>in</Box>
-                           </IconButton>
-                         )}
-                         {(authorProfile?.twitter || article.author.social_links?.twitter) && (
-                           <IconButton 
-                             size="small" 
-                             onClick={() => window.open(authorProfile?.twitter || article.author.social_links?.twitter, '_blank')}
-                             sx={{ 
-                               backgroundColor: 'rgba(29, 161, 242, 0.1)',
-                               color: '#1DA1F2',
-                               '&:hover': { backgroundColor: '#1DA1F2', color: 'white' }
-                             }}
-                           >
-                             <Box component="span" sx={{ fontSize: 16 }}>𝕏</Box>
-                           </IconButton>
-                         )}
-                         {(authorProfile?.facebook || article.author.social_links?.facebook) && (
-                           <IconButton 
-                             size="small" 
-                             onClick={() => window.open(authorProfile?.facebook || article.author.social_links?.facebook, '_blank')}
-                             sx={{ 
-                               backgroundColor: 'rgba(66, 103, 178, 0.1)',
-                               color: '#4267B2',
-                               '&:hover': { backgroundColor: '#4267B2', color: 'white' }
-                             }}
-                           >
-                             <Box component="span" sx={{ fontSize: 16 }}>f</Box>
-                           </IconButton>
-                         )}
-                         {(authorProfile?.instagram || article.author.social_links?.instagram) && (
-                           <IconButton 
-                             size="small" 
-                             onClick={() => window.open(authorProfile?.instagram || article.author.social_links?.instagram, '_blank')}
-                             sx={{ 
-                               backgroundColor: 'rgba(225, 48, 108, 0.1)',
-                               color: '#E1306C',
-                               '&:hover': { backgroundColor: '#E1306C', color: 'white' }
-                             }}
-                           >
-                             <Box component="span" sx={{ fontSize: 16 }}>📷</Box>
-                           </IconButton>
-                         )}
-                         {(authorProfile?.github || article.author.social_links?.github) && (
-                           <IconButton 
-                             size="small" 
-                             onClick={() => window.open(authorProfile?.github || article.author.social_links?.github, '_blank')}
-                             sx={{ 
-                               backgroundColor: 'rgba(36, 41, 46, 0.1)',
-                               color: '#24292E',
-                               '&:hover': { backgroundColor: '#24292E', color: 'white' }
-                             }}
-                           >
-                             <Box component="span" sx={{ fontSize: 16 }}>🐙</Box>
-                           </IconButton>
-                         )}
-                         {(authorProfile?.youtube || article.author.social_links?.youtube) && (
-                           <IconButton 
-                             size="small" 
-                             onClick={() => window.open(authorProfile?.youtube || article.author.social_links?.youtube, '_blank')}
-                             sx={{ 
-                               backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                               color: '#FF0000',
-                               '&:hover': { backgroundColor: '#FF0000', color: 'white' }
-                             }}
-                           >
-                             <Box component="span" sx={{ fontSize: 16 }}>▶️</Box>
-                           </IconButton>
-                         )}
+                        <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(255, 152, 0, 0.1)', borderRadius: 2 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
+                            {authorProfile?.courses_count || authorProfile?.total_courses || authorProfile?.courses_created || authorProfile?.number_of_courses || article.author.courses_count}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            دورة
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(156, 39, 176, 0.1)', borderRadius: 2 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main' }}>
+                            {(authorProfile?.students_count || authorProfile?.total_students || authorProfile?.students_enrolled || authorProfile?.number_of_students || article.author.students_count || 0).toLocaleString()}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            طالب
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'center', p: 1.5, backgroundColor: 'rgba(255, 193, 7, 0.1)', borderRadius: 2 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                            <StarIcon sx={{ color: 'warning.main', fontSize: 16 }} />
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
+                              {authorProfile?.rating || authorProfile?.average_rating || authorProfile?.teacher_rating || authorProfile?.overall_rating || article.author.rating || 4.5}
+                            </Typography>
+                          </Box>
+                          <Typography variant="caption" color="text.secondary">
+                            تقييم
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {/* Social Links */}
+                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                        {(authorProfile?.linkedin || article.author.social_links?.linkedin) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => window.open(authorProfile?.linkedin || article.author.social_links?.linkedin, '_blank')}
+                            sx={{
+                              backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                              color: 'primary.main',
+                              '&:hover': { backgroundColor: 'primary.main', color: 'white' }
+                            }}
+                          >
+                            <Box component="span" sx={{ fontSize: 16 }}>in</Box>
+                          </IconButton>
+                        )}
+                        {(authorProfile?.twitter || article.author.social_links?.twitter) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => window.open(authorProfile?.twitter || article.author.social_links?.twitter, '_blank')}
+                            sx={{
+                              backgroundColor: 'rgba(29, 161, 242, 0.1)',
+                              color: '#1DA1F2',
+                              '&:hover': { backgroundColor: '#1DA1F2', color: 'white' }
+                            }}
+                          >
+                            <Box component="span" sx={{ fontSize: 16 }}>𝕏</Box>
+                          </IconButton>
+                        )}
+                        {(authorProfile?.facebook || article.author.social_links?.facebook) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => window.open(authorProfile?.facebook || article.author.social_links?.facebook, '_blank')}
+                            sx={{
+                              backgroundColor: 'rgba(66, 103, 178, 0.1)',
+                              color: '#4267B2',
+                              '&:hover': { backgroundColor: '#4267B2', color: 'white' }
+                            }}
+                          >
+                            <Box component="span" sx={{ fontSize: 16 }}>f</Box>
+                          </IconButton>
+                        )}
+                        {(authorProfile?.instagram || article.author.social_links?.instagram) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => window.open(authorProfile?.instagram || article.author.social_links?.instagram, '_blank')}
+                            sx={{
+                              backgroundColor: 'rgba(225, 48, 108, 0.1)',
+                              color: '#E1306C',
+                              '&:hover': { backgroundColor: '#E1306C', color: 'white' }
+                            }}
+                          >
+                            <Box component="span" sx={{ fontSize: 16 }}>📷</Box>
+                          </IconButton>
+                        )}
+                        {(authorProfile?.github || article.author.social_links?.github) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => window.open(authorProfile?.github || article.author.social_links?.github, '_blank')}
+                            sx={{
+                              backgroundColor: 'rgba(36, 41, 46, 0.1)',
+                              color: '#24292E',
+                              '&:hover': { backgroundColor: '#24292E', color: 'white' }
+                            }}
+                          >
+                            <Box component="span" sx={{ fontSize: 16 }}>🐙</Box>
+                          </IconButton>
+                        )}
+                        {(authorProfile?.youtube || article.author.social_links?.youtube) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => window.open(authorProfile?.youtube || article.author.social_links?.youtube, '_blank')}
+                            sx={{
+                              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                              color: '#FF0000',
+                              '&:hover': { backgroundColor: '#FF0000', color: 'white' }
+                            }}
+                          >
+                            <Box component="span" sx={{ fontSize: 16 }}>▶️</Box>
+                          </IconButton>
+                        )}
                       </Box>
                     </Box>
                   </CardContent>
                 </StyledCard>
-                
 
-                
+
+
                 <StyledCard sx={{ mb: 3 }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, display: 'flex', alignItems: 'center', color: 'primary.main' }}>
                       <TrendingUpIcon sx={{ mr: 1.5, fontSize: 28 }} />
                       إحصائيات المقالة
                     </Typography>
-                    
+
                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 3 }}>
                       <Box sx={{ textAlign: 'center', p: 2, backgroundColor: 'rgba(76, 175, 80, 0.1)', borderRadius: 2, border: '1px solid rgba(76, 175, 80, 0.2)' }}>
                         <FavoriteIcon sx={{ fontSize: 24, color: 'success.main', mb: 1 }} />
@@ -1553,28 +1579,28 @@ const ArticleDetail = () => {
                       <ArticleIcon sx={{ mr: 1.5, fontSize: 28 }} />
                       مقالات ذات صلة
                     </Typography>
-                    
+
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {relatedArticles && relatedArticles.length > 0 ? (
                         relatedArticles.map((item) => (
                           <Box
-                            key={item.id} 
+                            key={item.id}
                             onClick={() => navigate(`/articles/${item.slug}`)}
                             sx={{
-                              display: 'flex', 
-                              gap: 2, 
-                              cursor: 'pointer', 
-                              p: 2, 
-                              borderRadius: 3, 
+                              display: 'flex',
+                              gap: 2,
+                              cursor: 'pointer',
+                              p: 2,
+                              borderRadius: 3,
                               transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                               border: '1px solid rgba(25, 118, 210, 0.1)',
                               backgroundColor: 'rgba(25, 118, 210, 0.02)',
-                              '&:hover': { 
-                                backgroundColor: 'rgba(25, 118, 210, 0.1)', 
+                              '&:hover': {
+                                backgroundColor: 'rgba(25, 118, 210, 0.1)',
                                 transform: 'translateX(-8px) scale(1.02)',
                                 boxShadow: '0 8px 24px rgba(25, 118, 210, 0.2)',
                                 border: '1px solid rgba(25, 118, 210, 0.3)'
-                              } 
+                              }
                             }}
                           >
                             <Box
@@ -1583,10 +1609,10 @@ const ArticleDetail = () => {
                                 height: 70,
                                 borderRadius: 3,
                                 background: item.image ? 'transparent' : `linear-gradient(135deg, #663399, #42a5f5)`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
                                 fontSize: '0.8rem',
                                 fontWeight: 700,
                                 boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
@@ -1595,8 +1621,8 @@ const ArticleDetail = () => {
                               }}
                             >
                               {item.image ? (
-                                <img 
-                                  src={item.image} 
+                                <img
+                                  src={item.image}
                                   alt={item.title}
                                   style={{
                                     width: '100%',
@@ -1609,7 +1635,7 @@ const ArticleDetail = () => {
                                   }}
                                 />
                               ) : null}
-                              <Box sx={{ 
+                              <Box sx={{
                                 display: item.image ? 'none' : 'flex',
                                 width: '100%',
                                 height: '100%',
@@ -1618,20 +1644,20 @@ const ArticleDetail = () => {
                                 background: `linear-gradient(135deg, #663399, #42a5f5)`
                               }}>
                                 {(item.category || 'مقال').split(' ')[0]}
-                          </Box>
+                              </Box>
                             </Box>
                             <Box sx={{ flex: 1 }}>
                               <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.3, mb: 1, color: 'text.primary' }}>
                                 {item.title}
-                            </Typography>
+                              </Typography>
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <ScheduleIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
                                 <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                                   {item.reading_time} دقيقة قراءة
-                            </Typography>
-                          </Box>
-                              <Typography variant="caption" sx={{ 
-                                color: 'primary.main', 
+                                </Typography>
+                              </Box>
+                              <Typography variant="caption" sx={{
+                                color: 'primary.main',
                                 fontWeight: 600,
                                 backgroundColor: 'rgba(25, 118, 210, 0.1)',
                                 px: 1,
@@ -1642,12 +1668,12 @@ const ArticleDetail = () => {
                               }}>
                                 {item.category || 'عام'}
                               </Typography>
-                        </Box>
+                            </Box>
                           </Box>
                         ))
                       ) : (
-                        <Box sx={{ 
-                          textAlign: 'center', 
+                        <Box sx={{
+                          textAlign: 'center',
                           py: 3,
                           color: 'text.secondary'
                         }}>
@@ -1664,7 +1690,7 @@ const ArticleDetail = () => {
           </Grid>
         </Container>
       </Box>
-      
+
       <Footer />
     </Box>
   );

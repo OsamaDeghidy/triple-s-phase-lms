@@ -24,18 +24,25 @@ import {
   Receipt as ReceiptIcon
 } from '@mui/icons-material';
 import { styled, alpha, keyframes } from '@mui/material/styles';
+import { motion } from 'framer-motion';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { cartAPI } from '../../services/courseService';
-import { paymentAPI } from '../../services/api.service';
+import { paymentAPI, bannerAPI } from '../../services/api.service';
 import BackGroundImage from '../../assets/images/BackGround.png';
 import BGTriangleImage from '../../assets/images/BGtriangle.png';
 
 // Animation keyframes
 const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
 `;
 
 const triangleFloat = keyframes`
@@ -45,6 +52,70 @@ const triangleFloat = keyframes`
   75% { transform: translateY(-20px) rotate(1deg); }
   100% { transform: translateY(0px) rotate(0deg); }
 `;
+
+const AnimatedBackground = styled('div')(() => ({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  zIndex: -1,
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    zIndex: 1,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23e94560\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")',
+    opacity: 0.4,
+    zIndex: 2,
+    animation: `${pulse} 15s ease-in-out infinite`,
+  },
+}));
+
+const FloatingShape = styled('div')({
+  position: 'absolute',
+  borderRadius: '50%',
+  background: 'linear-gradient(45deg, #333679, #1a5f8a)',
+  filter: 'blur(60px)',
+  opacity: 0.15,
+  zIndex: 1,
+  animation: `${float} 15s ease-in-out infinite`,
+  '&:nth-of-type(1)': {
+    width: '300px',
+    height: '300px',
+    top: '10%',
+    right: '10%',
+    animationDelay: '0s',
+  },
+  '&:nth-of-type(2)': {
+    width: '200px',
+    height: '200px',
+    bottom: '20%',
+    right: '15%',
+    animationDelay: '5s',
+  },
+  '&:nth-of-type(3)': {
+    width: '250px',
+    height: '250px',
+    top: '30%',
+    left: '15%',
+    animationDelay: '7s',
+    background: 'linear-gradient(45deg, #0a3d62, #333679)',
+  },
+});
 
 const AnimatedTriangle = styled(Box)(({ theme }) => ({
   position: 'absolute',
@@ -80,19 +151,23 @@ const AnimatedTriangle = styled(Box)(({ theme }) => ({
   }
 }));
 
-const HeroSection = styled(Box)(({ theme }) => ({
-  background: `url(${BackGroundImage})`,
+const HeroSection = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'backgroundImage',
+})(({ theme, backgroundImage }) => ({
+  background: `url(${backgroundImage || BackGroundImage})`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
   backgroundAttachment: 'fixed',
   color: 'white',
-  padding: theme.spacing(8, 0, 4),
+  padding: theme.spacing(12, 0, 6),
+  margin: '0 0 20px 0',
   position: 'relative',
   overflow: 'hidden',
-  minHeight: '40vh',
+  minHeight: '65vh',
   display: 'flex',
   alignItems: 'center',
+  boxShadow: '0 15px 50px rgba(0, 0, 0, 0.3)',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -102,7 +177,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
     bottom: 0,
     background: `
       linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
-      url(${BackGroundImage})
+      url(${backgroundImage || BackGroundImage})
     `,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -156,6 +231,87 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [headerBanner, setHeaderBanner] = useState(null);
+
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) {
+      return BackGroundImage;
+    }
+
+    if (typeof image === 'string') {
+      // If it's already a full URL, return it
+      if (image.startsWith('http')) return image;
+
+      // If it's a relative path, construct full URL
+      return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+    }
+
+    return BackGroundImage;
+  };
+
+  // Fetch header banner from API
+  useEffect(() => {
+    const fetchHeaderBanner = async () => {
+      try {
+        console.log('🔄 Fetching header banner from API...');
+
+        // Try to get header banners specifically
+        let bannerData;
+        try {
+          console.log('🔍 Trying to fetch header banners...');
+          bannerData = await bannerAPI.getHeaderBanners();
+          console.log('✅ Header banners received:', bannerData);
+        } catch (headerBannerError) {
+          console.log('⚠️ Header banners failed, trying by type...');
+          try {
+            bannerData = await bannerAPI.getBannersByType('header');
+            console.log('✅ Header banners by type received:', bannerData);
+          } catch (byTypeError) {
+            console.log('⚠️ By type failed, trying active banners...');
+            bannerData = await bannerAPI.getActiveBanners();
+            console.log('✅ Active banners received:', bannerData);
+          }
+        }
+
+        // Filter to only header type banners
+        let filteredBanners = [];
+        if (Array.isArray(bannerData)) {
+          filteredBanners = bannerData.filter(banner => banner.banner_type === 'header');
+        } else if (bannerData?.results) {
+          filteredBanners = bannerData.results.filter(banner => banner.banner_type === 'header');
+        } else if (bannerData?.data) {
+          filteredBanners = bannerData.data.filter(banner => banner.banner_type === 'header');
+        }
+
+        console.log('📊 Filtered header banners:', filteredBanners.length);
+
+        // Set the first header banner
+        if (filteredBanners.length > 0) {
+          const banner = filteredBanners[0];
+          setHeaderBanner({
+            id: banner.id,
+            title: banner.title,
+            description: banner.description || '',
+            image_url: getImageUrl(banner.image || banner.image_url),
+            url: banner.url || null,
+            banner_type: banner.banner_type || 'header'
+          });
+          console.log('✅ Header banner set successfully');
+        } else {
+          console.log('⚠️ No header banners found');
+          setHeaderBanner(null);
+        }
+
+      } catch (error) {
+        console.error('❌ Error fetching header banner:', error);
+        console.error('❌ Error details:', error.response?.data || error.message);
+        setHeaderBanner(null);
+      }
+    };
+
+    fetchHeaderBanner();
+  }, []);
 
   useEffect(() => {
     if (!authLoading) {
@@ -228,22 +384,77 @@ const CartPage = () => {
   }
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <AnimatedBackground>
+        <FloatingShape />
+        <FloatingShape style={{ width: '200px', height: '200px', bottom: '20%', right: '15%', animationDelay: '5s' }} />
+        <FloatingShape style={{ width: '250px', height: '250px', top: '30%', left: '15%', animationDelay: '7s' }} />
+      </AnimatedBackground>
       <Header />
 
       {/* Hero Section */}
-      <HeroSection>
+      <HeroSection backgroundImage={headerBanner?.image_url}>
         <AnimatedTriangle />
+        {/* Animated Background Elements */}
+        <FloatingShape style={{ width: '300px', height: '300px', top: '-100px', right: '-100px', animationDelay: '0s' }} />
+        <FloatingShape style={{ width: '200px', height: '200px', bottom: '-50px', right: '20%', animationDelay: '2s', animationDuration: '15s' }} />
+        <FloatingShape style={{ width: '400px', height: '400px', bottom: '-200px', left: '-150px', animationDelay: '4s', animationDuration: '20s' }} />
+
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3 }}>
-          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
-              <ArrowBack />
-            </IconButton>
-            <Typography variant="h4" component="h1" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
-              <CartIcon color="inherit" />
-              سلة التسوق
-            </Typography>
-          </Box>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <Box sx={{
+              textAlign: 'center',
+              py: 3,
+              position: 'relative',
+              '&::before, &::after': {
+                content: '""',
+                position: 'absolute',
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)',
+                filter: 'blur(40px)',
+                zIndex: -1,
+              },
+              '&::before': {
+                top: '20%',
+                left: '10%',
+                animation: `${pulse} 8s ease-in-out infinite`,
+              },
+              '&::after': {
+                bottom: '10%',
+                right: '15%',
+                animation: `${pulse} 10s ease-in-out infinite reverse`,
+              }
+            }}>
+              <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center' }}>
+                <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
+                  <ArrowBack />
+                </IconButton>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  fontWeight={700}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    color: 'white',
+                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.2rem' },
+                    lineHeight: 1.2,
+                    textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                  }}
+                >
+                  <CartIcon color="inherit" />
+                  سلة التسوق
+                </Typography>
+              </Box>
+            </Box>
+          </motion.div>
         </Container>
       </HeroSection>
 

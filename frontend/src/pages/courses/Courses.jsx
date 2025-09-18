@@ -48,6 +48,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { keyframes } from '@emotion/react';
 import { courseAPI, cartAPI } from '../../services/courseService';
 import { API_CONFIG } from '../../config/api.config';
+import { bannerAPI } from '../../services/api.service';
 import BackGroundImage from '../../assets/images/BackGround.png';
 import BGTriangleImage from '../../assets/images/BGtriangle.png';
 
@@ -351,8 +352,10 @@ const AnimatedTriangle = styled(Box)(({ theme }) => ({
   }
 }));
 
-const HeroSection = styled('div')(({ theme }) => ({
-  background: `url(${BackGroundImage})`,
+const HeroSection = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'backgroundImage',
+})(({ theme, backgroundImage }) => ({
+  background: `url(${backgroundImage || BackGroundImage})`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
@@ -375,7 +378,7 @@ const HeroSection = styled('div')(({ theme }) => ({
     bottom: 0,
     background: `
       linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
-      url(${BackGroundImage})
+      url(${backgroundImage || BackGroundImage})
     `,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -527,6 +530,87 @@ const Courses = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartItems, setCartItems] = useState({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [headerBanner, setHeaderBanner] = useState(null);
+
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) {
+      return BackGroundImage;
+    }
+
+    if (typeof image === 'string') {
+      // If it's already a full URL, return it
+      if (image.startsWith('http')) return image;
+
+      // If it's a relative path, construct full URL
+      return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+    }
+
+    return BackGroundImage;
+  };
+
+  // Fetch header banner from API
+  useEffect(() => {
+    const fetchHeaderBanner = async () => {
+      try {
+        console.log('🔄 Fetching header banner from API...');
+
+        // Try to get header banners specifically
+        let bannerData;
+        try {
+          console.log('🔍 Trying to fetch header banners...');
+          bannerData = await bannerAPI.getHeaderBanners();
+          console.log('✅ Header banners received:', bannerData);
+        } catch (headerBannerError) {
+          console.log('⚠️ Header banners failed, trying by type...');
+          try {
+            bannerData = await bannerAPI.getBannersByType('header');
+            console.log('✅ Header banners by type received:', bannerData);
+          } catch (byTypeError) {
+            console.log('⚠️ By type failed, trying active banners...');
+            bannerData = await bannerAPI.getActiveBanners();
+            console.log('✅ Active banners received:', bannerData);
+          }
+        }
+
+        // Filter to only header type banners
+        let filteredBanners = [];
+        if (Array.isArray(bannerData)) {
+          filteredBanners = bannerData.filter(banner => banner.banner_type === 'header');
+        } else if (bannerData?.results) {
+          filteredBanners = bannerData.results.filter(banner => banner.banner_type === 'header');
+        } else if (bannerData?.data) {
+          filteredBanners = bannerData.data.filter(banner => banner.banner_type === 'header');
+        }
+
+        console.log('📊 Filtered header banners:', filteredBanners.length);
+
+        // Set the first header banner
+        if (filteredBanners.length > 0) {
+          const banner = filteredBanners[0];
+          setHeaderBanner({
+            id: banner.id,
+            title: banner.title,
+            description: banner.description || '',
+            image_url: getImageUrl(banner.image || banner.image_url),
+            url: banner.url || null,
+            banner_type: banner.banner_type || 'header'
+          });
+          console.log('✅ Header banner set successfully');
+        } else {
+          console.log('⚠️ No header banners found');
+          setHeaderBanner(null);
+        }
+
+      } catch (error) {
+        console.error('❌ Error fetching header banner:', error);
+        console.error('❌ Error details:', error.response?.data || error.message);
+        setHeaderBanner(null);
+      }
+    };
+
+    fetchHeaderBanner();
+  }, []);
 
   // Fetch courses and categories from API
   useEffect(() => {
@@ -784,7 +868,7 @@ const Courses = () => {
       <Header />
 
       {/* Hero Section */}
-      <HeroSection>
+      <HeroSection backgroundImage={headerBanner?.image_url}>
         <AnimatedTriangle />
         {/* Animated Background Elements */}
         <FloatingShape style={{ width: '300px', height: '300px', top: '-100px', right: '-100px', animationDelay: '0s' }} />

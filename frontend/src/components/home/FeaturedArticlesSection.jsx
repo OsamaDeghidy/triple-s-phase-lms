@@ -14,7 +14,9 @@ import {
     CardContent
 } from '@mui/material';
 import { ArrowForward, ChevronLeft, ChevronRight, Article, ErrorOutline } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { articleAPI } from '../../services/api.service';
+import { useArticle } from '../../contexts/ArticleContext';
 
 const SectionContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(8, 0),
@@ -312,6 +314,8 @@ const EmptyStateContainer = styled(Box)(({ theme }) => ({
 const FeaturedArticlesSection = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const navigate = useNavigate();
+    const { saveArticleData } = useArticle();
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -365,7 +369,35 @@ const FeaturedArticlesSection = () => {
 
                         if (extractedArticles.length > 0) {
                             console.log(`✅ ${endpoint.name} success - Found ${extractedArticles.length} articles`);
-                            finalArticles = extractedArticles;
+
+                            // Process articles to ensure proper author information
+                            const processedArticles = extractedArticles.map(article => {
+                                // Extract author information from different possible fields
+                                const authorId = article.author || article.author_id || article.created_by || article.user;
+                                const authorName = article.author_name ||
+                                    (article.author?.profile?.name) ||
+                                    (article.author?.first_name && article.author?.last_name ? `${article.author.first_name} ${article.author.last_name}` : null) ||
+                                    article.author?.first_name ||
+                                    article.author?.last_name ||
+                                    article.author?.username ||
+                                    article.author?.name ||
+                                    (article.created_by_name) ||
+                                    (article.user_name) ||
+                                    'مؤلف غير معروف';
+
+                                // Return processed article with standardized author info
+                                return {
+                                    ...article,
+                                    author: {
+                                        id: authorId,
+                                        name: authorName,
+                                        ...article.author // Keep original author data for backward compatibility
+                                    }
+                                };
+                            });
+
+                            finalArticles = processedArticles;
+                            console.log(`📝 Processed articles with author info:`, processedArticles.map(a => ({ id: a.id, title: a.title, author: a.author?.name })));
                             break; // Exit the loop if we found articles
                         } else {
                             console.log(`⚠️ ${endpoint.name} - No articles found in response`);
@@ -385,17 +417,51 @@ const FeaturedArticlesSection = () => {
                     finalArticles = [
                         {
                             id: 'test-1',
+                            slug: 'test-article-health-medicine',
                             title: 'مقال تجريبي - الصحة والطب',
-                            author: { first_name: 'أدمن', last_name: 'النظام' },
+                            summary: 'مقال شامل عن الصحة والطب الحديث وأهمية الرعاية الصحية الوقائية',
+                            content: '<p>هذا مقال تجريبي عن الصحة والطب. يحتوي على معلومات مفيدة حول الرعاية الصحية الوقائية وأهمية اتباع نمط حياة صحي.</p><p>نناقش في هذا المقال أحدث التطورات في مجال الطب والعلاج، بالإضافة إلى نصائح مهمة للحفاظ على الصحة العامة.</p>',
+                            author: {
+                                id: 'admin-1',
+                                name: 'أدمن النظام',
+                                first_name: 'أدمن',
+                                last_name: 'النظام'
+                            },
+                            category: 'الصحة والطب',
+                            tags: ['صحة', 'طب', 'رعاية صحية'],
                             created_at: new Date().toISOString(),
-                            image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop'
+                            published_at: new Date().toISOString(),
+                            image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop',
+                            reading_time: 5,
+                            views_count: 150,
+                            likes_count: 25,
+                            comments_count: 8,
+                            featured: true,
+                            status: 'published'
                         },
                         {
                             id: 'test-2',
+                            slug: 'test-article-nutrition',
                             title: 'مقال تجريبي - التغذية السليمة',
-                            author: { first_name: 'أدمن', last_name: 'النظام' },
+                            summary: 'دليل شامل للتغذية السليمة وأهمية تناول الطعام الصحي للحفاظ على الصحة',
+                            content: '<p>التغذية السليمة هي أساس الصحة الجيدة. في هذا المقال نستعرض أهم مبادئ التغذية الصحية.</p><p>نتحدث عن الفيتامينات والمعادن الضرورية للجسم، وأهمية شرب الماء، وتجنب الأطعمة الضارة.</p>',
+                            author: {
+                                id: 'admin-2',
+                                name: 'أدمن النظام',
+                                first_name: 'أدمن',
+                                last_name: 'النظام'
+                            },
+                            category: 'التغذية',
+                            tags: ['تغذية', 'صحة', 'طعام صحي'],
                             created_at: new Date().toISOString(),
-                            image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop'
+                            published_at: new Date().toISOString(),
+                            image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop',
+                            reading_time: 7,
+                            views_count: 200,
+                            likes_count: 35,
+                            comments_count: 12,
+                            featured: true,
+                            status: 'published'
                         }
                     ];
                     console.log('🧪 Test data added:', finalArticles.length, 'articles');
@@ -414,24 +480,75 @@ const FeaturedArticlesSection = () => {
                 const fallbackArticles = [
                     {
                         id: 'fallback-1',
+                        slug: 'fallback-preventive-medicine',
                         title: 'مقال تجريبي - الطب الوقائي',
-                        author: { first_name: 'أدمن', last_name: 'النظام' },
+                        summary: 'مقال عن الطب الوقائي وأهمية الوقاية من الأمراض قبل حدوثها',
+                        content: '<p>الطب الوقائي هو أحد أهم فروع الطب الحديث. نناقش في هذا المقال أهمية الوقاية من الأمراض.</p>',
+                        author: {
+                            id: 'admin-1',
+                            name: 'أدمن النظام',
+                            first_name: 'أدمن',
+                            last_name: 'النظام'
+                        },
+                        category: 'الطب الوقائي',
+                        tags: ['طب وقائي', 'صحة'],
                         created_at: new Date().toISOString(),
-                        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop'
+                        published_at: new Date().toISOString(),
+                        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop',
+                        reading_time: 4,
+                        views_count: 100,
+                        likes_count: 15,
+                        comments_count: 5,
+                        featured: false,
+                        status: 'published'
                     },
                     {
                         id: 'fallback-2',
+                        slug: 'fallback-mental-health',
                         title: 'مقال تجريبي - الصحة النفسية',
-                        author: { first_name: 'أدمن', last_name: 'النظام' },
+                        summary: 'مقال عن الصحة النفسية وأهمية العناية بالصحة العقلية',
+                        content: '<p>الصحة النفسية لا تقل أهمية عن الصحة الجسدية. نستعرض في هذا المقال طرق الحفاظ على الصحة النفسية.</p>',
+                        author: {
+                            id: 'admin-2',
+                            name: 'أدمن النظام',
+                            first_name: 'أدمن',
+                            last_name: 'النظام'
+                        },
+                        category: 'الصحة النفسية',
+                        tags: ['صحة نفسية', 'عقل'],
                         created_at: new Date().toISOString(),
-                        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop'
+                        published_at: new Date().toISOString(),
+                        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop',
+                        reading_time: 6,
+                        views_count: 120,
+                        likes_count: 20,
+                        comments_count: 7,
+                        featured: false,
+                        status: 'published'
                     },
                     {
                         id: 'fallback-3',
+                        slug: 'fallback-therapeutic-nutrition',
                         title: 'مقال تجريبي - التغذية العلاجية',
-                        author: { first_name: 'أدمن', last_name: 'النظام' },
+                        summary: 'مقال عن التغذية العلاجية ودورها في علاج الأمراض',
+                        content: '<p>التغذية العلاجية تلعب دوراً مهماً في علاج العديد من الأمراض. نناقش في هذا المقال فوائد التغذية العلاجية.</p>',
+                        author: {
+                            id: 'admin-3',
+                            name: 'أدمن النظام',
+                            first_name: 'أدمن',
+                            last_name: 'النظام'
+                        },
+                        category: 'التغذية العلاجية',
+                        tags: ['تغذية علاجية', 'علاج'],
                         created_at: new Date().toISOString(),
-                        image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=250&fit=crop'
+                        published_at: new Date().toISOString(),
+                        image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=250&fit=crop',
+                        reading_time: 5,
+                        views_count: 80,
+                        likes_count: 12,
+                        comments_count: 3,
+                        featured: false,
+                        status: 'published'
                     }
                 ];
                 setArticles(fallbackArticles);
@@ -446,15 +563,16 @@ const FeaturedArticlesSection = () => {
         fetchArticles();
     }, []);
 
-    // Format date helper
+    // Format date helper - Using Gregorian calendar
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try {
             const date = new Date(dateString);
-            return date.toLocaleDateString('ar-SA', {
+            return date.toLocaleDateString('ar-SA-u-ca-gregory', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
+                calendar: 'gregory'
             });
         } catch (error) {
             console.error('Error formatting date:', error);
@@ -462,21 +580,45 @@ const FeaturedArticlesSection = () => {
         }
     };
 
-    // Get author name helper
+    // Get author name helper - Enhanced to match ArticleDetail.jsx logic
     const getAuthorName = (author) => {
-        if (!author) return 'غير محدد';
+        if (!author) return 'مؤلف غير معروف';
 
+        // If it's already a string, return it
         if (typeof author === 'string') return author;
 
+        // If it's an object, try different fields
         if (typeof author === 'object') {
+            // Check for profile name first
+            if (author.profile?.name) return author.profile.name;
+
+            // Check for first_name and last_name combination
             if (author.first_name && author.last_name) {
                 return `${author.first_name} ${author.last_name}`;
             }
+
+            // Check for individual name fields
+            if (author.first_name) return author.first_name;
+            if (author.last_name) return author.last_name;
+
+            // Check for username
             if (author.username) return author.username;
+
+            // Check for name field
+            if (author.name) return author.name;
+
+            // Check for email (use part before @)
             if (author.email) return author.email.split('@')[0];
+
+            // Check for user fields (nested user object)
+            if (author.user?.first_name && author.user?.last_name) {
+                return `${author.user.first_name} ${author.user.last_name}`;
+            }
+            if (author.user?.username) return author.user.username;
+            if (author.user?.name) return author.user.name;
         }
 
-        return 'غير محدد';
+        return 'مؤلف غير معروف';
     };
 
     // Get image URL helper
@@ -521,10 +663,69 @@ const FeaturedArticlesSection = () => {
 
     const handleArticleClick = (article) => {
         console.log('📖 Opening article:', article);
-        if (article.slug) {
-            window.location.href = `/article/${article.slug}`;
-        } else if (article.id) {
-            window.location.href = `/article/${article.id}`;
+        console.log('📖 Article data:', {
+            id: article.id,
+            slug: article.slug,
+            title: article.title,
+            author: article.author
+        });
+
+        try {
+            // Save the complete article data to context (like shared preferences)
+            // This ensures ArticleDetail.jsx has all the data immediately
+            const articleDataToSave = {
+                id: article.id,
+                slug: article.slug,
+                title: article.title || '',
+                summary: article.summary || '',
+                content: article.content || '',
+                author: {
+                    id: article.author?.id,
+                    name: getAuthorName(article.author),
+                    avatar: article.author?.avatar || `https://via.placeholder.com/40x40/1976d2/ffffff?text=${getAuthorName(article.author).charAt(0)}`
+                },
+                category: article.category || article.category_name || 'عام',
+                category_id: article.category_id,
+                tags: article.tags ? (Array.isArray(article.tags) ? article.tags.map(tag => tag.name || tag) : [article.tags]) : [],
+                image: getImageUrl(article.image),
+                cover_image: article.cover_image ? (article.cover_image.startsWith('http') ? article.cover_image : `http://localhost:8000${article.cover_image}`) : null,
+                published_at: article.published_at || article.created_at,
+                created_at: article.created_at,
+                updated_at: article.updated_at,
+                reading_time: article.reading_time || 5,
+                views_count: article.views_count || 0,
+                likes_count: article.likes_count || 0,
+                comments_count: article.comments_count || 0,
+                featured: article.featured || false,
+                status: article.status || 'published',
+                rating: article.rating || 4.5,
+                meta_description: article.meta_description || '',
+                meta_keywords: article.meta_keywords || '',
+                allow_comments: article.allow_comments !== false,
+                word_count: article.word_count || 0,
+                is_published: article.status === 'published'
+            };
+
+            console.log('💾 Saving article data to context:', articleDataToSave);
+            saveArticleData(articleDataToSave);
+
+            // Navigate to article detail page using React Router
+            // The route is /articles/:slug in App.jsx
+            if (article.slug) {
+                navigate(`/articles/${article.slug}`);
+                console.log('✅ Navigating to article by slug:', article.slug);
+            } else if (article.id) {
+                navigate(`/articles/${article.id}`);
+                console.log('✅ Navigating to article by ID:', article.id);
+            } else {
+                console.error('❌ No slug or ID found for article:', article);
+                // Fallback to articles page if no valid identifier
+                navigate('/articles');
+            }
+        } catch (error) {
+            console.error('❌ Error navigating to article:', error);
+            // Fallback to articles page on error
+            navigate('/articles');
         }
     };
 
@@ -640,7 +841,7 @@ const FeaturedArticlesSection = () => {
                     </HeaderLeft>
                     <ViewAllButton
                         endIcon={<ArrowForward />}
-                        onClick={() => window.location.href = '/articles'}
+                        onClick={() => navigate('/articles')}
                     >
                         عرض جميع المقالات
                     </ViewAllButton>

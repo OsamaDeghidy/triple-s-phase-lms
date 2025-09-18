@@ -43,7 +43,8 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
-import { articleAPI } from '../../services/api.service';
+import { articleAPI, bannerAPI } from '../../services/api.service';
+import { useArticle } from '../../contexts/ArticleContext';
 import BackGroundImage from '../../assets/images/BackGround.png';
 import BGTriangleImage from '../../assets/images/BGtriangle.png';
 
@@ -74,8 +75,10 @@ const triangleFloat = keyframes`
 `;
 
 // Styled components
-const HeroSection = styled(Box)(({ theme }) => ({
-  background: `url(${BackGroundImage})`,
+const HeroSection = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'backgroundImage',
+})(({ theme, backgroundImage }) => ({
+  background: `url(${backgroundImage || BackGroundImage})`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
@@ -97,7 +100,7 @@ const HeroSection = styled(Box)(({ theme }) => ({
     bottom: 0,
     background: `
       linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.3) 100%),
-      url(${BackGroundImage})
+      url(${backgroundImage || BackGroundImage})
     `,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -154,14 +157,15 @@ const AnimatedTriangle = styled(Box)(({ theme }) => ({
 }));
 
 const ModernCard = styled(Card)(({ theme }) => ({
-  height: '100%',
+  height: '420px', // ارتفاع ثابت مطلق
+  width: '100%', // عرض كامل
   display: 'flex',
-  flexDirection: 'row', // تغيير إلى أفقي
-  borderRadius: 20,
+  flexDirection: 'column',
+  borderRadius: 16,
   overflow: 'hidden',
   background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-  border: '1px solid rgba(25, 118, 210, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+  border: '1px solid rgba(25, 118, 210, 0.08)',
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   position: 'relative',
   '&::before': {
@@ -170,22 +174,19 @@ const ModernCard = styled(Card)(({ theme }) => ({
     top: 0,
     left: 0,
     right: 0,
-    height: '3px',
+    height: '4px',
     background: 'linear-gradient(90deg, #663399, #42a5f5, #1565c0)',
     backgroundSize: '200% 100%',
     animation: `${shimmer} 3s ease-in-out infinite`,
   },
   '&:hover': {
-    transform: 'translateY(-8px) rotateX(2deg)',
-    boxShadow: '0 20px 40px rgba(25, 118, 210, 0.15)',
+    transform: 'translateY(-12px)',
+    boxShadow: '0 24px 48px rgba(25, 118, 210, 0.18)',
     '& .article-image': {
-      transform: 'scale(1.1) rotate(2deg)'
+      transform: 'scale(1.05)'
     },
     '& .read-more': {
-      transform: 'translateX(8px)',
-    },
-    '& .card-content': {
-      transform: 'translateX(-4px)',
+      transform: 'translateY(-2px)',
     }
   }
 }));
@@ -348,6 +349,7 @@ const ReadMoreButton = styled(Box)(({ theme, category }) => ({
 const ArticlesPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { saveArticleData } = useArticle();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -357,6 +359,87 @@ const ArticlesPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [bookmarkedArticles, setBookmarkedArticles] = useState(new Set());
   const [likedArticles, setLikedArticles] = useState(new Set());
+  const [headerBanner, setHeaderBanner] = useState(null);
+
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) {
+      return BackGroundImage;
+    }
+
+    if (typeof image === 'string') {
+      // If it's already a full URL, return it
+      if (image.startsWith('http')) return image;
+
+      // If it's a relative path, construct full URL
+      return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
+    }
+
+    return BackGroundImage;
+  };
+
+  // Fetch header banner from API
+  useEffect(() => {
+    const fetchHeaderBanner = async () => {
+      try {
+        console.log('🔄 Fetching header banner from API...');
+
+        // Try to get header banners specifically
+        let bannerData;
+        try {
+          console.log('🔍 Trying to fetch header banners...');
+          bannerData = await bannerAPI.getHeaderBanners();
+          console.log('✅ Header banners received:', bannerData);
+        } catch (headerBannerError) {
+          console.log('⚠️ Header banners failed, trying by type...');
+          try {
+            bannerData = await bannerAPI.getBannersByType('header');
+            console.log('✅ Header banners by type received:', bannerData);
+          } catch (byTypeError) {
+            console.log('⚠️ By type failed, trying active banners...');
+            bannerData = await bannerAPI.getActiveBanners();
+            console.log('✅ Active banners received:', bannerData);
+          }
+        }
+
+        // Filter to only header type banners
+        let filteredBanners = [];
+        if (Array.isArray(bannerData)) {
+          filteredBanners = bannerData.filter(banner => banner.banner_type === 'header');
+        } else if (bannerData?.results) {
+          filteredBanners = bannerData.results.filter(banner => banner.banner_type === 'header');
+        } else if (bannerData?.data) {
+          filteredBanners = bannerData.data.filter(banner => banner.banner_type === 'header');
+        }
+
+        console.log('📊 Filtered header banners:', filteredBanners.length);
+
+        // Set the first header banner
+        if (filteredBanners.length > 0) {
+          const banner = filteredBanners[0];
+          setHeaderBanner({
+            id: banner.id,
+            title: banner.title,
+            description: banner.description || '',
+            image_url: getImageUrl(banner.image || banner.image_url),
+            url: banner.url || null,
+            banner_type: banner.banner_type || 'header'
+          });
+          console.log('✅ Header banner set successfully');
+        } else {
+          console.log('⚠️ No header banners found');
+          setHeaderBanner(null);
+        }
+
+      } catch (error) {
+        console.error('❌ Error fetching header banner:', error);
+        console.error('❌ Error details:', error.response?.data || error.message);
+        setHeaderBanner(null);
+      }
+    };
+
+    fetchHeaderBanner();
+  }, []);
 
   // Fetch articles from API
   useEffect(() => {
@@ -367,7 +450,7 @@ const ArticlesPage = () => {
 
         const response = await articleAPI.getArticles({
           page: currentPage,
-          page_size: 6,
+          page_size: 9, // زيادة عدد المقالات لكل صفحة
           search: searchQuery,
           status: 'published',
           ordering: sortBy === 'latest' ? '-created_at' :
@@ -395,30 +478,42 @@ const ArticlesPage = () => {
           totalCount = 0;
         }
 
-        // Transform articles data to match our component structure
+        // Transform articles data to match our component structure with comprehensive data
         const transformedArticles = articlesData.map(article => ({
           id: article.id,
+          slug: article.slug,
           title: article.title || '',
           summary: article.summary || '',
           content: article.content || '',
           author: {
+            id: article.author || article.author_id,
             name: article.author_name || article.author?.name || article.author?.first_name || 'مؤلف غير معروف',
             avatar: article.author?.image_profile || article.author?.avatar || `https://via.placeholder.com/40x40/1976d2/ffffff?text=${(article.author_name || article.author?.name || 'A').charAt(0)}`
           },
-          category: article.category || 'عام',
-          tags: article.tags ? article.tags.map(tag => tag.name || tag) : [],
+          category: article.category || article.category_name || 'عام',
+          category_id: article.category_id,
+          tags: article.tags ? (Array.isArray(article.tags) ? article.tags.map(tag => tag.name || tag) : [article.tags]) : [],
           image: article.image ? (article.image.startsWith('http') ? article.image : `http://localhost:8000${article.image}`) : 'https://via.placeholder.com/400x250/1976d2/ffffff?text=No+Image',
+          cover_image: article.cover_image ? (article.cover_image.startsWith('http') ? article.cover_image : `http://localhost:8000${article.cover_image}`) : null,
           published_at: article.published_at || article.created_at,
+          created_at: article.created_at,
+          updated_at: article.updated_at,
           reading_time: article.reading_time || 5,
           views_count: article.views_count || 0,
           likes_count: article.likes_count || 0,
           comments_count: article.comments_count || 0,
           featured: article.featured || false,
-          rating: 4.5 // Default rating
+          status: article.status || 'published',
+          rating: article.rating || 4.5,
+          meta_description: article.meta_description || '',
+          meta_keywords: article.meta_keywords || '',
+          allow_comments: article.allow_comments !== false,
+          word_count: article.word_count || 0,
+          is_published: article.status === 'published'
         }));
 
         setArticles(transformedArticles);
-        setTotalPages(Math.ceil(totalCount / 6));
+        setTotalPages(Math.ceil(totalCount / 9));
         setLoading(false);
       } catch (error) {
         console.error('Error fetching articles:', error);
@@ -489,6 +584,19 @@ const ArticlesPage = () => {
     });
   };
 
+  // Handle article click - save data and navigate
+  const handleArticleClick = (article) => {
+    console.log('📖 Article clicked:', article);
+    console.log('📖 Article ID:', article.id);
+    console.log('📖 Article title:', article.title);
+
+    // Save the complete article data to context (like shared preferences)
+    saveArticleData(article);
+
+    // Navigate to article detail page
+    navigate(`/articles/${article.slug || article.id}`);
+  };
+
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.summary.toLowerCase().includes(searchQuery.toLowerCase());
@@ -511,7 +619,7 @@ const ArticlesPage = () => {
     }
   });
 
-  const paginatedArticles = sortedArticles.slice((currentPage - 1) * 6, currentPage * 6);
+  const paginatedArticles = sortedArticles.slice((currentPage - 1) * 9, currentPage * 9);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -528,18 +636,19 @@ const ArticlesPage = () => {
       transition={{ duration: 0.6 }}
       whileHover={{ scale: 1.02 }}
     >
-      <ModernCard sx={{
-        height: { xs: '180px', sm: '240px', md: '280px' },
-        cursor: 'pointer',
-        flexDirection: { xs: 'column', sm: 'row' }
-      }} onClick={() => navigate(`/articles/${article.slug || article.id}`)}>
-        {/* Image Section - Smaller */}
+      <ModernCard
+        sx={{ cursor: 'pointer' }}
+        onClick={() => handleArticleClick(article)}
+      >
+        {/* Image Section - Fixed Height */}
         <Box sx={{
           position: 'relative',
           overflow: 'hidden',
-          width: { xs: '140px', sm: '180px', md: '220px' },
-          minWidth: { xs: '140px', sm: '180px', md: '220px' },
-          height: '100%'
+          height: '200px', // ارتفاع ثابت للصورة
+          minHeight: '200px', // ضمان الارتفاع الأدنى
+          maxHeight: '200px', // ضمان الارتفاع الأقصى
+          width: '100%',
+          flexShrink: 0 // منع التقلص
         }}>
           <CardMedia
             component="img"
@@ -551,184 +660,205 @@ const ArticlesPage = () => {
             sx={{
               objectFit: 'cover',
               transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-              borderRadius: { xs: '20px 20px 0 0', sm: '0 20px 20px 0' }
             }}
             onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/200x180/1976d2/ffffff?text=No+Image';
+              e.target.src = 'https://via.placeholder.com/400x200/1976d2/ffffff?text=No+Image';
             }}
           />
+
+          {/* Category Badge Overlay */}
+          <Box sx={{
+            position: 'absolute',
+            top: 12,
+            left: 12,
+            zIndex: 2
+          }}>
+            <CategoryChip
+              label={article.category}
+              size="small"
+              category={article.category}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                color: '#663399',
+                fontWeight: 700,
+                backdropFilter: 'blur(10px)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                }
+              }}
+            />
+          </Box>
+
+          {/* Action Buttons Overlay */}
+          <Box sx={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            display: 'flex',
+            gap: 0.5,
+            zIndex: 2
+          }}>
+            <Tooltip title={likedArticles.has(article.id) ? "إلغاء الإعجاب" : "إعجاب"}>
+              <ActionButton
+                variant="like"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLike(article.id);
+                }}
+                sx={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  color: likedArticles.has(article.id) ? '#663399' : '#666',
+                  backdropFilter: 'blur(10px)',
+                  '&:hover': {
+                    backgroundColor: likedArticles.has(article.id) ? '#663399' : '#f5f5f5',
+                    color: likedArticles.has(article.id) ? 'white' : '#663399',
+                  }
+                }}
+              >
+                {likedArticles.has(article.id) ? <FavoriteIcon sx={{ fontSize: 18 }} /> : <FavoriteBorderIcon sx={{ fontSize: 18 }} />}
+              </ActionButton>
+            </Tooltip>
+
+            <Tooltip title={bookmarkedArticles.has(article.id) ? "إلغاء الحفظ" : "حفظ"}>
+              <ActionButton
+                variant="bookmark"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBookmark(article.id);
+                }}
+                sx={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  color: bookmarkedArticles.has(article.id) ? '#42a5f5' : '#666',
+                  backdropFilter: 'blur(10px)',
+                  '&:hover': {
+                    backgroundColor: bookmarkedArticles.has(article.id) ? '#42a5f5' : '#f5f5f5',
+                    color: bookmarkedArticles.has(article.id) ? 'white' : '#42a5f5',
+                  }
+                }}
+              >
+                {bookmarkedArticles.has(article.id) ? <BookmarkIcon sx={{ fontSize: 18 }} /> : <BookmarkBorderIcon sx={{ fontSize: 18 }} />}
+              </ActionButton>
+            </Tooltip>
+          </Box>
 
           {/* Gradient Overlay */}
           <Box sx={{
             position: 'absolute',
-            top: 0,
+            bottom: 0,
             left: 0,
             right: 0,
-            bottom: 0,
-            background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.1), transparent)',
-            borderRadius: { xs: '20px 20px 0 0', sm: '0 20px 20px 0' }
+            height: '60px',
+            background: 'linear-gradient(transparent, rgba(0, 0, 0, 0.3))',
           }} />
         </Box>
 
         {/* Content Section */}
         <CardContent sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 3 },
+          p: 3,
           display: 'flex',
           flexDirection: 'column',
-          gap: { xs: 1, sm: 1.5 },
-          className: 'card-content',
-          position: 'relative'
+          gap: 1.5,
+          position: 'relative',
+          height: '220px', // ارتفاع ثابت للمحتوى
+          minHeight: '220px', // ضمان الارتفاع الأدنى
+          maxHeight: '220px' // ضمان الارتفاع الأقصى
         }}>
-
-
-          {/* Header with Category and Action Buttons */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            <CategoryChip
-              label={article.category}
-              size="small"
-              category={article.category}
-            />
-            <Box sx={{ display: 'flex', gap: 0.5 }}>
-              <Tooltip title={likedArticles.has(article.id) ? "إلغاء الإعجاب" : "إعجاب"}>
-                <ActionButton
-                  variant="like"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLike(article.id);
-                  }}
-                  sx={{
-                    backgroundColor: likedArticles.has(article.id) ? '#663399' : alpha('#663399', 0.1),
-                    color: likedArticles.has(article.id) ? 'white' : '#663399',
-                    '&:hover': {
-                      backgroundColor: likedArticles.has(article.id) ? '#1565c0' : '#663399',
-                      color: 'white',
-                    }
-                  }}
-                >
-                  {likedArticles.has(article.id) ? <FavoriteIcon sx={{ fontSize: 20 }} /> : <FavoriteBorderIcon sx={{ fontSize: 20 }} />}
-                </ActionButton>
-              </Tooltip>
-
-              <Tooltip title={bookmarkedArticles.has(article.id) ? "إلغاء الحفظ" : "حفظ"}>
-                <ActionButton
-                  variant="bookmark"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleBookmark(article.id);
-                  }}
-                  sx={{
-                    backgroundColor: bookmarkedArticles.has(article.id) ? '#42a5f5' : alpha('#42a5f5', 0.1),
-                    color: bookmarkedArticles.has(article.id) ? 'white' : '#42a5f5',
-                    '&:hover': {
-                      backgroundColor: bookmarkedArticles.has(article.id) ? '#663399' : '#42a5f5',
-                      color: 'white',
-                    }
-                  }}
-                >
-                  {bookmarkedArticles.has(article.id) ? <BookmarkIcon sx={{ fontSize: 20 }} /> : <BookmarkBorderIcon sx={{ fontSize: 20 }} />}
-                </ActionButton>
-              </Tooltip>
-            </Box>
-          </Box>
-
           {/* Title */}
           <Typography variant="h6" component="h3" sx={{
             fontWeight: 800,
-            lineHeight: 1.2,
+            lineHeight: 1.3,
             color: '#1a1a1a',
-            fontSize: { xs: '1.1rem', sm: '1.2rem' },
+            fontSize: '1.1rem',
             mb: 1,
             display: '-webkit-box',
-            WebkitLineClamp: { xs: 3, sm: 4 },
+            WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            minHeight: '2.6rem' // ارتفاع ثابت للعنوان
           }}>
             {article.title}
           </Typography>
 
           {/* Summary */}
           <Typography variant="body2" color="text.secondary" sx={{
-            lineHeight: 1.4,
-            fontSize: { xs: '0.9rem', sm: '1rem' },
-            mb: 2,
+            lineHeight: 1.5,
+            fontSize: '0.9rem',
             color: '#666',
             display: '-webkit-box',
-            WebkitLineClamp: { xs: 3, sm: 4 },
+            WebkitLineClamp: 3,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            flexGrow: 1
           }}>
             {article.summary}
           </Typography>
 
-          {/* Footer with Read More and Stats */}
+          {/* Stats Row */}
           <Box sx={{
             display: 'flex',
-            justifyContent: 'space-between',
+            gap: 1,
             alignItems: 'center',
-            mt: 'auto',
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 1, sm: 0 }
+            flexWrap: 'wrap',
+            mb: 1.5
           }}>
-            <ReadMoreButton
-              category={article.category}
-              className="read-more"
-            >
-              اقرأ المزيد
-              <Box className="arrow-circle">
-                <ArrowForwardIcon sx={{ fontSize: 14, color: 'white' }} />
-              </Box>
-            </ReadMoreButton>
-
             <Box sx={{
               display: 'flex',
-              gap: { xs: 1, sm: 1.5 },
               alignItems: 'center',
-              flexWrap: 'wrap'
+              gap: 0.5,
+              backgroundColor: 'rgba(25, 118, 210, 0.08)',
+              padding: '3px 8px',
+              borderRadius: '10px'
             }}>
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                backgroundColor: 'rgba(25, 118, 210, 0.1)',
-                padding: '4px 8px',
-                borderRadius: '12px'
-              }}>
-                <ScheduleIcon sx={{ fontSize: 12, color: '#663399' }} />
-                <Typography variant="caption" sx={{ fontWeight: 600, color: '#663399', fontSize: '0.65rem' }}>
-                  {article.reading_time} د
-                </Typography>
-              </Box>
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                padding: '4px 8px',
-                borderRadius: '12px'
-              }}>
-                <VisibilityIcon sx={{ fontSize: 12, color: '#4CAF50' }} />
-                <Typography variant="caption" sx={{ fontWeight: 600, color: '#4CAF50', fontSize: '0.65rem' }}>
-                  {article.views_count.toLocaleString()}
-                </Typography>
-              </Box>
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                padding: '4px 8px',
-                borderRadius: '12px'
-              }}>
-                <FavoriteIcon sx={{ fontSize: 12, color: '#F44336' }} />
-                <Typography variant="caption" sx={{ fontWeight: 600, color: '#F44336', fontSize: '0.65rem' }}>
-                  {(article.likes_count + (likedArticles.has(article.id) ? 1 : 0)).toLocaleString()}
-                </Typography>
-              </Box>
+              <ScheduleIcon sx={{ fontSize: 14, color: '#663399' }} />
+              <Typography variant="caption" sx={{ fontWeight: 600, color: '#663399', fontSize: '0.7rem' }}>
+                {article.reading_time} د
+              </Typography>
+            </Box>
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              backgroundColor: 'rgba(76, 175, 80, 0.08)',
+              padding: '3px 8px',
+              borderRadius: '10px'
+            }}>
+              <VisibilityIcon sx={{ fontSize: 14, color: '#4CAF50' }} />
+              <Typography variant="caption" sx={{ fontWeight: 600, color: '#4CAF50', fontSize: '0.7rem' }}>
+                {article.views_count.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              backgroundColor: 'rgba(244, 67, 54, 0.08)',
+              padding: '3px 8px',
+              borderRadius: '10px'
+            }}>
+              <FavoriteIcon sx={{ fontSize: 14, color: '#F44336' }} />
+              <Typography variant="caption" sx={{ fontWeight: 600, color: '#F44336', fontSize: '0.7rem' }}>
+                {(article.likes_count + (likedArticles.has(article.id) ? 1 : 0)).toLocaleString()}
+              </Typography>
             </Box>
           </Box>
+
+          {/* Read More Button */}
+          <ReadMoreButton
+            category={article.category}
+            className="read-more"
+            sx={{
+              alignSelf: 'flex-start',
+              mt: 'auto'
+            }}
+          >
+            اقرأ المزيد
+            <Box className="arrow-circle">
+              <ArrowForwardIcon sx={{ fontSize: 14, color: 'white' }} />
+            </Box>
+          </ReadMoreButton>
         </CardContent>
       </ModernCard>
     </motion.div>
@@ -748,33 +878,71 @@ const ArticlesPage = () => {
           </HeroSection>
 
           <Container sx={{ py: 4 }}>
-            <Grid container spacing={3}>
+            {/* Horizontal Scrolling Skeleton */}
+            <Box sx={{
+              display: 'flex',
+              gap: 3,
+              overflowX: 'auto',
+              pb: 2,
+              px: 1,
+              '&::-webkit-scrollbar': {
+                height: '8px',
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: 'rgba(0,0,0,0.1)',
+                borderRadius: '4px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#663399',
+                borderRadius: '4px',
+                '&:hover': {
+                  backgroundColor: '#5a2d87',
+                },
+              },
+            }}>
               {[1, 2, 3, 4, 5, 6].map((item) => (
-                <Grid item xs={12} lg={6} key={item}>
-                  <Box sx={{ display: 'flex', height: 280, borderRadius: 3, overflow: 'hidden' }}>
-                    <Skeleton variant="rectangular" width={250} height="100%" />
-                    <Box sx={{ flex: 1, p: 2, position: 'relative' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Skeleton variant="rectangular" width={80} height={24} sx={{ borderRadius: 1 }} />
-                        <Box sx={{ display: 'flex', gap: 0.5 }}>
-                          <Skeleton variant="circular" width={40} height={40} />
-                          <Skeleton variant="circular" width={40} height={40} />
-                        </Box>
-                      </Box>
-                      <Skeleton variant="text" width="40%" sx={{ mb: 1 }} />
-                      <Skeleton variant="text" sx={{ mb: 1 }} />
-                      <Skeleton variant="text" width="80%" sx={{ mb: 2 }} />
-                      <Skeleton variant="text" width="60%" />
-                      <Box sx={{ display: 'flex', gap: 1, mt: 'auto' }}>
-                        <Skeleton variant="rectangular" width={60} height={24} sx={{ borderRadius: 1 }} />
-                        <Skeleton variant="rectangular" width={60} height={24} sx={{ borderRadius: 1 }} />
-                        <Skeleton variant="rectangular" width={60} height={24} sx={{ borderRadius: 1 }} />
+                <Box key={item} sx={{
+                  flexShrink: 0,
+                  width: { xs: '280px', sm: '320px', md: '350px' },
+                  height: '420px',
+                  borderRadius: 3,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <Skeleton variant="rectangular" height={200} sx={{ flexShrink: 0 }} />
+                  <Box sx={{
+                    flex: 1,
+                    p: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    height: '220px',
+                    minHeight: '220px',
+                    maxHeight: '220px'
+                  }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Skeleton variant="rectangular" width={80} height={24} sx={{ borderRadius: 1 }} />
+                      <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        <Skeleton variant="circular" width={32} height={32} />
+                        <Skeleton variant="circular" width={32} height={32} />
                       </Box>
                     </Box>
+                    <Skeleton variant="text" width="90%" height={32} />
+                    <Skeleton variant="text" width="70%" height={32} />
+                    <Skeleton variant="text" width="100%" sx={{ flexGrow: 1 }} />
+                    <Skeleton variant="text" width="100%" />
+                    <Skeleton variant="text" width="60%" />
+                    <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
+                      <Skeleton variant="rectangular" width={50} height={20} sx={{ borderRadius: 1 }} />
+                      <Skeleton variant="rectangular" width={50} height={20} sx={{ borderRadius: 1 }} />
+                      <Skeleton variant="rectangular" width={50} height={20} sx={{ borderRadius: 1 }} />
+                    </Box>
+                    <Skeleton variant="rectangular" width={100} height={32} sx={{ borderRadius: 2, mt: 'auto' }} />
                   </Box>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           </Container>
         </Box>
         <Footer />
@@ -787,7 +955,7 @@ const ArticlesPage = () => {
       <Header />
 
       <Box component="main" sx={{ flex: 1 }}>
-        <HeroSection>
+        <HeroSection backgroundImage={headerBanner?.image_url}>
           <AnimatedTriangle />
           <Container>
             <motion.div
@@ -877,16 +1045,42 @@ const ArticlesPage = () => {
 
           {paginatedArticles.length > 0 ? (
             <Box>
-              <Grid container spacing={3}>
+              {/* Horizontal Scrolling Container */}
+              <Box sx={{
+                display: 'flex',
+                gap: 3,
+                overflowX: 'auto',
+                pb: 2,
+                px: 1,
+                '&::-webkit-scrollbar': {
+                  height: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: 'rgba(0,0,0,0.1)',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#663399',
+                  borderRadius: '4px',
+                  '&:hover': {
+                    backgroundColor: '#5a2d87',
+                  },
+                },
+              }}>
                 {paginatedArticles.map((article) => (
-                  <Grid item xs={12} lg={6} key={article.id}>
+                  <Box key={article.id} sx={{
+                    flexShrink: 0,
+                    width: { xs: '280px', sm: '320px', md: '350px' },
+                    height: '420px'
+                  }}>
                     {renderArticleCard(article)}
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
 
+              {/* Pagination - Keep if needed */}
               {totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                   <Pagination
                     count={totalPages}
                     page={currentPage}

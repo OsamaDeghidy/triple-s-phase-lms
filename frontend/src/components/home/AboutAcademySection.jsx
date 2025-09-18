@@ -17,6 +17,7 @@ import {
     Chat,
     KeyboardArrowUp
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { bannerAPI } from '../../services/api.service';
 
 const fadeInUp = keyframes`
@@ -314,11 +315,12 @@ const BackgroundDots = styled(Box)(({ theme }) => ({
     backgroundSize: '20px 20px',
 }));
 
-const AboutAcademySection = () => {
+const AboutAcademySection = ({ hideReadMoreButton = false }) => {
     // State for banner data
     const [bannerData, setBannerData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     // Helper function to get image URL
     const getImageUrl = (image) => {
@@ -525,12 +527,14 @@ const AboutAcademySection = () => {
                             </BenefitItem>
                         </BenefitsList>
 
-                        <CallToActionButton
-                            endIcon={<ArrowBack />}
-                            onClick={() => window.location.href = '/about'}
-                        >
-                            المزيد عنا
-                        </CallToActionButton>
+                        {!hideReadMoreButton && (
+                            <CallToActionButton
+                                endIcon={<ArrowBack />}
+                                onClick={() => navigate('/about-academy-detail')}
+                            >
+                                المزيد عنا
+                            </CallToActionButton>
+                        )}
                     </RightSection>
                 </ContentWrapper>
 

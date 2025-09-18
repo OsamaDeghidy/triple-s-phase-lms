@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { 
-  ThemeProvider as MuiThemeProvider, 
-  StyledEngineProvider, 
-  GlobalStyles, 
-  Box, 
+import {
+  ThemeProvider as MuiThemeProvider,
+  StyledEngineProvider,
+  GlobalStyles,
+  Box,
   CircularProgress,
   createTheme
 } from '@mui/material';
@@ -15,6 +15,7 @@ import { prefixer } from 'stylis';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ArticleProvider } from './contexts/ArticleContext';
 import themeConfig, { globalStyles } from './theme/index';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -101,6 +102,7 @@ import CreateArticle from './pages/teacher/articles/CreateArticle';
 import EditArticle from './pages/teacher/articles/EditArticle';
 import CartPage from './pages/cart/CartPage';
 import PaymentPage from './pages/payment/PaymentPage';
+import AboutAcademyDetail from './components/home/AboutAcademyDetail';
 
 // Question Bank Components
 import QuestionBankPage from './pages/teacher/QuestionBankPage';
@@ -115,12 +117,12 @@ const PublicHomePage = ({ children }) => {
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user, loading, getUserRole } = useAuth();
   const location = useLocation();
-  
+
   console.log('ProtectedRoute - isAuthenticated:', isAuthenticated);
   console.log('ProtectedRoute - user:', user);
   console.log('ProtectedRoute - allowedRoles:', allowedRoles);
   console.log('ProtectedRoute - current path:', location.pathname);
-  
+
   if (loading) {
     console.log('ProtectedRoute - Loading auth state...');
     return (
@@ -129,18 +131,18 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
       </Box>
     );
   }
-  
+
   if (!isAuthenticated) {
     console.log('ProtectedRoute - Not authenticated, redirecting to login');
     // Redirect to login, but save the current location they were trying to go to
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  
+
   // If specific roles are required and user doesn't have any of them
   if (allowedRoles.length > 0) {
     const userRole = getUserRole();
     console.log('ProtectedRoute - User role:', userRole);
-    
+
     // Check if user role matches any of the allowed roles
     // Handle both 'instructor' and 'teacher' as equivalent
     const hasAllowedRole = allowedRoles.some(allowedRole => {
@@ -148,13 +150,13 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
       if (allowedRole === 'instructor' && userRole === 'teacher') return true;
       return allowedRole === userRole;
     });
-    
+
     if (!hasAllowedRole) {
       console.log(`ProtectedRoute - User role ${userRole} not in allowed roles:`, allowedRoles);
       return <Navigate to="/unauthorized" replace />;
     }
   }
-  
+
   console.log('ProtectedRoute - Access granted');
   return children;
 };
@@ -162,7 +164,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 // Public Route Component (only for non-authenticated users)
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading, getUserRole } = useAuth();
-  
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -170,20 +172,20 @@ const PublicRoute = ({ children }) => {
       </Box>
     );
   }
-  
+
   // If user is authenticated, redirect to dashboard based on role
   if (isAuthenticated) {
     const userRole = getUserRole();
     let redirectPath = '/student/dashboard'; // Default to student dashboard
-    
+
     // Handle both 'instructor' and 'teacher' as equivalent
     if (userRole === 'instructor' || userRole === 'teacher') {
       redirectPath = '/teacher/dashboard';
     }
-    
+
     return <Navigate to={redirectPath} replace />;
   }
-  
+
   return children;
 };
 
@@ -225,7 +227,7 @@ const AppContent = () => {
   useEffect(() => {
     console.log('App component mounted');
     setIsInitialized(true);
-    
+
     return () => {
       console.log('App component unmounting');
     };
@@ -287,7 +289,7 @@ const AppContent = () => {
                       <Register />
                     </PublicRoute>
                   } />
-                  
+
                   {/* Public Routes - Accessible to all */}
                   <Route path="/" element={
                     <PublicHomePage>
@@ -299,12 +301,13 @@ const AppContent = () => {
                   <Route path="/courses/:id" element={<CourseDetail />} />
                   <Route path="/articles" element={<ArticlesPage />} />
                   <Route path="/articles/:slug" element={<ArticleDetail />} />
+                  <Route path="/about-academy-detail" element={<AboutAcademyDetail />} />
                   <Route path="/certificates/verify/:verificationCode" element={<CertificateVerification />} />
                   {/* Store Routes */}
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/payment/:courseId" element={<PaymentPage />} />
 
-                  
+
                   {/* Protected Routes - Student */}
                   <Route path="/student/*" element={
                     <ProtectedRoute allowedRoles={['student']}>
@@ -328,14 +331,14 @@ const AppContent = () => {
                       </MainLayout>
                     </ProtectedRoute>
                   } />
-                  
+
                   {/* Course Tracking - Standalone Page */}
                   <Route path="/student/courses/:id/tracking" element={
                     <ProtectedRoute allowedRoles={['student']}>
                       <CourseTracking />
                     </ProtectedRoute>
                   } />
-                  
+
                   {/* Protected Routes - Teacher */}
                   <Route path="/teacher/*" element={
                     <ProtectedRoute allowedRoles={['teacher', 'instructor']}>
@@ -386,7 +389,7 @@ const AppContent = () => {
                       </MainLayout>
                     </ProtectedRoute>
                   } />
-                  
+
                   {/* Common Protected Routes */}
                   <Route path="/profile" element={
                     <ProtectedRoute>
@@ -395,18 +398,18 @@ const AppContent = () => {
                       </MainLayout>
                     </ProtectedRoute>
                   } />
-                  
+
                   {/* Dashboard Redirect - Handles role-based redirection */}
                   <Route path="/dashboard" element={
                     <ProtectedRoute>
                       <DashboardRedirect />
                     </ProtectedRoute>
                   } />
-                  
+
                   {/* Redirect old dashboard routes to new structure */}
                   <Route path="/dashboard/student" element={<Navigate to="/student/dashboard" replace />} />
                   <Route path="/dashboard/teacher" element={<Navigate to="/teacher/dashboard" replace />} />
-                  
+
                   {/* 404 Not Found */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
@@ -419,11 +422,13 @@ const AppContent = () => {
   );
 };
 
-// Main App wrapper with AuthProvider
+// Main App wrapper with AuthProvider and ArticleProvider
 const App = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <ArticleProvider>
+        <AppContent />
+      </ArticleProvider>
     </AuthProvider>
   );
 };
