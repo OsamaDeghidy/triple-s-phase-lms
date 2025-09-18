@@ -17,7 +17,7 @@ Professional123@#
 for jorry host and doman 
 degtal ocian 
 pass : osam0Esmael
-ip : 142.93.95.121
+ip : 167.172.202.11
 
 pdt-admin.com
 
@@ -27,13 +27,13 @@ pdt-admin.com
 #degtal ocean config
 #DB_USER=doadmin
 #DB_PASSWORD= osam0Esmael
-#DB_HOST= 142.93.95.121
+#DB_HOST= 167.172.202.11
 #DB_PORT=5432
 #DB_NAME=defaultdb
 
 alisthomepros.com
 ################################## run my server
-# ssh root@142.93.95.121     username
+# ssh root@167.172.202.11     username
 # osam0Esmael                password
  su sammy
  cd ~/myprojectdir
@@ -52,7 +52,7 @@ alisthomepros.com
 sudo systemctl restart gunicorn
 sudo systemctl daemon-reload 
 sudo systemctl restart gunicorn.socket gunicorn.service
-c
+sudo nginx -t && sudo systemctl restart nginx
 ###################################
 sudo nano /etc/nginx/nginx.conf
 pip freeze > requirements.txt
@@ -69,6 +69,7 @@ custrus.com
 Osama5555
 python manage.py makemigrations
 python manage.py migrate
+python manage.py migrate users 0003_rename_teacher_to_instructor_tables --fake
 python manage.py runserver 0.0.0.0:8000
 python manage.py collectstatic --no-input
 
@@ -85,6 +86,23 @@ pip install django-allauth
 pip install requests
 pip install cryptography
 pip install django-ckeditor
+chmod o+x /home/sammy
+chmod o+rx /home/sammy/myprojectdir
+# اجعل مجموعة الملفات www-data وتأكد من ملكية المجلد staticfiles
+sudo chown -R sammy:www-data /home/sammy/myprojectdir/staticfiles
+
+# مجلدات => 755 (rwxr-xr-x), ملفات => 644 (rw-r--r--)
+sudo find /home/sammy/myprojectdir/staticfiles -type d -exec chmod 755 {} +
+sudo find /home/sammy/myprojectdir/staticfiles -type f -exec chmod 644 {} +
+
+# تأكد أن المجلدات الأبوية قابلة للعبور (execute) من قبل nginx
+sudo chmod 755 /home/sammy
+sudo chmod 755 /home/sammy/myprojectdir
+
+
+
+sudo -u www-data test -r /home/sammy/myprojectdir/staticfiles/admin/css/base.css && echo "nginx can read file"
+curl -I http://167.172.202.11/static/admin/css/base.css
 
 http {
     # ... existing settings ...
@@ -102,12 +120,13 @@ http {
     
     # ... rest of settings ...
 }
-
-
+files
+triplesacademy.com  www.triplesacademy.com
 ###############
+
 server {
     listen 80;
-    server_name 142.93.95.121 triplesacademy.com  www.triplesacademy.com;
+    server_name 167.172.202.11 ;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     # Static files
@@ -155,3 +174,19 @@ git push
 
 goddady domain for triple sss
 132.148.182.144
+
+
+
+
+
+
+
+ bashar@bluetech-jo.com
+Triple$2025
+ triplesacademy  
+Triplesacademy@123???
+ GoDaddy account
+ bunny
+bashar@bluetech-jo.com
+Triple$2025@
+Digital ocean
