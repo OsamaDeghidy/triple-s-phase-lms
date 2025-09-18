@@ -229,7 +229,6 @@ const CourseDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [tabValue, setTabValue] = useState(0);
-    const [relatedCourses, setRelatedCourses] = useState([]);
     const [expandedModules, setExpandedModules] = useState({});
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -244,27 +243,6 @@ const CourseDetail = () => {
         comment: ''
     });
 
-    // Mock related courses
-    const mockRelatedCourses = [
-        {
-            id: 2,
-            title: 'React Hooks in Depth',
-            instructor: 'John Doe',
-            image: 'https://source.unsplash.com/random/400x200?react',
-            rating: 4.7,
-            students: 1245,
-            price: 79.99,
-        },
-        {
-            id: 3,
-            title: 'Mastering Redux',
-            instructor: 'Alex Johnson',
-            image: 'https://source.unsplash.com/random/400x200?javascript',
-            rating: 4.9,
-            students: 987,
-            price: 89.99,
-        },
-    ];
 
     // Initialize all modules as collapsed by default
     const initializeExpandedModules = (modules) => {
@@ -314,16 +292,6 @@ const CourseDetail = () => {
                     }
                 }
 
-                // Fetch related courses
-                let relatedCoursesData = [];
-                try {
-                    const relatedResponse = await courseAPI.getRelatedCourses(id);
-                    relatedCoursesData = relatedResponse.results || relatedResponse || [];
-                    console.log('Related courses data:', relatedCoursesData);
-                } catch (error) {
-                    console.warn('Could not fetch related courses:', error);
-                    relatedCoursesData = [];
-                }
 
                 // Fetch course modules from content API (real data)
                 let modulesData = [];
@@ -551,7 +519,6 @@ const CourseDetail = () => {
                 console.log('Transformed course modules:', transformedCourse.modules);
 
                 setCourse(transformedCourse);
-                setRelatedCourses(relatedCoursesData);
                 setExpandedModules(initializeExpandedModules(transformedCourse.modules));
                 setLoading(false);
             } catch (error) {
@@ -649,8 +616,8 @@ const CourseDetail = () => {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
-            }) : 'مؤخراً',
-            title: review.title || 'تقييم ممتاز',
+            }) : '',
+            title: review.title || '',
             content: review.review_text || review.content || review.comment || review.text || '',
             likes: review.like_count || review.helpful_count || review.likes_count || 0,
             isLiked: review.is_liked_by_user || review.is_liked || false,
@@ -660,7 +627,7 @@ const CourseDetail = () => {
         })) : [];
 
         // Use rating statistics if available
-        const courseRating = ratingStats?.average_rating || apiCourse.average_rating || apiCourse.rating || 4.8;
+        const courseRating = ratingStats?.average_rating || apiCourse.average_rating || apiCourse.rating || 0;
         const totalReviews = ratingStats?.review_count || ratingStats?.total_reviews || transformedReviews.length;
 
         return {
@@ -669,21 +636,21 @@ const CourseDetail = () => {
             subtitle: apiCourse.subtitle || apiCourse.short_description || apiCourse.description?.substring(0, 100) || '',
             description: apiCourse.description || '',
             longDescription: apiCourse.description || apiCourse.long_description || apiCourse.content || '',
-            instructor: apiCourse.instructors?.[0]?.name || apiCourse.instructor?.name || apiCourse.teacher?.name || 'مدرس محترف',
-            instructorTitle: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.title || apiCourse.teacher?.title || 'مدرس محترف',
+            instructor: apiCourse.instructors?.[0]?.name || apiCourse.instructor?.name || apiCourse.teacher?.name || '',
+            instructorTitle: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.title || apiCourse.teacher?.title || '',
             instructorBio: apiCourse.instructors?.[0]?.bio || apiCourse.instructor?.bio || apiCourse.teacher?.bio || '',
             instructorAvatar: getImageUrl(apiCourse.instructors?.[0]?.profile_pic || apiCourse.instructor?.profile_pic || apiCourse.teacher?.profile_pic),
-            instructorRating: apiCourse.instructor?.rating || apiCourse.teacher?.rating || 4.9,
+            instructorRating: apiCourse.instructor?.rating || apiCourse.teacher?.rating || 0,
             instructorStudents: apiCourse.instructor?.students_count || apiCourse.teacher?.students_count || apiCourse.total_enrollments || 0,
-            instructorCourses: apiCourse.instructor?.courses_count || apiCourse.teacher?.courses_count || 8,
+            instructorCourses: apiCourse.instructor?.courses_count || apiCourse.teacher?.courses_count || 0,
             bannerImage: getImageUrl(apiCourse.image || apiCourse.banner_image || apiCourse.cover_image),
             thumbnail: getImageUrl(apiCourse.image || apiCourse.thumbnail || apiCourse.cover_image),
-            category: apiCourse.category?.name || apiCourse.category || 'التدريب الإلكتروني',
-            level: apiCourse.level || 'مبتدئ',
+            category: apiCourse.category?.name || apiCourse.category || '',
+            level: apiCourse.level || '',
             duration: apiCourse.duration || `${totalHours} ساعة`,
             totalHours: totalHours,
             lectures: totalLessons,
-            resources: apiCourse.resources_count || apiCourse.materials_count || 45,
+            resources: apiCourse.resources_count || apiCourse.materials_count || 0,
             students: apiCourse.total_enrollments || apiCourse.students_count || apiCourse.enrollments_count || 0,
             rating: courseRating,
             courseReviews: transformedReviews,
@@ -691,29 +658,17 @@ const CourseDetail = () => {
             originalPrice: discountPrice > 0 ? price : price,
             discount: discount,
             isBestseller: apiCourse.is_featured || apiCourse.is_bestseller || false,
-            lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' }) : 'مؤخراً',
-            language: apiCourse.language || 'العربية',
-            captions: apiCourse.captions || ['العربية', 'English'],
-            features: [
-                'وصول مدى الحياة',
-                'الوصول عبر الجوال والتلفاز',
-                'شهادة إتمام الدورة',
-                'ضمان استرداد الأموال خلال 30 يوم',
-                'موارد قابلة للتحميل',
-                'واجبات واختبارات'
-            ],
+            lastUpdated: apiCourse.updated_at ? new Date(apiCourse.updated_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' }) : '',
+            language: apiCourse.language || '',
+            captions: apiCourse.captions || [],
+            features: [],
             isEnrolled: apiCourse.is_enrolled || false,
             planPdfUrl: getFileUrl(apiCourse.timeline_pdf || apiCourse.plan_pdf || apiCourse.plan || apiCourse.syllabus_pdf),
             enrichmentPdfUrl: getFileUrl(apiCourse.enrichment_pdf || apiCourse.resources_pdf || apiCourse.materials_pdf),
             requirements: apiCourse.requirements || apiCourse.prerequisites || [],
             whoIsThisFor: apiCourse.who_is_this_for || apiCourse.target_audience || apiCourse.audience || [],
             modules: transformModulesData(modulesData, apiCourse, isUserEnrolled),
-            curriculum: [
-                { title: 'البداية', duration: '2h 45m', lectures: 5, completed: 2 },
-                { title: 'أنماط React المتقدمة', duration: '4h 15m', lectures: 6, completed: 0 },
-                { title: 'إدارة الحالة مع Redux', duration: '5h 30m', lectures: 6, completed: 0 },
-                { title: 'تحسين الأداء', duration: '3h 45m', lectures: 5, completed: 0 },
-            ],
+            curriculum: [],
             faqs: []
         };
     };
@@ -734,81 +689,10 @@ const CourseDetail = () => {
             return Array.isArray(lessons) && lessons.length > 0;
         });
 
-        // If user is not enrolled or no valid modules, show preview modules
+        // If user is not enrolled or no valid modules, return empty array
         if (!isUserEnrolled || !hasValidModules) {
-            console.log('User not enrolled or no valid modules, showing preview modules');
-
-            // Get course title for better preview content
-            const courseTitle = courseData?.title || courseData?.name || 'الدورة';
-            const isReactCourse = courseTitle.toLowerCase().includes('react');
-            const isWebCourse = courseTitle.toLowerCase().includes('web') || courseTitle.toLowerCase().includes('frontend');
-            const isBackendCourse = courseTitle.toLowerCase().includes('backend') || courseTitle.toLowerCase().includes('django') || courseTitle.toLowerCase().includes('python');
-
-            // Return preview modules based on course type
-            return [
-                {
-                    id: 1,
-                    title: `مقدمة إلى ${isReactCourse ? 'React' : isWebCourse ? 'تطوير الويب' : isBackendCourse ? 'تطوير الخلفية' : 'الدورة'}`,
-                    description: 'إعداد بيئة التطوير وفهم المفاهيم الأساسية',
-                    duration: '2h 45m',
-                    lessons: [
-                        { id: 1, title: `مقدمة إلى ${isReactCourse ? 'React' : isWebCourse ? 'تطوير الويب' : isBackendCourse ? 'تطوير الخلفية' : 'الدورة'}`, duration: '15:30', isPreview: true, completed: false, type: 'video' },
-                        { id: 2, title: 'إعداد بيئة التطوير', duration: '12:45', isPreview: true, completed: false, type: 'video' },
-                        { id: 3, title: 'المفاهيم الأساسية', duration: '18:20', isPreview: false, completed: false, type: 'video' },
-                        { id: 4, title: 'إعداد المشروع والتهيئة', duration: '22:10', isPreview: false, completed: false, type: 'video' },
-                        { id: 5, title: 'موارد الدورة والأدوات', duration: '08:30', isPreview: true, completed: false, type: 'article' },
-                        { id: 6, title: 'واجب الوحدة الأولى: مشروع تطبيقي', duration: '45:00', isPreview: false, completed: false, type: 'assignment' },
-                        { id: 7, title: 'كويز المفاهيم الأساسية', duration: '20:00', isPreview: false, completed: false, type: 'quiz' },
-                    ],
-                },
-                {
-                    id: 2,
-                    title: 'المفاهيم المتقدمة',
-                    description: 'إتقان المفاهيم المتقدمة وأفضل الممارسات',
-                    duration: '4h 15m',
-                    lessons: [
-                        { id: 8, title: 'المفاهيم المتقدمة - الجزء الأول', duration: '22:10', isPreview: true, completed: false, type: 'video' },
-                        { id: 9, title: 'المفاهيم المتقدمة - الجزء الثاني', duration: '18:30', isPreview: true, completed: false, type: 'video' },
-                        { id: 10, title: 'التطبيق العملي', duration: '20:15', isPreview: false, completed: false, type: 'video' },
-                        { id: 11, title: 'أفضل الممارسات', duration: '25:40', isPreview: false, completed: false, type: 'video' },
-                        { id: 12, title: 'التطبيقات العملية', duration: '28:20', isPreview: false, completed: false, type: 'video' },
-                        { id: 13, title: 'تمرين عملي: تطبيق المفاهيم', duration: '15:00', isPreview: false, completed: false, type: 'exercise' },
-                        { id: 14, title: 'واجب الوحدة الثانية: مشروع متقدم', duration: '60:00', isPreview: false, completed: false, type: 'assignment' },
-                        { id: 15, title: 'كويز المفاهيم المتقدمة', duration: '25:00', isPreview: false, completed: false, type: 'quiz' },
-                    ],
-                },
-                {
-                    id: 3,
-                    title: 'المشاريع العملية',
-                    description: 'تطبيق المفاهيم في مشاريع حقيقية',
-                    duration: '5h 30m',
-                    lessons: [
-                        { id: 16, title: 'مقدمة المشاريع العملية', duration: '25:20', isPreview: true, completed: false, type: 'video' },
-                        { id: 17, title: 'تطوير المشروع الأول', duration: '19:45', isPreview: false, completed: false, type: 'video' },
-                        { id: 18, title: 'تطوير المشروع الثاني', duration: '21:30', isPreview: true, completed: false, type: 'video' },
-                        { id: 19, title: 'اختبار وتحسين المشاريع', duration: '28:15', isPreview: false, completed: false, type: 'video' },
-                        { id: 20, title: 'نشر المشاريع', duration: '17:50', isPreview: false, completed: false, type: 'video' },
-                        { id: 21, title: 'مشروع نهائي شامل', duration: '45:00', isPreview: false, completed: false, type: 'project' },
-                        { id: 22, title: 'واجب الوحدة الثالثة: مشروع شامل', duration: '90:00', isPreview: false, completed: false, type: 'assignment' },
-                        { id: 23, title: 'امتحان منتصف الدورة', duration: '60:00', isPreview: false, completed: false, type: 'exam' },
-                    ],
-                },
-                {
-                    id: 4,
-                    title: 'التحسين والتطوير',
-                    description: 'تحسين الأداء والتطوير المستمر',
-                    duration: '3h 45m',
-                    lessons: [
-                        { id: 24, title: 'تحسين الأداء', duration: '20:10', isPreview: true, completed: false, type: 'video' },
-                        { id: 25, title: 'أدوات التطوير', duration: '18:30', isPreview: false, completed: false, type: 'video' },
-                        { id: 26, title: 'اختبار الجودة', duration: '25:45', isPreview: false, completed: false, type: 'video' },
-                        { id: 27, title: 'أدوات المراقبة', duration: '22:15', isPreview: false, completed: false, type: 'video' },
-                        { id: 28, title: 'دراسة حالة شاملة', duration: '30:00', isPreview: false, completed: false, type: 'case-study' },
-                        { id: 29, title: 'واجب الوحدة الرابعة: تحسين شامل', duration: '75:00', isPreview: false, completed: false, type: 'assignment' },
-                        { id: 30, title: 'كويز التحسين والتطوير', duration: '30:00', isPreview: false, completed: false, type: 'quiz' },
-                    ],
-                },
-            ];
+            console.log('User not enrolled or no valid modules, returning empty modules');
+            return [];
         }
 
         const result = modulesData.map((module, index) => {
@@ -962,14 +846,9 @@ const CourseDetail = () => {
                 ...transformedExams
             ].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-            // If no content found, add some default content
+            // If no content found, keep empty array
             if (allContent.length === 0) {
-                console.log(`No content found for module ${module.id || index + 1}, adding default content`);
-                allContent.push(
-                    { id: 1, title: 'مقدمة إلى الوحدة', duration: '15:00', isPreview: true, completed: false, type: 'video', order: 1 },
-                    { id: 2, title: 'واجب الوحدة', duration: '45:00', isPreview: false, completed: false, type: 'assignment', order: 2 },
-                    { id: 3, title: 'كويز الوحدة', duration: '20:00', isPreview: false, completed: false, type: 'quiz', order: 3 }
-                );
+                console.log(`No content found for module ${module.id || index + 1}, keeping empty`);
             }
 
             // Convert module duration from seconds to readable format
@@ -1437,273 +1316,6 @@ const CourseDetail = () => {
 
 
 
-            {/* Related Courses Section */}
-            {Array.isArray(relatedCourses) && relatedCourses.length > 0 && (
-                <Container maxWidth="lg" sx={{ pt: 1, pb: 4, px: { xs: 2, sm: 3, md: 4 } }}>
-                    <Box sx={{
-                        maxWidth: '1200px',
-                        margin: '0 auto',
-                        direction: 'rtl' // Right to left direction
-                    }}>
-                        <Box sx={{ mb: 4 }}>
-                            <SectionTitle variant="h4" component="h2" gutterBottom>
-                                الدورات ذات الصلة
-                            </SectionTitle>
-                            <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem', lineHeight: 1.6 }}>
-                                إخترنا لك مجموعة من الدورات التي قد تعجبك
-                            </Typography>
-                        </Box>
-
-                        {/* Grid Container - 3 cards side by side */}
-                        <Grid container spacing={3} justifyContent="flex-start">
-                            {Array.isArray(relatedCourses) ? relatedCourses.slice(0, 3).map((relatedCourse) => (
-                                <Grid key={relatedCourse.id} xs={12} sm={6} lg={4}>
-                                    <Card
-                                        sx={{
-                                            height: '100%',
-                                            cursor: 'pointer',
-                                            borderRadius: 3,
-                                            boxShadow: '0 6px 20px rgba(14, 81, 129, 0.08)',
-                                            border: '1px solid',
-                                            borderColor: 'rgba(14, 81, 129, 0.08)',
-                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                            background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.98) 100%)',
-                                            backdropFilter: 'blur(10px)',
-                                            maxWidth: '400px',
-                                            mx: 'auto',
-                                            '&:hover': {
-                                                transform: 'translateY(-8px) scale(1.02)',
-                                                boxShadow: '0 15px 35px rgba(14, 81, 129, 0.15)',
-                                                borderColor: 'rgba(14, 81, 129, 0.2)',
-                                            },
-                                        }}
-                                        onClick={() => navigate(`/courses/${relatedCourse.id}`)}
-                                    >
-                                        {/* Course Image with Overlay */}
-                                        <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                                            <Box sx={{
-                                                width: '100%',
-                                                height: 180,
-                                                background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                position: 'relative',
-                                            }}>
-                                                <img
-                                                    src={relatedCourse.image || relatedCourse.thumbnail || 'https://source.unsplash.com/random/400x200?programming'}
-                                                    alt={relatedCourse.title}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        objectFit: 'cover',
-                                                        transition: 'transform 0.4s ease',
-                                                    }}
-                                                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
-                                                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                                                />
-                                                {/* Gradient Overlay */}
-                                                <Box sx={{
-                                                    position: 'absolute',
-                                                    top: 0,
-                                                    left: 0,
-                                                    right: 0,
-                                                    bottom: 0,
-                                                    background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.3) 0%, rgba(229, 151, 139, 0.3) 100%)',
-                                                    opacity: 0,
-                                                    transition: 'opacity 0.3s ease',
-                                                    '&:hover': { opacity: 1 }
-                                                }} />
-
-                                                {/* Category Badge */}
-                                                <Chip
-                                                    label={relatedCourse.category || "التدريب الإلكتروني"}
-                                                    size="small"
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: 16,
-                                                        right: 16,
-                                                        bgcolor: 'rgba(255,255,255,0.9)',
-                                                        color: '#333679',
-                                                        fontWeight: 600,
-                                                        fontSize: '0.7rem',
-                                                        backdropFilter: 'blur(10px)',
-                                                    }}
-                                                />
-
-                                                {/* Bookmark Icon */}
-                                                <IconButton
-                                                    size="small"
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: 16,
-                                                        left: 16,
-                                                        bgcolor: 'rgba(255,255,255,0.9)',
-                                                        color: '#333679',
-                                                        '&:hover': {
-                                                            bgcolor: '#333679',
-                                                            color: 'white',
-                                                            transform: 'scale(1.1)'
-                                                        },
-                                                        transition: 'all 0.3s ease',
-                                                    }}
-                                                >
-                                                    <BookmarkBorder fontSize="small" />
-                                                </IconButton>
-                                            </Box>
-                                        </Box>
-
-                                        {/* Course Content */}
-                                        <CardContent sx={{ p: 2.5 }}>
-                                            {/* Course Title */}
-                                            <Typography
-                                                variant="h6"
-                                                component="h3"
-                                                sx={{
-                                                    fontWeight: 700,
-                                                    lineHeight: 1.3,
-                                                    mb: 1.5,
-                                                    display: '-webkit-box',
-                                                    WebkitLineClamp: 2,
-                                                    WebkitBoxOrient: 'vertical',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    fontSize: '1rem',
-                                                    color: '#333679',
-                                                }}
-                                                dir="rtl"
-                                            >
-                                                {relatedCourse.title}
-                                            </Typography>
-
-                                            {/* Instructor Info */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                                <Avatar
-                                                    src={relatedCourse.instructorAvatar || relatedCourse.instructor?.avatar}
-                                                    alt={relatedCourse.instructor}
-                                                    sx={{
-                                                        width: 28,
-                                                        height: 28,
-                                                        mr: 1,
-                                                        border: '2px solid #4DBFB3'
-                                                    }}
-                                                />
-                                                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-                                                    {relatedCourse.instructor || 'مدرس محترف'}
-                                                </Typography>
-                                            </Box>
-
-                                            {/* Course Stats */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5, gap: 1.5 }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <VideoIcon fontSize="small" sx={{ color: '#333679', mr: 0.5 }} />
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {relatedCourse.lectures || 4} درس
-                                                    </Typography>
-                                                </Box>
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <PeopleAltOutlined fontSize="small" sx={{ color: '#4DBFB3', mr: 0.5 }} />
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {relatedCourse.students || 6} طالب
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-
-                                            {/* Rating */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                                <Rating
-                                                    value={(() => {
-                                                        const rating = relatedCourse.rating;
-                                                        if (typeof rating === 'number') {
-                                                            return rating;
-                                                        } else if (typeof rating === 'string') {
-                                                            const numRating = parseFloat(rating);
-                                                            return isNaN(numRating) ? 0 : numRating;
-                                                        } else {
-                                                            return 0;
-                                                        }
-                                                    })()}
-                                                    precision={0.5}
-                                                    readOnly
-                                                    size="small"
-                                                    emptyIcon={<StarBorder fontSize="inherit" />}
-                                                    sx={{
-                                                        mr: 1.25,
-                                                        '& .MuiRating-iconFilled': {
-                                                            color: '#4DBFB3',
-                                                        },
-                                                    }}
-                                                />
-                                                <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-                                                    {(() => {
-                                                        const rating = relatedCourse.rating;
-                                                        if (typeof rating === 'number') {
-                                                            return rating.toFixed(1);
-                                                        } else if (typeof rating === 'string') {
-                                                            const numRating = parseFloat(rating);
-                                                            return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
-                                                        } else {
-                                                            return '0.0';
-                                                        }
-                                                    })()}/5.00
-                                                </Typography>
-                                            </Box>
-
-                                            {/* Price */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                <Typography
-                                                    variant="h6"
-                                                    sx={{
-                                                        fontSize: '1.1rem',
-                                                        fontWeight: 700,
-                                                        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
-                                                        WebkitBackgroundClip: 'text',
-                                                        WebkitTextFillColor: 'transparent',
-                                                    }}
-                                                >
-                                                    {(() => {
-                                                        const price = relatedCourse.price;
-                                                        if (typeof price === 'number') {
-                                                            return price.toFixed(2);
-                                                        } else if (typeof price === 'string') {
-                                                            const numPrice = parseFloat(price);
-                                                            return isNaN(numPrice) ? '0.00' : numPrice.toFixed(2);
-                                                        } else {
-                                                            return '0.00';
-                                                        }
-                                                    })()} ر.س
-                                                </Typography>
-
-                                                <Button
-                                                    variant="outlined"
-                                                    size="small"
-                                                    sx={{
-                                                        borderColor: '#333679',
-                                                        color: '#333679',
-                                                        '&:hover': {
-                                                            bgcolor: '#333679',
-                                                            color: 'white',
-                                                            borderColor: '#333679',
-                                                        },
-                                                        borderRadius: 2,
-                                                        textTransform: 'none',
-                                                        fontWeight: 600,
-                                                        fontSize: '0.8rem',
-                                                        px: 2,
-                                                        py: 0.5,
-                                                    }}
-                                                >
-                                                    عرض الدورة
-                                                </Button>
-                                            </Box>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            )) : null}
-                        </Grid>
-                    </Box>
-                </Container>
-            )}
 
             {/* Review Form Dialog */}
             <Dialog

@@ -412,59 +412,6 @@ const FeaturedArticlesSection = () => {
 
                 if (finalArticles.length === 0) {
                     console.log('⚠️ No articles found from any API endpoint');
-                    // Add some test data as last resort to verify component works
-                    console.log('🧪 Adding test data to verify component functionality...');
-                    finalArticles = [
-                        {
-                            id: 'test-1',
-                            slug: 'test-article-health-medicine',
-                            title: 'مقال تجريبي - الصحة والطب',
-                            summary: 'مقال شامل عن الصحة والطب الحديث وأهمية الرعاية الصحية الوقائية',
-                            content: '<p>هذا مقال تجريبي عن الصحة والطب. يحتوي على معلومات مفيدة حول الرعاية الصحية الوقائية وأهمية اتباع نمط حياة صحي.</p><p>نناقش في هذا المقال أحدث التطورات في مجال الطب والعلاج، بالإضافة إلى نصائح مهمة للحفاظ على الصحة العامة.</p>',
-                            author: {
-                                id: 'admin-1',
-                                name: 'أدمن النظام',
-                                first_name: 'أدمن',
-                                last_name: 'النظام'
-                            },
-                            category: 'الصحة والطب',
-                            tags: ['صحة', 'طب', 'رعاية صحية'],
-                            created_at: new Date().toISOString(),
-                            published_at: new Date().toISOString(),
-                            image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop',
-                            reading_time: 5,
-                            views_count: 150,
-                            likes_count: 25,
-                            comments_count: 8,
-                            featured: true,
-                            status: 'published'
-                        },
-                        {
-                            id: 'test-2',
-                            slug: 'test-article-nutrition',
-                            title: 'مقال تجريبي - التغذية السليمة',
-                            summary: 'دليل شامل للتغذية السليمة وأهمية تناول الطعام الصحي للحفاظ على الصحة',
-                            content: '<p>التغذية السليمة هي أساس الصحة الجيدة. في هذا المقال نستعرض أهم مبادئ التغذية الصحية.</p><p>نتحدث عن الفيتامينات والمعادن الضرورية للجسم، وأهمية شرب الماء، وتجنب الأطعمة الضارة.</p>',
-                            author: {
-                                id: 'admin-2',
-                                name: 'أدمن النظام',
-                                first_name: 'أدمن',
-                                last_name: 'النظام'
-                            },
-                            category: 'التغذية',
-                            tags: ['تغذية', 'صحة', 'طعام صحي'],
-                            created_at: new Date().toISOString(),
-                            published_at: new Date().toISOString(),
-                            image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop',
-                            reading_time: 7,
-                            views_count: 200,
-                            likes_count: 35,
-                            comments_count: 12,
-                            featured: true,
-                            status: 'published'
-                        }
-                    ];
-                    console.log('🧪 Test data added:', finalArticles.length, 'articles');
                 }
 
                 console.log('📊 Final articles to set:', finalArticles.length);
@@ -474,86 +421,7 @@ const FeaturedArticlesSection = () => {
             } catch (err) {
                 console.error('❌ Critical error in fetchArticles:', err);
                 console.error('❌ Error stack:', err.stack);
-
-                // Even if there's an error, try to show test data
-                console.log('🚨 Critical error occurred, showing test data as fallback...');
-                const fallbackArticles = [
-                    {
-                        id: 'fallback-1',
-                        slug: 'fallback-preventive-medicine',
-                        title: 'مقال تجريبي - الطب الوقائي',
-                        summary: 'مقال عن الطب الوقائي وأهمية الوقاية من الأمراض قبل حدوثها',
-                        content: '<p>الطب الوقائي هو أحد أهم فروع الطب الحديث. نناقش في هذا المقال أهمية الوقاية من الأمراض.</p>',
-                        author: {
-                            id: 'admin-1',
-                            name: 'أدمن النظام',
-                            first_name: 'أدمن',
-                            last_name: 'النظام'
-                        },
-                        category: 'الطب الوقائي',
-                        tags: ['طب وقائي', 'صحة'],
-                        created_at: new Date().toISOString(),
-                        published_at: new Date().toISOString(),
-                        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop',
-                        reading_time: 4,
-                        views_count: 100,
-                        likes_count: 15,
-                        comments_count: 5,
-                        featured: false,
-                        status: 'published'
-                    },
-                    {
-                        id: 'fallback-2',
-                        slug: 'fallback-mental-health',
-                        title: 'مقال تجريبي - الصحة النفسية',
-                        summary: 'مقال عن الصحة النفسية وأهمية العناية بالصحة العقلية',
-                        content: '<p>الصحة النفسية لا تقل أهمية عن الصحة الجسدية. نستعرض في هذا المقال طرق الحفاظ على الصحة النفسية.</p>',
-                        author: {
-                            id: 'admin-2',
-                            name: 'أدمن النظام',
-                            first_name: 'أدمن',
-                            last_name: 'النظام'
-                        },
-                        category: 'الصحة النفسية',
-                        tags: ['صحة نفسية', 'عقل'],
-                        created_at: new Date().toISOString(),
-                        published_at: new Date().toISOString(),
-                        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop',
-                        reading_time: 6,
-                        views_count: 120,
-                        likes_count: 20,
-                        comments_count: 7,
-                        featured: false,
-                        status: 'published'
-                    },
-                    {
-                        id: 'fallback-3',
-                        slug: 'fallback-therapeutic-nutrition',
-                        title: 'مقال تجريبي - التغذية العلاجية',
-                        summary: 'مقال عن التغذية العلاجية ودورها في علاج الأمراض',
-                        content: '<p>التغذية العلاجية تلعب دوراً مهماً في علاج العديد من الأمراض. نناقش في هذا المقال فوائد التغذية العلاجية.</p>',
-                        author: {
-                            id: 'admin-3',
-                            name: 'أدمن النظام',
-                            first_name: 'أدمن',
-                            last_name: 'النظام'
-                        },
-                        category: 'التغذية العلاجية',
-                        tags: ['تغذية علاجية', 'علاج'],
-                        created_at: new Date().toISOString(),
-                        published_at: new Date().toISOString(),
-                        image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=250&fit=crop',
-                        reading_time: 5,
-                        views_count: 80,
-                        likes_count: 12,
-                        comments_count: 3,
-                        featured: false,
-                        status: 'published'
-                    }
-                ];
-                setArticles(fallbackArticles);
-                setError(null); // Clear error to show articles
-                console.log('🔄 Fallback articles set:', fallbackArticles.length);
+                setError('حدث خطأ في تحميل المقالات. يرجى المحاولة مرة أخرى.');
             } finally {
                 setLoading(false);
                 console.log('🏁 fetchArticles completed');
@@ -624,8 +492,7 @@ const FeaturedArticlesSection = () => {
     // Get image URL helper
     const getImageUrl = (image) => {
         if (!image) {
-            // Return a default medical/health image
-            return 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop';
+            return null;
         }
 
         if (typeof image === 'string') {
@@ -636,7 +503,7 @@ const FeaturedArticlesSection = () => {
             return `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}${image}`;
         }
 
-        return 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop';
+        return null;
     };
 
     const handlePrevious = () => {
@@ -867,11 +734,26 @@ const FeaturedArticlesSection = () => {
                                 created_at: article.created_at
                             });
 
+                            const imageUrl = getImageUrl(article.image);
+
                             return (
                                 <ArticleCard key={article.id}>
-                                    <ArticleImage
-                                        sx={{ backgroundImage: `url(${getImageUrl(article.image)})` }}
-                                    />
+                                    {imageUrl ? (
+                                        <ArticleImage
+                                            sx={{ backgroundImage: `url(${imageUrl})` }}
+                                        />
+                                    ) : (
+                                        <ArticleImage
+                                            sx={{
+                                                backgroundColor: '#f5f5f5',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            <Article sx={{ fontSize: 48, color: '#ccc' }} />
+                                        </ArticleImage>
+                                    )}
                                     <ArticleContent>
                                         <ArticleTitle>{article.title}</ArticleTitle>
                                         <ArticleMeta>
