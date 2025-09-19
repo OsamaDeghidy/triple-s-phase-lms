@@ -1889,11 +1889,6 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
         return questions.filter(q => q.module_id == selectedModuleId);
       }
       return questions;
-    } else if (activeTab === 'flashcards') {
-      if (selectedModuleId) {
-        return flashcards.filter(f => f.module_id == selectedModuleId);
-      }
-      return flashcards;
     } else {
       // Default to modules
       return modules || [];
@@ -2058,47 +2053,6 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
                 {question.module_name || 'عام'} • {question.type === 'mcq' ? 'اختيار من متعدد' : question.type === 'true_false' ? 'صح أو خطأ' : question.type === 'essay' ? 'مقالي' : 'اختيار من متعدد'}
               </Typography>
               </Box>
-          </Box>
-        ))
-      ) : activeTab === 'flashcards' ? (
-        // Flashcards display
-        filteredContent.map((flashcard, index) => (
-          <Box
-            key={flashcard.id || index}
-            onClick={() => onFlashcardClick && onFlashcardClick(flashcard, index)}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              p: 1.5,
-              borderRadius: 2,
-              bgcolor: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                bgcolor: 'rgba(255,255,255,0.2)',
-                transform: 'translateX(4px)'
-              }
-            }}
-          >
-            <Psychology sx={{ color: '#9C27B0', fontSize: 20, mr: 1.5 }} />
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '0.75rem',
-                mb: 0.2,
-                lineHeight: 1.2
-              }}>
-                {(flashcard.front_text || flashcard.front || 'بطاقة تعليمية').substring(0, 40)}...
-              </Typography>
-              <Typography variant="caption" sx={{
-                color: 'rgba(255,255,255,0.7)',
-                fontSize: '0.65rem'
-              }}>
-                {flashcard.module_name || flashcard.category || 'عام'}
-              </Typography>
-            </Box>
           </Box>
         ))
       ) : null}
@@ -3647,30 +3601,6 @@ const CourseTracking = () => {
                     fontSize: '0.7rem'
                   }}>
                     الأسئلة
-                  </Typography>
-                </Box>
-                <Box 
-                  onClick={() => {
-                    setActiveTab('flashcards');
-                    setSearchParams({ tab: 'flashcards' });
-                  }}
-                  sx={{
-                  px: 1.25,
-                  py: 0.6,
-                  borderRadius: 1.25,
-                    bgcolor: activeTab === 'flashcards' ? 'rgba(255,255,255,0.2)' : 'transparent',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.1)',
-                  }
-                }}>
-                  <Typography variant="body2" sx={{
-                    color: activeTab === 'flashcards' ? 'white' : 'rgba(255,255,255,0.7)',
-                    fontWeight: activeTab === 'flashcards' ? 'bold' : 500,
-                    fontSize: '0.7rem'
-                  }}>
-                    البطاقات
                   </Typography>
                 </Box>
               </Box>
