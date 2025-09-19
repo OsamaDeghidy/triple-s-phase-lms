@@ -485,7 +485,8 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
             width: '100%',
             height: '100%',
             border: 'none',
-            backgroundColor: '#000'
+            backgroundColor: '#000',
+            padding: '100px'
           }}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1042,6 +1043,8 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           objectFit: 'cover', // Ensures video covers the entire container
 
           objectPosition: 'center', // Centers the video within the container
+
+          padding: '100px',
 
           ...style
 
