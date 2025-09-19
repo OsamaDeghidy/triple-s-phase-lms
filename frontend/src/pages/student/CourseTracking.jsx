@@ -3911,8 +3911,7 @@ const CourseTracking = () => {
                 <Box sx={{
                   width: '100%',
                   height: '100%',
-                  p: 2,
-                  pt: 5,
+                  padding: '100px',
                   overflow: 'hidden',
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)',
                   color: 'text.primary',
