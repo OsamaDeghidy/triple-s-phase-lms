@@ -9,6 +9,9 @@ from django.db.models import Count
 from django.conf import settings
 from .models import Profile, Organization, Instructor, Student
 from django.utils import timezone
+from django.http import JsonResponse
+from django.urls import path
+from django.shortcuts import get_object_or_404
 
 class StatusFilter(SimpleListFilter):
     title = 'حالة المستخدم'
@@ -122,14 +125,30 @@ class CustomUserAdmin(BaseUserAdmin):
             status_colors = {
                 'Student': '#28a745',
                 'Instructor': '#007bff',
-                'Admin': '#dc3545',
-                'Organization': '#6f42c1'
+                'Admin': '#dc3545'
             }
             color = status_colors.get(profile.status, '#6c757d')
-            return format_html(
-                '<span style="color: {}; font-weight: bold;">{}</span>',
-                color, profile.get_status_display() if profile.status else 'غير محدد'
-            )
+            
+            # إنشاء dropdown لتغيير الحالة
+            status_choices = [
+                ('Student', 'Student'),
+                ('Instructor', 'Instructor'),
+                ('Admin', 'Admin'),
+            ]
+            
+            options = ''
+            for value, label in status_choices:
+                selected = 'selected' if profile.status == value else ''
+                options += f'<option value="{value}" {selected}>{label}</option>'
+            
+            dropdown = f'''
+            <select class="status-dropdown" data-user-id="{obj.id}" data-profile-id="{profile.id}" 
+                    style="border: 1px solid #ddd; padding: 4px 8px; border-radius: 4px; background: white; color: {color}; font-weight: bold;">
+                {options}
+            </select>
+            '''
+            
+            return format_html(dropdown)
         except Profile.DoesNotExist:
             return format_html('<span style="color: #dc3545;">لا يوجد ملف شخصي</span>')
     user_status.short_description = 'الحالة'
@@ -197,6 +216,41 @@ class CustomUserAdmin(BaseUserAdmin):
                 }),
             )
         return super().get_add_fieldsets(request, obj)
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('update-status/', self.update_user_status, name='update_user_status'),
+        ]
+        return custom_urls + urls
+    
+    def update_user_status(self, request):
+        """AJAX endpoint لتحديث حالة المستخدم"""
+        if request.method == 'POST':
+            try:
+                profile_id = request.POST.get('profile_id')
+                new_status = request.POST.get('status')
+                
+                if not profile_id or not new_status:
+                    return JsonResponse({'success': False, 'error': 'معاملات مفقودة'})
+                
+                profile = get_object_or_404(Profile, id=profile_id)
+                old_status = profile.status
+                profile.status = new_status
+                profile.save()
+                
+                return JsonResponse({
+                    'success': True, 
+                    'message': f'تم تحديث الحالة من {old_status} إلى {new_status}',
+                    'new_status': new_status
+                })
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+        
+        return JsonResponse({'success': False, 'error': 'طريقة غير صحيحة'})
+    
+    class Media:
+        js = ('admin/js/status_dropdown.js',)
 
 
 @admin.register(Profile)
