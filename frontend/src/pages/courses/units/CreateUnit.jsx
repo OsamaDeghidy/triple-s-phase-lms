@@ -209,31 +209,35 @@ const CreateUnit = () => {
     const preloadOrder = async () => {
       try {
         const data = await contentAPI.getModules(courseId);
-        const items = Array.isArray(data?.results) ? data.results : Array.isArray(data) ? data : data?.modules || [];
+        console.log('CreateUnit - Raw API response:', data);
+        
+        // Handle different response formats
+        let items = [];
+        if (Array.isArray(data)) {
+          items = data;
+        } else if (data?.results && Array.isArray(data.results)) {
+          items = data.results;
+        } else if (data?.modules && Array.isArray(data.modules)) {
+          items = data.modules;
+        } else if (data?.data && Array.isArray(data.data)) {
+          items = data.data;
+        }
+        
+        console.log('CreateUnit - Processed items:', items);
         
         // Set modules for submodule selection (only main modules)
         const mainModules = items.filter(m => !m.is_submodule);
         setModules(mainModules);
         
-        // Get all existing orders for this course
-        const existingOrders = items
-          .filter(m => typeof m.order === 'number' && m.order > 0)
-          .map(m => m.order)
-          .sort((a, b) => b - a); // Sort descending
-        
-        // Find the next available order
-        let nextOrder = 1;
-        for (const order of existingOrders) {
-          if (order === nextOrder) {
-            nextOrder++;
-          } else {
-            break;
-          }
-        }
-        
-        setUnitData(prev => ({ ...prev, order: nextOrder }));
+        // Find the maximum order and add 1, or start from 1 if no modules exist
+        const maxOrder = items.length > 0 ? 
+          items.reduce((max, m) => (typeof m.order === 'number' && m.order > max ? m.order : max), 0) : 0;
+        setUnitData(prev => ({ ...prev, order: maxOrder + 1 }));
       } catch (e) {
+        console.error('Error loading modules:', e);
         setLoadError('تعذر تحميل ترتيب الوحدة التالي');
+        // Set default order to 1 if loading fails
+        setUnitData(prev => ({ ...prev, order: 1 }));
       }
     };
     if (courseId) preloadOrder();
@@ -297,7 +301,7 @@ const CreateUnit = () => {
         durationMinutes: unitData.duration ? Number(unitData.duration) : 0,
         isActive: true,
         status: 'published',
-        order: unitData.order,
+        order: unitData.order || 1, // Ensure order is always provided
         submodule: unitData.submodule || null, // Add submodule support
       };
       
@@ -326,27 +330,11 @@ const CreateUnit = () => {
       console.error('Error creating module:', error);
       let serverMsg = 'تعذر حفظ الوحدة. برجاء التحقق من الحقول.';
       try {
-        if (typeof error?.response?.data === 'string') {
-          serverMsg = error.response.data;
-        } else if (error?.response?.data?.detail) {
-          serverMsg = error.response.data.detail;
-        } else if (error?.response?.data?.error) {
-          serverMsg = error.response.data.error;
-        } else if (error?.response?.data?.details?.non_field_errors) {
-          serverMsg = error.response.data.details.non_field_errors[0] || serverMsg;
-        } else if (error?.response?.data?.non_field_errors) {
-          serverMsg = error.response.data.non_field_errors[0] || serverMsg;
-        }
+        if (typeof error?.response?.data === 'string') serverMsg = error.response.data;
+        else if (error?.response?.data?.detail) serverMsg = error.response.data.detail;
+        else if (error?.response?.data?.error) serverMsg = error.response.data.error;
       } catch {}
-      
       setSubmitError(serverMsg);
-      
-      // Show error in snackbar for better visibility
-      setSnackbar({
-        open: true,
-        message: serverMsg,
-        severity: 'error'
-      });
     } finally {
       setSubmitting(false);
     }

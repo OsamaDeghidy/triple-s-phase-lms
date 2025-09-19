@@ -136,7 +136,7 @@ const Units = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(100); // Increase default to show more units
 
   // تحميل بيانات الكورس
   const fetchCourse = async () => {
@@ -156,11 +156,27 @@ const Units = () => {
       setLoading(true);
       try {
         const data = await contentAPI.getModules(courseId);
-        const items = Array.isArray(data?.results)
-          ? data.results
-          : Array.isArray(data)
-          ? data
-          : data?.modules || [];
+        console.log('Raw API response:', data);
+        
+        // Handle different response formats
+        let items = [];
+        if (Array.isArray(data)) {
+          items = data;
+        } else if (data?.results && Array.isArray(data.results)) {
+          items = data.results;
+        } else if (data?.modules && Array.isArray(data.modules)) {
+          items = data.modules;
+        } else if (data?.data && Array.isArray(data.data)) {
+          items = data.data;
+        }
+        
+        console.log('Processed items:', items);
+        console.log('Total items count:', items.length);
+        
+        if (items.length === 0) {
+          console.warn('No items found in API response');
+        }
+        
         const mapped = items.map((m) => ({
           id: m.id,
           title: m.name || '',
@@ -179,8 +195,19 @@ const Units = () => {
           submodules_count: m.submodules_count || 0,
         }));
         setUnits(mapped);
+        console.log('Final mapped units count:', mapped.length);
+        
+        // Show warning if we got fewer units than expected
+        if (mapped.length < 20) {
+          console.warn(`Only ${mapped.length} units loaded. Expected more.`);
+        }
+        
+        // Log main modules count
+        const mainModules = mapped.filter(m => !m.is_submodule);
+        console.log(`Main modules count: ${mainModules.length}`);
       } catch (error) {
         console.error('Error fetching units:', error);
+        console.error('Error details:', error.response?.data);
         setSnackbar({
           open: true,
           message: 'حدث خطأ في تحميل الوحدات',

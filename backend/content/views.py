@@ -4,6 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
+from django.db import models
 
 from courses.models import Course, Enrollment
 from users.models import Profile
@@ -21,6 +22,22 @@ class ModuleViewSet(ModelViewSet):
     queryset = Module.objects.select_related('course').all()
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+    pagination_class = None  # Disable pagination for now
+    
+    def list(self, request, *args, **kwargs):
+        """Override list to ensure no pagination"""
+        queryset = self.filter_queryset(self.get_queryset())
+        print(f"ModuleViewSet list - Total queryset count: {queryset.count()}")
+        
+        # Force get all objects without pagination
+        all_objects = list(queryset)
+        print(f"ModuleViewSet list - All objects count: {len(all_objects)}")
+        
+        serializer = self.get_serializer(all_objects, many=True)
+        print(f"ModuleViewSet list - Serialized data count: {len(serializer.data)}")
+        
+        # Return data without pagination wrapper
+        return Response(serializer.data)
     
     def destroy(self, request, *args, **kwargs):
         """حذف وحدة مع التحقق من وجود وحدات فرعية"""
@@ -54,6 +71,7 @@ class ModuleViewSet(ModelViewSet):
         course_id = self.request.query_params.get('course_id')
         if course_id:
             queryset = queryset.filter(course_id=course_id)
+            print(f"Filtered by course_id: {course_id}, count: {queryset.count()}")
         
         # Filter by submodule if provided
         submodule_id = self.request.query_params.get('submodule_id')
@@ -65,6 +83,7 @@ class ModuleViewSet(ModelViewSet):
         if main_modules_only and main_modules_only.lower() == 'true':
             queryset = queryset.filter(submodule__isnull=True)
         
+        print(f"Final queryset count: {queryset.count()}")
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
@@ -181,31 +200,42 @@ class ModuleViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         """Create a new module with better error handling"""
         try:
-            # Check for duplicate order within the same course
-            course_id = request.data.get('course')
-            order = request.data.get('order')
+            # Auto-assign order if not provided or conflicts
+            data = request.data.copy()
+            course_id = data.get('course')
             
-            if course_id and order:
-                existing_module = Module.objects.filter(course_id=course_id, order=order).first()
-                if existing_module:
-                    return Response({
-                        'error': 'بيانات غير صحيحة',
-                        'details': {
-                            'non_field_errors': ['الحقول course, order يجب أن تشكل مجموعة فريدة.']
-                        }
-                    }, status=status.HTTP_400_BAD_REQUEST)
+            # Always ensure order is provided and unique
+            if course_id:
+                if 'order' not in data or not data['order']:
+                    # Find the next available order
+                    max_order = Module.objects.filter(course_id=course_id).aggregate(
+                        max_order=models.Max('order')
+                    )['max_order'] or 0
+                    data['order'] = max_order + 1
+                else:
+                    # Check if order already exists for this course
+                    existing_order = Module.objects.filter(course_id=course_id, order=data['order']).exists()
+                    if existing_order:
+                        # Find the next available order
+                        max_order = Module.objects.filter(course_id=course_id).aggregate(
+                            max_order=models.Max('order')
+                        )['max_order'] or 0
+                        data['order'] = max_order + 1
             
-            serializer = self.get_serializer(data=request.data)
+            print(f"Creating module with data: {data}")
+            serializer = self.get_serializer(data=data)
             if serializer.is_valid():
                 self.perform_create(serializer)
                 headers = self.get_success_headers(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             else:
+                print(f"Serializer errors: {serializer.errors}")
                 return Response({
                     'error': 'بيانات غير صحيحة',
                     'details': serializer.errors
                 }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(f"Error creating module: {str(e)}")
             return Response({
                 'error': 'حدث خطأ أثناء إنشاء الوحدة',
                 'details': str(e)
