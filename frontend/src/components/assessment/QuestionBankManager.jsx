@@ -39,7 +39,15 @@ import {
   useTheme,
   alpha,
   keyframes,
-  styled
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  TableSortLabel
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -213,7 +221,15 @@ const QuestionBankManager = () => {
   });
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [bulkAction, setBulkAction] = useState('');
+  const [orderBy, setOrderBy] = useState('created_at');
+  const [order, setOrder] = useState('desc');
+  const [tablePage, setTablePage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState(null);
 
+  const questionBankData = useQuestionBank();
+  
   const {
     questions = [],
     loading = false,
@@ -233,7 +249,7 @@ const QuestionBankManager = () => {
     goToNextPage,
     goToPreviousPage,
     clearError
-  } = useQuestionBank();
+  } = questionBankData || {};
 
   // Debug logging
   console.log('QuestionBankManager - lessons:', lessons);
@@ -242,6 +258,56 @@ const QuestionBankManager = () => {
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setTablePage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setTablePage(0);
+  };
+
+  // Use questions directly from API (filtering is done server-side)
+  const filteredQuestions = questions || [];
+
+  // Sort questions based on orderBy and order
+  const sortedQuestions = React.useMemo(() => {
+    if (!filteredQuestions || filteredQuestions.length === 0) return [];
+    
+    return [...filteredQuestions].sort((a, b) => {
+      if (orderBy === 'created_at') {
+        return order === 'asc' 
+          ? new Date(a.created_at) - new Date(b.created_at)
+          : new Date(b.created_at) - new Date(a.created_at);
+      }
+      if (orderBy === 'question_type') {
+        return order === 'asc' 
+          ? a.question_type.localeCompare(b.question_type)
+          : b.question_type.localeCompare(a.question_type);
+      }
+      if (orderBy === 'difficulty_level') {
+        const difficultyOrder = { 'easy': 1, 'medium': 2, 'hard': 3 };
+        return order === 'asc' 
+          ? difficultyOrder[a.difficulty_level] - difficultyOrder[b.difficulty_level]
+          : difficultyOrder[b.difficulty_level] - difficultyOrder[a.difficulty_level];
+      }
+      return 0;
+    });
+  }, [filteredQuestions, orderBy, order]);
+
+  // Paginate questions
+  const paginatedQuestions = React.useMemo(() => {
+    if (!sortedQuestions || sortedQuestions.length === 0) return [];
+    const startIndex = tablePage * rowsPerPage;
+    return sortedQuestions.slice(startIndex, startIndex + rowsPerPage);
+  }, [sortedQuestions, tablePage, rowsPerPage]);
 
   const handleOpenDialog = (question = null) => {
     setEditingQuestion(question);
@@ -256,26 +322,38 @@ const QuestionBankManager = () => {
   const handleQuestionSubmit = async (questionData) => {
     try {
       if (editingQuestion) {
-        await updateQuestion(editingQuestion.id, questionData);
+        await updateQuestion?.(editingQuestion.id, questionData);
       } else {
-        await createQuestion(questionData);
+        await createQuestion?.(questionData);
       }
       handleCloseDialog();
-      fetchQuestions();
+      fetchQuestions?.();
     } catch (error) {
       console.error('Error saving question:', error);
     }
   };
 
-  const handleDeleteQuestion = async (questionId) => {
-    if (window.confirm('هل أنت متأكد من حذف هذا السؤال؟')) {
+  const handleDeleteQuestion = (questionId) => {
+    setQuestionToDelete(questionId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteQuestion = async () => {
+    if (questionToDelete) {
       try {
-        await deleteQuestion(questionId);
-        fetchQuestions();
+        await deleteQuestion?.(questionToDelete);
+        fetchQuestions?.();
+        setDeleteDialogOpen(false);
+        setQuestionToDelete(null);
       } catch (error) {
         console.error('Error deleting question:', error);
       }
     }
+  };
+
+  const cancelDeleteQuestion = () => {
+    setDeleteDialogOpen(false);
+    setQuestionToDelete(null);
   };
 
   const handleSearch = async (event) => {
@@ -283,9 +361,9 @@ const QuestionBankManager = () => {
     setSearchTerm(searchValue);
     
     if (searchValue.trim()) {
-      await searchQuestions(searchValue, filters);
+      await searchQuestions?.(searchValue, filters);
     } else {
-      await fetchQuestions();
+      await fetchQuestions?.();
     }
   };
 
@@ -298,9 +376,9 @@ const QuestionBankManager = () => {
     
     // Apply filters
     if (searchTerm.trim()) {
-      await searchQuestions(searchTerm, newFilters);
+      await searchQuestions?.(searchTerm, newFilters);
     } else {
-      await filterQuestions(newFilters);
+      await filterQuestions?.(newFilters);
     }
   };
 
@@ -310,14 +388,14 @@ const QuestionBankManager = () => {
     try {
       if (bulkAction === 'delete') {
         if (window.confirm(`هل أنت متأكد من حذف ${selectedQuestions.length} سؤال؟`)) {
-          const result = await bulkDeleteQuestions(selectedQuestions);
-          if (result.success) {
+          const result = await bulkDeleteQuestions?.(selectedQuestions);
+          if (result?.success) {
             setSelectedQuestions([]);
             // Show success message
             console.log(result.message);
           } else {
             // Show error message
-            console.error(result.error);
+            console.error(result?.error);
           }
         }
       }
@@ -325,9 +403,6 @@ const QuestionBankManager = () => {
       console.error('Error performing bulk action:', error);
     }
   };
-
-  // Use questions directly from API (filtering is done server-side)
-  const filteredQuestions = questions;
 
   const getQuestionTypeIcon = (type) => {
     switch (type) {
@@ -694,8 +769,15 @@ const QuestionBankManager = () => {
               {error ? (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {error}
+                  <Button 
+                    size="small" 
+                    onClick={() => clearError?.()} 
+                    sx={{ ml: 2 }}
+                  >
+                    إغلاق
+                  </Button>
                 </Alert>
-              ) : filteredQuestions.length === 0 ? (
+              ) : (filteredQuestions?.length || 0) === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 8 }}>
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -723,155 +805,122 @@ const QuestionBankManager = () => {
                 </Box>
               ) : (
                 <Box>
-                  <AnimatePresence>
-                    <Grid container spacing={3} sx={{ width: '100%' }}>
-                  {filteredQuestions.map((question) => (
-                        <Grid item xs={12} md={6} key={question.id} sx={{ display: 'flex' }}>
-                      <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            layout
-                            style={{ width: '100%' }}
+                  <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 2 }}>
+                    <Table sx={{ minWidth: 650 }} aria-label="questions table">
+                        <TableHead>
+                          <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                            <TableCell align="center">
+                              <TableSortLabel
+                                active={orderBy === 'question_type'}
+                                direction={orderBy === 'question_type' ? order : 'asc'}
+                                onClick={() => handleRequestSort('question_type')}
+                              >
+                                نوع السؤال
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell align="center">
+                              <TableSortLabel
+                                active={orderBy === 'difficulty_level'}
+                                direction={orderBy === 'difficulty_level' ? order : 'asc'}
+                                onClick={() => handleRequestSort('difficulty_level')}
+                              >
+                                مستوى الصعوبة
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell align="center">نص السؤال</TableCell>
+                            <TableCell align="center">الدورة/الدرس</TableCell>
+                            <TableCell align="center">
+                              <TableSortLabel
+                                active={orderBy === 'created_at'}
+                                direction={orderBy === 'created_at' ? order : 'asc'}
+                                onClick={() => handleRequestSort('created_at')}
+                              >
+                                تاريخ الإنشاء
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell align="center">الإجراءات</TableCell>
+                          </TableRow>
+                        </TableHead>
+                      <TableBody>
+                        {paginatedQuestions.map((question) => (
+                          <TableRow
+                            key={question.id}
+                            sx={{ 
+                              '&:last-child td, &:last-child th': { border: 0 },
+                              '&:hover': { backgroundColor: '#f8f9fa' }
+                            }}
                           >
-                            <ModernCard 
-                              sx={{ height: '100%', cursor: 'pointer', width: '100%' }}
-                            >
-                              <CardContent sx={{ 
-                                flexGrow: 1, 
-                                p: 3, 
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2,
-                                minHeight: '300px'
-                              }}>
-                                {/* Header with Type and Difficulty */}
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Chip
-                                    label={getQuestionTypeLabel(question.question_type)}
-                                    size="small"
-                                    color="primary"
-                                    variant="outlined"
-                                      sx={{ fontWeight: 600 }}
-                                  />
-                                  <Chip
-                                    label={getDifficultyLabel(question.difficulty_level)}
-                                    size="small"
-                                    color={getDifficultyColor(question.difficulty_level)}
-                                    variant="outlined"
-                                      sx={{ fontWeight: 600 }}
-                                  />
-                                  </Box>
-                                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-                                    {new Date(question.created_at).toLocaleDateString('en-US')}
-                                  </Typography>
-                                </Box>
-                                
-                                {/* Question Text */}
-                                <Typography variant="body1" sx={{ 
-                                  fontWeight: 500, 
-                                  lineHeight: 1.4, 
-                                  minHeight: '4.2em',
-                                  maxHeight: '4.2em',
+                            <TableCell align="center">
+                              <Chip
+                                label={getQuestionTypeLabel(question.question_type)}
+                                size="small"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ fontWeight: 600 }}
+                              />
+                            </TableCell>
+                            <TableCell align="center">
+                              <Chip
+                                label={getDifficultyLabel(question.difficulty_level)}
+                                size="small"
+                                color={getDifficultyColor(question.difficulty_level)}
+                                variant="outlined"
+                                sx={{ fontWeight: 600 }}
+                              />
+                            </TableCell>
+                            <TableCell align="center" sx={{ maxWidth: 300 }}>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   display: '-webkit-box',
-                                  WebkitLineClamp: 3,
+                                  WebkitLineClamp: 2,
                                   WebkitBoxOrient: 'vertical',
-                                  color: '#333',
-                                  fontSize: '0.95rem',
-                                  mb: 2
-                                }}>
-                                  {question.question_text}
-                                </Typography>
-                                
-                                {/* Course and Lesson Info */}
-                                {(question.course_title || question.lesson_title) && (
-                                  <Box sx={{ mb: 2 }}>
+                                  lineHeight: 1.4,
+                                  textAlign: 'center'
+                                }}
+                              >
+                                {question.question_text}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Box sx={{ textAlign: 'center' }}>
                                 {question.course_title && (
-                                      <Typography variant="caption" color="text.secondary" sx={{ 
-                                        display: 'block', 
-                                        mb: 0.5,
-                                        fontWeight: 500,
-                                        fontSize: '0.8rem'
-                                      }}>
-                                        📚 {question.course_title}
+                                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                                    📚 {question.course_title}
                                   </Typography>
                                 )}
                                 {question.lesson_title && (
-                                      <Typography variant="caption" color="text.secondary" sx={{ 
-                                        display: 'block',
-                                        fontWeight: 500,
-                                        fontSize: '0.8rem'
-                                      }}>
-                                        📖 الدرس: {question.lesson_title}
+                                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                    📖 {question.lesson_title}
                                   </Typography>
                                 )}
                               </Box>
-                                )}
-                                
-                                {/* Footer with Actions */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  justifyContent: 'space-between', 
-                                  alignItems: 'center',
-                                  mt: 'auto'
-                                }}>
-                                  <Box sx={{ 
-                                    display: 'flex', 
-                                    gap: 1,
-                                    alignItems: 'center'
-                                  }}>
-                                    <Button
-                                      variant="contained"
-                                      size="small"
-                                      startIcon={<VisibilityIcon />}
-                                      onClick={() => handleOpenDialog(question)}
-                                      sx={{
-                                        borderRadius: '12px',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 600,
-                                        backgroundColor: '#4DBFB3',
-                                        color: 'white',
-                                        boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
-                                        '&:hover': {
-                                          backgroundColor: '#388e3c',
-                                          transform: 'translateY(-1px)',
-                                          boxShadow: '0 4px 12px rgba(76, 175, 80, 0.4)',
-                                        }
-                                      }}
-                                    >
-                                      عرض
-                                    </Button>
-                                    <Button
-                                      variant="outlined"
-                                      size="small"
-                                      startIcon={<EditIcon />}
-                                      onClick={() => handleOpenDialog(question)}
-                                      sx={{
-                                        borderRadius: '12px',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 600,
-                                        borderColor: '#663399',
-                                        color: '#663399',
-                                        '&:hover': {
-                                          borderColor: '#1565c0',
-                                          backgroundColor: 'rgba(25, 118, 210, 0.08)',
-                                          transform: 'translateY(-1px)',
-                                        }
-                                      }}
-                                    >
-                                      تعديل
-                                    </Button>
-                            </Box>
-
-                              <Box sx={{ display: 'flex', gap: 1 }}>
-                                <Tooltip title="نسخ">
-                                  <IconButton size="small">
-                                        <CopyIcon sx={{ fontSize: 16, color: '#999' }} />
+                            </TableCell>
+                            <TableCell align="center">
+                              <Typography variant="caption" color="text.secondary">
+                                {new Date(question.created_at).toLocaleDateString('en-US')}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                <Tooltip title="عرض">
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => handleOpenDialog(question)}
+                                    sx={{ color: '#4DBFB3' }}
+                                  >
+                                    <VisibilityIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="تعديل">
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => handleOpenDialog(question)}
+                                    sx={{ color: '#663399' }}
+                                  >
+                                    <EditIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="حذف">
@@ -880,18 +929,34 @@ const QuestionBankManager = () => {
                                     color="error"
                                     onClick={() => handleDeleteQuestion(question.id)}
                                   >
-                                        <DeleteIcon sx={{ fontSize: 16 }} />
+                                    <DeleteIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                               </Box>
-                            </Box>
-                          </CardContent>
-                            </ModernCard>
-                      </motion.div>
-                    </Grid>
-                  ))}
-                </Grid>
-                  </AnimatePresence>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    component="div"
+                    count={filteredQuestions?.length || 0}
+                    rowsPerPage={rowsPerPage}
+                    page={tablePage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    labelRowsPerPage="عدد الصفوف في الصفحة:"
+                    labelDisplayedRows={({ from, to, count }) => 
+                      `${from}-${to} من ${count !== -1 ? count : `أكثر من ${to}`}`
+                    }
+                    sx={{ 
+                      borderTop: '1px solid #e0e0e0',
+                      backgroundColor: '#fafafa'
+                    }}
+                  />
                 </Box>
               )}
             </>
@@ -943,6 +1008,60 @@ const QuestionBankManager = () => {
             lessons={lessons || []}
           />
         </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={cancelDeleteQuestion}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title" sx={{ 
+          textAlign: 'center', 
+          color: '#d32f2f',
+          fontWeight: 'bold',
+          fontSize: '1.2rem'
+        }}>
+          ⚠️ تأكيد الحذف
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+          <Typography id="delete-dialog-description" sx={{ mb: 2 }}>
+            هل أنت متأكد من حذف هذا السؤال؟
+          </Typography>
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            <Typography variant="body2">
+              هذا الإجراء لا يمكن التراجع عنه. سيتم حذف السؤال نهائياً من قاعدة البيانات.
+            </Typography>
+          </Alert>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 3 }}>
+          <Button 
+            onClick={cancelDeleteQuestion}
+            variant="outlined"
+            sx={{ 
+              minWidth: 100,
+              borderRadius: '20px'
+            }}
+          >
+            إلغاء
+          </Button>
+          <Button 
+            onClick={confirmDeleteQuestion}
+            variant="contained"
+            color="error"
+            sx={{ 
+              minWidth: 100,
+              borderRadius: '20px',
+              backgroundColor: '#d32f2f',
+              '&:hover': {
+                backgroundColor: '#b71c1c'
+              }
+            }}
+          >
+            حذف
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );
