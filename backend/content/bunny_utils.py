@@ -150,7 +150,6 @@ def get_bunny_embed_url(video_id: str, autoplay: bool = False, loop: bool = Fals
         'autoplay': str(autoplay).lower(),
         'loop': str(loop).lower(),
         'muted': str(muted).lower(),
-        'preload': 'auto',
         'responsive': 'true',
         'startTime': str(start_time)
     }
@@ -269,7 +268,6 @@ def get_bunny_private_embed_url(video_id: str, user_id: int = None, expires_in: 
         'autoplay': str(autoplay).lower(),
         'loop': str(loop).lower(),
         'muted': str(muted).lower(),
-        'preload': 'auto',
         'responsive': 'true',
         'startTime': str(start_time),
         'token': token

@@ -30,7 +30,7 @@ const UnitVideoPlayer = ({ unit }) => {
 
   // Generate Bunny embed URL
   const getBunnyEmbedUrl = (videoId) => {
-    return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
+    return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
   };
 
   // Get video source type
