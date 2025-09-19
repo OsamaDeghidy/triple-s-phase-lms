@@ -833,11 +833,11 @@ def course_tracking_data(request, course_id):
                 if lesson_completed:
                     completed_lessons += 1
                 
-                # Generate bunny_video_url if bunny_video_id exists
-                bunny_video_url = lesson.bunny_video_url
-                if lesson.bunny_video_id and not bunny_video_url:
-                    from content.bunny_utils import get_bunny_direct_url
-                    bunny_video_url = get_bunny_direct_url(lesson.bunny_video_id)
+                # Generate bunny_video_url if bunny_video_id exists (for embed)
+                bunny_video_url = None
+                if lesson.bunny_video_id:
+                    from content.bunny_utils import get_bunny_embed_url
+                    bunny_video_url = get_bunny_embed_url(lesson.bunny_video_id)
                 
                 module_lessons.append({
                     'id': lesson.id,

@@ -2503,9 +2503,8 @@ const CourseTracking = () => {
             
             console.log('Lesson bunny_video_id:', lesson.bunny_video_id);
             
-            console.log('Lesson bunny_video_url:', lesson.bunny_video_url);
             
-            console.log('Lesson has Bunny video:', lesson.bunny_video_id && lesson.bunny_video_url);
+            console.log('Lesson has Bunny video:', lesson.bunny_video_id);
 
 
 
@@ -2567,9 +2566,7 @@ const CourseTracking = () => {
 
               resources: lesson.resources || [],
               
-              bunny_video_id: lesson.bunny_video_id,
-              
-              bunny_video_url: lesson.bunny_video_url
+              bunny_video_id: lesson.bunny_video_id
 
             };
 
