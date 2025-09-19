@@ -86,6 +86,7 @@ admin.site.unregister(User)
 @admin.register(User)
 class CustomUserAdmin(BaseUserAdmin):
     inlines = (InstructorInline, StudentInline) if hasattr(settings, 'SHOW_ALL_INLINES') else ()
+    actions = ['create_missing_instructor_student_profiles']
     def get_list_display(self, request):
         """Hide permissions from list display for non-superusers"""
         base_display = [
@@ -249,6 +250,50 @@ class CustomUserAdmin(BaseUserAdmin):
         
         return JsonResponse({'success': False, 'error': 'طريقة غير صحيحة'})
     
+    
+    def create_missing_instructor_student_profiles(self, request, queryset):
+        """إنشاء بروفايلات المدربين والطلاب المفقودة"""
+        instructor_count = 0
+        student_count = 0
+        
+        for user in queryset:
+            try:
+                if hasattr(user, 'profile'):
+                    profile = user.profile
+                    
+                    # إنشاء بروفايل مدرب إذا كان status = Instructor ولم يكن موجود
+                    if profile.status == 'Instructor' and not hasattr(profile, 'instructor'):
+                        Instructor.objects.create(
+                            profile=profile,
+                            bio='مدرب في المنصة',
+                            qualification='مؤهل تعليمي'
+                        )
+                        instructor_count += 1
+                    
+                    # إنشاء بروفايل طالب إذا كان status = Student ولم يكن موجود
+                    elif profile.status == 'Student' and not hasattr(profile, 'student'):
+                        Student.objects.create(
+                            profile=profile,
+                            department='عام'
+                        )
+                        student_count += 1
+                        
+            except Exception as e:
+                self.message_user(request, f'خطأ في إنشاء بروفايل للمستخدم {user.username}: {str(e)}', level='ERROR')
+        
+        message_parts = []
+        if instructor_count > 0:
+            message_parts.append(f'{instructor_count} بروفايل مدرب')
+        if student_count > 0:
+            message_parts.append(f'{student_count} بروفايل طالب')
+            
+        if message_parts:
+            self.message_user(request, f'تم إنشاء: {", ".join(message_parts)}', level='SUCCESS')
+        else:
+            self.message_user(request, 'جميع البروفايلات موجودة بالفعل', level='INFO')
+    
+    create_missing_instructor_student_profiles.short_description = "إنشاء بروفايلات المدربين والطلاب المفقودة"
+
     class Media:
         js = ('admin/js/status_dropdown.js',)
 
@@ -262,6 +307,7 @@ class ProfileAdmin(admin.ModelAdmin):
     list_filter = ('status', 'user__date_joined')
     search_fields = ('name', 'user__username', 'email', 'phone', 'shortBio')
     readonly_fields = ('id', 'created_date')
+    actions = ['create_instructor_student_profiles']
     
     fieldsets = (
         ('معلومات أساسية', {
@@ -326,6 +372,46 @@ class ProfileAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('user')
+    
+    def create_instructor_student_profiles(self, request, queryset):
+        """إنشاء بروفايلات المدربين والطلاب للبروفايلات المحددة"""
+        instructor_count = 0
+        student_count = 0
+        
+        for profile in queryset:
+            try:
+                # إنشاء بروفايل مدرب إذا كان status = Instructor ولم يكن موجود
+                if profile.status == 'Instructor' and not hasattr(profile, 'instructor'):
+                    Instructor.objects.create(
+                        profile=profile,
+                        bio='مدرب في المنصة',
+                        qualification='مؤهل تعليمي'
+                    )
+                    instructor_count += 1
+                
+                # إنشاء بروفايل طالب إذا كان status = Student ولم يكن موجود
+                elif profile.status == 'Student' and not hasattr(profile, 'student'):
+                    Student.objects.create(
+                        profile=profile,
+                        department='عام'
+                    )
+                    student_count += 1
+                    
+            except Exception as e:
+                self.message_user(request, f'خطأ في إنشاء بروفايل للمستخدم {profile.name}: {str(e)}', level='ERROR')
+        
+        message_parts = []
+        if instructor_count > 0:
+            message_parts.append(f'{instructor_count} بروفايل مدرب')
+        if student_count > 0:
+            message_parts.append(f'{student_count} بروفايل طالب')
+            
+        if message_parts:
+            self.message_user(request, f'تم إنشاء: {", ".join(message_parts)}', level='SUCCESS')
+        else:
+            self.message_user(request, 'جميع البروفايلات موجودة بالفعل', level='INFO')
+    
+    create_instructor_student_profiles.short_description = "إنشاء بروفايلات المدربين والطلاب"
 
 
 @admin.register(Organization)
