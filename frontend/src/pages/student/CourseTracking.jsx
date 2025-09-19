@@ -276,20 +276,37 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   
   // Get the appropriate video URL
   const getVideoUrl = () => {
+    console.log('=== getVideoUrl Debug ===');
+    console.log('hasBunnyVideo:', hasBunnyVideo);
+    console.log('lessonData.bunny_video_url:', lessonData.bunny_video_url);
+    console.log('lessonData.bunny_video_id:', lessonData.bunny_video_id);
+    console.log('url:', url);
+    
     if (hasBunnyVideo) {
       // Use the private embed URL with token from API response
       if (lessonData.bunny_video_url) {
+        console.log('Using bunny_video_url:', lessonData.bunny_video_url);
         return lessonData.bunny_video_url;
       }
       // Fallback: generate embed URL if bunny_video_url is not provided
-      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
+      const fallbackUrl = `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
+      console.log('Using fallback URL:', fallbackUrl);
+      return fallbackUrl;
     }
+    console.log('Using original URL:', url);
     return url;
   };
 
   // Process URL to ensure it's absolute (for videos)
   const processVideoUrl = (videoUrl) => {
-    if (!videoUrl || typeof videoUrl !== 'string') return null;
+    console.log('=== processVideoUrl Debug ===');
+    console.log('Input videoUrl:', videoUrl);
+    console.log('Type:', typeof videoUrl);
+    
+    if (!videoUrl || typeof videoUrl !== 'string') {
+      console.log('Returning null - invalid videoUrl');
+      return null;
+    }
 
     // If it's already a full URL, return as is
     if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
@@ -315,6 +332,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
 
 
+    console.log('Final processed URL:', videoUrl);
     return videoUrl;
 
   };
@@ -326,10 +344,13 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
 
   // Debug logging
+  console.log('=== VideoPlayer Debug ===');
   console.log('VideoPlayer - Original URL:', url);
   console.log('VideoPlayer - Processed URL:', processedUrl);
   console.log('VideoPlayer - Has Bunny Video:', hasBunnyVideo);
   console.log('VideoPlayer - Bunny Video ID:', lessonData?.bunny_video_id);
+  console.log('VideoPlayer - Bunny Video URL:', lessonData?.bunny_video_url);
+  console.log('VideoPlayer - Lesson Data:', lessonData);
 
   console.log('VideoPlayer - isValidVideoUrl:', processedUrl && (
 
@@ -471,7 +492,8 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   );
 
   // Check if URL is external video (YouTube, Vimeo, Bunny CDN, etc.)
-  const isExternalVideoUrl = (processedUrl && (
+  // For Bunny videos with DRM, always use iframe to avoid HLS key errors
+  const isExternalVideoUrl = hasBunnyVideo || (processedUrl && (
     processedUrl.includes('youtube.com') ||
     processedUrl.includes('youtu.be') ||
     processedUrl.includes('vimeo.com') ||
@@ -481,16 +503,41 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     processedUrl.includes('instagram.com') ||
     processedUrl.includes('mediadelivery.net') ||
     processedUrl.includes('b-cdn.net')
-  )) || hasBunnyVideo;
+  ));
+  
+  console.log('=== External Video Check ===');
+  console.log('isExternalVideoUrl:', isExternalVideoUrl);
+  console.log('hasBunnyVideo:', hasBunnyVideo);
+  console.log('processedUrl:', processedUrl);
 
   // Convert external video URLs to embed format
   const getEmbedUrl = (url) => {
+    console.log('=== getEmbedUrl Debug ===');
+    console.log('Input URL:', url);
+    console.log('hasBunnyVideo:', hasBunnyVideo);
+    console.log('lessonData?.bunny_video_id:', lessonData?.bunny_video_id);
+    console.log('lessonData?.bunny_video_url:', lessonData?.bunny_video_url);
+    
     if (!url) return '';
+    
+    // For Bunny videos with DRM, always use iframe embed to avoid HLS key errors
+    if (hasBunnyVideo && lessonData?.bunny_video_id) {
+      // Use the private embed URL with token if available
+      if (lessonData.bunny_video_url) {
+        console.log('Using bunny_video_url for embed:', lessonData.bunny_video_url);
+        return lessonData.bunny_video_url;
+      }
+      // Fallback to basic embed URL
+      const fallbackEmbedUrl = `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
+      console.log('Using fallback embed URL:', fallbackEmbedUrl);
+      return fallbackEmbedUrl;
+    }
     
     // Bunny CDN URLs
     if (url.includes('mediadelivery.net') || url.includes('b-cdn.net')) {
       // If it's already an embed URL, return as is
       if (url.includes('/embed/')) {
+        console.log('Already embed URL:', url);
         return url;
       }
       
@@ -501,48 +548,57 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
         // The video ID is the second to last part (before playlist.m3u8)
         const videoId = urlParts[urlParts.length - 2];
         if (videoId && videoId !== 'playlist.m3u8') {
-          return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&responsive=true`;
+          const convertedUrl = `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&responsive=true`;
+          console.log('Converted to embed URL:', convertedUrl);
+          return convertedUrl;
         }
       }
       
+      console.log('Returning original Bunny URL:', url);
       return url;
-    }
-    
-    // Check if we have a Bunny video ID from lessonData
-    if (lessonData?.bunny_video_id) {
-      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true`;
     }
     
     // YouTube URLs
     if (url.includes('youtube.com/watch?v=')) {
       const videoId = url.split('v=')[1]?.split('&')[0];
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+      const youtubeUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+      console.log('YouTube embed URL:', youtubeUrl);
+      return youtubeUrl;
     }
     
     if (url.includes('youtu.be/')) {
       const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+      const youtubeUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+      console.log('YouTube.be embed URL:', youtubeUrl);
+      return youtubeUrl;
     }
     
     // Vimeo URLs
     if (url.includes('vimeo.com/')) {
       const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
-      return videoId ? `https://player.vimeo.com/video/${videoId}` : url;
+      const vimeoUrl = videoId ? `https://player.vimeo.com/video/${videoId}` : url;
+      console.log('Vimeo embed URL:', vimeoUrl);
+      return vimeoUrl;
     }
     
     // DailyMotion URLs
     if (url.includes('dailymotion.com/video/')) {
       const videoId = url.split('dailymotion.com/video/')[1]?.split('?')[0];
-      return videoId ? `https://www.dailymotion.com/embed/video/${videoId}` : url;
+      const dailymotionUrl = videoId ? `https://www.dailymotion.com/embed/video/${videoId}` : url;
+      console.log('DailyMotion embed URL:', dailymotionUrl);
+      return dailymotionUrl;
     }
     
     // Twitch URLs (for VODs)
     if (url.includes('twitch.tv/videos/')) {
       const videoId = url.split('twitch.tv/videos/')[1]?.split('?')[0];
-      return videoId ? `https://player.twitch.tv/?video=${videoId}` : url;
+      const twitchUrl = videoId ? `https://player.twitch.tv/?video=${videoId}` : url;
+      console.log('Twitch embed URL:', twitchUrl);
+      return twitchUrl;
     }
     
     // For other platforms, return original URL
+    console.log('Returning original URL:', url);
     return url;
   };
 
@@ -553,8 +609,12 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   // If it's an external video URL, display it in an iframe
   if (isExternalVideoUrl) {
     const embedUrl = getEmbedUrl(processedUrl);
-    const isBunnyVideo = processedUrl.includes('mediadelivery.net') || processedUrl.includes('b-cdn.net');
+    const isBunnyVideo = hasBunnyVideo || processedUrl.includes('mediadelivery.net') || processedUrl.includes('b-cdn.net');
+    console.log('=== IFRAME MODE ACTIVATED ===');
     console.log('External video detected:', processedUrl);
+    console.log('Has Bunny Video:', hasBunnyVideo);
+    console.log('Bunny Video ID:', lessonData?.bunny_video_id);
+    console.log('Bunny Video URL:', lessonData?.bunny_video_url);
     console.log('Embed URL:', embedUrl);
     console.log('Is Bunny CDN:', isBunnyVideo);
     
