@@ -502,9 +502,10 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
       if (url.includes('b-cdn.net')) {
         // Extract video ID from Bunny CDN URL
         const urlParts = url.split('/');
-        const videoId = urlParts[urlParts.length - 1]?.split('?')[0];
-        if (videoId) {
-          return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
+        // The video ID is the second to last part (before playlist.m3u8)
+        const videoId = urlParts[urlParts.length - 2];
+        if (videoId && videoId !== 'playlist.m3u8') {
+          return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&responsive=true`;
         }
       }
       
@@ -513,7 +514,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     
     // Check if we have a Bunny video ID from lessonData
     if (lessonData?.bunny_video_id) {
-      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
+      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true`;
     }
     
     // YouTube URLs
@@ -575,10 +576,44 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           py: 1,
           borderRadius: 1,
           fontSize: '0.75rem',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          backdropFilter: 'blur(5px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
         }}>
           {isBunnyVideo ? 'Bunny CDN' : 'فيديو خارجي'}
         </Box>
+        
+        {/* Bunny Video ID Display */}
+        {lessonData?.bunny_video_id && (
+          <Box sx={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            zIndex: 10,
+            bgcolor: 'rgba(25, 118, 210, 0.9)',
+            color: 'white',
+            px: 2,
+            py: 1,
+            borderRadius: 1,
+            fontSize: '0.75rem',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            backdropFilter: 'blur(5px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+          }}>
+            <Box sx={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              bgcolor: 'rgba(255, 255, 255, 0.8)'
+            }} />
+            Video ID: {lessonData.bunny_video_id}
+          </Box>
+        )}
         
         <iframe
           src={embedUrl}
@@ -2465,6 +2500,12 @@ const CourseTracking = () => {
             console.log('Lesson file_url:', lesson.file_url);
 
             console.log('Lesson resources:', lesson.resources);
+            
+            console.log('Lesson bunny_video_id:', lesson.bunny_video_id);
+            
+            console.log('Lesson bunny_video_url:', lesson.bunny_video_url);
+            
+            console.log('Lesson has Bunny video:', lesson.bunny_video_id && lesson.bunny_video_url);
 
 
 
@@ -2524,7 +2565,11 @@ const CourseTracking = () => {
 
               content: lesson.content,
 
-              resources: lesson.resources || []
+              resources: lesson.resources || [],
+              
+              bunny_video_id: lesson.bunny_video_id,
+              
+              bunny_video_url: lesson.bunny_video_url
 
             };
 
@@ -3968,9 +4013,35 @@ const CourseTracking = () => {
           <IconButton onClick={toggleSidebar} sx={{ mr: 2, color: 'white' }}>
             <Menu />
           </IconButton>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', flex: 1, color: 'white' }}>
-            {currentLesson?.title || courseData.title}
-          </Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white' }}>
+              {currentLesson?.title || courseData.title}
+            </Typography>
+            
+            {/* Bunny Video ID Display for Mobile */}
+            {currentLesson?.bunny_video_id && (
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                mt: 0.5
+              }}>
+                <Box sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  bgcolor: 'rgba(76, 175, 80, 0.8)'
+                }} />
+                <Typography variant="caption" sx={{
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '0.7rem',
+                  fontWeight: '500'
+                }}>
+                  Bunny Video ID: {currentLesson.bunny_video_id}
+                </Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
 
         {/* Main Split Layout */}
@@ -4030,18 +4101,49 @@ const CourseTracking = () => {
                 <Close sx={{ fontSize: 20 }} />
               </IconButton>
               
-              <Typography variant="h4" sx={{
-                fontWeight: 'bold',
-                fontSize: '2rem',
-                mb: 0.5,
-                textAlign: 'right',
-                color: 'white',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                flex: 1,
-                mx: 2
-              }}>
-                {courseData?.title || 'Biological Chemistry'}
-              </Typography>
+              <Box sx={{ flex: 1, mx: 2 }}>
+                <Typography variant="h4" sx={{
+                  fontWeight: 'bold',
+                  fontSize: '2rem',
+                  mb: 0.5,
+                  textAlign: 'right',
+                  color: 'white',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                }}>
+                  {courseData?.title || 'Biological Chemistry'}
+                </Typography>
+                
+                {/* Bunny Video ID Display */}
+                {currentLesson?.bunny_video_id && (
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    bgcolor: 'rgba(25, 118, 210, 0.2)',
+                    borderRadius: 1,
+                    border: '1px solid rgba(25, 118, 210, 0.3)',
+                    backdropFilter: 'blur(5px)'
+                  }}>
+                    <Box sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(76, 175, 80, 0.8)'
+                    }} />
+                    <Typography variant="body2" sx={{
+                      color: 'rgba(255, 255, 255, 0.9)',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+                    }}>
+                      Bunny Video ID: {currentLesson.bunny_video_id}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
             </Box>
 
             {/* Main Content Container */}

@@ -842,6 +842,8 @@ def course_tracking_data(request, course_id):
                     'order': lesson.order,
                     'completed': lesson_completed,
                     'video_url': lesson.video_url,
+                    'bunny_video_id': lesson.bunny_video_id,
+                    'bunny_video_url': lesson.bunny_video_url,
                     'content': lesson.content,
                     'resources': [
                         {

@@ -17,6 +17,7 @@ class BunnyCDNClient:
     def __init__(self):
         self.api_key = getattr(settings, 'BUNNY_CDN_API_KEY', None)
         self.library_id = getattr(settings, 'BUNNY_CDN_LIBRARY_ID', None)
+        self.token_auth_key = getattr(settings, 'BUNNY_CDN_TOKEN_AUTH_KEY', None)
         self.base_url = f"https://video.bunnycdn.com/library/{self.library_id}"
         self.headers = {
             'AccessKey': self.api_key,
@@ -173,6 +174,109 @@ def get_bunny_direct_url(video_id: str) -> str:
         return ""
     
     return f"https://{cdn_hostname}/{video_id}/play_720p.mp4"
+
+
+def get_bunny_private_url(video_id: str, user_id: int = None, expires_in: int = 3600) -> str:
+    """
+    Generate private streaming URL with token authentication
+    
+    Args:
+        video_id (str): The Bunny CDN video ID
+        user_id (int): User ID for additional security (optional)
+        expires_in (int): Token expiration time in seconds (default: 1 hour)
+        
+    Returns:
+        Private streaming URL with token authentication
+    """
+    import time
+    import hashlib
+    import hmac
+    
+    cdn_hostname = getattr(settings, 'BUNNY_CDN_CONFIG', {}).get('CDN_HOSTNAME', '')
+    token_auth_key = getattr(settings, 'BUNNY_CDN_TOKEN_AUTH_KEY', None)
+    
+    if not cdn_hostname or not token_auth_key:
+        return ""
+    
+    # Generate token
+    expires = int(time.time()) + expires_in
+    token_data = f"{video_id}:{expires}"
+    if user_id:
+        token_data += f":{user_id}"
+    
+    # Create HMAC signature
+    signature = hmac.new(
+        token_auth_key.encode('utf-8'),
+        token_data.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+    
+    # Create token
+    token = f"{expires}:{signature}"
+    if user_id:
+        token += f":{user_id}"
+    
+    return f"https://{cdn_hostname}/{video_id}/play_720p.mp4?token={token}"
+
+
+def get_bunny_private_embed_url(video_id: str, user_id: int = None, expires_in: int = 3600, 
+                               autoplay: bool = False, loop: bool = False, 
+                               muted: bool = False, start_time: int = 0) -> str:
+    """
+    Generate private embed URL with token authentication
+    
+    Args:
+        video_id (str): The Bunny CDN video ID
+        user_id (int): User ID for additional security (optional)
+        expires_in (int): Token expiration time in seconds (default: 1 hour)
+        autoplay (bool): Whether to autoplay the video
+        loop (bool): Whether to loop the video
+        muted (bool): Whether to start muted
+        start_time (int): Start time in seconds
+        
+    Returns:
+        Private embed URL with token authentication
+    """
+    import time
+    import hashlib
+    import hmac
+    
+    library_id = getattr(settings, 'BUNNY_CDN_LIBRARY_ID', '')
+    token_auth_key = getattr(settings, 'BUNNY_CDN_TOKEN_AUTH_KEY', None)
+    
+    if not library_id or not token_auth_key:
+        return ""
+    
+    # Generate token
+    expires = int(time.time()) + expires_in
+    token_data = f"{video_id}:{expires}"
+    if user_id:
+        token_data += f":{user_id}"
+    
+    # Create HMAC signature
+    signature = hmac.new(
+        token_auth_key.encode('utf-8'),
+        token_data.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+    
+    # Create token
+    token = f"{expires}:{signature}"
+    if user_id:
+        token += f":{user_id}"
+    
+    params = {
+        'autoplay': str(autoplay).lower(),
+        'loop': str(loop).lower(),
+        'muted': str(muted).lower(),
+        'preload': 'auto',
+        'responsive': 'true',
+        'startTime': str(start_time),
+        'token': token
+    }
+    
+    param_string = '&'.join([f"{k}={v}" for k, v in params.items()])
+    return f"https://iframe.mediadelivery.net/embed/{library_id}/{video_id}?{param_string}"
 
 
 # Model helper functions

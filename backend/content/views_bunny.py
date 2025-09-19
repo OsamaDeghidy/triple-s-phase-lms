@@ -16,6 +16,8 @@ from .bunny_utils import (
     validate_bunny_video_id, 
     get_bunny_video_url,
     get_bunny_embed_url,
+    get_bunny_private_url,
+    get_bunny_private_embed_url,
     update_module_bunny_video,
     update_lesson_bunny_video,
     update_course_bunny_promotional_video
@@ -409,4 +411,100 @@ def remove_bunny_promotional_video_from_course(request, course_id):
         return Response({
             'success': False,
             'error': _('Error removing promotional video from course')
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_bunny_private_url_view(request, video_id):
+    """
+    Get Bunny CDN private streaming URL with token authentication
+    
+    GET /api/content/bunny/private/{video_id}/
+    Query parameters:
+    - expires_in: number (default: 3600 seconds = 1 hour)
+    """
+    try:
+        expires_in = int(request.GET.get('expires_in', 3600))
+        user_id = request.user.id
+        
+        private_url = get_bunny_private_url(
+            video_id=video_id,
+            user_id=user_id,
+            expires_in=expires_in
+        )
+        
+        if private_url:
+            return Response({
+                'private_url': private_url,
+                'video_id': video_id,
+                'user_id': user_id,
+                'expires_in': expires_in
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'error': _('Failed to generate private URL')
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        logger.error(f"Error generating private URL for video {video_id}: {str(e)}")
+        return Response({
+            'error': _('Error generating private URL')
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_bunny_private_embed_url_view(request, video_id):
+    """
+    Get Bunny CDN private embed URL with token authentication
+    
+    GET /api/content/bunny/private-embed/{video_id}/
+    Query parameters:
+    - expires_in: number (default: 3600 seconds = 1 hour)
+    - autoplay: true/false (default: false)
+    - loop: true/false (default: false)
+    - muted: true/false (default: false)
+    - start_time: number (default: 0)
+    """
+    try:
+        expires_in = int(request.GET.get('expires_in', 3600))
+        autoplay = request.GET.get('autoplay', 'false').lower() == 'true'
+        loop = request.GET.get('loop', 'false').lower() == 'true'
+        muted = request.GET.get('muted', 'false').lower() == 'true'
+        start_time = int(request.GET.get('start_time', 0))
+        user_id = request.user.id
+        
+        private_embed_url = get_bunny_private_embed_url(
+            video_id=video_id,
+            user_id=user_id,
+            expires_in=expires_in,
+            autoplay=autoplay,
+            loop=loop,
+            muted=muted,
+            start_time=start_time
+        )
+        
+        if private_embed_url:
+            return Response({
+                'private_embed_url': private_embed_url,
+                'video_id': video_id,
+                'user_id': user_id,
+                'expires_in': expires_in,
+                'parameters': {
+                    'autoplay': autoplay,
+                    'loop': loop,
+                    'muted': muted,
+                    'start_time': start_time
+                }
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'error': _('Failed to generate private embed URL')
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        logger.error(f"Error generating private embed URL for video {video_id}: {str(e)}")
+        return Response({
+            'error': _('Error generating private embed URL')
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
