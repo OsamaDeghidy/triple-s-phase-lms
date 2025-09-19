@@ -494,36 +494,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           {isBunnyVideo ? 'Bunny CDN' : 'فيديو خارجي'}
         </Box>
         
-        {/* Bunny Video ID Display */}
-        {lessonData?.bunny_video_id && (
-          <Box sx={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            zIndex: 10,
-            bgcolor: 'rgba(25, 118, 210, 0.9)',
-            color: 'white',
-            px: 2,
-            py: 1,
-            borderRadius: 1,
-            fontSize: '0.75rem',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            backdropFilter: 'blur(5px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-          }}>
-            <Box sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              bgcolor: 'rgba(255, 255, 255, 0.8)'
-            }} />
-            Video ID: {lessonData.bunny_video_id}
-          </Box>
-        )}
         
         <iframe
           src={embedUrl}
@@ -620,7 +590,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           </Box>
 
           {/* Action buttons */}
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
             {/* Preview button for supported files */}
             {(fileExtension === 'pdf' || fileExtension === 'txt') && (
               <Button
@@ -736,9 +706,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
         flexDirection: 'column',
 
-        gap: 2,
-
-        padding: 2
+        padding: 5
 
       }}>
 
@@ -891,7 +859,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
               ملفات الدرس
             </Typography>
             
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               {lessonData.resources.map((resource, index) => {
                 const fileName = resource.title || resource.name || resource.file_url?.split('/').pop() || `ملف ${index + 1}`;
                 const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -914,7 +882,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
                       }
                     }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       {/* File icon */}
                       <Box sx={{ 
                         p: 1, 
@@ -1953,7 +1921,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
   const filteredContent = getFilteredContent();
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSidebarExpanded ? 0.75 : 0.5, p: isSidebarExpanded ? 0.25 : 0.125 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', p: isSidebarExpanded ? 0.25 : 0.125 }}>
       {activeTab === 'lessons' ? (
         // Display all lessons from all modules
         filteredContent.map((lesson, index) => {
@@ -1980,7 +1948,7 @@ const CourseContent = ({ modules, expandedModule, onModuleClick, onLessonClick, 
               },
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: isSidebarExpanded ? 1.25 : 0.75 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {/* Radio Button / Icon */}
               <Box
                 sx={{
@@ -3377,7 +3345,7 @@ const CourseTracking = () => {
 
         flexDirection: 'column',
 
-        gap: 2
+        padding: 24
 
       }}>
 
@@ -3427,7 +3395,7 @@ const CourseTracking = () => {
 
         flexDirection: 'column',
 
-        gap: 2
+        padding: 24
 
       }}>
 
@@ -3858,29 +3826,6 @@ const CourseTracking = () => {
               {currentLesson?.title || courseData.title}
             </Typography>
             
-            {/* Bunny Video ID Display for Mobile */}
-            {currentLesson?.bunny_video_id && (
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                mt: 0.5
-              }}>
-                <Box sx={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  bgcolor: 'rgba(76, 175, 80, 0.8)'
-                }} />
-                <Typography variant="caption" sx={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '0.7rem',
-                  fontWeight: '500'
-                }}>
-                  Bunny Video ID: {currentLesson.bunny_video_id}
-                </Typography>
-              </Box>
-            )}
           </Box>
         </Box>
 
@@ -3953,36 +3898,6 @@ const CourseTracking = () => {
                   {courseData?.title || 'Biological Chemistry'}
                 </Typography>
                 
-                {/* Bunny Video ID Display */}
-                {currentLesson?.bunny_video_id && (
-                  <Box sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: 1,
-                    mt: 1,
-                    p: 1,
-                    bgcolor: 'rgba(25, 118, 210, 0.2)',
-                    borderRadius: 1,
-                    border: '1px solid rgba(25, 118, 210, 0.3)',
-                    backdropFilter: 'blur(5px)'
-                  }}>
-                    <Box sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      bgcolor: 'rgba(76, 175, 80, 0.8)'
-                    }} />
-                    <Typography variant="body2" sx={{
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
-                    }}>
-                      Bunny Video ID: {currentLesson.bunny_video_id}
-                    </Typography>
-                  </Box>
-                )}
               </Box>
             </Box>
 
@@ -4047,8 +3962,7 @@ const CourseTracking = () => {
                     </Typography>
                     <Box sx={{
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: 2
+                      alignItems: 'center'
                     }}>
                       {/* Show Answer Button - Top */}
                       <IconButton
@@ -4602,8 +4516,7 @@ const CourseTracking = () => {
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
             display: 'flex',
             justifyContent: 'flex-end',
-            alignItems: 'center',
-            gap: 2
+            alignItems: 'center'
           }}>
             {selectedFlashcard ? (
               // Flashcard navigation buttons
@@ -5113,9 +5026,7 @@ const CourseTracking = () => {
 
               display: 'flex',
 
-              justifyContent: 'center',
-
-              gap: 2
+              justifyContent: 'center'
 
             }}>
 
