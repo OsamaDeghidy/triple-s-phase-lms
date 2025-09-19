@@ -276,35 +276,21 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   
   // Get the appropriate video URL
   const getVideoUrl = () => {
-    console.log('=== getVideoUrl Debug ===');
-    console.log('hasBunnyVideo:', hasBunnyVideo);
-    console.log('lessonData.bunny_video_url:', lessonData.bunny_video_url);
-    console.log('lessonData.bunny_video_id:', lessonData.bunny_video_id);
-    console.log('url:', url);
-    
     if (hasBunnyVideo) {
       // Use the private embed URL with token from API response
       if (lessonData.bunny_video_url) {
-        console.log('Using bunny_video_url:', lessonData.bunny_video_url);
         return lessonData.bunny_video_url;
       }
       // Fallback: generate embed URL if bunny_video_url is not provided
       const fallbackUrl = `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
-      console.log('Using fallback URL:', fallbackUrl);
       return fallbackUrl;
     }
-    console.log('Using original URL:', url);
     return url;
   };
 
   // Process URL to ensure it's absolute (for videos)
   const processVideoUrl = (videoUrl) => {
-    console.log('=== processVideoUrl Debug ===');
-    console.log('Input videoUrl:', videoUrl);
-    console.log('Type:', typeof videoUrl);
-    
     if (!videoUrl || typeof videoUrl !== 'string') {
-      console.log('Returning null - invalid videoUrl');
       return null;
     }
 
@@ -315,26 +301,15 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
     // If it starts with /media/ or /static/, make it absolute
     if (videoUrl.startsWith('/media/') || videoUrl.startsWith('/static/')) {
-
       return `${API_CONFIG.baseURL}${videoUrl}`;
-
     }
-
-
 
     // If it's a relative path, assume it's in media
-
     if (!videoUrl.startsWith('/')) {
-
       return `${API_CONFIG.baseURL}/media/${videoUrl}`;
-
     }
 
-
-
-    console.log('Final processed URL:', videoUrl);
     return videoUrl;
-
   };
 
 
@@ -343,38 +318,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
 
 
-  // Debug logging
-  console.log('=== VideoPlayer Debug ===');
-  console.log('VideoPlayer - Original URL:', url);
-  console.log('VideoPlayer - Processed URL:', processedUrl);
-  console.log('VideoPlayer - Has Bunny Video:', hasBunnyVideo);
-  console.log('VideoPlayer - Bunny Video ID:', lessonData?.bunny_video_id);
-  console.log('VideoPlayer - Bunny Video URL:', lessonData?.bunny_video_url);
-  console.log('VideoPlayer - Lesson Data:', lessonData);
-
-  console.log('VideoPlayer - isValidVideoUrl:', processedUrl && (
-
-    processedUrl.includes('.mp4') ||
-
-    processedUrl.includes('.webm') ||
-
-    processedUrl.includes('.ogg') ||
-
-    processedUrl.includes('.avi') ||
-
-    processedUrl.includes('.mov') ||
-
-    processedUrl.includes('.wmv') ||
-
-    processedUrl.includes('.flv') ||
-
-    processedUrl.includes('blob:') ||
-
-    processedUrl.startsWith('http://') ||
-
-    processedUrl.startsWith('https://')
-
-  ));
 
 
 
@@ -492,7 +435,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   );
 
   // Check if URL is external video (YouTube, Vimeo, Bunny CDN, etc.)
-  // For Bunny videos with DRM, always use iframe to avoid HLS key errors
+  // For Bunny videos with DRM, ALWAYS use iframe to avoid HLS key errors
   const isExternalVideoUrl = hasBunnyVideo || (processedUrl && (
     processedUrl.includes('youtube.com') ||
     processedUrl.includes('youtu.be') ||
@@ -504,32 +447,19 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     processedUrl.includes('mediadelivery.net') ||
     processedUrl.includes('b-cdn.net')
   ));
-  
-  console.log('=== External Video Check ===');
-  console.log('isExternalVideoUrl:', isExternalVideoUrl);
-  console.log('hasBunnyVideo:', hasBunnyVideo);
-  console.log('processedUrl:', processedUrl);
 
   // Convert external video URLs to embed format
   const getEmbedUrl = (url) => {
-    console.log('=== getEmbedUrl Debug ===');
-    console.log('Input URL:', url);
-    console.log('hasBunnyVideo:', hasBunnyVideo);
-    console.log('lessonData?.bunny_video_id:', lessonData?.bunny_video_id);
-    console.log('lessonData?.bunny_video_url:', lessonData?.bunny_video_url);
-    
     if (!url) return '';
     
-    // For Bunny videos with DRM, always use iframe embed to avoid HLS key errors
+    // For Bunny videos with DRM, ALWAYS use iframe embed to avoid HLS key errors
     if (hasBunnyVideo && lessonData?.bunny_video_id) {
       // Use the private embed URL with token if available
       if (lessonData.bunny_video_url) {
-        console.log('Using bunny_video_url for embed:', lessonData.bunny_video_url);
         return lessonData.bunny_video_url;
       }
       // Fallback to basic embed URL
       const fallbackEmbedUrl = `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
-      console.log('Using fallback embed URL:', fallbackEmbedUrl);
       return fallbackEmbedUrl;
     }
     
@@ -537,7 +467,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     if (url.includes('mediadelivery.net') || url.includes('b-cdn.net')) {
       // If it's already an embed URL, return as is
       if (url.includes('/embed/')) {
-        console.log('Already embed URL:', url);
         return url;
       }
       
@@ -549,56 +478,43 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
         const videoId = urlParts[urlParts.length - 2];
         if (videoId && videoId !== 'playlist.m3u8') {
           const convertedUrl = `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&responsive=true`;
-          console.log('Converted to embed URL:', convertedUrl);
           return convertedUrl;
         }
       }
       
-      console.log('Returning original Bunny URL:', url);
       return url;
     }
     
     // YouTube URLs
     if (url.includes('youtube.com/watch?v=')) {
       const videoId = url.split('v=')[1]?.split('&')[0];
-      const youtubeUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : url;
-      console.log('YouTube embed URL:', youtubeUrl);
-      return youtubeUrl;
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
     }
     
     if (url.includes('youtu.be/')) {
       const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-      const youtubeUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : url;
-      console.log('YouTube.be embed URL:', youtubeUrl);
-      return youtubeUrl;
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
     }
     
     // Vimeo URLs
     if (url.includes('vimeo.com/')) {
       const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
-      const vimeoUrl = videoId ? `https://player.vimeo.com/video/${videoId}` : url;
-      console.log('Vimeo embed URL:', vimeoUrl);
-      return vimeoUrl;
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : url;
     }
     
     // DailyMotion URLs
     if (url.includes('dailymotion.com/video/')) {
       const videoId = url.split('dailymotion.com/video/')[1]?.split('?')[0];
-      const dailymotionUrl = videoId ? `https://www.dailymotion.com/embed/video/${videoId}` : url;
-      console.log('DailyMotion embed URL:', dailymotionUrl);
-      return dailymotionUrl;
+      return videoId ? `https://www.dailymotion.com/embed/video/${videoId}` : url;
     }
     
     // Twitch URLs (for VODs)
     if (url.includes('twitch.tv/videos/')) {
       const videoId = url.split('twitch.tv/videos/')[1]?.split('?')[0];
-      const twitchUrl = videoId ? `https://player.twitch.tv/?video=${videoId}` : url;
-      console.log('Twitch embed URL:', twitchUrl);
-      return twitchUrl;
+      return videoId ? `https://player.twitch.tv/?video=${videoId}` : url;
     }
     
     // For other platforms, return original URL
-    console.log('Returning original URL:', url);
     return url;
   };
 
@@ -610,13 +526,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   if (isExternalVideoUrl) {
     const embedUrl = getEmbedUrl(processedUrl);
     const isBunnyVideo = hasBunnyVideo || processedUrl.includes('mediadelivery.net') || processedUrl.includes('b-cdn.net');
-    console.log('=== IFRAME MODE ACTIVATED ===');
-    console.log('External video detected:', processedUrl);
-    console.log('Has Bunny Video:', hasBunnyVideo);
-    console.log('Bunny Video ID:', lessonData?.bunny_video_id);
-    console.log('Bunny Video URL:', lessonData?.bunny_video_url);
-    console.log('Embed URL:', embedUrl);
-    console.log('Is Bunny CDN:', isBunnyVideo);
     
     return (
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -714,10 +623,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   if (isFileUrl) {
     const fileName = processedUrl.split('/').pop() || 'ملف';
     const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-    
-    console.log('File detected:', processedUrl);
-    console.log('File name:', fileName);
-    console.log('File extension:', fileExtension);
     
     return (
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -1264,23 +1169,9 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
         }}
 
-        onLoadStart={() => {
-
-          console.log('Video load started for URL:', processedUrl);
-
-        }}
-
-        onLoadedData={() => {
-
-          console.log('Video data loaded for URL:', processedUrl);
-
-        }}
-
-        onCanPlay={() => {
-
-          console.log('Video can play for URL:', processedUrl);
-
-        }}
+        onLoadStart={() => {}}
+        onLoadedData={() => {}}
+        onCanPlay={() => {}}
 
       />
 
@@ -2467,11 +2358,6 @@ const CourseTracking = () => {
 
 
 
-      // Debug: Log the full response
-
-      console.log('Full API Response:', response);
-
-      console.log('Course modules:', response?.course?.modules);
 
 
 
@@ -2545,22 +2431,6 @@ const CourseTracking = () => {
 
           lessons: (module.lessons || []).map(lesson => {
 
-            // Debug: Log lesson data
-
-            console.log('Lesson data:', lesson);
-
-            console.log('Lesson video_url:', lesson.video_url);
-
-            console.log('Lesson video_file:', lesson.video_file);
-
-            console.log('Lesson file_url:', lesson.file_url);
-
-            console.log('Lesson resources:', lesson.resources);
-            
-            console.log('Lesson bunny_video_id:', lesson.bunny_video_id);
-            
-            
-            console.log('Lesson has Bunny video:', lesson.bunny_video_id);
 
 
 
@@ -2601,7 +2471,6 @@ const CourseTracking = () => {
 
 
 
-            console.log('Final videoUrl for lesson:', lesson.id, ':', videoUrl);
 
 
 
@@ -2640,11 +2509,6 @@ const CourseTracking = () => {
 
 
 
-      // Debug: Log transformed data
-
-      console.log('Transformed course data:', transformedData);
-
-      console.log('First module lessons:', transformedData.modules?.[0]?.lessons);
 
 
 
@@ -2654,7 +2518,6 @@ const CourseTracking = () => {
       try {
         // Fetch questions using the content API
         const questionsResponse = await contentAPI.getCourseQuestionBank(courseId);
-        console.log('Questions response:', questionsResponse);
         
         // Extract questions from modules structure
         const allQuestions = [];
@@ -2702,12 +2565,10 @@ const CourseTracking = () => {
             });
           }
         });
-        console.log('All questions with parsed options:', allQuestions);
         setQuestions(allQuestions);
 
         // Fetch flashcards using the content API
         const flashcardsResponse = await contentAPI.getCourseFlashcards(courseId);
-        console.log('Flashcards response:', flashcardsResponse);
         
         // Extract flashcards from modules structure
         const allFlashcards = [];
@@ -2751,10 +2612,6 @@ const CourseTracking = () => {
         transformedData.modules[0].lessons && transformedData.modules[0].lessons.length > 0) {
 
         const firstLesson = transformedData.modules[0].lessons[0];
-
-        console.log('Setting current lesson:', firstLesson);
-
-        console.log('Current lesson videoUrl:', firstLesson.videoUrl);
 
         setCurrentLesson({
 
@@ -2898,18 +2755,12 @@ const CourseTracking = () => {
 
   // Handle question selection
   const handleQuestionClick = (question, index) => {
-    console.log('Selected question:', question);
-    console.log('Question type:', question.type);
-    console.log('Question options (raw):', question.options);
-    
     // Parse options if they are a JSON string
     let parsedOptions = question.options;
     if (typeof question.options === 'string') {
       try {
         parsedOptions = JSON.parse(question.options);
-        console.log('Parsed options:', parsedOptions);
       } catch (e) {
-        console.error('Error parsing options:', e);
         parsedOptions = [];
       }
     }
@@ -2934,7 +2785,6 @@ const CourseTracking = () => {
       options: parsedOptions
     };
     
-    console.log('Question with parsed options:', questionWithParsedOptions);
     setSelectedQuestion(questionWithParsedOptions);
     setCurrentQuestionIndex(index);
     setShowAnswer(false);
@@ -2945,7 +2795,6 @@ const CourseTracking = () => {
 
   // Handle flashcard selection
   const handleFlashcardClick = (flashcard, index) => {
-    console.log('Selected flashcard:', flashcard);
     setSelectedFlashcard(flashcard);
     setCurrentFlashcardIndex(index);
     setCurrentLesson(null); // Clear current lesson when viewing flashcards
@@ -4211,8 +4060,7 @@ const CourseTracking = () => {
               bgcolor: 'black',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              mt: 8 // Add margin to account for fixed header
+              justifyContent: 'center'
             }}>
               {selectedFlashcard ? (
                 // Flashcard Display
@@ -4346,20 +4194,9 @@ const CourseTracking = () => {
 
                     {/* Multiple Choice Options */}
                     {(() => {
-                      console.log('Rendering options check:', {
-                        type: selectedQuestion.type,
-                        hasOptions: !!selectedQuestion.options,
-                        optionsLength: selectedQuestion.options?.length,
-                        options: selectedQuestion.options,
-                        isArray: Array.isArray(selectedQuestion.options),
-                        correctAnswer: selectedQuestion.correct_answer
-                      });
-                      
                       // Check if it's MCQ and has options
                       const isMCQ = selectedQuestion.type === 'mcq';
                       const hasOptions = selectedQuestion.options && selectedQuestion.options.length > 0;
-                      
-                      console.log('MCQ check:', { isMCQ, hasOptions });
                       
                       return isMCQ && hasOptions;
                     })() ? (
@@ -4372,14 +4209,6 @@ const CourseTracking = () => {
                                           selectedQuestion.correct_answer === String(index) ||
                                           option.is_correct === true;
                           const isWrong = isSelected && !isCorrect && showAnswer;
-                          
-                          console.log('Option check:', {
-                            option,
-                            index,
-                            correctAnswer: selectedQuestion.correct_answer,
-                            isCorrect,
-                            isSelected
-                          });
                           
                           return (
                           <Box
@@ -4520,15 +4349,6 @@ const CourseTracking = () => {
                             ));
                             
                             const isWrong = isSelected && !isCorrect && showAnswer;
-                            
-                            console.log('True/False check:', {
-                              option,
-                              index,
-                              correctAnswer: selectedQuestion.correct_answer,
-                              isCorrect,
-                              isSelected,
-                              isWrong
-                            });
                             
                             return (
                               <Box
@@ -5159,9 +4979,6 @@ const CourseTracking = () => {
                 quizId={activeQuizId}
 
                 onFinish={(attemptId) => {
-
-                  console.log('Quiz finished with attempt ID:', attemptId);
-
                   setActiveAttemptId(attemptId);
 
                   setShowQuizResult(true);
@@ -5409,36 +5226,20 @@ const CourseTracking = () => {
               </Button>
 
               <Button
-
                 variant="outlined"
-
                 startIcon={<OpenInNew />}
-
                 onClick={() => {
-
                   const processedUrl = processFileUrl(imagePreview.url);
-
                   window.open(processedUrl, '_blank');
-
                   showSnackbar('تم فتح الصورة في نافذة جديدة', 'info');
-
                 }}
-
               >
-
                 فتح في نافذة جديدة
-
               </Button>
-
             </Box>
-
           </Box>
-
         </Fade>
-
       </Modal>
-
-
 
       {/* Snackbar */}
 
