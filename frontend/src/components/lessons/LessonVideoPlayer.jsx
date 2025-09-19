@@ -27,8 +27,13 @@ const LessonVideoPlayer = ({ lesson }) => {
   const hasBunnyVideo = lesson?.bunny_video_id;
   const hasExternalVideo = lesson?.video_url;
 
-  // Generate Bunny embed URL
+  // Use private embed URL with token from lesson data
   const getBunnyEmbedUrl = (videoId) => {
+    // If lesson has bunny_video_url (with token), use it
+    if (lesson?.bunny_video_url) {
+      return lesson.bunny_video_url;
+    }
+    // Fallback to basic embed URL
     return `https://iframe.mediadelivery.net/embed/495146/${videoId}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
   };
 

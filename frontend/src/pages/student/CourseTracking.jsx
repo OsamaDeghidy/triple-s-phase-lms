@@ -277,8 +277,8 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   // Get the appropriate video URL
   const getVideoUrl = () => {
     if (hasBunnyVideo) {
-      // Generate embed URL from video ID
-      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
+      // Use the private embed URL with token from API response
+      return lessonData.bunny_video_url;
     }
     return url;
   };

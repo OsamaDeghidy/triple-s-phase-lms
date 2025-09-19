@@ -833,11 +833,16 @@ def course_tracking_data(request, course_id):
                 if lesson_completed:
                     completed_lessons += 1
                 
-                # Generate bunny_video_url if bunny_video_id exists (for embed)
+                # Generate bunny_video_url if bunny_video_id exists (for private embed with token)
                 bunny_video_url = None
                 if lesson.bunny_video_id:
-                    from content.bunny_utils import get_bunny_embed_url
-                    bunny_video_url = get_bunny_embed_url(lesson.bunny_video_id)
+                    from content.bunny_utils import get_bunny_private_embed_url
+                    # Use private embed URL with token for DRM protected videos
+                    bunny_video_url = get_bunny_private_embed_url(
+                        video_id=lesson.bunny_video_id,
+                        user_id=request.user.id if request.user.is_authenticated else None,
+                        expires_in=3600  # 1 hour
+                    )
                 
                 module_lessons.append({
                     'id': lesson.id,
