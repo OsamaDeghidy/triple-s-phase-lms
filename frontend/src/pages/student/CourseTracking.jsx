@@ -104,51 +104,28 @@ if (typeof document !== 'undefined') {
 }
 
 import {
-
   PlayCircleOutline,
-
   PlayArrow,
-
   Close as CloseIcon,
-
   Pause,
-
   Fullscreen,
-
   FullscreenExit,
-
   VolumeUp,
-
   VolumeOff,
-
   Speed as SpeedIcon,
-
   ClosedCaption,
-
   Settings,
-
   PictureInPicture,
-
   CheckCircle,
-
   CheckCircleOutline,
-
   ExpandMore,
-
   ExpandLess,
-
   BookmarkBorder,
-
   Bookmark,
-
   AccessTime,
-
   MenuBook,
-
   Quiz,
-
   Assignment,
-
   VideoLibrary,
 
   Star,
@@ -263,8 +240,6 @@ import { API_CONFIG } from '../../config/api.config';
 
 // Force reload
 
-
-
 // Simple video player component to replace ReactPlayer
 
 const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, width, height, style, lessonData }) => {
@@ -312,22 +287,13 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     return videoUrl;
   };
 
-
-
   const processedUrl = processVideoUrl(getVideoUrl());
-
-
-
-
-
 
   React.useEffect(() => {
 
     const video = videoRef.current;
 
     if (!video) return;
-
-
 
     const handlePlay = () => onPlay && onPlay();
 
@@ -352,35 +318,18 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
       }
 
     };
-
     const handleDuration = () => onDuration && onDuration(video.duration);
-
     const handleLoadedMetadata = () => onDuration && onDuration(video.duration);
-
-
-
     video.addEventListener('play', handlePlay);
-
     video.addEventListener('pause', handlePause);
-
     video.addEventListener('timeupdate', handleTimeUpdate);
-
     video.addEventListener('durationchange', handleDuration);
-
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-
-
     return () => {
-
       video.removeEventListener('play', handlePlay);
-
       video.removeEventListener('pause', handlePause);
-
       video.removeEventListener('timeupdate', handleTimeUpdate);
-
       video.removeEventListener('durationchange', handleDuration);
-
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
 
     };
@@ -518,10 +467,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     return url;
   };
 
-
-
-
-
   // If it's an external video URL, display it in an iframe
   if (isExternalVideoUrl) {
     const embedUrl = getEmbedUrl(processedUrl);
@@ -589,14 +534,14 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
             width: '100%',
             height: '100%',
             border: 'none',
-            backgroundColor: '#000'
+            backgroundColor: '#000',
+            objectFit: 'contain',
+            objectPosition: 'center'
           }}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           title="External Video"
-          onError={(e) => {
-            console.error('Iframe error:', e);
-          }}
+          onError={() => {}}
         />
       </Box>
     );
@@ -1147,6 +1092,10 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
           backgroundColor: '#000',
 
+          objectFit: 'contain', // Ensures video fits within container without cropping
+
+          objectPosition: 'center', // Centers the video within the container
+
           ...style
 
         }}
@@ -1157,17 +1106,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
         preload="metadata"
 
-        onError={(e) => {
-
-          console.error('Video error:', e);
-
-          console.error('Video src (original):', url);
-
-          console.error('Video src (processed):', processedUrl);
-
-          console.error('Video error details:', e.target.error);
-
-        }}
+        onError={() => {}}
 
         onLoadStart={() => {}}
         onLoadedData={() => {}}
@@ -1180,11 +1119,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   );
 
 };
-
-
-
-
-
 
 
 // Animation
@@ -5024,12 +4958,6 @@ const CourseTracking = () => {
         </Fade>
 
       </Modal>
-
-
-
-
-
-
 
       {/* Image Preview Modal */}
 
