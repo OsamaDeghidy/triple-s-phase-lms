@@ -297,7 +297,7 @@ def update_module_bunny_video(module, video_id: str) -> bool:
         
         if video_info:
             module.bunny_video_id = video_id
-            module.bunny_video_url = video_info.get('playableUrl', '')
+            # No need to store bunny_video_url anymore, we generate it from video_id
             
             # Update video duration if available
             if 'length' in video_info:
@@ -331,7 +331,7 @@ def update_lesson_bunny_video(lesson, video_id: str) -> bool:
         
         if video_info:
             lesson.bunny_video_id = video_id
-            lesson.bunny_video_url = video_info.get('playableUrl', '')
+            # No need to store bunny_video_url anymore, we generate it from video_id
             
             # Update duration if available
             if 'length' in video_info:

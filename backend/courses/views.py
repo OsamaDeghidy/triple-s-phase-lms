@@ -833,6 +833,12 @@ def course_tracking_data(request, course_id):
                 if lesson_completed:
                     completed_lessons += 1
                 
+                # Generate bunny_video_url if bunny_video_id exists
+                bunny_video_url = lesson.bunny_video_url
+                if lesson.bunny_video_id and not bunny_video_url:
+                    from content.bunny_utils import get_bunny_direct_url
+                    bunny_video_url = get_bunny_direct_url(lesson.bunny_video_id)
+                
                 module_lessons.append({
                     'id': lesson.id,
                     'title': lesson.title,
@@ -843,7 +849,7 @@ def course_tracking_data(request, course_id):
                     'completed': lesson_completed,
                     'video_url': lesson.video_url,
                     'bunny_video_id': lesson.bunny_video_id,
-                    'bunny_video_url': lesson.bunny_video_url,
+                    'bunny_video_url': bunny_video_url,
                     'content': lesson.content,
                     'resources': [
                         {

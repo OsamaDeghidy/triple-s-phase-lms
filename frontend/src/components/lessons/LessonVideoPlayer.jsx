@@ -24,7 +24,7 @@ const LessonVideoPlayer = ({ lesson }) => {
   const [open, setOpen] = useState(false);
 
   // Check if lesson has Bunny video
-  const hasBunnyVideo = lesson?.bunny_video_id && lesson?.bunny_video_url;
+  const hasBunnyVideo = lesson?.bunny_video_id;
   const hasExternalVideo = lesson?.video_url;
 
   // Generate Bunny embed URL

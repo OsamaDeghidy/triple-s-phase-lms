@@ -272,12 +272,13 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   const videoRef = React.useRef(null);
 
   // Check if lesson has Bunny CDN video
-  const hasBunnyVideo = lessonData?.bunny_video_id && lessonData?.bunny_video_url;
+  const hasBunnyVideo = lessonData?.bunny_video_id;
   
   // Get the appropriate video URL
   const getVideoUrl = () => {
     if (hasBunnyVideo) {
-      return lessonData.bunny_video_url;
+      // Generate embed URL from video ID
+      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
     }
     return url;
   };
@@ -333,7 +334,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   console.log('VideoPlayer - Processed URL:', processedUrl);
   console.log('VideoPlayer - Has Bunny Video:', hasBunnyVideo);
   console.log('VideoPlayer - Bunny Video ID:', lessonData?.bunny_video_id);
-  console.log('VideoPlayer - Bunny Video URL:', lessonData?.bunny_video_url);
 
   console.log('VideoPlayer - isValidVideoUrl:', processedUrl && (
 

@@ -24,7 +24,7 @@ const UnitVideoPlayer = ({ unit }) => {
   const [open, setOpen] = useState(false);
 
   // Check if unit has Bunny video
-  const hasBunnyVideo = unit?.bunny_video_id && unit?.bunny_video_url;
+  const hasBunnyVideo = unit?.bunny_video_id;
   const hasUploadedVideo = unit?.video;
   const hasExternalVideo = unit?.video_url;
 

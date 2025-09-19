@@ -231,7 +231,7 @@ class Module(models.Model):
     @property
     def has_bunny_video(self):
         """Check if this module has a Bunny CDN video"""
-        return bool(self.bunny_video_id and self.bunny_video_url)
+        return bool(self.bunny_video_id)
     
     @property
     def video_source(self):
@@ -245,7 +245,9 @@ class Module(models.Model):
     def get_video_url(self):
         """Get the appropriate video URL based on available sources"""
         if self.has_bunny_video:
-            return self.bunny_video_url
+            # Generate embed URL from video ID
+            from content.bunny_utils import get_bunny_embed_url
+            return get_bunny_embed_url(self.bunny_video_id)
         elif self.video:
             return self.video.url
         return None
@@ -447,7 +449,7 @@ class Lesson(models.Model):
     @property
     def has_bunny_video(self):
         """Check if this lesson has a Bunny CDN video"""
-        return bool(self.bunny_video_id and self.bunny_video_url)
+        return bool(self.bunny_video_id)
     
     @property
     def video_source(self):
@@ -461,7 +463,9 @@ class Lesson(models.Model):
     def get_video_url(self):
         """Get the appropriate video URL based on available sources"""
         if self.has_bunny_video:
-            return self.bunny_video_url
+            # Generate embed URL from video ID
+            from content.bunny_utils import get_bunny_embed_url
+            return get_bunny_embed_url(self.bunny_video_id)
         elif self.video_url:
             return self.video_url
         return None
