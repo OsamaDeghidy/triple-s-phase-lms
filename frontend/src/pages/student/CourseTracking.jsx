@@ -474,25 +474,6 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
     
     return (
       <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* External video indicator */}
-        <Box sx={{
-          position: 'absolute',
-          top: 10,
-          right: 10,
-          zIndex: 10,
-          bgcolor: isBunnyVideo ? 'rgba(76, 175, 80, 0.9)' : 'rgba(0,0,0,0.7)',
-          color: 'white',
-          px: 2,
-          py: 1,
-          borderRadius: 1,
-          fontSize: '0.75rem',
-          fontWeight: 'bold',
-          backdropFilter: 'blur(5px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-        }}>
-          {isBunnyVideo ? 'Bunny CDN' : 'فيديو خارجي'}
-        </Box>
         
         
         <iframe
@@ -504,9 +485,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
             width: '100%',
             height: '100%',
             border: 'none',
-            backgroundColor: '#000',
-            objectFit: 'contain',
-            objectPosition: 'center'
+            backgroundColor: '#000'
           }}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1060,7 +1039,7 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
           backgroundColor: '#000',
 
-          objectFit: 'contain', // Ensures video fits within container without cropping
+          objectFit: 'cover', // Ensures video covers the entire container
 
           objectPosition: 'center', // Centers the video within the container
 
