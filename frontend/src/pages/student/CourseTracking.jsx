@@ -2507,8 +2507,11 @@ const CourseTracking = () => {
             // Find video resource if no direct video_url
 
             let videoUrl = lesson.video_url;
-
-            if (!videoUrl && lesson.resources) {
+            
+            // Use bunny_video_url if available (contains token for DRM protected videos)
+            if (lesson.bunny_video_url) {
+              videoUrl = lesson.bunny_video_url;
+            } else if (!videoUrl && lesson.resources) {
 
               const videoResource = lesson.resources.find(resource =>
 
@@ -2562,7 +2565,8 @@ const CourseTracking = () => {
 
               resources: lesson.resources || [],
               
-              bunny_video_id: lesson.bunny_video_id
+              bunny_video_id: lesson.bunny_video_id,
+              bunny_video_url: lesson.bunny_video_url
 
             };
 
