@@ -278,29 +278,25 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
   const getVideoUrl = () => {
     if (hasBunnyVideo) {
       // Use the private embed URL with token from API response
-      return lessonData.bunny_video_url;
+      if (lessonData.bunny_video_url) {
+        return lessonData.bunny_video_url;
+      }
+      // Fallback: generate embed URL if bunny_video_url is not provided
+      return `https://iframe.mediadelivery.net/embed/495146/${lessonData.bunny_video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
     }
     return url;
   };
 
   // Process URL to ensure it's absolute (for videos)
   const processVideoUrl = (videoUrl) => {
-    if (!videoUrl) return null;
-
-
+    if (!videoUrl || typeof videoUrl !== 'string') return null;
 
     // If it's already a full URL, return as is
-
     if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
-
       return videoUrl;
-
     }
 
-
-
     // If it starts with /media/ or /static/, make it absolute
-
     if (videoUrl.startsWith('/media/') || videoUrl.startsWith('/static/')) {
 
       return `${API_CONFIG.baseURL}${videoUrl}`;
