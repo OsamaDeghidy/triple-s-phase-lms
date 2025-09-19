@@ -164,7 +164,12 @@ export const courseAPI = {
       } else if (key === 'materials_pdf' && courseData[key] instanceof File) {
         formData.append('materials_pdf', courseData[key]);
       } else if (courseData[key] !== null && courseData[key] !== undefined) {
-        formData.append(key, courseData[key]);
+        // Always send category field, even if empty
+        if (key === 'category') {
+          formData.append(key, courseData[key] || '');
+        } else {
+          formData.append(key, courseData[key]);
+        }
       }
     });
 
@@ -219,8 +224,13 @@ export const courseAPI = {
         formData.append('syllabus_pdf', courseData[key]);
       } else if (key === 'materials_pdf' && courseData[key] instanceof File) {
         formData.append('materials_pdf', courseData[key]);
-      } else if (courseData[key] !== null && courseData[key] !== undefined && courseData[key] !== '') {
-        formData.append(key, courseData[key]);
+      } else if (courseData[key] !== null && courseData[key] !== undefined) {
+        // Always send category field, even if empty
+        if (key === 'category') {
+          formData.append(key, courseData[key] || '');
+        } else {
+          formData.append(key, courseData[key]);
+        }
       }
     });
 
