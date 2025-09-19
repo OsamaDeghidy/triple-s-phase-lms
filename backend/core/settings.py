@@ -560,7 +560,7 @@ ADMIN_REORDER = (
 
 # Bunny CDN Settings
 # Get these values from your Bunny CDN dashboard
-BUNNY_CDN_API_KEY = 'cd50c0f1-1e99-433e-8a1a-74c049be1f9b'
+BUNNY_CDN_API_KEY = '894c88da-efc1-4e5e-914f93f0c69e-77f3-4cd4'
 BUNNY_CDN_LIBRARY_ID = '495146'
 BUNNY_CDN_TOKEN_AUTH_KEY = 'cd50c0f1-1e99-433e-8a1a-74c049be1f9b'
 
