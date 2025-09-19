@@ -95,7 +95,7 @@ class BunnyCDNClient:
         video_info = self.get_video_info(video_id)
         if video_info and 'thumbnailFileName' in video_info:
             # Construct thumbnail URL based on Bunny CDN structure
-            return f"https://iframe.mediadelivery.net/embed/{self.library_id}/{video_id}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0"
+            return f"https://iframe.mediadelivery.net/embed/{self.library_id}/{video_id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0"
         return None
 
 

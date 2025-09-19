@@ -94,7 +94,7 @@ const BunnyVideoSelector = ({
   };
 
   const generateEmbedUrl = (id) => {
-    return `https://iframe.mediadelivery.net/embed/495146/${id}?autoplay=false&loop=false&muted=false&preload=auto&responsive=true&startTime=0`;
+    return `https://iframe.mediadelivery.net/embed/495146/${id}?autoplay=false&loop=false&muted=false&responsive=true&startTime=0`;
   };
 
   const formatDuration = (seconds) => {
