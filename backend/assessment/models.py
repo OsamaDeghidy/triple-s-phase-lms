@@ -431,6 +431,13 @@ class Flashcard(models.Model):
         blank=True, null=True
     )
     
+    # Tags for categorization
+    tags = models.JSONField(
+        default=list, blank=True,
+        verbose_name=_('Tags'),
+        help_text=_('JSON array of tags for categorization')
+    )
+    
     # Media
     front_image = models.ImageField(upload_to='flashcards/front/', blank=True, null=True, verbose_name=_('Front Image'))
     back_image = models.ImageField(upload_to='flashcards/back/', blank=True, null=True, verbose_name=_('Back Image'))

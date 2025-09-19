@@ -2787,13 +2787,9 @@ const CourseTracking = () => {
 
     if (!currentLesson || !courseId) return;
 
-
-
     try {
 
       await courseAPI.markLessonCompleted(courseId, currentLesson.id);
-
-
 
       // Update local state
 
@@ -2831,8 +2827,6 @@ const CourseTracking = () => {
 
         });
 
-
-
         return {
 
           ...prevData,
@@ -2843,11 +2837,7 @@ const CourseTracking = () => {
 
       });
 
-
-
       showSnackbar('تم إكمال الدرس بنجاح!', 'success');
-
-
 
       // Auto-advance to next lesson if available
 
@@ -2870,13 +2860,11 @@ const CourseTracking = () => {
   };
 
 
-
   // Navigate to next lesson
 
   const navigateToNextLesson = () => {
 
     if (!currentLesson || !courseData) return;
-
 
 
     const currentModuleIndex = courseData.modules.findIndex(m => m.id === currentLesson.moduleId);
@@ -2886,7 +2874,6 @@ const CourseTracking = () => {
       const currentModule = courseData.modules[currentModuleIndex];
 
       const currentLessonIndex = currentModule.lessons.findIndex(l => l.id === currentLesson.id);
-
 
 
       if (currentLessonIndex < currentModule.lessons.length - 1) {
@@ -2918,13 +2905,11 @@ const CourseTracking = () => {
   };
 
 
-
   // Navigate to previous lesson
 
   const navigateToPreviousLesson = () => {
 
     if (!currentLesson || !courseData) return;
-
 
 
     const currentModuleIndex = courseData.modules.findIndex(m => m.id === currentLesson.moduleId);
@@ -2934,7 +2919,6 @@ const CourseTracking = () => {
       const currentModule = courseData.modules[currentModuleIndex];
 
       const currentLessonIndex = currentModule.lessons.findIndex(l => l.id === currentLesson.id);
-
 
 
       if (currentLessonIndex > 0) {
@@ -2965,15 +2949,11 @@ const CourseTracking = () => {
 
   };
 
-
-
   // Process file URL to ensure it's absolute
 
   const processFileUrl = (fileUrl) => {
 
     if (!fileUrl) return null;
-
-
 
     // If it's already a full URL, return as is
 
@@ -2983,8 +2963,6 @@ const CourseTracking = () => {
 
     }
 
-
-
     // If it starts with /media/ or /static/, make it absolute
 
     if (fileUrl.startsWith('/media/') || fileUrl.startsWith('/static/')) {
@@ -2992,8 +2970,6 @@ const CourseTracking = () => {
       return `${API_CONFIG.baseURL}${fileUrl}`;
 
     }
-
-
 
     // If it's a relative path, assume it's in media
 
@@ -3003,13 +2979,9 @@ const CourseTracking = () => {
 
     }
 
-
-
     return fileUrl;
 
   };
-
-
 
   // Download resource
 
@@ -3027,12 +2999,9 @@ const CourseTracking = () => {
 
       }
 
-
-
       const processedUrl = processFileUrl(fileUrl);
 
       const fileName = resource.title || resource.name || 'ملف';
-
 
 
       // Direct download for file resources
@@ -3063,8 +3032,6 @@ const CourseTracking = () => {
 
   };
 
-
-
   // Preview resource
 
   const previewResource = (resource) => {
@@ -3081,15 +3048,11 @@ const CourseTracking = () => {
 
       }
 
-
-
       const processedUrl = processFileUrl(fileUrl);
 
       const fileName = resource.title || resource.name || 'ملف';
 
       const extension = fileName.split('.').pop().toLowerCase();
-
-
 
       // For images, show in modal preview
 
@@ -3109,8 +3072,6 @@ const CourseTracking = () => {
 
       }
 
-
-
       // For PDFs, open in new tab
 
       if (extension === 'pdf') {
@@ -3122,8 +3083,6 @@ const CourseTracking = () => {
         return;
 
       }
-
-
 
       // For videos, open in new tab
 
@@ -3137,14 +3096,11 @@ const CourseTracking = () => {
 
       }
 
-
-
       // For other files, try to open in new tab
 
       window.open(processedUrl, '_blank');
 
       showSnackbar('تم فتح الملف في نافذة جديدة', 'info');
-
 
 
     } catch (error) {
@@ -3158,14 +3114,11 @@ const CourseTracking = () => {
   };
 
 
-
   // Track video progress
 
   const trackVideoProgress = async (progress) => {
 
     if (!currentLesson || !courseId) return;
-
-
 
     try {
 
@@ -3190,14 +3143,11 @@ const CourseTracking = () => {
   };
 
 
-
   // Handle video progress with throttling
 
   const handleProgressWithTracking = (state) => {
 
     setVideoProgress(state.playedSeconds);
-
-
 
     // Track progress every 10 seconds or when video ends
 
@@ -3219,17 +3169,11 @@ const CourseTracking = () => {
 
   };
 
-
-
-
-
   const toggleSidebarExpand = () => {
 
     setIsSidebarExpanded(!isSidebarExpanded);
 
   };
-
-
 
   // Snackbar handlers
 
@@ -3246,7 +3190,6 @@ const CourseTracking = () => {
   };
 
 
-
   const showSnackbar = (message, severity = 'info') => {
 
     setSnackbarMessage(message);
@@ -3256,15 +3199,6 @@ const CourseTracking = () => {
     setSnackbarOpen(true);
 
   };
-
-
-
-
-
-
-
-
-
 
 
   const toggleBookmark = (lessonId) => {
@@ -3278,7 +3212,6 @@ const CourseTracking = () => {
     }));
 
   };
-
 
 
   if (isLoading) {
@@ -3306,7 +3239,6 @@ const CourseTracking = () => {
     );
 
   }
-
 
 
   if (error) {
@@ -3357,8 +3289,6 @@ const CourseTracking = () => {
 
   }
 
-
-
   if (!courseId) {
 
     return (
@@ -3407,8 +3337,6 @@ const CourseTracking = () => {
 
   }
 
-
-
   if (!courseData) {
 
     return (
@@ -3434,7 +3362,6 @@ const CourseTracking = () => {
     );
 
   }
-
 
 
   return (

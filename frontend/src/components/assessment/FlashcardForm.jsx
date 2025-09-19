@@ -479,7 +479,7 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
                     <MenuItem value="">لا يوجد ربط</MenuItem>
                     {lessons.map((lesson) => (
                       <MenuItem key={lesson.id} value={lesson.id}>
-                        {lesson.title} - {lesson.module?.name}
+                        {lesson.title} - {lesson.module?.title || lesson.module?.name || 'بدون وحدة'}
                       </MenuItem>
                     ))}
                   </Select>
@@ -530,7 +530,7 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
               
               <Grid container spacing={6}>
                 {/* Front Side */}
-                <Grid item xs={12} lg={6} sx={{ 
+                <Grid size={{ xs: 12, lg: 6 }} sx={{ 
                   '&.MuiGrid-root': {
                     width: '520px'
                   }
@@ -616,7 +616,7 @@ const FlashcardForm = ({ open, onClose, flashcard = null, onSuccess }) => {
                 </Grid>
 
                 {/* Back Side */}
-                <Grid item xs={12} lg={6} sx={{ 
+                <Grid size={{ xs: 12, lg: 6 }} sx={{ 
                   '&.MuiGrid-root': {
                     width: '520px'
                   }

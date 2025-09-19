@@ -299,7 +299,7 @@ const FlashcardManager = () => {
   const LoadingSkeleton = () => (
     <Grid container spacing={3}>
       {[...Array(6)].map((_, index) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
           <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 2 }} />
         </Grid>
       ))}
@@ -384,7 +384,7 @@ const FlashcardManager = () => {
         <Container sx={{ py: 4 }}>
           <Grid container spacing={3}>
             {[1, 2, 3, 4, 5, 6].map((item) => (
-              <Grid item xs={12} md={6} key={item}>
+              <Grid size={{ xs: 12, md: 6 }} key={item}>
                 <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 3, mb: 2 }} />
                 <Skeleton variant="text" height={24} sx={{ mb: 1 }} />
                 <Skeleton variant="text" height={20} width="60%" sx={{ mb: 1 }} />
@@ -619,11 +619,11 @@ const FlashcardManager = () => {
             <EmptyState />
           ) : (
             <>
-              {/* Flashcards Grid - Full Width */}
+              {/* Flashcards Grid - Side by Side */}
               <Grid container spacing={3}>
                 <AnimatePresence>
                   {flashcards.map((flashcard) => (
-                    <Grid item xs={12} key={flashcard.id}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={flashcard.id}>
                       <FlashcardCard
                         flashcard={flashcard}
                         onEdit={handleOpenDialog}

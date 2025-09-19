@@ -350,12 +350,11 @@ class AssessmentService {
 
   /**
    * Get lessons for question assignment
-   * @param {string|number} courseId - Optional course ID to filter lessons
+   * @param {Object} params - Query parameters including courseId, page_size, etc.
    * @returns {Promise<Object>} Lessons data
    */
-  async getLessons(courseId = null) {
+  async getLessons(params = {}) {
     try {
-      const params = courseId ? { course: courseId } : {};
       const response = await api.get(ASSESSMENT_API.LESSONS, { params });
       return {
         success: true,

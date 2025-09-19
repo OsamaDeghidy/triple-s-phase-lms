@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Grid, Avatar, LinearProgress, useTheme, Chip, Skeleton, Card, CardContent, IconButton, Tabs, Tab } from '@mui/material';
+import { Box, Typography, Button, Grid, Avatar, LinearProgress, useTheme, Chip, Skeleton, Card, CardContent, IconButton, Tabs, Tab, Dialog, DialogContent } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
   School as SchoolIcon,
@@ -19,12 +19,14 @@ import {
   CalendarToday as CalendarIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import dashboardService from '../../services/dashboard.service';
 import { contentAPI } from '../../services/content.service';
+import CourseDetails from '../courses/CourseDetails';
 
 // Animation variants
 const container = {
@@ -64,6 +66,8 @@ const StudentDashboard = () => {
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
   const [upcomingLectures, setUpcomingLectures] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -194,6 +198,16 @@ const StudentDashboard = () => {
 
   const handleCourseView = (courseId) => {
     navigate(`/courses/${courseId}`);
+  };
+
+  const handleCourseDetails = (course) => {
+    setSelectedCourse(course);
+    setCourseDetailsOpen(true);
+  };
+
+  const handleCloseCourseDetails = () => {
+    setCourseDetailsOpen(false);
+    setSelectedCourse(null);
   };
 
   const formatGrade = (grade) => {
@@ -676,25 +690,53 @@ const StudentDashboard = () => {
                                   </Box>
                                 </Box>
 
-                                {/* Continue button */}
-                                <Button
-                                  variant="contained"
-                                  size="small"
-                                  sx={{
-                                    background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                                    borderRadius: 2,
-                                    px: 2,
-                                    py: 0.5,
-                                    fontSize: '0.8rem',
-                                    fontWeight: 600,
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                      background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                                    }
-                                  }}
-                                >
-                                  متابعة
-                                </Button>
+                                {/* Action buttons */}
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    startIcon={<VisibilityIcon />}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCourseDetails(course);
+                                    }}
+                                    sx={{
+                                      borderRadius: 2,
+                                      px: 2,
+                                      py: 0.5,
+                                      fontSize: '0.8rem',
+                                      fontWeight: 600,
+                                      textTransform: 'none',
+                                      borderColor: '#333679',
+                                      color: '#333679',
+                                      '&:hover': {
+                                        borderColor: '#1a6ba8',
+                                        color: '#1a6ba8',
+                                        background: 'rgba(51, 54, 121, 0.04)'
+                                      }
+                                    }}
+                                  >
+                                    التفاصيل
+                                  </Button>
+                                  <Button
+                                    variant="contained"
+                                    size="small"
+                                    sx={{
+                                      background: 'linear-gradient(45deg, #333679, #1a6ba8)',
+                                      borderRadius: 2,
+                                      px: 2,
+                                      py: 0.5,
+                                      fontSize: '0.8rem',
+                                      fontWeight: 600,
+                                      textTransform: 'none',
+                                      '&:hover': {
+                                        background: 'linear-gradient(45deg, #1a6ba8, #333679)',
+                                      }
+                                    }}
+                                  >
+                                    متابعة
+                                  </Button>
+                                </Box>
                               </Box>
                             </CardContent>
                           </Card>
@@ -905,6 +947,36 @@ const StudentDashboard = () => {
           </Card>
         </motion.div>
       </motion.div>
+
+      {/* Course Details Dialog */}
+      <Dialog
+        open={courseDetailsOpen}
+        onClose={handleCloseCourseDetails}
+        maxWidth="md"
+        fullWidth
+        fullScreen={false}
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: 3,
+            height: '70vh',
+            maxHeight: '70vh',
+            width: '80vw',
+            maxWidth: '800px',
+            margin: 2,
+            display: 'flex',
+            flexDirection: 'column'
+          }
+        }}
+      >
+        <DialogContent sx={{ p: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {selectedCourse && (
+            <CourseDetails
+              course={selectedCourse}
+              onClose={handleCloseCourseDetails}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

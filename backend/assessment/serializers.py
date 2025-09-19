@@ -136,12 +136,16 @@ class FlashcardSerializer(serializers.ModelSerializer):
     
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
     related_question_text = serializers.CharField(source='related_question.question_text', read_only=True)
+    lesson_title = serializers.CharField(source='lesson.title', read_only=True)
+    course_title = serializers.CharField(source='lesson.module.course.title', read_only=True)
+    module_title = serializers.CharField(source='lesson.module.title', read_only=True)
     
     class Meta:
         model = Flashcard
         fields = [
             'id', 'front_text', 'back_text', 'related_question',
-            'related_question_text', 'front_image', 'back_image',
+            'related_question_text', 'lesson', 'lesson_title', 
+            'course_title', 'module_title', 'tags', 'front_image', 'back_image',
             'created_by', 'created_by_name', 'created_at', 'updated_at'
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']

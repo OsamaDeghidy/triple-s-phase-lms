@@ -476,7 +476,7 @@ class FlashcardViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['created_by']
+    filterset_fields = ['created_by', 'lesson']
     search_fields = ['front_text', 'back_text']
     ordering_fields = ['created_at']
     ordering = ['-created_at']
@@ -492,7 +492,7 @@ class FlashcardViewSet(viewsets.ModelViewSet):
                 related_question__assessment_questions__assessment__status='published'
             ).distinct()
         
-        return queryset.select_related('created_by', 'related_question')
+        return queryset.select_related('created_by', 'related_question', 'lesson', 'lesson__module', 'lesson__module__course')
     
     def perform_create(self, serializer):
         """Set the creator when creating a flashcard"""
