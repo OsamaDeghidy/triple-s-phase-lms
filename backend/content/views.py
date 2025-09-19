@@ -181,6 +181,20 @@ class ModuleViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         """Create a new module with better error handling"""
         try:
+            # Check for duplicate order within the same course
+            course_id = request.data.get('course')
+            order = request.data.get('order')
+            
+            if course_id and order:
+                existing_module = Module.objects.filter(course_id=course_id, order=order).first()
+                if existing_module:
+                    return Response({
+                        'error': 'بيانات غير صحيحة',
+                        'details': {
+                            'non_field_errors': ['الحقول course, order يجب أن تشكل مجموعة فريدة.']
+                        }
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
                 self.perform_create(serializer)

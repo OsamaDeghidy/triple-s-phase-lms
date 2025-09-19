@@ -215,8 +215,23 @@ const CreateUnit = () => {
         const mainModules = items.filter(m => !m.is_submodule);
         setModules(mainModules);
         
-        const maxOrder = items.reduce((max, m) => (typeof m.order === 'number' && m.order > max ? m.order : max), 0);
-        setUnitData(prev => ({ ...prev, order: maxOrder + 1 }));
+        // Get all existing orders for this course
+        const existingOrders = items
+          .filter(m => typeof m.order === 'number' && m.order > 0)
+          .map(m => m.order)
+          .sort((a, b) => b - a); // Sort descending
+        
+        // Find the next available order
+        let nextOrder = 1;
+        for (const order of existingOrders) {
+          if (order === nextOrder) {
+            nextOrder++;
+          } else {
+            break;
+          }
+        }
+        
+        setUnitData(prev => ({ ...prev, order: nextOrder }));
       } catch (e) {
         setLoadError('تعذر تحميل ترتيب الوحدة التالي');
       }
@@ -311,11 +326,27 @@ const CreateUnit = () => {
       console.error('Error creating module:', error);
       let serverMsg = 'تعذر حفظ الوحدة. برجاء التحقق من الحقول.';
       try {
-        if (typeof error?.response?.data === 'string') serverMsg = error.response.data;
-        else if (error?.response?.data?.detail) serverMsg = error.response.data.detail;
-        else if (error?.response?.data?.error) serverMsg = error.response.data.error;
+        if (typeof error?.response?.data === 'string') {
+          serverMsg = error.response.data;
+        } else if (error?.response?.data?.detail) {
+          serverMsg = error.response.data.detail;
+        } else if (error?.response?.data?.error) {
+          serverMsg = error.response.data.error;
+        } else if (error?.response?.data?.details?.non_field_errors) {
+          serverMsg = error.response.data.details.non_field_errors[0] || serverMsg;
+        } else if (error?.response?.data?.non_field_errors) {
+          serverMsg = error.response.data.non_field_errors[0] || serverMsg;
+        }
       } catch {}
+      
       setSubmitError(serverMsg);
+      
+      // Show error in snackbar for better visibility
+      setSnackbar({
+        open: true,
+        message: serverMsg,
+        severity: 'error'
+      });
     } finally {
       setSubmitting(false);
     }

@@ -3,10 +3,14 @@ import api from './api.service';
 // Content (Modules/Lessons) API service
 export const contentAPI = {
   // Modules
-  getModules: async (courseId) => {
-    const response = await api.get('/api/content/modules/', {
-      params: { course_id: courseId, course: courseId }, // backend uses course_id; include course just in case
-    });
+  getModules: async (courseId, params = {}) => {
+    const queryParams = { 
+      course_id: courseId, 
+      course: courseId, // backend uses course_id; include course just in case
+      page_size: 1000, // Get all modules to avoid pagination issues
+      ...params 
+    };
+    const response = await api.get('/api/content/modules/', { params: queryParams });
     return response.data;
   },
 
