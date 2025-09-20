@@ -3,19 +3,12 @@ import { Box, Typography, Button, Grid, Avatar, LinearProgress, useTheme, Chip, 
 import { alpha } from '@mui/material/styles';
 import {
   School as SchoolIcon,
-  Assignment as AssignmentIcon,
   Event as EventIcon,
-  Grade as GradeIcon,
   MenuBook as MenuBookIcon,
-  Quiz as QuizIcon,
-  EmojiEvents as BadgeIcon,
-  Star as StarIcon,
-  TrendingUp as TrendingUpIcon,
   CheckCircle as CheckCircleIcon,
   PlayArrow as PlayArrowIcon,
   VideoLibrary as VideoLibraryIcon,
   AttachMoney as MoneyIcon,
-  Schedule as ScheduleIcon,
   CalendarToday as CalendarIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
@@ -52,26 +45,54 @@ const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [stats, setStats] = useState({
     enrolledCourses: 0,
-    completedLessons: 0,
-    pendingAssignments: 0,
-    averageGrade: 0,
-    totalPoints: 0,
-    learningStreak: 0,
-    certificates: 0
+    completedLessons: 0
   });
   const [courses, setCourses] = useState([]);
   const [achievements, setAchievements] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
-  const [upcomingAssignments, setUpcomingAssignments] = useState([]);
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
   const [upcomingLectures, setUpcomingLectures] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     loadDashboardData();
+    loadUserName();
   }, []);
+
+  const loadUserName = () => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        // Try different possible name fields in order of preference
+        let name = '';
+        
+        if (user.first_name && user.last_name) {
+          name = `${user.first_name} ${user.last_name}`;
+        } else if (user.first_name) {
+          name = user.first_name;
+        } else if (user.name) {
+          name = user.name;
+        } else if (user.username) {
+          name = user.username;
+        } else if (user.email) {
+          name = user.email.split('@')[0];
+        } else {
+          name = 'طالب';
+        }
+        
+        setUserName(name);
+      } else {
+        setUserName('طالب');
+      }
+    } catch (error) {
+      console.error('Error loading user name:', error);
+      setUserName('طالب');
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -83,18 +104,22 @@ const StudentDashboard = () => {
         coursesData,
         achievementsData,
         activityData,
-        assignmentsData,
         meetingsData
       ] = await Promise.all([
         dashboardService.getStudentStats(),
         dashboardService.getStudentCourses(),
         dashboardService.getAchievements(),
         dashboardService.getRecentActivity(),
-        dashboardService.getUpcomingAssignments(),
         dashboardService.getUpcomingMeetings()
       ]);
 
-      setStats(statsData);
+      // استخدام البيانات الحقيقية من الـ API
+      const enhancedStats = {
+        completedLessons: statsData.completedLessons || 0,
+        enrolledCourses: statsData.enrolledCourses || 0
+      };
+      
+      setStats(enhancedStats);
 
       // Set loading state for courses
       setCoursesLoading(true);
@@ -180,7 +205,6 @@ const StudentDashboard = () => {
 
       setAchievements(mockAchievements);
       setRecentActivity(activityData);
-      setUpcomingAssignments(assignmentsData);
       setUpcomingMeetings(meetingsData);
 
       // Set empty array for lectures if no data from API
@@ -210,23 +234,6 @@ const StudentDashboard = () => {
     setSelectedCourse(null);
   };
 
-  const formatGrade = (grade) => {
-    if (grade >= 90) return 'A+';
-    if (grade >= 85) return 'A';
-    if (grade >= 80) return 'B+';
-    if (grade >= 75) return 'B';
-    if (grade >= 70) return 'C+';
-    if (grade >= 65) return 'C';
-    if (grade >= 60) return 'D+';
-    return 'D';
-  };
-
-  const getGradeColor = (grade) => {
-    if (grade >= 80) return 'success';
-    if (grade >= 70) return 'info';
-    if (grade >= 60) return 'warning';
-    return 'error';
-  };
 
   const formatDate = (date) => {
     return new Intl.DateTimeFormat('en-GB', {
@@ -235,6 +242,7 @@ const StudentDashboard = () => {
       day: 'numeric'
     }).format(date);
   };
+
 
   const getDayName = (date) => {
     const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -282,7 +290,7 @@ const StudentDashboard = () => {
                 display: 'inline-block'
               }}
             >
-              مرحباً بك، محمد! 👋
+              مرحباً بك، {userName}! 👋
             </Typography>
           </motion.div>
           <motion.div variants={item}>
@@ -387,104 +395,6 @@ const StudentDashboard = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          background: '#333679',
-                          color: 'white',
-                          '& svg': {
-                            fontSize: '1.5rem'
-                          }
-                        }}
-                      >
-                        <AssignmentIcon />
-                      </Box>
-                      <Box>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
-                          الواجبات المعلقة
-                        </Typography>
-                        <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
-                          {stats.pendingAssignments || 0}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <motion.div variants={item}>
-                <Card
-                  sx={{
-                    height: 100,
-                    borderRadius: 3,
-                    background: 'white',
-                    border: 'none',
-                    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
-                    },
-                    transition: 'all 0.3s ease',
-                  }}
-                >
-                  <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box
-                        sx={{
-                          width: 45,
-                          height: 45,
-                          borderRadius: 2,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: '#ff9800',
-                          color: 'white',
-                          '& svg': {
-                            fontSize: '1.5rem'
-                          }
-                        }}
-                      >
-                        <GradeIcon />
-                      </Box>
-                      <Box>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
-                          المعدل الحالي
-                        </Typography>
-                        <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
-                          {formatGrade(stats.averageGrade || 0)}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <motion.div variants={item}>
-                <Card
-                  sx={{
-                    height: 100,
-                    borderRadius: 3,
-                    background: 'white',
-                    border: 'none',
-                    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
-                    },
-                    transition: 'all 0.3s ease',
-                  }}
-                >
-                  <CardContent sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box
-                        sx={{
-                          width: 45,
-                          height: 45,
-                          borderRadius: 2,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
                           background: '#4caf50',
                           color: 'white',
                           '& svg': {
@@ -492,14 +402,14 @@ const StudentDashboard = () => {
                           }
                         }}
                       >
-                        <StarIcon />
+                        <MenuBookIcon />
                       </Box>
                       <Box>
                         <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 0.5 }}>
-                          النقاط المكتسبة
+                          الدروس المكتملة
                         </Typography>
                         <Typography variant="h4" fontWeight={700} sx={{ color: '#333', lineHeight: 1 }}>
-                          {(stats.totalPoints || 0).toLocaleString()}
+                          {stats.completedLessons || 0}
                         </Typography>
                       </Box>
                     </Box>
@@ -507,7 +417,10 @@ const StudentDashboard = () => {
                 </Card>
               </motion.div>
             </Grid>
-          </Grid>
+
+
+
+            </Grid>
         </Box>
 
         {/* Main Content with Tabs */}
@@ -669,29 +582,8 @@ const StudentDashboard = () => {
                                 />
                               </Box>
 
-                              {/* Course stats */}
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Box sx={{ display: 'flex', gap: 3 }}>
-                                  <Box sx={{ textAlign: 'center' }}>
-                                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
-                                      الأسئلة
-                                    </Typography>
-                                    <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
-                                      {course.question_count !== undefined ? course.question_count : '...'}
-                                    </Typography>
-                                  </Box>
-                                  <Box sx={{ textAlign: 'center' }}>
-                                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.75rem', mb: 0.5 }}>
-                                      البطاقات التعليمية
-                                    </Typography>
-                                    <Typography variant="body2" fontWeight={600} sx={{ color: '#333', fontSize: '0.85rem' }}>
-                                      {course.flashcard_count !== undefined ? course.flashcard_count : '...'}
-                                    </Typography>
-                                  </Box>
-                                </Box>
-
-                                {/* Action buttons */}
-                                <Box sx={{ display: 'flex', gap: 1 }}>
+                              {/* Action buttons */}
+                              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                                   <Button
                                     variant="outlined"
                                     size="small"
@@ -737,7 +629,6 @@ const StudentDashboard = () => {
                                     متابعة
                                   </Button>
                                 </Box>
-                              </Box>
                             </CardContent>
                           </Card>
                         </motion.div>

@@ -53,33 +53,24 @@ const CourseDetails = ({ course, onClose }) => {
       try {
         const lessonsData = await contentAPI.getCourseModulesWithLessons(course.id);
         console.log('Lessons data:', lessonsData);
-        const allLessons = lessonsData?.results?.flatMap(module => 
+        
+        // Process the API response correctly
+        const allLessons = lessonsData?.modules?.flatMap(module => 
           module.lessons?.map(lesson => ({
             ...lesson,
             module_title: module.title
           })) || []
         ) || [];
+        
         setLessons(allLessons);
         console.log('Processed lessons:', allLessons);
       } catch (err) {
         console.error('Error loading lessons:', err);
-        // Add mock data for testing
-        setLessons([
-          {
-            id: 1,
-            title: 'مقدمة في البرمجة',
-            module_title: 'الوحدة الأولى',
-            duration: '30 دقيقة',
-            is_completed: false
-          },
-          {
-            id: 2,
-            title: 'أساسيات JavaScript',
-            module_title: 'الوحدة الأولى',
-            duration: '45 دقيقة',
-            is_completed: true
-          }
-        ]);
+        setLessons([]);
+        // Show error message to user
+        console.warn('فشل في تحميل الدروس. تأكد من أنك مسجل في المقرر.');
+      } finally {
+        setLoading(prev => ({ ...prev, lessons: false }));
       }
 
       // Load questions
@@ -87,24 +78,27 @@ const CourseDetails = ({ course, onClose }) => {
       try {
         const questionsData = await contentAPI.getCourseQuestionBank(course.id);
         console.log('Questions data:', questionsData);
-        setQuestions(questionsData?.results || questionsData || []);
+        
+        // Process the API response correctly - flatten all questions from all modules and lessons
+        const allQuestions = questionsData?.modules?.flatMap(module => 
+          module.lessons?.flatMap(lesson => 
+            lesson.questions?.map(question => ({
+              ...question,
+              question_text: question.question,
+              lesson_title: lesson.title,
+              module_title: module.name
+            })) || []
+          ) || []
+        ) || [];
+        
+        setQuestions(allQuestions);
+        console.log('Processed questions:', allQuestions);
       } catch (err) {
         console.error('Error loading questions:', err);
-        // Add mock data for testing
-        setQuestions([
-          {
-            id: 1,
-            question_text: 'ما هي لغة البرمجة المستخدمة في تطوير الويب؟',
-            difficulty_level: 'easy',
-            question_type: 'mcq'
-          },
-          {
-            id: 2,
-            question_text: 'اشرح مفهوم الـ DOM في JavaScript',
-            difficulty_level: 'medium',
-            question_type: 'essay'
-          }
-        ]);
+        setQuestions([]);
+        console.warn('فشل في تحميل الأسئلة. تأكد من أنك مسجل في المقرر.');
+      } finally {
+        setLoading(prev => ({ ...prev, questions: false }));
       }
 
       // Load flashcards
@@ -112,33 +106,32 @@ const CourseDetails = ({ course, onClose }) => {
       try {
         const flashcardsData = await contentAPI.getCourseFlashcards(course.id);
         console.log('Flashcards data:', flashcardsData);
-        setFlashcards(flashcardsData?.results || flashcardsData || []);
+        
+        // Process the API response correctly - flatten all flashcards from all modules and lessons
+        const allFlashcards = flashcardsData?.modules?.flatMap(module => 
+          module.lessons?.flatMap(lesson => 
+            lesson.flashcards?.map(flashcard => ({
+              ...flashcard,
+              front_text: flashcard.front,
+              back_text: flashcard.back,
+              lesson_title: lesson.title,
+              module_title: module.name
+            })) || []
+          ) || []
+        ) || [];
+        
+        setFlashcards(allFlashcards);
+        console.log('Processed flashcards:', allFlashcards);
       } catch (err) {
         console.error('Error loading flashcards:', err);
-        // Add mock data for testing
-        setFlashcards([
-          {
-            id: 1,
-            front_text: 'ما هي لغة البرمجة المستخدمة في تطوير الويب؟',
-            lesson_title: 'مقدمة في البرمجة'
-          },
-          {
-            id: 2,
-            front_text: 'ما هو الـ DOM؟',
-            lesson_title: 'أساسيات JavaScript'
-          }
-        ]);
+        setFlashcards([]);
+        console.warn('فشل في تحميل البطاقات التعليمية. تأكد من أنك مسجل في المقرر.');
+      } finally {
+        setLoading(prev => ({ ...prev, flashcards: false }));
       }
 
     } catch (error) {
       console.error('Error loading course data:', error);
-    } finally {
-      setLoading(prev => ({ 
-        ...prev, 
-        lessons: false, 
-        questions: false, 
-        flashcards: false 
-      }));
     }
   };
 
@@ -147,26 +140,26 @@ const CourseDetails = ({ course, onClose }) => {
   };
 
   const formatDuration = (duration) => {
-    if (!duration) return 'غير محدد';
+    if (!duration) return '0د';
     return duration;
   };
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy': return 'success';
-      case 'medium': return 'warning';
-      case 'hard': return 'error';
-      default: return 'default';
-    }
+  const getDifficultyLabel = (level) => {
+    const labels = {
+      'easy': 'سهل',
+      'medium': 'متوسط',
+      'hard': 'صعب'
+    };
+    return labels[level] || 'غير محدد';
   };
 
-  const getDifficultyLabel = (difficulty) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy': return 'سهل';
-      case 'medium': return 'متوسط';
-      case 'hard': return 'صعب';
-      default: return 'غير محدد';
-    }
+  const getDifficultyColor = (level) => {
+    const colors = {
+      'easy': 'success',
+      'medium': 'warning',
+      'hard': 'error'
+    };
+    return colors[level] || 'default';
   };
 
   if (!course) return null;
@@ -214,6 +207,23 @@ const CourseDetails = ({ course, onClose }) => {
               <Typography variant="caption" sx={{ opacity: 0.9 }}>
                 {course.description || 'لا يوجد وصف متاح'}
               </Typography>
+              <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                  {lessons.length} درس
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                  •
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                  {questions.length} سؤال
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                  •
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                  {flashcards.length} بطاقة
+                </Typography>
+              </Box>
             </Box>
             <IconButton
               onClick={onClose}
@@ -367,9 +377,15 @@ const CourseDetails = ({ course, onClose }) => {
                   ))}
                 </Box>
               ) : (
-                <Alert severity="info" sx={{ borderRadius: 2 }}>
-                  لا توجد دروس متاحة لهذا المقرر
-                </Alert>
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <MenuBookIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                    لا توجد دروس متاحة
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    لم يتم إضافة أي دروس لهذا المقرر بعد
+                  </Typography>
+                </Box>
               )}
             </Box>
           )}
@@ -472,9 +488,15 @@ const CourseDetails = ({ course, onClose }) => {
                   ))}
                 </Box>
               ) : (
-                <Alert severity="info" sx={{ borderRadius: 2 }}>
-                  لا توجد أسئلة متاحة لهذا المقرر
-                </Alert>
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <QuizIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                    لا توجد أسئلة متاحة
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    لم يتم إضافة أي أسئلة لهذا المقرر بعد
+                  </Typography>
+                </Box>
               )}
             </Box>
           )}
@@ -566,9 +588,15 @@ const CourseDetails = ({ course, onClose }) => {
                   ))}
                 </Box>
               ) : (
-                <Alert severity="info" sx={{ borderRadius: 2 }}>
-                  لا توجد بطاقات تعليمية متاحة لهذا المقرر
-                </Alert>
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <PsychologyIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                    لا توجد بطاقات تعليمية متاحة
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    لم يتم إضافة أي بطاقات تعليمية لهذا المقرر بعد
+                  </Typography>
+                </Box>
               )}
             </Box>
           )}

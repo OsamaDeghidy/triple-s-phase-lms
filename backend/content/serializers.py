@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Count, Avg, Sum, Max
+from django.db import models
 from django.utils import timezone
 from courses.models import Course, Enrollment
 from content.models import Module, UserProgress, ModuleProgress, Lesson, LessonResource
@@ -79,13 +80,26 @@ class ModuleCreateSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id']
 
+    def create(self, validated_data):
+        # Auto-assign order if not provided or conflicts
+        if 'order' not in validated_data or validated_data.get('order') in [None, 0]:
+            course = validated_data['course']
+            max_order = Module.objects.filter(course=course).aggregate(
+                max_order=models.Max('order')
+            )['max_order'] or 0
+            validated_data['order'] = max_order + 1
+        
+        return super().create(validated_data)
+
     def validate(self, data):
-        # Ensure order is unique for the course
+        # Auto-assign order if not provided or if it conflicts
         if 'order' in data and 'course' in data:
             if Module.objects.filter(course=data['course'], order=data['order']).exists():
-                raise serializers.ValidationError({
-                    'order': 'A module with this order already exists for this course.'
-                })
+                # Find the next available order
+                max_order = Module.objects.filter(course=data['course']).aggregate(
+                    max_order=models.Max('order')
+                )['max_order'] or 0
+                data['order'] = max_order + 1
         
         # Validate submodule belongs to the same course
         if data.get('submodule') and data.get('course'):
