@@ -7,7 +7,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('courses', '0002_course_bunny_promotional_video_id_course_bunny_promotional_video_url'),
-        ('courses', '0007_course_bunny_promotional_video_id_and_more'),
     ]
 
     operations = [

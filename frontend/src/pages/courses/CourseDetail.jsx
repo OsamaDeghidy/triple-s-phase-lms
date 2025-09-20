@@ -1313,6 +1313,7 @@ const CourseDetail = () => {
                                     course={course}
                                     setShowReviewForm={setShowReviewForm}
                                     handleLikeReview={handleLikeReview}
+                                    isAuthenticated={isAuthenticated}
                                 />
                             )}
                         </Box>
@@ -1417,8 +1418,13 @@ const CourseDetail = () => {
                             endIcon={submittingReview ? <CircularProgress size={20} color="inherit" /> : null}
                             sx={{
                                 background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
+                                color: 'white',
                                 '&:hover': {
                                     background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
+                                    color: 'white',
+                                },
+                                '&:disabled': {
+                                    color: 'white',
                                 },
                                 borderRadius: 2,
                                 textTransform: 'none',

@@ -29,6 +29,24 @@ const CourseDetailCard = ({
         return null;
     }
 
+    // Helper function to get course image URL with fallback
+    const getCourseImageUrl = () => {
+        console.log('CourseDetailCard - Course data:', {
+            bannerImage: course?.bannerImage,
+            thumbnail: course?.thumbnail,
+            title: course?.title
+        });
+
+        if (course?.bannerImage && course.bannerImage !== 'https://source.unsplash.com/random/1600x500?programming,react') {
+            return course.bannerImage;
+        }
+        if (course?.thumbnail && course.thumbnail !== 'https://source.unsplash.com/random/1600x500?programming,react') {
+            return course.thumbnail;
+        }
+        // Fallback to default image
+        return '/src/assets/images/coursedetailMGE.jpeg';
+    };
+
     return (
         <>
             {/* Desktop Layout - Complete Course Detail Page */}
@@ -168,7 +186,7 @@ const CourseDetailCard = ({
                                                     wordBreak: 'break-word'
                                                 }}
                                             >
-                                                أكاديمية الثلاثي 8
+                                                Triple s Academy
                                             </Typography>
                                             <Typography
                                                 sx={{
@@ -222,14 +240,14 @@ const CourseDetailCard = ({
                                         >
                                             <Typography
                                                 sx={{
-                                                    color: '#000',
+                                                    color: '#ffffff',
                                                     fontSize: { md: '24px', lg: '30px', xl: '36px' },
                                                     fontWeight: 'bold',
                                                     fontFamily: 'monospace',
                                                     textShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                                 }}
                                             >
-                                                JS
+                                                SSS
                                             </Typography>
                                         </Box>
 
@@ -294,7 +312,7 @@ const CourseDetailCard = ({
                                             left: 0,
                                             right: 0,
                                             bottom: 0,
-                                            background: 'url(/src/assets/images/coursedetailMGE.jpeg)',
+                                            backgroundImage: `url(${getCourseImageUrl()})`,
                                             backgroundSize: 'cover',
                                             backgroundPosition: 'center',
                                             backgroundRepeat: 'no-repeat',
@@ -327,7 +345,7 @@ const CourseDetailCard = ({
                                                 left: 0,
                                                 right: 0,
                                                 bottom: 0,
-                                                background: 'url(/src/assets/images/coursedetailMGE.jpeg)',
+                                                backgroundImage: `url(${getCourseImageUrl()})`,
                                                 backgroundSize: 'cover',
                                                 backgroundPosition: 'center',
                                                 backgroundRepeat: 'no-repeat',
@@ -360,7 +378,9 @@ const CourseDetailCard = ({
                                                     letterSpacing: '1px'
                                                 }}
                                             >
-                                                دورة للمبتدئين
+                                                {course?.level === 'beginner' ? 'دورة للمبتدئين' :
+                                                    course?.level === 'intermediate' ? 'دورة للمتوسطين' :
+                                                        course?.level === 'advanced' ? 'دورة للمتقدمين' : 'دورة للمبتدئين'}
                                             </Typography>
                                         </Box>
 
@@ -465,7 +485,7 @@ const CourseDetailCard = ({
                                                 lg: '150px',
                                                 xl: '160px'
                                             },
-                                            backgroundImage: 'url(/src/assets/images/coursedetailMGE.jpeg)',
+                                            backgroundImage: `url(${getCourseImageUrl()})`,
                                             backgroundSize: 'cover',
                                             backgroundPosition: 'center',
                                             backgroundRepeat: 'no-repeat',
@@ -612,7 +632,7 @@ const CourseDetailCard = ({
                                                     fontSize: { xs: '11px', sm: '12px', md: '13px', lg: '14px', xl: '15px' },
                                                     fontWeight: 500
                                                 }}>
-                                                    <span style={{ color: '#666' }}>الفيديوهات:</span> <span style={{ color: '#4DBFB3', fontWeight: 'bold' }}>{course?.videoCount || '14'}</span>
+                                                    <span style={{ color: '#666' }}>الفيديوهات:</span> <span style={{ color: '#4DBFB3', fontWeight: 'bold' }}>{course?.lectures || '14'}</span>
                                                 </Typography>
                                             </Box>
 

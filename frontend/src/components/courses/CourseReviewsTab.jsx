@@ -33,7 +33,8 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 const CourseReviewsTab = ({
     course,
     setShowReviewForm,
-    handleLikeReview
+    handleLikeReview,
+    isAuthenticated
 }) => {
     const theme = useTheme();
 
@@ -72,31 +73,45 @@ const CourseReviewsTab = ({
                             sx={{ mr: 1.25 }}
                         />
                         <Typography variant="body1" color="text.secondary" sx={{ ml: 0.5 }}>
-                            تقييم الدورة • {course.reviews?.length || 0} تقييم
+                            تقييم الدورة • {course.courseReviews?.length || 0} تقييم
                         </Typography>
                     </Box>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<DescriptionOutlined />}
-                    onClick={() => setShowReviewForm(true)}
-                    sx={{
-                        borderRadius: 3,
-                        px: 4,
-                        py: 1.5,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
-                        boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)',
-                        '&:hover': {
-                            background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
-                            boxShadow: '0 12px 35px rgba(14, 81, 129, 0.3)',
-                            transform: 'translateY(-2px)'
-                        }
-                    }}
-                >
-                    كتابة تقييم
-                </Button>
+                {isAuthenticated ? (
+                    <Button
+                        variant="contained"
+                        startIcon={<DescriptionOutlined />}
+                        onClick={() => setShowReviewForm(true)}
+                        sx={{
+                            borderRadius: 3,
+                            px: 4,
+                            py: 1.5,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
+                            boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
+                                boxShadow: '0 12px 35px rgba(14, 81, 129, 0.3)',
+                                transform: 'translateY(-2px)'
+                            }
+                        }}
+                    >
+                        كتابة تقييم
+                    </Button>
+                ) : (
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            fontStyle: 'italic',
+                            textAlign: 'center',
+                            py: 2
+                        }}
+                    >
+                        سجل الدخول لكتابة تقييمك
+                    </Typography>
+                )}
             </Box>
 
             {/* Rating Distribution */}
@@ -123,7 +138,7 @@ const CourseReviewsTab = ({
                             </Box>
                         </Box>
                         <Typography variant="body2" color="text.secondary" sx={{ minWidth: 40, textAlign: 'right' }}>
-                            {Math.round((star / 5) * (course.reviews?.length || 0))} تقييم
+                            {Math.round((star / 5) * (course.courseReviews?.length || 0))} تقييم
                         </Typography>
                     </Box>
                 ))}
@@ -131,7 +146,7 @@ const CourseReviewsTab = ({
 
             {/* Reviews List */}
             <Box>
-                {Array.isArray(course.reviews) ? course.reviews.map((review) => (
+                {Array.isArray(course.courseReviews) ? course.courseReviews.map((review) => (
                     <Box
                         key={review.id}
                         sx={{
@@ -196,7 +211,7 @@ const CourseReviewsTab = ({
                         </Typography>
                     </Box>
                 )) : null}
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, pb: 3 }}>
                     <Button
                         variant="outlined"
                         sx={{

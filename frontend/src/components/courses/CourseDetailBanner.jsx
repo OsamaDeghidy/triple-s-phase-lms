@@ -55,7 +55,7 @@ const pulse = keyframes`
 const HeroSection = styled('div')(({ theme }) => ({
     background: '#ffffff',
     color: '#333333',
-    padding: theme.spacing(16, 0, 4),
+    padding: theme.spacing(16, 0, 0),
     margin: '0',
     position: 'relative',
     overflow: 'hidden',
@@ -152,7 +152,7 @@ const CourseDetailBanner = ({
                         maxWidth: '1200px',
                         width: '100%',
                         direction: 'rtl',
-                        margin: '0 auto'
+                        margin: '0 auto',
                     }}>
                         {/* Breadcrumb */}
                         <Breadcrumbs
@@ -219,7 +219,7 @@ const CourseDetailBanner = ({
                             component="h1"
                             sx={{
                                 color: '#222222',
-                                fontSize: { xs: '3.0rem', md: '3.5rem', lg: '4.0rem' },
+                                fontSize: { xs: '3.0rem', md: '3.5rem', lg: '3.2rem' },
                                 fontWeight: 'bold',
                                 lineHeight: 1.2,
                                 mb: 3,
