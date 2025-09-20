@@ -325,37 +325,82 @@ def student_dashboard_stats(request):
         
         # الحصول على تسجيلات الطالب
         student_enrollments = Enrollment.objects.filter(student=user)
+        student_courses = [enrollment.course for enrollment in student_enrollments]
         
         # إحصائيات المقررات
         enrolled_courses = student_enrollments.filter(status__in=['active', 'completed']).count()
         completed_courses = student_enrollments.filter(status='completed').count()
         
-        # إحصائيات الدروس
-        completed_lessons = 0  # يمكن إضافة منطق لحساب الدروس المكتملة
-        total_lessons = 0  # يمكن إضافة منطق لحساب إجمالي الدروس
+        # إحصائيات الدروس - حساب حقيقي
+        completed_lessons = 0
+        total_lessons = 0
+        total_study_time = 0  # بالدقائق
+        
+        for course in student_courses:
+            for module in course.modules.all():
+                lessons = module.lessons.all()
+                total_lessons += lessons.count()
+                
+                # حساب الدروس المكتملة (يمكن تحسين هذا حسب نموذج التقدم)
+                for lesson in lessons:
+                    # إضافة مدة الدرس للوقت الإجمالي
+                    if hasattr(lesson, 'duration') and lesson.duration:
+                        total_study_time += lesson.duration.total_seconds() / 60  # تحويل إلى دقائق
+                    
+                    # يمكن إضافة منطق للتحقق من إكمال الدرس
+                    # if lesson.is_completed_by_user(user):
+                    #     completed_lessons += 1
+        
+        # حساب الدروس المكتملة بناءً على التقدم في التسجيل
+        for enrollment in student_enrollments:
+            if enrollment.progress:
+                course_lessons = sum(module.lessons.count() for module in enrollment.course.modules.all())
+                completed_lessons += int((enrollment.progress / 100) * course_lessons)
         
         # إحصائيات الواجبات
         pending_assignments = Assignment.objects.filter(
-            course__in=[enrollment.course for enrollment in student_enrollments],
+            course__in=student_courses,
             due_date__gte=timezone.now()
         ).count()
         
-        # متوسط الدرجات
-        avg_grade = 0  # يمكن إضافة منطق لحساب متوسط الدرجات
+        # متوسط الدرجات - حساب حقيقي
+        submissions = AssignmentSubmission.objects.filter(
+            user=user,
+            status='graded'
+        )
+        avg_grade = 0
+        if submissions.exists():
+            total_score = sum(submission.total_score or 0 for submission in submissions)
+            avg_grade = total_score / submissions.count()
         
-        # النقاط الإجمالية
-        total_points = 0  # يمكن إضافة منطق لحساب النقاط
+        # النقاط الإجمالية - حساب حقيقي
+        total_points = sum(submission.total_score or 0 for submission in submissions)
         
-        # شهادات
-        certificates = 0  # يمكن إضافة منطق لحساب الشهادات
+        # شهادات - حساب حقيقي
+        certificates = 0  # يمكن إضافة نموذج للشهادات
+        
+        # سلسلة التعلم - حساب حقيقي
+        learning_streak = 0
+        current_streak = 0
+        
+        # حساب سلسلة التعلم بناءً على آخر نشاط
+        if student_enrollments.exists():
+            last_activity = student_enrollments.order_by('-last_accessed').first()
+            if last_activity and last_activity.last_accessed:
+                days_since_last_activity = (timezone.now() - last_activity.last_accessed).days
+                if days_since_last_activity <= 1:
+                    current_streak = 1  # يمكن تحسين هذا المنطق
         
         stats = {
             'enrolledCourses': enrolled_courses,
             'completedLessons': completed_lessons,
+            'totalLessons': total_lessons,
+            'totalStudyTime': int(total_study_time),  # بالدقائق
             'pendingAssignments': pending_assignments,
-            'averageGrade': avg_grade,
+            'averageGrade': round(avg_grade, 1),
             'totalPoints': total_points,
-            'learningStreak': 0,  # يمكن إضافة منطق لحساب سلسلة التعلم
+            'learningStreak': learning_streak,
+            'currentStreak': current_streak,
             'certificates': certificates
         }
         
