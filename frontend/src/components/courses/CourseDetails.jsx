@@ -27,11 +27,13 @@ import assessmentService from '../../services/assessment.service';
 
 const CourseDetails = ({ course, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
-  const [lessons, setLessons] = useState([]);
+  const [modules, setModules] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
+  const [expandedModules, setExpandedModules] = useState({});
+  const [expandedSubModules, setExpandedSubModules] = useState({});
   const [loading, setLoading] = useState({
-    lessons: false,
+    modules: false,
     questions: false,
     flashcards: false
   });
@@ -48,29 +50,35 @@ const CourseDetails = ({ course, onClose }) => {
     try {
       console.log('Loading data for course:', course.id);
       
-      // Load lessons
-      setLoading(prev => ({ ...prev, lessons: true }));
+      // Load modules with lessons
+      setLoading(prev => ({ ...prev, modules: true }));
       try {
-        const lessonsData = await contentAPI.getCourseModulesWithLessons(course.id);
-        console.log('Lessons data:', lessonsData);
+        const modulesData = await contentAPI.getCourseModulesWithLessons(course.id);
+        console.log('Modules data:', modulesData);
         
-        // Process the API response correctly
-        const allLessons = lessonsData?.modules?.flatMap(module => 
-          module.lessons?.map(lesson => ({
-            ...lesson,
-            module_title: module.title
-          })) || []
-        ) || [];
+        // Organize modules: separate main modules and sub modules
+        const modulesList = modulesData?.modules || [];
+        const mainModules = modulesList.filter(module => !module.submodule);
+        const subModules = modulesList.filter(module => module.submodule);
         
-        setLessons(allLessons);
-        console.log('Processed lessons:', allLessons);
+        // Group sub modules under their parent modules
+        const organizedModules = mainModules.map(mainModule => {
+          const relatedSubModules = subModules.filter(subModule => subModule.submodule === mainModule.id);
+          
+          return {
+            ...mainModule,
+            submodules: relatedSubModules
+          };
+        });
+        
+        setModules(organizedModules);
+        console.log('Processed modules:', organizedModules);
       } catch (err) {
-        console.error('Error loading lessons:', err);
-        setLessons([]);
-        // Show error message to user
-        console.warn('فشل في تحميل الدروس. تأكد من أنك مسجل في المقرر.');
+        console.error('Error loading modules:', err);
+        setModules([]);
+        console.warn('فشل في تحميل الوحدات. تأكد من أنك مسجل في المقرر.');
       } finally {
-        setLoading(prev => ({ ...prev, lessons: false }));
+        setLoading(prev => ({ ...prev, modules: false }));
       }
 
       // Load questions
@@ -209,7 +217,15 @@ const CourseDetails = ({ course, onClose }) => {
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                  {lessons.length} درس
+                  {(() => {
+                    const totalLessons = modules.reduce((total, module) => {
+                      const mainLessons = module.lessons ? module.lessons.length : 0;
+                      const subModulesLessons = module.submodules ? 
+                        module.submodules.reduce((subTotal, sub) => subTotal + (sub.lessons ? sub.lessons.length : 0), 0) : 0;
+                      return total + mainLessons + subModulesLessons;
+                    }, 0);
+                    return `${totalLessons} درس`;
+                  })()}
                 </Typography>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>
                   •
@@ -290,29 +306,21 @@ const CourseDetails = ({ course, onClose }) => {
             <Box>
               <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#333679' }}>
-                  دروس المقرر ({lessons.length})
+                  وحدات المقرر ({modules.length})
                 </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<PlayArrowIcon sx={{ fontSize: 16 }} />}
-                  sx={{ borderRadius: 2, fontSize: '0.8rem' }}
-                >
-                  بدء التعلم
-                </Button>
               </Box>
 
-              {loading.lessons ? (
+              {loading.modules ? (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {[1, 2, 3].map((item) => (
-                    <Skeleton key={item} variant="rectangular" height={80} sx={{ borderRadius: 2 }} />
+                    <Skeleton key={item} variant="rectangular" height={120} sx={{ borderRadius: 2 }} />
                   ))}
                 </Box>
-              ) : lessons.length > 0 ? (
+              ) : modules.length > 0 ? (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {lessons.map((lesson, index) => (
+                  {modules.map((module, index) => (
                     <motion.div
-                      key={lesson.id}
+                      key={module.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
@@ -327,7 +335,8 @@ const CourseDetails = ({ course, onClose }) => {
                         transition: 'all 0.3s ease'
                       }}>
                         <CardContent sx={{ p: 1.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          {/* Module Header */}
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
                             <Box sx={{
                               width: 32,
                               height: 32,
@@ -342,35 +351,203 @@ const CourseDetails = ({ course, onClose }) => {
                             </Box>
                             <Box sx={{ flex: 1 }}>
                               <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.25 }}>
-                                {lesson.title}
+                                {module.title || module.name}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                {lesson.module_title} • {formatDuration(lesson.duration)}
+                                {(() => {
+                                  const mainLessons = module.lessons ? module.lessons.length : 0;
+                                  const subModulesLessons = module.submodules ? 
+                                    module.submodules.reduce((total, sub) => total + (sub.lessons ? sub.lessons.length : 0), 0) : 0;
+                                  const totalLessons = mainLessons + subModulesLessons;
+                                  return `${totalLessons} درس`;
+                                })()}
+                                {module.submodules && module.submodules.length > 0 && ` • ${module.submodules.length} وحدة فرعية`}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              {lesson.is_completed && (
-                                <CheckCircleIcon sx={{ color: 'success.main', fontSize: 16 }} />
-                              )}
-                              <Button
-                                variant="contained"
-                                size="small"
-                                startIcon={<PlayArrowIcon sx={{ fontSize: 14 }} />}
-                                sx={{
-                                  background: 'linear-gradient(45deg, #333679, #1a6ba8)',
-                                  borderRadius: 2,
-                                  fontSize: '0.75rem',
-                                  px: 1.5,
-                                  py: 0.5,
-                                  '&:hover': {
-                                    background: 'linear-gradient(45deg, #1a6ba8, #333679)'
-                                  }
-                                }}
-                              >
-                                {lesson.is_completed ? 'مراجعة' : 'بدء'}
-                              </Button>
-                            </Box>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => setExpandedModules(prev => ({
+                                ...prev,
+                                [module.id]: !prev[module.id]
+                              }))}
+                              sx={{
+                                borderRadius: 2,
+                                fontSize: '0.75rem',
+                                px: 1.5,
+                                py: 0.5,
+                                minWidth: 'auto'
+                              }}
+                            >
+                              {expandedModules[module.id] ? 'إخفاء' : 'عرض'}
+                            </Button>
                           </Box>
+
+                          {/* Expanded Content */}
+                          {expandedModules[module.id] && (
+                            <Box sx={{ 
+                              borderTop: '1px solid #f0f0f0',
+                              pt: 1.5,
+                              mt: 1
+                            }}>
+                              {/* Main Module Lessons */}
+                              {module.lessons && module.lessons.length > 0 && (
+                                <Box sx={{ mb: 1 }}>
+                                  <Typography variant="caption" fontWeight={600} sx={{ 
+                                    color: '#333679',
+                                    display: 'block',
+                                    mb: 1
+                                  }}>
+                                    دروس الوحدة الرئيسية ({module.lessons.length})
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    {module.lessons.map((lesson, lessonIndex) => (
+                                      <Box key={lesson.id} sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
+                                        p: 1,
+                                        borderRadius: 1,
+                                        background: '#f8f9fa',
+                                        border: '1px solid #e9ecef'
+                                      }}>
+                                        <Typography variant="caption" sx={{ 
+                                          color: '#666',
+                                          minWidth: '20px',
+                                          textAlign: 'center'
+                                        }}>
+                                          {lessonIndex + 1}
+                                        </Typography>
+                                        <Box sx={{ flex: 1 }}>
+                                          <Typography variant="caption" fontWeight={500}>
+                                            {lesson.title}
+                                          </Typography>
+                                          {lesson.duration && (
+                                            <Typography variant="caption" sx={{ 
+                                              color: '#666',
+                                              display: 'block'
+                                            }}>
+                                              {formatDuration(lesson.duration)}
+                                            </Typography>
+                                          )}
+                                        </Box>
+                                        {lesson.is_completed && (
+                                          <CheckCircleIcon sx={{ color: 'success.main', fontSize: 14 }} />
+                                        )}
+                                      </Box>
+                                    ))}
+                                  </Box>
+                                </Box>
+                              )}
+
+                              {/* Sub Modules */}
+                              {module.submodules && module.submodules.length > 0 && (
+                                <Box>
+                                  <Typography variant="caption" fontWeight={600} sx={{ 
+                                    color: '#333679',
+                                    display: 'block',
+                                    mb: 1
+                                  }}>
+                                    الوحدات الفرعية ({module.submodules.length})
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    {module.submodules.map((subModule, subIndex) => (
+                                      <Box key={subModule.id}>
+                                        <Box sx={{
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: 1,
+                                          p: 1,
+                                          borderRadius: 1,
+                                          background: '#e8f5e8',
+                                          border: '1px solid #d4edda',
+                                          cursor: 'pointer'
+                                        }}
+                                        onClick={() => setExpandedSubModules(prev => ({
+                                          ...prev,
+                                          [subModule.id]: !prev[subModule.id]
+                                        }))}>
+                                          <Typography variant="caption" sx={{ 
+                                            color: '#666',
+                                            minWidth: '20px',
+                                            textAlign: 'center'
+                                          }}>
+                                            {subIndex + 1}
+                                          </Typography>
+                                          <Box sx={{ flex: 1 }}>
+                                            <Typography variant="caption" fontWeight={500}>
+                                              {subModule.title || subModule.name}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ 
+                                              color: '#666',
+                                              display: 'block'
+                                            }}>
+                                              {subModule.lessons ? `${subModule.lessons.length} درس` : '0 درس'}
+                                            </Typography>
+                                          </Box>
+                                          <Typography variant="caption" sx={{ 
+                                            color: '#666',
+                                            fontSize: '0.7rem'
+                                          }}>
+                                            {expandedSubModules[subModule.id] ? 'إخفاء' : 'عرض'}
+                                          </Typography>
+                                        </Box>
+
+                                        {/* Sub Module Lessons */}
+                                        {expandedSubModules[subModule.id] && subModule.lessons && subModule.lessons.length > 0 && (
+                                          <Box sx={{ 
+                                            mt: 1,
+                                            ml: 2,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 0.5
+                                          }}>
+                                            {subModule.lessons.map((lesson, lessonIndex) => (
+                                              <Box key={lesson.id} sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1,
+                                                p: 0.75,
+                                                borderRadius: 1,
+                                                background: '#f8f9fa',
+                                                border: '1px solid #e9ecef'
+                                              }}>
+                                                <Typography variant="caption" sx={{ 
+                                                  color: '#666',
+                                                  minWidth: '16px',
+                                                  textAlign: 'center',
+                                                  fontSize: '0.7rem'
+                                                }}>
+                                                  {lessonIndex + 1}
+                                                </Typography>
+                                                <Box sx={{ flex: 1 }}>
+                                                  <Typography variant="caption" fontWeight={500} sx={{ fontSize: '0.7rem' }}>
+                                                    {lesson.title}
+                                                  </Typography>
+                                                  {lesson.duration && (
+                                                    <Typography variant="caption" sx={{ 
+                                                      color: '#666',
+                                                      display: 'block',
+                                                      fontSize: '0.65rem'
+                                                    }}>
+                                                      {formatDuration(lesson.duration)}
+                                                    </Typography>
+                                                  )}
+                                                </Box>
+                                                {lesson.is_completed && (
+                                                  <CheckCircleIcon sx={{ color: 'success.main', fontSize: 12 }} />
+                                                )}
+                                              </Box>
+                                            ))}
+                                          </Box>
+                                        )}
+                                      </Box>
+                                    ))}
+                                  </Box>
+                                </Box>
+                              )}
+                            </Box>
+                          )}
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -380,10 +557,10 @@ const CourseDetails = ({ course, onClose }) => {
                 <Box sx={{ textAlign: 'center', py: 4 }}>
                   <MenuBookIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
                   <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                    لا توجد دروس متاحة
+                    لا توجد وحدات متاحة
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    لم يتم إضافة أي دروس لهذا المقرر بعد
+                    لم يتم إضافة أي وحدات لهذا المقرر بعد
                   </Typography>
                 </Box>
               )}
@@ -397,14 +574,6 @@ const CourseDetails = ({ course, onClose }) => {
                 <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#333679' }}>
                   بنك الأسئلة ({questions.length})
                 </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<QuizIcon sx={{ fontSize: 16 }} />}
-                  sx={{ borderRadius: 2, fontSize: '0.8rem' }}
-                >
-                  بدء الاختبار
-                </Button>
               </Box>
 
               {loading.questions ? (
@@ -464,23 +633,6 @@ const CourseDetails = ({ course, onClose }) => {
                                 />
                               </Box>
                             </Box>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              startIcon={<PlayArrowIcon sx={{ fontSize: 14 }} />}
-                              sx={{
-                                background: 'linear-gradient(45deg, #ff9800, #f57c00)',
-                                borderRadius: 2,
-                                fontSize: '0.75rem',
-                                px: 1.5,
-                                py: 0.5,
-                                '&:hover': {
-                                  background: 'linear-gradient(45deg, #f57c00, #ff9800)'
-                                }
-                              }}
-                            >
-                              حل السؤال
-                            </Button>
                           </Box>
                         </CardContent>
                       </Card>
@@ -508,14 +660,6 @@ const CourseDetails = ({ course, onClose }) => {
                 <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#333679' }}>
                   البطاقات التعليمية ({flashcards.length})
                 </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<PsychologyIcon sx={{ fontSize: 16 }} />}
-                  sx={{ borderRadius: 2, fontSize: '0.8rem' }}
-                >
-                  بدء المراجعة
-                </Button>
               </Box>
 
               {loading.flashcards ? (
@@ -564,23 +708,6 @@ const CourseDetails = ({ course, onClose }) => {
                                 {flashcard.lesson_title || 'بدون درس مرتبط'}
                               </Typography>
                             </Box>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              startIcon={<PlayArrowIcon sx={{ fontSize: 14 }} />}
-                              sx={{
-                                background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
-                                borderRadius: 2,
-                                fontSize: '0.75rem',
-                                px: 1.5,
-                                py: 0.5,
-                                '&:hover': {
-                                  background: 'linear-gradient(45deg, #673ab7, #9c27b0)'
-                                }
-                              }}
-                            >
-                              مراجعة
-                            </Button>
                           </Box>
                         </CardContent>
                       </Card>

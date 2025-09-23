@@ -301,9 +301,9 @@ const CourseDetail = () => {
                 // Only try to fetch modules if user is authenticated
                 if (isAuthenticated) {
                     try {
-                        console.log('Fetching modules from content API for course:', id);
-                        const modulesResponse = await contentAPI.getModules(id);
-                        console.log('Content API modules response:', modulesResponse);
+                        console.log('Fetching modules with lessons from content API for course:', id);
+                        const modulesResponse = await contentAPI.getCourseModulesWithLessons(id);
+                        console.log('Content API modules with lessons response:', modulesResponse);
 
                         // Handle different response formats
                         if (modulesResponse && typeof modulesResponse === 'object') {
@@ -322,7 +322,7 @@ const CourseDetail = () => {
                             modulesData = [];
                         }
 
-                        console.log('Processed content modules data:', modulesData);
+                        console.log('Processed content modules with lessons data:', modulesData);
 
                         // If we got modules data, user is enrolled or content is public
                         if (modulesData.length > 0) {
@@ -684,10 +684,28 @@ const CourseDetail = () => {
             modulesData = [];
         }
 
-        // Check if modulesData is empty or has no lessons
-        const hasValidModules = modulesData.length > 0 && modulesData.some(module => {
-            const lessons = module.lessons || module.content || module.lectures || [];
-            return Array.isArray(lessons) && lessons.length > 0;
+        // Organize modules: separate main modules and sub modules
+        const mainModules = modulesData.filter(module => !module.submodule);
+        const subModules = modulesData.filter(module => module.submodule);
+        
+        // Group sub modules under their parent modules
+        const organizedModules = mainModules.map(mainModule => {
+            const relatedSubModules = subModules.filter(subModule => subModule.submodule === mainModule.id);
+            
+            return {
+                ...mainModule,
+                submodules: relatedSubModules
+            };
+        });
+
+        console.log('Organized modules with submodules:', organizedModules);
+
+        // Check if organizedModules has valid content
+        const hasValidModules = organizedModules.length > 0 && organizedModules.some(module => {
+            const mainLessons = module.lessons || module.content || module.lectures || [];
+            const subModulesLessons = module.submodules ? 
+                module.submodules.reduce((total, sub) => total + (sub.lessons ? sub.lessons.length : 0), 0) : 0;
+            return Array.isArray(mainLessons) && (mainLessons.length > 0 || subModulesLessons > 0);
         });
 
         // If user is not enrolled or no valid modules, return empty array
@@ -696,7 +714,7 @@ const CourseDetail = () => {
             return [];
         }
 
-        const result = modulesData.map((module, index) => {
+        const result = organizedModules.map((module, index) => {
             // Transform assignments
             const transformAssignments = (assignments) => {
                 if (!Array.isArray(assignments)) return [];
@@ -860,12 +878,45 @@ const CourseDetail = () => {
                 return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
             };
 
+            // Transform submodules if they exist
+            const transformedSubModules = module.submodules ? module.submodules.map((subModule, subIndex) => {
+                const subLessons = subModule.lessons || subModule.content || subModule.lectures || [];
+                const subAssignments = subModule.assignments || [];
+                const subQuizzes = subModule.quizzes || [];
+                const subExams = subModule.exams || [];
+
+                const transformedSubLessons = transformLessons(subLessons);
+                const transformedSubAssignments = transformAssignments(subAssignments);
+                const transformedSubQuizzes = transformQuizzes(subQuizzes);
+                const transformedSubExams = transformExams(subExams);
+
+                const allSubContent = [
+                    ...transformedSubLessons,
+                    ...transformedSubAssignments,
+                    ...transformedSubQuizzes,
+                    ...transformedSubExams
+                ].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                return {
+                    id: subModule.id || `sub_${subIndex + 1}`,
+                    title: subModule.name || subModule.title || `الوحدة الفرعية ${subIndex + 1}`,
+                    description: subModule.description || '',
+                    duration: formatModuleDuration(subModule.video_duration || subModule.duration),
+                    lessons: allSubContent,
+                    order: subModule.order || subIndex + 1,
+                    status: subModule.status || 'published',
+                    isActive: subModule.is_active !== false,
+                    isSubModule: true
+                };
+            }) : [];
+
             return {
                 id: module.id || index + 1,
                 title: module.name || module.title || `الوحدة ${index + 1}`,
                 description: module.description || '',
                 duration: formatModuleDuration(module.video_duration || module.duration),
                 lessons: allContent, // Now includes lessons, assignments, quizzes, and exams
+                submodules: transformedSubModules, // Include transformed submodules
                 order: module.order || index + 1,
                 status: module.status || 'published',
                 isActive: module.is_active !== false

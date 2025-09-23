@@ -460,8 +460,8 @@ class CourseModulesWithLessonsViewSet(ModelViewSet):
                     'error': 'ليس لديك صلاحية للوصول إلى هذا الكورس'
                 }, status=status.HTTP_403_FORBIDDEN)
             
-            # Get modules with lessons
-            modules = Module.objects.filter(course=course, is_active=True).prefetch_related('lessons').order_by('order')
+            # Get modules with lessons (including submodules)
+            modules = Module.objects.filter(course=course, is_active=True).prefetch_related('lessons', 'submodules').order_by('order')
             
             modules_data = []
             for module in modules:
@@ -471,6 +471,7 @@ class CourseModulesWithLessonsViewSet(ModelViewSet):
                     'description': module.description,
                     'order': module.order,
                     'video_duration': module.video_duration,
+                    'submodule': module.submodule.id if module.submodule else None,
                     'lessons': []
                 }
                 
@@ -493,7 +494,9 @@ class CourseModulesWithLessonsViewSet(ModelViewSet):
                         'content_type': lesson.lesson_type,
                         'duration': duration_text,
                         'order': lesson.order,
-                        'is_completed': False  # This should be calculated based on user progress
+                        'is_completed': False,  # This should be calculated based on user progress
+                        'module_name': module.name,
+                        'module_id': module.id
                     }
                     module_data['lessons'].append(lesson_data)
                 

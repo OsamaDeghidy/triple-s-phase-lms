@@ -2186,6 +2186,10 @@ const CourseTracking = () => {
   useEffect(() => {
     const tab = searchParams.get('tab');
     const moduleId = searchParams.get('moduleId');
+    const lessonId = searchParams.get('lessonId');
+    const questionId = searchParams.get('questionId');
+    const flashcardId = searchParams.get('flashcardId');
+    
     
     if (tab) {
       setActiveTab(tab);
@@ -2197,8 +2201,115 @@ const CourseTracking = () => {
     if (moduleId) {
       setSelectedModuleId(moduleId);
       setExpandedModule(moduleId);
+      
+      // If no specific lessonId is provided, open first lesson in the module
+      if (!lessonId && courseData?.modules) {
+        const module = courseData.modules.find(m => m.id == moduleId);
+        if (module) {
+          let firstLesson = null;
+          
+          // Check main module lessons first
+          if (module.lessons && module.lessons.length > 0) {
+            firstLesson = module.lessons[0];
+          } else if (module.submodules && module.submodules.length > 0) {
+            // Check submodules for first lesson
+            for (const subModule of module.submodules) {
+              if (subModule.lessons && subModule.lessons.length > 0) {
+                firstLesson = subModule.lessons[0];
+                break;
+              }
+            }
+          }
+          
+          if (firstLesson) {
+            setCurrentLesson(firstLesson);
+            setActiveTab('lessons');
+          }
+        }
+      }
     }
-  }, [searchParams]);
+    
+    // Handle specific content selection
+    if (lessonId && courseData?.modules) {
+      // Find and open the specific lesson
+      const allModules = [...courseData.modules];
+      let lessonFound = false;
+      
+      for (const module of allModules) {
+        if (module.lessons) {
+          const lesson = module.lessons.find(l => l.id == lessonId);
+          if (lesson) {
+            setCurrentLesson(lesson);
+            setSelectedModuleId(module.id);
+            setExpandedModule(module.id);
+            setActiveTab('lessons');
+            lessonFound = true;
+            break;
+          }
+        }
+        // Check submodules
+        if (module.submodules) {
+          for (const subModule of module.submodules) {
+            if (subModule.lessons) {
+              const lesson = subModule.lessons.find(l => l.id == lessonId);
+              if (lesson) {
+                setCurrentLesson(lesson);
+                setSelectedModuleId(module.id);
+                setExpandedModule(module.id);
+                setActiveTab('lessons');
+                lessonFound = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    if (questionId && questions.length > 0) {
+      // Find and open the specific question
+      const allQuestions = questions;
+      const question = allQuestions.find(q => q.id == questionId);
+      if (question) {
+        setSelectedQuestion(question);
+        setCurrentQuestionIndex(allQuestions.findIndex(q => q.id == questionId));
+        setSelectedModuleId(question.module_id);
+        setExpandedModule(question.module_id);
+        setActiveTab('questions');
+      }
+    } else if (moduleId && !questionId && questions.length > 0) {
+      // If no specific questionId but moduleId is provided, open first question in module
+      const moduleQuestions = questions.filter(q => q.module_id == moduleId);
+      if (moduleQuestions.length > 0) {
+        const firstQuestion = moduleQuestions[0];
+        setSelectedQuestion(firstQuestion);
+        setCurrentQuestionIndex(questions.findIndex(q => q.id == firstQuestion.id));
+        setActiveTab('questions');
+      }
+    }
+    
+    if (flashcardId && flashcards.length > 0) {
+      // Find and open the specific flashcard
+      const allFlashcards = flashcards;
+      const flashcard = allFlashcards.find(f => f.id == flashcardId);
+      if (flashcard) {
+        setSelectedFlashcard(flashcard);
+        setCurrentFlashcardIndex(allFlashcards.findIndex(f => f.id == flashcardId));
+        setSelectedModuleId(flashcard.module_id);
+        setExpandedModule(flashcard.module_id);
+        setActiveTab('flashcards');
+      }
+    } else if (moduleId && !flashcardId && flashcards.length > 0) {
+      // If no specific flashcardId but moduleId is provided, open first flashcard in module
+      const moduleFlashcards = flashcards.filter(f => f.module_id == moduleId);
+      if (moduleFlashcards.length > 0) {
+        const firstFlashcard = moduleFlashcards[0];
+        setSelectedFlashcard(firstFlashcard);
+        setCurrentFlashcardIndex(flashcards.findIndex(f => f.id == firstFlashcard.id));
+        setActiveTab('flashcards');
+      }
+    }
+  }, [searchParams, courseData?.modules, questions, flashcards]);
 
   // Fetch course data on component mount
 
@@ -2589,7 +2700,7 @@ const CourseTracking = () => {
 
   const handleModuleClick = (moduleId) => {
 
-    setExpandedModule(expandedModule === moduleId ? null : moduleId);
+    setExpandedModule(expandedModule == moduleId ? null : moduleId);
 
   };
 
@@ -2599,11 +2710,11 @@ const CourseTracking = () => {
 
   const handleLessonClick = (moduleId, lessonId) => {
 
-    const module = (courseData.modules || []).find(m => m.id === moduleId);
+    const module = (courseData.modules || []).find(m => m.id == moduleId);
 
     if (module) {
 
-      const lesson = (module.lessons || []).find(l => l.id === lessonId);
+      const lesson = (module.lessons || []).find(l => l.id == lessonId);
 
       if (lesson) {
 

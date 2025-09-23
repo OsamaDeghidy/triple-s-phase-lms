@@ -175,8 +175,9 @@ def profile_view(request):
         user_type_data = None
         if profile.status == 'Student':
             try:
-                student = Student.objects.get(profile=profile)
-                user_type_data = StudentSerializer(student).data
+                student = Student.objects.filter(profile=profile).first()
+                if student:
+                    user_type_data = StudentSerializer(student).data
             except Student.DoesNotExist:
                 pass
         elif profile.status == 'Instructor':
