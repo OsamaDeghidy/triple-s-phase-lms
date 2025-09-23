@@ -53,10 +53,18 @@ class PublishedFilter(SimpleListFilter):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_default', 'course_count', 'created_at')
+    list_display = ('name', 'is_default_display', 'course_count', 'created_at')
     list_filter = ('is_default', 'created_at')
     search_fields = ('name', 'description')
     readonly_fields = ('created_at', 'updated_at')
+    
+    def is_default_display(self, obj):
+        if obj.is_default:
+            return format_html('<span style="color: red; font-weight: bold;">🔒 Default</span>')
+        else:
+            return format_html('<span style="color: green;">✓ Custom</span>')
+    is_default_display.short_description = 'Type'
+    is_default_display.admin_order_field = 'is_default'
     
     def course_count(self, obj):
         count = obj.courses.count()
@@ -72,12 +80,38 @@ class CategoryAdmin(admin.ModelAdmin):
             return False
         return super().has_delete_permission(request, obj)
     
-    def get_actions(self, request):
-        """Remove delete action for default categories"""
-        actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
+    def delete_selected_categories(self, request, queryset):
+        """Custom delete action that excludes default categories"""
+        # Filter out default categories from the queryset
+        non_default_categories = queryset.filter(is_default=False)
+        default_categories = queryset.filter(is_default=True)
+        
+        if default_categories.exists():
+            default_names = ', '.join([cat.name for cat in default_categories])
+            self.message_user(
+                request,
+                f'Cannot delete default categories: {default_names}. Only non-default categories can be deleted.',
+                level='WARNING'
+            )
+        
+        if non_default_categories.exists():
+            count = non_default_categories.count()
+            non_default_categories.delete()
+            self.message_user(
+                request,
+                f'Successfully deleted {count} non-default categor{"y" if count == 1 else "ies"}.',
+                level='SUCCESS'
+            )
+        else:
+            self.message_user(
+                request,
+                'No non-default categories selected for deletion.',
+                level='INFO'
+            )
+    
+    delete_selected_categories.short_description = "Delete selected non-default categories"
+    
+    actions = ['delete_selected_categories']
 
 
 @admin.register(Tags)

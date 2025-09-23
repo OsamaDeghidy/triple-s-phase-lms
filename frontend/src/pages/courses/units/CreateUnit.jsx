@@ -274,14 +274,12 @@ const CreateUnit = () => {
   };
 
   const removeLesson = (index) => {
-    if (unitData.lessons.length > 1) {
-      const updatedLessons = [...unitData.lessons];
-      updatedLessons.splice(index, 1);
-      setUnitData(prev => ({
-        ...prev,
-        lessons: updatedLessons
-      }));
-    }
+    const updatedLessons = [...unitData.lessons];
+    updatedLessons.splice(index, 1);
+    setUnitData(prev => ({
+      ...prev,
+      lessons: updatedLessons
+    }));
   };
 
   const handleCloseSnackbar = () => {

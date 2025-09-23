@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Max
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.db.models.signals import post_save, pre_save
@@ -178,9 +179,22 @@ class Module(models.Model):
             })
     
     def save(self, *args, **kwargs):
-        """Override save to ensure clean is called.
+        """Override save to ensure clean is called and order is auto-assigned.
         Skips heavy file validators for existing files when not updating file fields.
         """
+        # Auto-assign order if not provided or conflicts
+        if not self.order or self.order == 0:
+            max_order = Module.objects.filter(course=self.course).aggregate(
+                max_order=models.Max('order')
+            )['max_order'] or 0
+            self.order = max_order + 1
+        elif Module.objects.filter(course=self.course, order=self.order).exclude(pk=self.pk).exists():
+            # If order conflicts, find next available
+            max_order = Module.objects.filter(course=self.course).aggregate(
+                max_order=models.Max('order')
+            )['max_order'] or 0
+            self.order = max_order + 1
+            
         skip_file_validation = kwargs.pop('skip_file_validation', False) or getattr(self, '_skip_file_validation', False)
         if skip_file_validation:
             # Only run model-level clean; avoid field validators (e.g., file size) for unchanged files
@@ -281,7 +295,6 @@ class Lesson(models.Model):
     slug = models.SlugField(
         _('slug'),
         max_length=250,
-        unique=True,
         blank=True,
         help_text=_('A short label containing only letters, numbers, underscores or hyphens for URLs')
     )
