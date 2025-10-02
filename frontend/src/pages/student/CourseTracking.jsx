@@ -240,6 +240,36 @@ import { API_CONFIG } from '../../config/api.config';
 
 // Force reload
 
+// Process file URL to ensure it's absolute - moved outside component for global access
+const processFileUrl = (fileUrl) => {
+  try {
+    if (!fileUrl || typeof fileUrl !== 'string') {
+      console.warn('Invalid file URL provided:', fileUrl);
+      return null;
+    }
+
+    // If it's already a full URL, return as is
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return fileUrl;
+    }
+
+    // If it starts with /media/ or /static/, make it absolute
+    if (fileUrl.startsWith('/media/') || fileUrl.startsWith('/static/')) {
+      return `${API_CONFIG.baseURL}${fileUrl}`;
+    }
+
+    // If it's a relative path, assume it's in media
+    if (!fileUrl.startsWith('/')) {
+      return `${API_CONFIG.baseURL}/media/${fileUrl}`;
+    }
+
+    return fileUrl;
+  } catch (error) {
+    console.error('Error processing file URL:', error, fileUrl);
+    return null;
+  }
+};
+
 // Simple video player component to replace ReactPlayer
 
 const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, width, height, style, lessonData }) => {
@@ -516,92 +546,101 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
 
   // If it's a file URL, display it in an iframe or download link
   if (isFileUrl) {
-    const fileName = processedUrl.split('/').pop() || 'ملف';
-    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-    
-    return (
-      <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* File indicator */}
-        <Box sx={{
-          position: 'absolute',
-          top: 10,
-          right: 10,
-          zIndex: 10,
-          bgcolor: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          px: 2,
-          py: 1,
-          borderRadius: 1,
-          fontSize: '0.75rem',
-          fontWeight: 'bold'
-        }}>
-          ملف خارجي
-        </Box>
-        
-        {/* File content area */}
-        <Box sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: '#f5f5f5',
-          p: 3
-        }}>
-          {/* File icon and info */}
+    try {
+      const fileName = processedUrl?.split('/').pop() || 'ملف';
+      const fileExtension = fileName?.split('.').pop()?.toLowerCase() || '';
+      
+      return (
+        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+          {/* File indicator */}
           <Box sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            zIndex: 10,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            px: 2,
+            py: 1,
+            borderRadius: 1,
+            fontSize: '0.75rem',
+            fontWeight: 'bold'
+          }}>
+            ملف خارجي
+          </Box>
+          
+          {/* File content area */}
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            mb: 3,
-            textAlign: 'center'
+            justifyContent: 'center',
+            bgcolor: '#f5f5f5',
+            p: 3
           }}>
-            {getFileIcon(fileName, fileExtension)}
-            <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: '#333' }}>
-              {fileName}
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-              نوع الملف: {fileExtension.toUpperCase()}
-            </Typography>
-          </Box>
+            {/* File icon and info */}
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              mb: 3,
+              textAlign: 'center'
+            }}>
+              {getFileIcon(fileName, fileExtension)}
+              <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: '#333' }}>
+                {fileName}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                نوع الملف: {fileExtension.toUpperCase()}
+              </Typography>
+            </Box>
 
-          {/* Action buttons */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {/* Preview button for supported files */}
-            {(fileExtension === 'pdf' || fileExtension === 'txt') && (
-              <Button
-                variant="contained"
-                startIcon={<Visibility />}
-                onClick={() => {
-                  const iframe = document.createElement('iframe');
-                  iframe.src = processedUrl;
-                  iframe.style.width = '100%';
-                  iframe.style.height = '100%';
-                  iframe.style.border = 'none';
-                  
-                  // Create a new window for preview
-                  const previewWindow = window.open('', '_blank', 'width=800,height=600');
-                  previewWindow.document.write(`
-                    <html>
-                      <head><title>معاينة ${fileName}</title></head>
-                      <body style="margin:0; padding:0;">
-                        ${iframe.outerHTML}
-                      </body>
-                    </html>
-                  `);
-                  previewWindow.document.close();
-                }}
-                sx={{
-                  bgcolor: '#1976d2',
-                  '&:hover': { bgcolor: '#1565c0' }
-                }}
-              >
-                معاينة
-              </Button>
+            {/* Action buttons */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {/* Preview button for supported files */}
+              {(fileExtension === 'pdf' || fileExtension === 'txt') && (
+                <Button
+                  variant="contained"
+                  startIcon={<Visibility />}
+                  onClick={() => {
+                    try {
+                      const iframe = document.createElement('iframe');
+                      iframe.src = processedUrl;
+                      iframe.style.width = '100%';
+                      iframe.style.height = '100%';
+                      iframe.style.border = 'none';
+                      
+                      // Create a new window for preview
+                      const previewWindow = window.open('', '_blank', 'width=800,height=600');
+                      if (previewWindow) {
+                        previewWindow.document.write(`
+                          <html>
+                            <head><title>معاينة ${fileName}</title></head>
+                            <body style="margin:0; padding:0;">
+                              ${iframe.outerHTML}
+                            </body>
+                          </html>
+                        `);
+                        previewWindow.document.close();
+                      }
+                    } catch (error) {
+                      console.error('Error opening file preview:', error);
+                      // Fallback: open file directly
+                      window.open(processedUrl, '_blank');
+                    }
+                  }}
+                  sx={{
+                    bgcolor: '#1976d2',
+                    '&:hover': { bgcolor: '#1565c0' }
+                  }}
+                >
+                  معاينة
+                </Button>
             )}
             
             {/* Download button */}
@@ -609,13 +648,19 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
               variant="contained"
               startIcon={<Download />}
               onClick={() => {
-                const link = document.createElement('a');
-                link.href = processedUrl;
-                link.download = fileName;
-                link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                try {
+                  const link = document.createElement('a');
+                  link.href = processedUrl;
+                  link.download = fileName;
+                  link.target = '_blank';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                } catch (error) {
+                  console.error('Error downloading file:', error);
+                  // Fallback: open file in new tab
+                  window.open(processedUrl, '_blank');
+                }
               }}
               sx={{
                 bgcolor: '#4caf50',
@@ -629,7 +674,13 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
             <Button
               variant="outlined"
               startIcon={<OpenInNew />}
-              onClick={() => window.open(processedUrl, '_blank')}
+              onClick={() => {
+                try {
+                  window.open(processedUrl, '_blank');
+                } catch (error) {
+                  console.error('Error opening file in new tab:', error);
+                }
+              }}
               sx={{
                 borderColor: '#1976d2',
                 color: '#1976d2',
@@ -656,6 +707,31 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
         </Box>
       </Box>
     );
+    } catch (error) {
+      console.error('Error rendering file display:', error);
+      return (
+        <Box sx={{ 
+          position: 'relative', 
+          width: '100%', 
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#f5f5f5',
+          p: 3
+        }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <InsertDriveFile sx={{ fontSize: 48, color: '#757575', mb: 2 }} />
+            <Typography variant="h6" sx={{ color: '#666', mb: 1 }}>
+              خطأ في عرض الملف
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#888' }}>
+              لا يمكن عرض هذا الملف حالياً
+            </Typography>
+          </Box>
+        </Box>
+      );
+    }
   }
 
   if (!isValidVideoUrl) {
@@ -841,10 +917,11 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
             
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               {lessonData.resources.map((resource, index) => {
-                const fileName = resource.title || resource.name || resource.file_url?.split('/').pop() || `ملف ${index + 1}`;
-                const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-                const fileUrl = resource.file_url || resource.url;
-                const processedFileUrl = processFileUrl(fileUrl);
+                try {
+                  const fileName = resource.title || resource.name || resource.file_url?.split('/').pop() || `ملف ${index + 1}`;
+                  const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+                  const fileUrl = resource.file_url || resource.url;
+                  const processedFileUrl = processFileUrl(fileUrl);
                 
                 return (
                   <Box
@@ -965,6 +1042,25 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
                     </Box>
                   </Box>
                 );
+                } catch (error) {
+                  console.error('Error rendering resource:', error, resource);
+                  return (
+                    <Box
+                      key={index}
+                      sx={{
+                        p: 2,
+                        border: '1px solid #ffcdd2',
+                        borderRadius: 2,
+                        bgcolor: '#ffebee',
+                        mb: 1
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ color: '#d32f2f' }}>
+                        خطأ في عرض الملف: {resource.title || resource.name || `ملف ${index + 1}`}
+                      </Typography>
+                    </Box>
+                  );
+                }
               })}
             </Box>
           </Box>
@@ -1377,129 +1473,81 @@ const getLessonIcon = (type) => {
 // Get file icon based on file type
 
 const getFileIcon = (fileName, fileType) => {
+  // Add null/undefined checks
+  if (!fileName && !fileType) {
+    return <InsertDriveFile sx={{ color: '#757575' }} />;
+  }
 
-  const extension = fileName ? fileName.split('.').pop().toLowerCase() : '';
-
-
+  const extension = fileName ? fileName.split('.').pop()?.toLowerCase() || '' : '';
 
   // Check by file type first
-
-  if (fileType) {
-
+  if (fileType && typeof fileType === 'string') {
     switch (fileType.toLowerCase()) {
-
       case 'pdf':
-
         return <PictureAsPdf sx={{ color: '#d32f2f' }} />;
 
       case 'image':
-
       case 'jpg':
-
       case 'jpeg':
-
       case 'png':
-
       case 'gif':
-
       case 'bmp':
-
       case 'webp':
-
         return <Image sx={{ color: '#663399' }} />;
 
       case 'video':
-
       case 'mp4':
-
       case 'avi':
-
       case 'mov':
-
       case 'wmv':
-
       case 'flv':
-
       case 'webm':
-
         return <VideoFile sx={{ color: '#388e3c' }} />;
 
       case 'audio':
-
       case 'mp3':
-
       case 'wav':
-
       case 'ogg':
-
       case 'aac':
-
         return <AudioFile sx={{ color: '#f57c00' }} />;
 
       case 'document':
-
       case 'doc':
-
       case 'docx':
-
         return <TextSnippet sx={{ color: '#663399' }} />;
 
       case 'excel':
-
       case 'xls':
-
       case 'xlsx':
-
         return <TableChart sx={{ color: '#388e3c' }} />;
 
       case 'powerpoint':
-
       case 'ppt':
-
       case 'pptx':
-
         return <DescriptionOutlined sx={{ color: '#d32f2f' }} />;
 
       case 'code':
-
       case 'txt':
-
       case 'js':
-
       case 'html':
-
       case 'css':
-
       case 'py':
-
       case 'java':
-
       case 'cpp':
-
       case 'c':
-
         return <Code sx={{ color: '#7b1fa2' }} />;
 
       case 'archive':
-
       case 'zip':
-
       case 'rar':
-
       case '7z':
-
       case 'tar':
-
       case 'gz':
-
         return <Archive sx={{ color: '#5d4037' }} />;
 
       default:
-
         return <InsertDriveFile sx={{ color: '#757575' }} />;
-
     }
-
   }
 
 
@@ -3060,168 +3108,104 @@ const CourseTracking = () => {
 
   };
 
-  // Process file URL to ensure it's absolute
-
-  const processFileUrl = (fileUrl) => {
-
-    if (!fileUrl) return null;
-
-    // If it's already a full URL, return as is
-
-    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
-
-      return fileUrl;
-
-    }
-
-    // If it starts with /media/ or /static/, make it absolute
-
-    if (fileUrl.startsWith('/media/') || fileUrl.startsWith('/static/')) {
-
-      return `${API_CONFIG.baseURL}${fileUrl}`;
-
-    }
-
-    // If it's a relative path, assume it's in media
-
-    if (!fileUrl.startsWith('/')) {
-
-      return `${API_CONFIG.baseURL}/media/${fileUrl}`;
-
-    }
-
-    return fileUrl;
-
-  };
 
   // Download resource
-
   const downloadResource = async (resource) => {
-
     try {
+      if (!resource) {
+        showSnackbar('معلومات الملف غير متوفرة', 'error');
+        return;
+      }
 
       const fileUrl = resource.file_url || resource.url;
 
       if (!fileUrl) {
-
         showSnackbar('رابط الملف غير متوفر', 'error');
-
         return;
-
       }
 
       const processedUrl = processFileUrl(fileUrl);
+      
+      if (!processedUrl) {
+        showSnackbar('لا يمكن معالجة رابط الملف', 'error');
+        return;
+      }
 
       const fileName = resource.title || resource.name || 'ملف';
 
-
       // Direct download for file resources
-
       const link = document.createElement('a');
-
       link.href = processedUrl;
-
       link.download = fileName;
-
       link.target = '_blank';
-
       document.body.appendChild(link);
-
       link.click();
-
       document.body.removeChild(link);
 
       showSnackbar('تم بدء تحميل الملف', 'success');
-
     } catch (error) {
-
       console.error('Error downloading resource:', error);
-
       showSnackbar('حدث خطأ أثناء تحميل الملف', 'error');
-
     }
-
   };
 
   // Preview resource
-
   const previewResource = (resource) => {
-
     try {
+      if (!resource) {
+        showSnackbar('معلومات الملف غير متوفرة', 'error');
+        return;
+      }
 
       const fileUrl = resource.file_url || resource.url;
 
       if (!fileUrl) {
-
         showSnackbar('رابط الملف غير متوفر', 'error');
-
         return;
-
       }
 
       const processedUrl = processFileUrl(fileUrl);
+      
+      if (!processedUrl) {
+        showSnackbar('لا يمكن معالجة رابط الملف', 'error');
+        return;
+      }
 
       const fileName = resource.title || resource.name || 'ملف';
-
-      const extension = fileName.split('.').pop().toLowerCase();
+      const extension = fileName.split('.').pop()?.toLowerCase() || '';
 
       // For images, show in modal preview
-
       if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(extension)) {
-
         setImagePreview({
-
           open: true,
-
           url: processedUrl,
-
           title: fileName
-
         });
-
         return;
-
       }
 
       // For PDFs, open in new tab
-
       if (extension === 'pdf') {
-
         window.open(processedUrl, '_blank');
-
         showSnackbar('تم فتح ملف PDF في نافذة جديدة', 'info');
-
         return;
-
       }
 
       // For videos, open in new tab
-
       if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(extension)) {
-
         window.open(processedUrl, '_blank');
-
         showSnackbar('تم فتح الفيديو في نافذة جديدة', 'info');
-
         return;
-
       }
 
       // For other files, try to open in new tab
-
       window.open(processedUrl, '_blank');
-
       showSnackbar('تم فتح الملف في نافذة جديدة', 'info');
 
-
     } catch (error) {
-
       console.error('Error previewing resource:', error);
-
       showSnackbar('حدث خطأ أثناء معاينة الملف', 'error');
-
     }
-
   };
 
 
