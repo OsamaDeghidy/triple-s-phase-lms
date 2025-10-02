@@ -878,23 +878,24 @@ def course_tracking_data(request, course_id):
                     ]
                 })
             
-            # Get module quiz
-            module_quiz = module_quizzes.filter(module=module).first()
+            # Get module quiz - DISABLED
+            # module_quiz = module_quizzes.filter(module=module).first()
+            module_quiz = None  # Quiz functionality disabled
             module_quiz_data = None
-            if module_quiz:
-                quiz_attempt = quiz_attempts.filter(quiz=module_quiz).first()
-                module_quiz_data = {
-                    'id': module_quiz.id,
-                    'title': module_quiz.title,
-                    'description': module_quiz.description,
-                    'time_limit': module_quiz.time_limit,
-                    'pass_mark': module_quiz.pass_mark,
-                    'total_questions': module_quiz.get_total_questions(),
-                    'attempted': quiz_attempt is not None,
-                    'score': quiz_attempt.score if quiz_attempt else None,
-                    'passed': quiz_attempt.passed if quiz_attempt else None,
-                    'attempt_number': quiz_attempt.attempt_number if quiz_attempt else 0
-                }
+            # if module_quiz:
+            #     quiz_attempt = quiz_attempts.filter(quiz=module_quiz).first()
+            #     module_quiz_data = {
+            #         'id': module_quiz.id,
+            #         'title': module_quiz.title,
+            #         'description': module_quiz.description,
+            #         'time_limit': module_quiz.time_limit,
+            #         'pass_mark': module_quiz.pass_mark,
+            #         'total_questions': module_quiz.get_total_questions(),
+            #         'attempted': quiz_attempt is not None,
+            #         'score': quiz_attempt.score if quiz_attempt else None,
+            #         'passed': quiz_attempt.passed if quiz_attempt else None,
+            #         'attempt_number': quiz_attempt.attempt_number if quiz_attempt else 0
+            #     }
             
             modules_data.append({
                 'id': module.id,
@@ -936,7 +937,7 @@ def course_tracking_data(request, course_id):
             'enrolled_date': enrollment.enrollment_date,
             'last_accessed': user_progress.last_accessed,
             'time_spent_minutes': user_progress.time_spent_minutes,
-            'has_final_exam': exams.filter(is_final=True).exists(),
+            'has_final_exam': False,  # Exam functionality disabled
             'certificate': {
                 'id': certificate.certificate_id if certificate else None,
                 'status': certificate.status if certificate else None,
@@ -945,80 +946,81 @@ def course_tracking_data(request, course_id):
             } if certificate else None
         }
         
-        # Prepare assignments data
+        # Prepare assignments data - DISABLED
         assignments_data = []
-        for assignment in assignments:
-            submission = assignment_submissions.filter(assignment=assignment).first()
-            assignments_data.append({
-                'id': assignment.id,
-                'title': assignment.title,
-                'description': assignment.description,
-                'due_date': assignment.due_date,
-                'points': assignment.points,
-                'allow_late_submissions': assignment.allow_late_submissions,
-                'has_questions': assignment.has_questions,
-                'has_file_upload': assignment.has_file_upload,
-                'total_questions': assignment.get_questions_count(),
-                'submitted': submission is not None,
-                'submission_status': submission.status if submission else None,
-                'grade': submission.grade if submission else None,
-                'feedback': submission.feedback if submission else None,
-                'is_overdue': assignment.is_overdue()
-            })
+        # for assignment in assignments:
+        #     submission = assignment_submissions.filter(assignment=assignment).first()
+        #     assignments_data.append({
+        #         'id': assignment.id,
+        #         'title': assignment.title,
+        #         'description': assignment.description,
+        #         'due_date': assignment.due_date,
+        #         'points': assignment.points,
+        #         'allow_late_submissions': assignment.allow_late_submissions,
+        #         'has_questions': assignment.has_questions,
+        #         'has_file_upload': assignment.has_file_upload,
+        #         'total_questions': assignment.get_questions_count(),
+        #         'submitted': submission is not None,
+        #         'submission_status': submission.status if submission else None,
+        #         'grade': submission.grade if submission else None,
+        #         'feedback': submission.feedback if submission else None,
+        #         'is_overdue': assignment.is_overdue()
+        #     })
         
-        # Prepare quizzes data
+        # Prepare quizzes data - DISABLED
         quizzes_data = []
-        all_quizzes = list(course_quizzes) + list(module_quizzes)
-        # Remove duplicates based on quiz ID
-        seen_quiz_ids = set()
-        unique_quizzes = []
-        for quiz in all_quizzes:
-            if quiz.id not in seen_quiz_ids:
-                seen_quiz_ids.add(quiz.id)
-                unique_quizzes.append(quiz)
+        # all_quizzes = list(course_quizzes) + list(module_quizzes)
+        # # Remove duplicates based on quiz ID
+        # seen_quiz_ids = set()
+        # unique_quizzes = []
+        # for quiz in all_quizzes:
+        #     if quiz.id not in seen_quiz_ids:
+        #         seen_quiz_ids.add(quiz.id)
+        #         unique_quizzes.append(quiz)
         
-        for quiz in unique_quizzes:
-            attempt = quiz_attempts.filter(quiz=quiz).first()
-            quizzes_data.append({
-                'id': quiz.id,
-                'title': quiz.title,
-                'description': quiz.description,
-                'time_limit': quiz.time_limit,
-                'pass_mark': quiz.pass_mark,
-                'total_points': quiz.get_total_points(),
-                'total_questions': quiz.questions.count(),
-                'allow_multiple_attempts': True,  # Default value since field doesn't exist
-                'max_attempts': None,  # Default value since field doesn't exist
-                'attempted': attempt is not None,
-                'score': attempt.score if attempt else None,
-                'passed': attempt.passed if attempt else None,
-                'attempt_number': attempt.attempt_number if attempt else 0
-            })
+        # for quiz in unique_quizzes:
+        #     attempt = quiz_attempts.filter(quiz=quiz).first()
+        #     quizzes_data.append({
+        #         'id': quiz.id,
+        #         'title': quiz.title,
+        #         'description': quiz.description,
+        #         'time_limit': quiz.time_limit,
+        #         'pass_mark': quiz.pass_mark,
+        #         'total_points': quiz.get_total_points(),
+        #         'total_questions': quiz.questions.count(),
+        #         'allow_multiple_attempts': True,  # Default value since field doesn't exist
+        #         'max_attempts': None,  # Default value since field doesn't exist
+        #         'attempted': attempt is not None,
+        #         'score': attempt.score if attempt else None,
+        #         'passed': attempt.passed if attempt else None,
+        #         'attempt_number': attempt.attempt_number if attempt else 0
+        #     })
         
-        # Prepare exams data
+        # Prepare exams data - DISABLED
         exams_data = []
-        for exam in exams:
-            attempt = exam_attempts.filter(exam=exam).first()
-            exams_data.append({
-                'id': exam.id,
-                'title': exam.title,
-                'description': exam.description,
-                'time_limit': exam.time_limit,
-                'pass_mark': exam.pass_mark,
-                'is_final': exam.is_final,
-                'total_points': exam.total_points,
-                'total_questions': exam.questions.count(),
-                'allow_multiple_attempts': exam.allow_multiple_attempts,
-                'max_attempts': exam.max_attempts,
-                'attempted': attempt is not None,
-                'score': attempt.score if attempt else None,
-                'passed': attempt.passed if attempt else None,
-                'attempt_number': attempt.attempt_number if attempt else 0
-            })
+        # for exam in exams:
+        #     attempt = exam_attempts.filter(exam=exam).first()
+        #     exams_data.append({
+        #         'id': exam.id,
+        #         'title': exam.title,
+        #         'description': exam.description,
+        #         'time_limit': exam.time_limit,
+        #         'pass_mark': exam.pass_mark,
+        #         'is_final': exam.is_final,
+        #         'total_points': exam.total_points,
+        #         'total_questions': exam.questions.count(),
+        #         'allow_multiple_attempts': exam.allow_multiple_attempts,
+        #         'max_attempts': exam.max_attempts,
+        #         'attempted': attempt is not None,
+        #         'score': attempt.score if attempt else None,
+        #         'passed': attempt.passed if attempt else None,
+        #         'attempt_number': attempt.attempt_number if attempt else 0
+        #     })
         
-        # Get final exam data if exists
+        # Get final exam data if exists - DISABLED
         final_exam_data = None
-        final_exam = exams.filter(is_final=True).first()
+        # final_exam = exams.filter(is_final=True).first()
+        final_exam = None  # Exam functionality disabled
         if final_exam:
             # Get user's previous attempts for final exam - تعليق مؤقت بسبب حذف نموذج الواجبات
             # from assignments.models import UserExamAttempt  # Module deleted

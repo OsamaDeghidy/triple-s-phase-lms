@@ -26,7 +26,7 @@ import { ArrowBack as ArrowBackIcon, Save as SaveIcon, DeleteOutline as DeleteIc
 import { styled } from '@mui/material/styles';
 import contentAPI from '../../../services/content.service';
 import BunnyVideoSelector from '../../../components/BunnyVideoSelector';
-import { testAuth, testBunnyAPI } from '../../../utils/authTest';
+// import { testAuth, testBunnyAPI } from '../../../utils/authTest';
 
 const Wrapper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -418,34 +418,6 @@ const LessonForm = ({ isEdit = false }) => {
           </Box>
         )}
 
-        {/* Debug Section */}
-        <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-            Debug Tools
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            <Button 
-              variant="outlined" 
-              size="small"
-              onClick={() => {
-                const auth = testAuth();
-                console.log('Auth Status:', auth);
-              }}
-            >
-              Test Auth
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="small"
-              onClick={async () => {
-                const result = await testBunnyAPI();
-                console.log('Bunny API Test:', result);
-              }}
-            >
-              Test Bunny API
-            </Button>
-          </Box>
-        </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 3 }}>
           <Button variant="outlined" onClick={() => navigate(-1)} disabled={saving}>إلغاء</Button>
