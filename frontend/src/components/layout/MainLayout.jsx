@@ -43,9 +43,6 @@ const teacherNavItems = [
   { text: 'كورساتي', icon: <ClassIcon />, path: '/teacher/my-courses' },
   { text: 'بنك الأسئلة', icon: <QuizIcon />, path: '/teacher/question-bank' },
   { text: 'البطاقات التعليمية', icon: <PsychologyIcon />, path: '/teacher/flashcards' },
-  // { text: 'الواجبات', icon: <AssignmentIcon />, path: '/teacher/assignments' },
-  { text: 'الكويزات', icon: <AssessmentIcon />, path: '/teacher/quizzes' },
- // { text: 'الامتحانات', icon: <AssessmentIcon />, path: '/teacher/exams' },
   { text: 'المحاضرات', icon: <VideoCallIcon />, path: '/teacher/meetings' },
   { text: 'المقالات', icon: <ArticleIcon />, path: '/teacher/articles' },
   { text: 'الإعدادات', icon: <SettingsIcon />, path: '/teacher/settings' },
@@ -56,9 +53,7 @@ const studentNavItems = [
   { text: 'الرئيسية', icon: <HomeIcon />, path: '/', exact: true },
   { text: 'لوحة التحكم', icon: <DashboardIcon />, path: '/student/dashboard' },
   { text: 'كورساتي', icon: <ClassIcon />, path: '/student/my-courses', isDropdown: true },
-  // { text: 'واجباتي', icon: <AssignmentIcon />, path: '/student/assignments' },
   { text: 'محاضراتي', icon: <VideoCallIcon />, path: '/student/meetings' },
-  { text: 'شهاداتي', icon: <SchoolIcon />, path: '/student/certificates' },
   { text: 'الإعدادات', icon: <SettingsIcon />, path: '/student/settings' },
 ];
 

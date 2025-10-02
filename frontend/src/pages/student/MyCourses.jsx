@@ -56,7 +56,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { styled, keyframes } from '@mui/system';
 import { courseAPI } from '../../services/api.service';
 import { contentAPI } from '../../services/content.service';
-import { quizAPI } from '../../services/quiz.service';
+// import { quizAPI } from '../../services/quiz.service';
 
 // Module Lessons Component
 const ModuleLessons = ({ moduleId, lessons = [], course = null }) => {

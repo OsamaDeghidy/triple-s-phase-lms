@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 from courses.models import Course, Enrollment
-from certificates.models import Certificate
 from datetime import timedelta
 
 User = get_user_model()
@@ -21,7 +20,6 @@ def admin_dashboard(request):
     total_teachers = User.objects.filter(groups__name='Teachers').count()
     total_courses = Course.objects.count()
     total_enrollments = Enrollment.objects.count()
-    total_certificates = Certificate.objects.count()
     
     # Get recent activities (simplified for now)
     recent_activities = [
@@ -61,7 +59,6 @@ def admin_dashboard(request):
             'total_teachers': total_teachers,
             'total_courses': total_courses,
             'total_enrollments': total_enrollments,
-            'total_certificates': total_certificates,
         },
         'recent_activities': recent_activities,
         'recent_courses': recent_courses,

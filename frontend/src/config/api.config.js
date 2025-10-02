@@ -10,7 +10,7 @@ const getBaseURL = () => {
   // Check if we're in development mode
   if (import.meta.env.DEV) {
     // Try environment variable first, then fallback to localhost
-    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+    //return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   }
   // In production, use the production URL
   return import.meta.env.VITE_API_BASE_URL || 'https://triplesacademy.com';
@@ -71,11 +71,6 @@ export const API_ENDPOINTS = {
   CONTENT: {
     MODULES: '/api/content/modules/',
     LESSONS: '/api/content/lessons/',
-  },
-  ASSIGNMENTS: {
-    QUIZZES: '/api/assignments/quizzes/',
-    QUIZ_ATTEMPTS: '/api/assignments/quiz-attempts/',
-    QUIZ_ANSWERS: '/api/assignments/quiz-user-answers/',
   },
   EXTRAS: {
     BANNERS: '/api/extras/banners/active/',

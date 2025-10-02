@@ -761,57 +761,65 @@ def course_tracking_data(request, course_id):
                 'completion_percentage': module_progress.get_completion_percentage()
             }
         
-        # Get quizzes for course and modules
-        from assignments.models import Quiz, QuizAttempt
-        course_quizzes = Quiz.objects.filter(
-            course=course,
-            is_active=True
-        ).prefetch_related('questions')
+        # Get quizzes for course and modules - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # from assignments.models import Quiz, QuizAttempt  # Module deleted
+        # course_quizzes = Quiz.objects.filter(
+        #     course=course,
+        #     is_active=True
+        # ).prefetch_related('questions')
+        course_quizzes = []  # Temporary empty list
         
-        module_quizzes = Quiz.objects.filter(
-            module__in=modules,
-            is_active=True
-        ).prefetch_related('questions')
+        # module_quizzes = Quiz.objects.filter(
+        #     module__in=modules,
+        #     is_active=True
+        # ).prefetch_related('questions')
+        module_quizzes = []  # Temporary empty list
         
-        # Get user quiz attempts
-        quiz_attempts = QuizAttempt.objects.filter(
-            user=user,
-            quiz__in=list(course_quizzes) + list(module_quizzes)
-        ).select_related('quiz')
+        # Get user quiz attempts - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # quiz_attempts = QuizAttempt.objects.filter(
+        #     user=user,
+        #     quiz__in=list(course_quizzes) + list(module_quizzes)
+        # )
+        quiz_attempts = []  # Temporary empty list
         
-        # Get assignments
-        from assignments.models import Assignment, AssignmentSubmission
-        assignments = Assignment.objects.filter(
-            course=course,
-            is_active=True
-        ).prefetch_related('questions', 'questions__answers')
+        # Get assignments - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # from assignments.models import Assignment, AssignmentSubmission  # Module deleted
+        # assignments = Assignment.objects.filter(
+        #     course=course,
+        #     is_active=True
+        # ).prefetch_related('questions', 'questions__answers')
+        assignments = []  # Temporary empty list
         
-        # Get user assignment submissions
-        assignment_submissions = AssignmentSubmission.objects.filter(
-            user=user,
-            assignment__in=assignments
-        ).select_related('assignment')
+        # Get user assignment submissions - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # assignment_submissions = AssignmentSubmission.objects.filter(
+        #     user=user,
+        #     assignment__in=assignments
+        # ).select_related('assignment')
+        assignment_submissions = []  # Temporary empty list
         
-        # Get exams
-        from assignments.models import Exam, UserExamAttempt
-        exams = Exam.objects.filter(
-            course=course,
-            is_active=True
-        ).prefetch_related('questions', 'questions__answers')
+        # Get exams - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # from assignments.models import Exam, UserExamAttempt  # Module deleted
+        # exams = Exam.objects.filter(
+        #     course=course,
+        #     is_active=True
+        # ).prefetch_related('questions', 'questions__answers')
+        exams = []  # Temporary empty list
         
-        # Get user exam attempts
-        exam_attempts = UserExamAttempt.objects.filter(
-            user=user,
-            exam__in=exams
-        ).select_related('exam')
+        # Get user exam attempts - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # exam_attempts = UserExamAttempt.objects.filter(
+        #     user=user,
+        #     exam__in=exams
+        # ).select_related('exam')
+        exam_attempts = []  # Temporary empty list
         
-        # Get certificate if exists
-        from certificates.models import Certificate
-        certificate = Certificate.objects.filter(
-            user=user,
-            course=course,
-            status='active'
-        ).first()
+        # Get certificate if exists - تعليق مؤقت بسبب حذف نموذج الشهادات
+        # from certificates.models import Certificate  # Module deleted
+        # certificate = Certificate.objects.filter(
+        #     user=user,
+        #     course=course,
+        #     status='active'
+        # ).first()
+        certificate = None  # Temporary value
         
         # Prepare modules data
         modules_data = []
@@ -1012,12 +1020,13 @@ def course_tracking_data(request, course_id):
         final_exam_data = None
         final_exam = exams.filter(is_final=True).first()
         if final_exam:
-            # Get user's previous attempts for final exam
-            from assignments.models import UserExamAttempt
-            previous_attempts = UserExamAttempt.objects.filter(
-                user=user,
-                exam=final_exam
-            ).order_by('-attempt_number')
+            # Get user's previous attempts for final exam - تعليق مؤقت بسبب حذف نموذج الواجبات
+            # from assignments.models import UserExamAttempt  # Module deleted
+            # previous_attempts = UserExamAttempt.objects.filter(
+            #     user=user,
+            #     exam=final_exam
+            # ).order_by('-attempt_number')
+            previous_attempts = []  # Temporary empty list
             
             final_exam_data = {
                 'id': final_exam.id,

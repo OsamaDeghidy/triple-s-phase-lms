@@ -45,12 +45,10 @@ urlpatterns = [
     # path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
     # API Routes
-    path('api/assignments/', include('assignments.urls')),
     path('api/assessment/', include('assessment.urls')),
     path('api/auth/', include('authentication.urls')),
     path('api/users/', include('users.urls')),
     path('api/courses/', include('courses.urls')),
-    path('api/certificates/', include('certificates.urls')),
     path('api/meetings/', include('meetings.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/articles/', include('articles.urls')),
@@ -58,14 +56,14 @@ urlpatterns = [
     path('api/content/', include('content.urls')),  # Content app URLs
     path('api/store/', include('store.urls')),  # Store app URLs
     path('api/reviews/', include('reviews.urls')),  # Reviews app URLs
-    path('api/permissions/', include('custom_permissions.urls')),  # Custom permissions URLs
+   
     
     # Legacy routes (for backward compatibility) - Commented out to avoid namespace conflicts
     # path('auth/', include('authentication.urls')),
     # path('users/', include('users.urls')),
     # path('courses/', include('courses.urls')),
-    # path('assignments/', include('assignments.urls')),
-    # path('certificates/', include('certificates.urls')),
+    # path('assignments/', include('assignments.urls')),  # Module deleted
+    # path('certificates/', include('certificates.urls')),  # Module deleted
     # path('meetings/', include('meetings.urls')),
     # path('notifications/', include('notifications.urls')),
     # path('articles/', include('articles.urls')),
@@ -73,7 +71,7 @@ urlpatterns = [
     # path('content/', include('content.urls')),  # Content app URLs
     # path('store/', include('store.urls')),  # Store app URLs
     # path('reviews/', include('reviews.urls')),  # Reviews app URLs
-    # path('permissions/', include('custom_permissions.urls')),  # Custom permissions URLs
+    # path('permissions/', include('custom_permissions.urls')),  # Custom permissions URLs - Module deleted
     
     # Template views for legacy support (data comes from APIs)
     # path('', include('templates.urls')),  # Main pages - disabled for now
@@ -94,4 +92,3 @@ if settings.DEBUG and 'debug_toolbar_available' in locals() and debug_toolbar_av
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-

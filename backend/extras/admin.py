@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.db.models import Count, Q
 from django.contrib.auth import get_user_model
 from courses.models import Course, Enrollment
-from certificates.models import Certificate
 from .models import Banner, CourseCollection
 from .views import get_admin_dashboard_data
 from core.admin_views import user_permissions, group_permissions
@@ -72,7 +71,6 @@ class CustomAdminSite(AdminSite):
                 'total_teachers': User.objects.filter(groups__name='Teachers').count(),
                 'total_courses': Course.objects.count(),
                 'total_enrollments': Enrollment.objects.count(),
-                'total_certificates': Certificate.objects.count(),
             })
         
         return context

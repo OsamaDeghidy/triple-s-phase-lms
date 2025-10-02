@@ -294,7 +294,7 @@ def get_admin_dashboard_data():
     """
     from users.models import User
     from courses.models import Course, Enrollment
-    from certificates.models import Certificate
+    # from certificates.models import Certificate  # Module deleted
     
     now = timezone.now()
     

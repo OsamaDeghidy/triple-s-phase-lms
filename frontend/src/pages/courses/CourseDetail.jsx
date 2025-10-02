@@ -51,8 +51,8 @@ import CourseReviewsTab from '../../components/courses/CourseReviewsTab';
 import CoursePromotionalVideo from '../../components/courses/CoursePromotionalVideo';
 import { courseAPI, cartAPI, paymentAPI } from '../../services/courseService';
 import { contentAPI } from '../../services/content.service';
-import { assignmentsAPI } from '../../services/assignment.service';
-import { examAPI } from '../../services/exam.service';
+// import { assignmentsAPI } from '../../services/assignment.service';
+// import { examAPI } from '../../services/exam.service';
 import { reviewsAPI } from '../../services/reviews.service';
 import api from '../../services/api.service';
 import { API_CONFIG } from '../../config/api.config';
@@ -408,25 +408,26 @@ const CourseDetail = () => {
                             modulesData[i].lessons = [];
                         }
 
-                        // Fetch assignments for this module
-                        try {
-                            const assignmentsResponse = await assignmentsAPI.getAssignments({
-                                course: id,
-                                module: moduleId
-                            });
-                            console.log(`Assignments for module ${moduleId}:`, assignmentsResponse);
+                        // Fetch assignments for this module - DISABLED
+                        // try {
+                        //     const assignmentsResponse = await assignmentsAPI.getAssignments({
+                        //         course: id,
+                        //         module: moduleId
+                        //     });
+                        //     console.log(`Assignments for module ${moduleId}:`, assignmentsResponse);
 
-                            if (assignmentsResponse && Array.isArray(assignmentsResponse)) {
-                                modulesData[i].assignments = assignmentsResponse;
-                            } else if (assignmentsResponse && Array.isArray(assignmentsResponse.results)) {
-                                modulesData[i].assignments = assignmentsResponse.results;
-                            } else if (assignmentsResponse && Array.isArray(assignmentsResponse.data)) {
-                                modulesData[i].assignments = assignmentsResponse.data;
-                            }
-                        } catch (error) {
-                            console.warn(`Could not fetch assignments for module ${moduleId}:`, error);
-                            modulesData[i].assignments = [];
-                        }
+                        //     if (assignmentsResponse && Array.isArray(assignmentsResponse)) {
+                        //         modulesData[i].assignments = assignmentsResponse;
+                        //     } else if (assignmentsResponse && Array.isArray(assignmentsResponse.results)) {
+                        //         modulesData[i].assignments = assignmentsResponse.results;
+                        //     } else if (assignmentsResponse && Array.isArray(assignmentsResponse.data)) {
+                        //         modulesData[i].assignments = assignmentsResponse.data;
+                        //     }
+                        // } catch (error) {
+                        //     console.warn(`Could not fetch assignments for module ${moduleId}:`, error);
+                        //     modulesData[i].assignments = [];
+                        // }
+                        modulesData[i].assignments = [];
 
                         // Fetch quizzes for this module
                         try {
@@ -445,25 +446,26 @@ const CourseDetail = () => {
                             modulesData[i].quizzes = [];
                         }
 
-                        // Fetch exams for this module
-                        try {
-                            const examsResponse = await examAPI.getExams({
-                                course: id,
-                                module: moduleId
-                            });
-                            console.log(`Exams for module ${moduleId}:`, examsResponse);
+                        // Fetch exams for this module - DISABLED
+                        // try {
+                        //     const examsResponse = await examAPI.getExams({
+                        //         course: id,
+                        //         module: moduleId
+                        //     });
+                        //     console.log(`Exams for module ${moduleId}:`, examsResponse);
 
-                            if (examsResponse && Array.isArray(examsResponse)) {
-                                modulesData[i].exams = examsResponse;
-                            } else if (examsResponse && Array.isArray(examsResponse.results)) {
-                                modulesData[i].exams = examsResponse.results;
-                            } else if (examsResponse && Array.isArray(examsResponse.data)) {
-                                modulesData[i].exams = examsResponse.data;
-                            }
-                        } catch (error) {
-                            console.warn(`Could not fetch exams for module ${moduleId}:`, error);
-                            modulesData[i].exams = [];
-                        }
+                        //     if (examsResponse && Array.isArray(examsResponse)) {
+                        //         modulesData[i].exams = examsResponse;
+                        //     } else if (examsResponse && Array.isArray(examsResponse.results)) {
+                        //         modulesData[i].exams = examsResponse.results;
+                        //     } else if (examsResponse && Array.isArray(examsResponse.data)) {
+                        //         modulesData[i].exams = examsResponse.data;
+                        //     }
+                        // } catch (error) {
+                        //     console.warn(`Could not fetch exams for module ${moduleId}:`, error);
+                        //     modulesData[i].exams = [];
+                        // }
+                        modulesData[i].exams = [];
                     }
                 }
 

@@ -226,9 +226,9 @@ import {
 
 import { Quiz as QuizIcon } from '@mui/icons-material';
 
-import QuizStart from './quiz/QuizStart';
+// import QuizStart from './quiz/QuizStart';
 
-import QuizResult from './quiz/QuizResult';
+// import QuizResult from './quiz/QuizResult';
 
 import FlashcardViewer from '../../components/assessment/FlashcardViewer';
 
@@ -4838,52 +4838,23 @@ const CourseTracking = () => {
 
             </IconButton>
 
-            {!showQuizResult ? (
-
-              <QuizStart
-
-                quizId={activeQuizId}
-
-                onFinish={(attemptId) => {
-                  setActiveAttemptId(attemptId);
-
-                  setShowQuizResult(true);
-
-                }}
-
-                onClose={() => {
-
+            {/* Quiz components disabled */}
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="h6" color="text.secondary">
+                Quiz functionality has been disabled
+              </Typography>
+              <Button 
+                variant="contained" 
+                onClick={() => {
                   setOpenQuiz(false);
-
                   setShowQuizResult(false);
-
                   setActiveAttemptId(null);
-
                 }}
-
-              />
-
-            ) : (
-
-              <QuizResult
-
-                quizId={activeQuizId}
-
-                attemptId={activeAttemptId}
-
-                onClose={() => {
-
-                  setOpenQuiz(false);
-
-                  setShowQuizResult(false);
-
-                  setActiveAttemptId(null);
-
-                }}
-
-              />
-
-            )}
+                sx={{ mt: 2 }}
+              >
+                Close
+              </Button>
+            </Box>
 
           </Box>
 

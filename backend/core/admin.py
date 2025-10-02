@@ -47,9 +47,9 @@ class LMSAdminSite(AdminSite):
         # Import models here to avoid circular imports
         from users.models import Profile, Instructor, Student
         from courses.models import Course, Enrollment
-        from assignments.models import Quiz, Exam, Assignment
+        # from assignments.models import Quiz, Exam, Assignment  # Module deleted
         from meetings.models import Meeting
-        from certificates.models import Certificate
+        # from certificates.models import Certificate  # Module deleted
         from articles.models import Article
         from notifications.models import Notification
         from django.contrib.auth.models import User
@@ -101,9 +101,9 @@ class LMSAdminSite(AdminSite):
         """API endpoint for dashboard statistics"""
         from users.models import Profile
         from courses.models import Course, Enrollment
-        from assignments.models import Quiz, Exam, Assignment
+        # from assignments.models import Quiz, Exam, Assignment  # Module deleted
         from meetings.models import Meeting
-        from certificates.models import Certificate
+        # from certificates.models import Certificate  # Module deleted
         from articles.models import Article
         from notifications.models import Notification
         from django.contrib.auth.models import User

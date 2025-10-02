@@ -88,14 +88,11 @@ INSTALLED_APPS = [
     'content',
     'store',
     'reviews',
-    'assignments',
     'assessment',
-    'certificates',
     'meetings',
     'notifications',
     'articles',
     'extras',
-    'custom_permissions',
 ]
 
 # Moyasar settings (use environment variables in production)
@@ -487,17 +484,7 @@ ADMIN_REORDER = (
         'courses.Cart',
         'courses.CartItem',
     )},
-    
-    # Assignments & Exams
-    {'app': 'assignments', 'label': 'الواجبات والامتحانات', 'models': (
-        'assignments.Quiz',
-        'assignments.Question',
-        'assignments.QuizAttempt',
-        'assignments.Exam',
-        'assignments.ExamQuestion',
-        'assignments.UserExamAttempt',
-    )},
-    
+     
     # Assessment System
     {'app': 'assessment', 'label': 'نظام التقييمات', 'models': (
         'assessment.Assessment',
@@ -508,13 +495,7 @@ ADMIN_REORDER = (
         'assessment.Flashcard',
         'assessment.StudentFlashcardProgress',
     )},
-    
-    # Assignments
-    {'app': 'assignments', 'label': 'الواجبات', 'models': (
-        'assignments.Assignment',
-        'assignments.AssignmentSubmission',
-    )},
-    
+  
     # Meetings
     {'app': 'meetings', 'label': 'الاجتماعات', 'models': (
         'meetings.Meeting',
@@ -525,13 +506,6 @@ ADMIN_REORDER = (
         'meetings.MeetingChat',
     )},
     
-    # Certificates
-    {'app': 'certificates', 'label': 'الشهادات', 'models': (
-        'certificates.Certificate',
-        'certificates.CertificateTemplate',
-        'certificates.PresetCertificateTemplate',
-        'certificates.UserSignature',
-    )},
     {'app': 'articles', 'label': 'المقالات', 'models': (
         'articles.Article',
         'articles.ArticleComment',

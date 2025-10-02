@@ -5,7 +5,6 @@ from django.db.models import Count, Avg, Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 from courses.models import Course, Enrollment
-from assignments.models import Assignment, AssignmentSubmission
 from content.models import Lesson
 from users.models import Student, Instructor
 from meetings.models import Meeting
@@ -13,7 +12,7 @@ from articles.models import Article
 from store.models import Order
 from store.models_payment import Transaction
 from reviews.models import CourseReview
-from certificates.models import Certificate
+
 
 @login_required
 def student_dashboard_stats(request):
@@ -32,20 +31,22 @@ def student_dashboard_stats(request):
         course__enrollments__is_active=True
     ).count()
     
-    # الواجبات المعلقة
-    pending_assignments = Assignment.objects.filter(
-        course__enrollments__student=student,
-        course__enrollments__is_active=True,
-        due_date__gte=timezone.now()
-    ).exclude(
-        submissions__student=student
-    ).count()
+    # الواجبات المعلقة - تعليق مؤقت بسبب حذف نموذج الواجبات
+    # pending_assignments = Assignment.objects.filter(
+    #     course__enrollments__student=student,
+    #     course__enrollments__is_active=True,
+    #     due_date__gte=timezone.now()
+    # ).exclude(
+    #     submissions__student=student
+    # ).count()
+    pending_assignments = 0  # Temporary value
     
-    # متوسط الدرجات
-    average_grade = AssignmentSubmission.objects.filter(
-        student=student,
-        grade__isnull=False
-    ).aggregate(avg_grade=Avg('grade'))['avg_grade'] or 0
+    # متوسط الدرجات - تعليق مؤقت بسبب حذف نموذج الواجبات
+    # average_grade = AssignmentSubmission.objects.filter(
+    #     student=student,
+    #     grade__isnull=False
+    # ).aggregate(avg_grade=Avg('grade'))['avg_grade'] or 0
+    average_grade = 0  # Temporary value
     
     # النقاط الإجمالية
     total_points = student.points or 0
@@ -53,8 +54,9 @@ def student_dashboard_stats(request):
     # أيام التعلم المتتالية
     learning_streak = student.learning_streak or 0
     
-    # الشهادات
-    certificates = Certificate.objects.filter(student=student).count()
+    # الشهادات - تعليق مؤقت بسبب حذف نموذج الشهادات
+    # certificates = Certificate.objects.filter(student=student).count()
+    certificates = 0  # Temporary value
     
     return JsonResponse({
         'enrolledCourses': enrolled_courses,
@@ -94,11 +96,12 @@ def teacher_dashboard_stats(request):
         course__instructor=instructor
     ).aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
     
-    # الواجبات المعلقة
-    pending_assignments = AssignmentSubmission.objects.filter(
-        assignment__course__instructor=instructor,
-        grade__isnull=True
-    ).count()
+    # الواجبات المعلقة - تعليق مؤقت بسبب حذف نموذج الواجبات
+    # pending_assignments = AssignmentSubmission.objects.filter(
+    #     assignment__course__instructor=instructor,
+    #     grade__isnull=True
+    # ).count()
+    pending_assignments = 0  # Temporary value
     
     # المحاضرات القادمة
     upcoming_meetings = Meeting.objects.filter(
@@ -176,9 +179,6 @@ def teacher_courses(request):
         # عدد الطلاب
         students_count = course.enrollments.filter(is_active=True).count()
         
-        # عدد الواجبات
-        assignments_count = course.assignments.count()
-        
         # متوسط تقدم الطلاب
         enrollments = course.enrollments.filter(is_active=True)
         total_progress = 0
@@ -191,13 +191,7 @@ def teacher_courses(request):
                 total_progress += (completed_lessons / total_lessons * 100)
         
         avg_progress = total_progress / enrollments.count() if enrollments.count() > 0 else 0
-        
-        # الواجبات المعلقة
-        pending_assignments = AssignmentSubmission.objects.filter(
-            assignment__course=course,
-            grade__isnull=True
-        ).count()
-        
+           
         # الجلسة القادمة
         next_meeting = course.meetings.filter(
             start_time__gte=timezone.now()
@@ -207,9 +201,7 @@ def teacher_courses(request):
             'id': course.id,
             'name': course.title,
             'students': students_count,
-            'assignments': assignments_count,
             'progress': round(avg_progress, 1),
-            'pendingAssignments': pending_assignments,
             'nextClass': next_meeting.start_time.strftime('%Y-%m-%d %H:%M') if next_meeting else 'لا توجد جلسات قادمة',
             'color': 'primary'
         })
@@ -238,30 +230,12 @@ def student_progress(request):
         completed_lessons = course.lessons.filter(
             views__student=student
         ).count()
-        progress = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
-        
-        # متوسط الدرجات
-        avg_grade = AssignmentSubmission.objects.filter(
-            student=student,
-            assignment__course=course,
-            grade__isnull=False
-        ).aggregate(avg=Avg('grade'))['avg'] or 0
-        
-        # تحديد التقدير
-        if avg_grade >= 90:
-            grade = 'ممتاز'
-        elif avg_grade >= 80:
-            grade = 'جيد جداً'
-        elif avg_grade >= 70:
-            grade = 'جيد'
-        else:
-            grade = 'مقبول'
+        progress = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0           
         
         students_data.append({
             'id': student.id,
             'name': student.user.get_full_name(),
             'progress': round(progress, 1),
-            'grade': grade
         })
     
     # ترتيب حسب التقدم
@@ -293,21 +267,7 @@ def recent_activity(request):
                 'course': lesson.course.title
             })
         
-        # آخر الواجبات المقدمة
-        recent_submissions = AssignmentSubmission.objects.filter(
-            student=user.student
-        ).order_by('-submitted_at')[:5]
-        
-        for submission in recent_submissions:
-            activities.append({
-                'id': f'submission_{submission.id}',
-                'type': 'assignment',
-                'title': f'قدم واجب: {submission.assignment.title}',
-                'description': f'مقرر: {submission.assignment.course.title}',
-                'time': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
-                'course': submission.assignment.course.title
-            })
-    
+
     elif hasattr(user, 'instructor'):
         # نشاطات المعلم
         # آخر المقررات المنشأة
@@ -323,56 +283,12 @@ def recent_activity(request):
                 'description': f'عدد الطلاب: {course.enrollments.filter(is_active=True).count()}',
                 'time': course.created_at.strftime('%Y-%m-%d %H:%M')
             })
-        
-        # آخر الواجبات المنشأة
-        recent_assignments = Assignment.objects.filter(
-            course__instructor=user.instructor
-        ).order_by('-created_at')[:5]
-        
-        for assignment in recent_assignments:
-            activities.append({
-                'id': f'assignment_{assignment.id}',
-                'type': 'assignment',
-                'title': f'أنشأ واجب: {assignment.title}',
-                'description': f'مقرر: {assignment.course.title}',
-                'time': assignment.created_at.strftime('%Y-%m-%d %H:%M'),
-                'course': assignment.course.title
-            })
-    
+
     # ترتيب حسب التاريخ
     activities.sort(key=lambda x: x['time'], reverse=True)
     
     return JsonResponse(activities[:10], safe=False)
 
-@login_required
-def upcoming_assignments(request):
-    """الواجبات القادمة"""
-    user = request.user
-    
-    if hasattr(user, 'student'):
-        # واجبات الطالب القادمة
-        assignments = Assignment.objects.filter(
-            course__enrollments__student=user.student,
-            course__enrollments__is_active=True,
-            due_date__gte=timezone.now()
-        ).exclude(
-            submissions__student=user.student
-        ).order_by('due_date')[:10]
-        
-        assignments_data = []
-        for assignment in assignments:
-            assignments_data.append({
-                'id': assignment.id,
-                'type': 'assignment',
-                'title': assignment.title,
-                'description': f'مقرر: {assignment.course.title}',
-                'time': assignment.due_date.strftime('%Y-%m-%d %H:%M'),
-                'course': assignment.course.title
-            })
-        
-        return JsonResponse(assignments_data, safe=False)
-    
-    return JsonResponse([], safe=False)
 
 @login_required
 def upcoming_meetings(request):

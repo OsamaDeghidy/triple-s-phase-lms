@@ -9,7 +9,7 @@ from datetime import timedelta
 from .models import Course, Enrollment
 from users.models import User, Profile, Instructor, Student
 from content.models import Module, Lesson
-from assignments.models import Assignment, AssignmentSubmission
+# from assignments.models import Assignment, AssignmentSubmission  # Module deleted
 from meetings.models import Meeting
 
 
@@ -48,11 +48,12 @@ def teacher_dashboard_stats(request):
             total_enrollments += enrollments
             total_students += course.students.count()
         
-        # إحصائيات الواجبات
-        pending_assignments = Assignment.objects.filter(
-            course__in=instructor_courses,
-            due_date__gte=timezone.now()
-        ).count()
+        # إحصائيات الواجبات - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # pending_assignments = Assignment.objects.filter(
+        #     course__in=instructor_courses,
+        #     due_date__gte=timezone.now()
+        # ).count()
+        pending_assignments = 0  # Temporary value
         
         # إحصائيات المحاضرات
         upcoming_meetings = Meeting.objects.filter(
@@ -238,20 +239,6 @@ def teacher_recent_activity(request):
         
         # واجبات جديدة
         instructor_courses = Course.objects.filter(instructors=instructor)
-        recent_assignments = Assignment.objects.filter(
-            course__in=instructor_courses
-        ).select_related('course').order_by('-created_at')[:5]
-        
-        for assignment in recent_assignments:
-            recent_activities.append({
-                'id': f"assignment_{assignment.id}",
-                'type': 'assignment',
-                'title': f'واجب جديد: {assignment.title}',
-                'description': f'تم إنشاء واجب في {assignment.course.title}',
-                'date': assignment.created_at,
-                'icon': 'assignment'
-            })
-        
         # ترتيب النشاطات حسب التاريخ
         recent_activities.sort(key=lambda x: x['date'], reverse=True)
         
@@ -357,17 +344,19 @@ def student_dashboard_stats(request):
                 course_lessons = sum(module.lessons.count() for module in enrollment.course.modules.all())
                 completed_lessons += int((enrollment.progress / 100) * course_lessons)
         
-        # إحصائيات الواجبات
-        pending_assignments = Assignment.objects.filter(
-            course__in=student_courses,
-            due_date__gte=timezone.now()
-        ).count()
+        # إحصائيات الواجبات - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # pending_assignments = Assignment.objects.filter(
+        #     course__in=student_courses,
+        #     due_date__gte=timezone.now()
+        # ).count()
+        pending_assignments = 0  # Temporary value
         
-        # متوسط الدرجات - حساب حقيقي
-        submissions = AssignmentSubmission.objects.filter(
-            user=user,
-            status='graded'
-        )
+        # متوسط الدرجات - حساب حقيقي - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # submissions = AssignmentSubmission.objects.filter(
+        #     user=user,
+        #     status='graded'
+        # )
+        submissions = []  # Temporary empty list
         avg_grade = 0
         if submissions.exists():
             total_score = sum(submission.total_score or 0 for submission in submissions)
@@ -580,10 +569,11 @@ def student_recent_activity(request):
                 'icon': 'school'
             })
         
-        # واجبات مكتملة
-        recent_submissions = AssignmentSubmission.objects.filter(
-            user=user
-        ).select_related('assignment', 'assignment__course').order_by('-submitted_at')[:5]
+        # واجبات مكتملة - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # recent_submissions = AssignmentSubmission.objects.filter(
+        #     user=user
+        # ).select_related('assignment', 'assignment__course').order_by('-submitted_at')[:5]
+        recent_submissions = []  # Temporary empty list
         
         for submission in recent_submissions:
             recent_activities.append({
@@ -629,19 +619,21 @@ def student_upcoming_assignments(request):
             status__in=['active', 'completed']
         )]
         
-        # الواجبات القادمة
-        upcoming_assignments = Assignment.objects.filter(
-            course__in=student_courses,
-            due_date__gte=timezone.now()
-        ).select_related('course').order_by('due_date')[:10]
+        # الواجبات القادمة - تعليق مؤقت بسبب حذف نموذج الواجبات
+        # upcoming_assignments = Assignment.objects.filter(
+        #     course__in=student_courses,
+        #     due_date__gte=timezone.now()
+        # ).select_related('course').order_by('due_date')[:10]
+        upcoming_assignments = []  # Temporary empty list
         
         assignments_data = []
         for assignment in upcoming_assignments:
-            # التحقق من حالة التسليم
-            submission = AssignmentSubmission.objects.filter(
-                assignment=assignment,
-                user=user
-            ).first()
+            # التحقق من حالة التسليم - تعليق مؤقت بسبب حذف نموذج الواجبات
+            # submission = AssignmentSubmission.objects.filter(
+            #     assignment=assignment,
+            #     user=user
+            # ).first()
+            submission = None  # Temporary value
             
             assignments_data.append({
                 'id': assignment.id,

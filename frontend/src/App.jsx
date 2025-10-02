@@ -63,30 +63,13 @@ import StudentMyCourses from './pages/student/MyCourses';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 import DashboardRedirect from './pages/DashboardRedirect';
-import QuizzesList from './pages/teacher/quizzes/QuizzesList';
-import QuizForm from './pages/teacher/quizzes/QuizForm';
-import QuizDetail from './pages/teacher/quizzes/QuizDetail';
-import ExamList from './pages/teacher/exams/ExamList';
-import ExamForm from './pages/teacher/exams/ExamForm';
-import ExamDetail from './pages/teacher/exams/ExamDetail';
+
 
 // Dashboard Pages
 import StudentDashboard from './components/dashboards/StudentDashboard';
 import TeacherDashboard from './components/dashboards/TeacherDashboard';
 import CourseTracking from './pages/student/CourseTracking';
-import MyCertificates from './pages/student/MyCertificates';
-import CertificateVerification from './pages/CertificateVerification';
-import StudentAssignments from './pages/assignments/StudentAssignments';
-import TeacherAssignments from './pages/assignments/TeacherAssignments';
-import AssignmentSubmissions from './pages/assignments/AssignmentSubmissions';
-import GradeSubmission from './pages/assignments/GradeSubmission';
-import SubmitAssignment from './pages/assignments/SubmitAssignment';
-import CreateAssignment from './pages/assignments/CreateAssignment';
-import EditAssignment from './pages/assignments/EditAssignment';
-import AssignmentQuestions from './pages/assignments/AssignmentQuestions';
-import ExamStart from './pages/student/exam/ExamStart';
-import ExamTaking from './pages/student/exam/ExamTaking';
-import ExamResult from './pages/student/exam/ExamResult';
+
 
 // Meeting Components
 import TeacherMeetings from './pages/teacher/meetings/TeacherMeetings';
@@ -302,7 +285,6 @@ const AppContent = () => {
                   <Route path="/articles" element={<ArticlesPage />} />
                   <Route path="/articles/:slug" element={<ArticleDetail />} />
                   <Route path="/about-academy-detail" element={<AboutAcademyDetail />} />
-                  <Route path="/certificates/verify/:verificationCode" element={<CertificateVerification />} />
                   {/* Store Routes */}
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/payment/:courseId" element={<PaymentPage />} />
@@ -317,13 +299,10 @@ const AppContent = () => {
                           <Route path="dashboard" element={<StudentDashboard />} />
                           <Route path="courses" element={<StudentMyCourses />} />
                           <Route path="my-courses" element={<StudentMyCourses />} />
-                          {/* مسارات الامتحان الشامل للطالب */}
-                          <Route path="my-courses/:courseId/exam" element={<ExamStart />} />
-                          <Route path="my-courses/:courseId/exam/taking" element={<ExamTaking />} />
-                          <Route path="my-courses/:courseId/exam/result" element={<ExamResult />} />
-                          <Route path="assignments" element={<StudentAssignments />} />
-                          <Route path="assignments/:assignmentId/submit" element={<SubmitAssignment />} />
-                          <Route path="certificates" element={<MyCertificates />} />
+                          {/* مسارات الامتحان الشامل للطالب - DISABLED */}
+                          <Route path="my-courses/:courseId/exam" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
+                          <Route path="my-courses/:courseId/exam/taking" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
+                          <Route path="my-courses/:courseId/exam/result" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
                           <Route path="meetings" element={<StudentMeetings />} />
                           <Route path="meetings/live/:meetingId" element={<StudentLiveMeeting />} />
                           <Route path="settings" element={<Profile />} />
@@ -359,26 +338,20 @@ const AppContent = () => {
                           <Route path="courses/:courseId/units/:unitId/lessons/:lessonId/edit" element={<LessonForm isEdit />} />
                           <Route path="courses/:courseId/units/:unitId/lessons/:lessonId" element={<LessonDetail />} />
                           <Route path="question-bank" element={<QuestionBankPage />} />
-                          <Route path="flashcards" element={<FlashcardsPage />} />
-                          <Route path="assignments" element={<TeacherAssignments />} />
-                          <Route path="assignments/new" element={<CreateAssignment />} />
-                          <Route path="assignments/:assignmentId/edit" element={<EditAssignment />} />
-                          <Route path="assignments/:assignmentId/questions" element={<AssignmentQuestions />} />
-                          <Route path="assignments/:assignmentId/submissions" element={<AssignmentSubmissions />} />
-                          <Route path="assignments/:assignmentId/submissions/:submissionId" element={<GradeSubmission />} />
+                          <Route path="flashcards" element={<FlashcardsPage />} />                  
                           <Route path="students" element={<div>الطلاب</div>} />
                           <Route path="reports" element={<div>التقارير</div>} />
                           <Route path="settings" element={<Profile />} />
-                          {/* Quizzes routes */}
-                          <Route path="quizzes" element={<QuizzesList />} />
-                          <Route path="quizzes/create" element={<QuizForm />} />
-                          <Route path="quizzes/:quizId/edit" element={<QuizForm />} />
-                          <Route path="quizzes/:quizId" element={<QuizDetail />} />
-                          {/* مسارات الامتحانات الشاملة */}
-                          <Route path="exams" element={<ExamList />} />
-                          <Route path="exams/create" element={<ExamForm />} />
-                          <Route path="exams/:examId" element={<ExamDetail />} />
-                          <Route path="exams/:examId/edit" element={<ExamForm isEdit />} />
+                          {/* Quizzes routes - DISABLED */}
+                          <Route path="quizzes" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Quiz functionality has been disabled</h2></div>} />
+                          <Route path="quizzes/create" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Quiz functionality has been disabled</h2></div>} />
+                          <Route path="quizzes/:quizId/edit" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Quiz functionality has been disabled</h2></div>} />
+                          <Route path="quizzes/:quizId" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Quiz functionality has been disabled</h2></div>} />
+                          {/* مسارات الامتحانات الشاملة - DISABLED */}
+                          <Route path="exams" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
+                          <Route path="exams/create" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
+                          <Route path="exams/:examId" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
+                          <Route path="exams/:examId/edit" element={<div style={{padding: '20px', textAlign: 'center'}}><h2>Exam functionality has been disabled</h2></div>} />
                           <Route path="meetings" element={<TeacherMeetings />} />
                           <Route path="meetings/live/:meetingId" element={<LiveMeeting />} />
                           {/* Articles routes */}
