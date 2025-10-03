@@ -448,14 +448,16 @@ const CourseCollections = () => {
                             <PlayCircleOutline fontSize="large" color="primary" />
                           </PlayButton>
                         </CourseMedia>
-                        <DiscountBadge>
-                          1 WEEKS
-                        </DiscountBadge>
+                        {course.discount_percentage && (
+                          <DiscountBadge>
+                            {course.discount_percentage}% خصم
+                          </DiscountBadge>
+                        )}
                       </Box>
                       <CourseCardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                           <Rating
-                            value={4}
+                            value={course.rating || course.average_rating || 0}
                             precision={0.1}
                             readOnly
                             size="small"
@@ -469,7 +471,7 @@ const CourseCollections = () => {
                             }}
                           />
                           <Typography variant="caption" color="text.secondary" sx={{ color: '#666666', fontSize: '0.8rem' }}>
-                            (0)
+                            ({course.reviews_count || course.ratings_count || 0})
                           </Typography>
                         </Box>
                         <CourseTitle variant="subtitle1" component="h3">
@@ -490,7 +492,7 @@ const CourseCollections = () => {
                             }}>
                               📄
                             </Box>
-                            <span>درس: {course.lessons_count || 0}</span>
+                            <span>درس: {course.lessons_count || course.lessons?.length || 0}</span>
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Box sx={{
@@ -506,10 +508,10 @@ const CourseCollections = () => {
                             }}>
                               👥
                             </Box>
-                            <span>Students {course.enrolled_count || 60}+</span>
+                            <span>طلاب: {course.enrolled_count || course.students_count || 0}</span>
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <span>Beginner</span>
+                            <span>{course.level || 'مبتدئ'}</span>
                           </Box>
                         </Box>
                         <Box sx={{ borderTop: '1px solid #E0E0E0', pt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -537,9 +539,16 @@ const CourseCollections = () => {
                               }
                             </Typography>
                           </Box>
-                          <CurrentPrice>
-                            {course.is_free ? 'مجاني' : `${course.discount_price || course.price}.00 $`}
-                          </CurrentPrice>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CurrentPrice>
+                              {course.is_free ? 'مجاني' : `${parseFloat(course.discount_price || course.price)} $`}
+                            </CurrentPrice>
+                            {course.discount_price && course.price && course.discount_price < course.price && (
+                              <OriginalPrice>
+                                {parseFloat(course.price)} $
+                              </OriginalPrice>
+                            )}
+                          </Box>
                         </Box>
                       </CourseCardContent>
                     </CourseCard>

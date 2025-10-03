@@ -817,6 +817,36 @@ const Courses = () => {
     return 'https://source.unsplash.com/random/800x450?course,education';
   };
 
+  // Helper function to format duration as HH:MM:SS
+  const formatDuration = (duration) => {
+    if (!duration) return 'غير محدد';
+    
+    // If duration is already in HH:MM:SS format, return as is
+    if (typeof duration === 'string' && duration.includes(':')) {
+      return duration;
+    }
+    
+    // If duration is in seconds (number or string), convert to HH:MM:SS
+    const seconds = parseInt(duration);
+    if (isNaN(seconds)) return 'غير محدد';
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  // Helper function to format price without .00
+  const formatPrice = (price) => {
+    if (!price) return '0';
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) return price;
+    
+    // Remove .00 if it's a whole number
+    return numPrice % 1 === 0 ? numPrice.toString() : numPrice.toFixed(2).replace(/\.00$/, '');
+  };
+
   if (loading) {
     return (
       <Box>
@@ -1292,16 +1322,6 @@ const Courses = () => {
                               }}
                             />
                           )}
-                          <Chip
-                            label={getLevelLabel(course.level)}
-                            size="small"
-                            color={course.level === 'beginner' ? 'success' : course.level === 'intermediate' ? 'warning' : 'error'}
-                            sx={{
-                              mb: 1.5,
-                              fontWeight: 600,
-                              fontSize: '0.7rem',
-                            }}
-                          />
                           <CourseTitle variant="h6" component="h3" gutterBottom>
                             {course.title}
                           </CourseTitle>
@@ -1338,13 +1358,7 @@ const Courses = () => {
                             <Box>
                               <AccessTime fontSize="small" />
                               <Typography variant="caption" sx={{ mr: 0.5 }}>
-                                {course.duration || 'غير محدد'}
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <People fontSize="small" />
-                              <Typography variant="caption" sx={{ mr: 0.5 }}>
-                                {course.total_enrollments?.toLocaleString() || 0}
+                                {course.duration ? formatDuration(course.duration) : 'غير محدد'}
                               </Typography>
                             </Box>
                           </CourseMeta>
@@ -1353,15 +1367,15 @@ const Courses = () => {
                             {course.discount_price ? (
                               <>
                                 <Typography variant="body2" color="error" sx={{ textDecoration: 'line-through', opacity: 0.7, fontSize: '0.8rem' }}>
-                                  {course.price} ر.س
+                                  ${formatPrice(course.price)}
                                 </Typography>
                                 <Typography variant="h6" color="primary" sx={{ lineHeight: 1, mt: -0.5 }}>
-                                  {course.discount_price} ر.س
+                                  ${formatPrice(course.discount_price)}
                                 </Typography>
                               </>
                             ) : (
                               <Typography variant="h6" color="primary">
-                                {course.is_free ? 'مجاني' : `${course.price} ر.س`}
+                                {course.is_free ? 'مجاني' : `$${formatPrice(course.price)}`}
                               </Typography>
                             )}
                           </Box>
