@@ -961,62 +961,29 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
               // عرض ملفات النص
               if (['txt', 'md', 'json', 'xml', 'csv'].includes(fileExtension)) {
                 return (
-                  <Box sx={{
-                    width: '100%',
-                    height: '100%',
-                    p: 2,
-                    overflow: 'auto',
-                    bgcolor: '#f5f5f5',
-                    fontFamily: 'monospace',
-                    fontSize: '14px',
-                    lineHeight: 1.5
-                  }}>
-                    <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
-                      {fileName}
-                    </Typography>
-                    <Box sx={{
-                      bgcolor: 'white',
-                      p: 2,
-                      borderRadius: 1,
-                      border: '1px solid #e0e0e0',
-                      height: 'calc(100% - 60px)',
-                      overflow: 'auto'
-                    }}>
-                      <iframe
-                        src={processedFileUrl}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          border: 'none'
-                        }}
-                        title={fileName}
-                      />
-                    </Box>
-                  </Box>
+                  <iframe
+                    src={processedFileUrl}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none'
+                    }}
+                    title={fileName}
+                  />
                 );
               }
               
               // للملفات الأخرى
               return (
-                <Box sx={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  p: 3
-                }}>
-                  <Box sx={{ mb: 3, fontSize: '4rem', color: 'primary.main' }}>
-                    {getFileIcon(fileName, fileExtension)}
-                  </Box>
-                  <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
-                    {fileName}
-                  </Typography>
-                  <Typography variant="body2" sx={{ textAlign: 'center', color: '#666' }}>
-                    نوع الملف: {fileExtension.toUpperCase()}
-                  </Typography>
-                </Box>
+                <iframe
+                  src={processedFileUrl}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none'
+                  }}
+                  title={fileName}
+                />
               );
             })()}
           </Box>
