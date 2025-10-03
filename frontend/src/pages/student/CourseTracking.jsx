@@ -272,7 +272,7 @@ const processFileUrl = (fileUrl) => {
 
 // Simple video player component to replace ReactPlayer
 
-const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, width, height, style, lessonData }) => {
+const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, width, height, style, lessonData, previewResource }) => {
 
   const videoRef = React.useRef(null);
 
@@ -897,172 +897,128 @@ const VideoPlayer = ({ url, playing, onPlay, onPause, onProgress, onDuration, wi
           </Box>
 
         ) : lessonData?.resources && lessonData.resources.length > 0 ? (
-          // عرض الملفات إذا كانت متاحة
+          // عرض الملف مباشرة في نفس المكان
           <Box sx={{
             width: '100%',
             height: '100%',
-            p: 3,
-            overflow: 'auto',
+            position: 'relative',
             bgcolor: 'rgba(255,255,255,0.95)',
             color: 'text.primary'
           }}>
-            <Typography variant="h5" sx={{ 
-              textAlign: 'right', 
-              mb: 3, 
-              color: 'primary.main',
-              fontWeight: 'bold'
-            }}>
-              ملفات الدرس
-            </Typography>
-            
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {lessonData.resources.map((resource, index) => {
-                try {
-                  const fileName = resource.title || resource.name || resource.file_url?.split('/').pop() || `ملف ${index + 1}`;
-                  const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-                  const fileUrl = resource.file_url || resource.url;
-                  const processedFileUrl = processFileUrl(fileUrl);
-                
+            {(() => {
+              const resource = lessonData.resources[0]; // عرض الملف الأول
+              const fileName = resource.title || resource.name || resource.file_url?.split('/').pop() || 'ملف';
+              const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+              const fileUrl = resource.file_url || resource.url;
+              const processedFileUrl = processFileUrl(fileUrl);
+              
+              // عرض PDF
+              if (fileExtension === 'pdf') {
                 return (
-                  <Box
-                    key={index}
-                    sx={{
-                      p: 2,
-                      border: '1px solid #e0e0e0',
-                      borderRadius: 2,
-                      bgcolor: 'white',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-                        transform: 'translateY(-2px)'
-                      }
+                  <iframe
+                    src={processedFileUrl}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none'
                     }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      {/* File icon */}
-                      <Box sx={{ 
-                        p: 1, 
-                        borderRadius: 1, 
-                        bgcolor: 'rgba(25, 118, 210, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        {getFileIcon(fileName, fileExtension)}
-                      </Box>
-                      
-                      {/* File info */}
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6" sx={{ 
-                          fontWeight: 'bold', 
-                          color: '#333',
-                          mb: 0.5
-                        }}>
-                          {fileName}
-                        </Typography>
-                        <Typography variant="body2" sx={{ 
-                          color: '#666',
-                          mb: 1
-                        }}>
-                          نوع الملف: {fileExtension.toUpperCase()} • حجم الملف: {resource.file_size || 'غير محدد'}
-                        </Typography>
-                        {resource.description && (
-                          <Typography variant="body2" sx={{ 
-                            color: '#888',
-                            fontSize: '0.85rem'
-                          }}>
-                            {resource.description}
-                          </Typography>
-                        )}
-                      </Box>
-                      
-                      {/* Action buttons */}
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        {/* Preview button for supported files */}
-                        {(fileExtension === 'pdf' || fileExtension === 'txt') && (
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<Visibility />}
-                            onClick={() => {
-                              const iframe = document.createElement('iframe');
-                              iframe.src = processedFileUrl;
-                              iframe.style.width = '100%';
-                              iframe.style.height = '100%';
-                              iframe.style.border = 'none';
-                              
-                              const previewWindow = window.open('', '_blank', 'width=800,height=600');
-                              previewWindow.document.write(`
-                                <html>
-                                  <head><title>معاينة ${fileName}</title></head>
-                                  <body style="margin:0; padding:0;">
-                                    ${iframe.outerHTML}
-                                  </body>
-                                </html>
-                              `);
-                              previewWindow.document.close();
-                            }}
-                            sx={{ minWidth: 'auto' }}
-                          >
-                            معاينة
-                          </Button>
-                        )}
-                        
-                        {/* Download button */}
-                        <Button
-                          size="small"
-                          variant="contained"
-                          startIcon={<Download />}
-                          onClick={() => {
-                            const link = document.createElement('a');
-                            link.href = processedFileUrl;
-                            link.download = fileName;
-                            link.target = '_blank';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                          }}
-                          sx={{ minWidth: 'auto' }}
-                        >
-                          تحميل
-                        </Button>
-                        
-                        {/* Open in new tab button */}
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          startIcon={<OpenInNew />}
-                          onClick={() => window.open(processedFileUrl, '_blank')}
-                          sx={{ minWidth: 'auto' }}
-                        >
-                          فتح
-                        </Button>
-                      </Box>
+                    title={fileName}
+                  />
+                );
+              }
+              
+              // عرض الفيديو
+              if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(fileExtension)) {
+                return (
+                  <video
+                    src={processedFileUrl}
+                    controls
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain'
+                    }}
+                    title={fileName}
+                  />
+                );
+              }
+              
+              // عرض الصور
+              if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(fileExtension)) {
+                return (
+                  <img
+                    src={processedFileUrl}
+                    alt={fileName}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain'
+                    }}
+                  />
+                );
+              }
+              
+              // عرض ملفات النص
+              if (['txt', 'md', 'json', 'xml', 'csv'].includes(fileExtension)) {
+                return (
+                  <Box sx={{
+                    width: '100%',
+                    height: '100%',
+                    p: 2,
+                    overflow: 'auto',
+                    bgcolor: '#f5f5f5',
+                    fontFamily: 'monospace',
+                    fontSize: '14px',
+                    lineHeight: 1.5
+                  }}>
+                    <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
+                      {fileName}
+                    </Typography>
+                    <Box sx={{
+                      bgcolor: 'white',
+                      p: 2,
+                      borderRadius: 1,
+                      border: '1px solid #e0e0e0',
+                      height: 'calc(100% - 60px)',
+                      overflow: 'auto'
+                    }}>
+                      <iframe
+                        src={processedFileUrl}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          border: 'none'
+                        }}
+                        title={fileName}
+                      />
                     </Box>
                   </Box>
                 );
-                } catch (error) {
-                  console.error('Error rendering resource:', error, resource);
-                  return (
-                    <Box
-                      key={index}
-                      sx={{
-                        p: 2,
-                        border: '1px solid #ffcdd2',
-                        borderRadius: 2,
-                        bgcolor: '#ffebee',
-                        mb: 1
-                      }}
-                    >
-                      <Typography variant="body2" sx={{ color: '#d32f2f' }}>
-                        خطأ في عرض الملف: {resource.title || resource.name || `ملف ${index + 1}`}
-                      </Typography>
-                    </Box>
-                  );
-                }
-              })}
-            </Box>
+              }
+              
+              // للملفات الأخرى
+              return (
+                <Box sx={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  p: 3
+                }}>
+                  <Box sx={{ mb: 3, fontSize: '4rem', color: 'primary.main' }}>
+                    {getFileIcon(fileName, fileExtension)}
+                  </Box>
+                  <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
+                    {fileName}
+                  </Typography>
+                  <Typography variant="body2" sx={{ textAlign: 'center', color: '#666' }}>
+                    نوع الملف: {fileExtension.toUpperCase()}
+                  </Typography>
+                </Box>
+              );
+            })()}
           </Box>
         ) : (
 
@@ -2227,6 +2183,15 @@ const CourseTracking = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
   const [imagePreview, setImagePreview] = useState({ open: false, url: '', title: '' });
+  
+  // File preview states
+  const [filePreview, setFilePreview] = useState({ 
+    open: false, 
+    url: '', 
+    title: '', 
+    type: '',
+    content: null 
+  });
 
 
 
@@ -3184,21 +3149,52 @@ const CourseTracking = () => {
         return;
       }
 
-      // For PDFs, open in new tab
+      // For PDFs, show in same page
       if (extension === 'pdf') {
-        window.open(processedUrl, '_blank');
-        showSnackbar('تم فتح ملف PDF في نافذة جديدة', 'info');
+        setFilePreview({
+          open: true,
+          url: processedUrl,
+          title: fileName,
+          type: 'pdf',
+          content: null
+        });
         return;
       }
 
-      // For videos, open in new tab
+      // For videos, show in same page
       if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(extension)) {
-        window.open(processedUrl, '_blank');
-        showSnackbar('تم فتح الفيديو في نافذة جديدة', 'info');
+        setFilePreview({
+          open: true,
+          url: processedUrl,
+          title: fileName,
+          type: 'video',
+          content: null
+        });
         return;
       }
 
-      // For other files, try to open in new tab
+      // For text files, try to fetch and display content
+      if (['txt', 'md', 'json', 'xml', 'csv'].includes(extension)) {
+        fetch(processedUrl)
+          .then(response => response.text())
+          .then(content => {
+            setFilePreview({
+              open: true,
+              url: processedUrl,
+              title: fileName,
+              type: 'text',
+              content: content
+            });
+          })
+          .catch(() => {
+            // If fetch fails, open in new tab
+            window.open(processedUrl, '_blank');
+            showSnackbar('تم فتح الملف في نافذة جديدة', 'info');
+          });
+        return;
+      }
+
+      // For other files, open in new tab
       window.open(processedUrl, '_blank');
       showSnackbar('تم فتح الملف في نافذة جديدة', 'info');
 
@@ -4478,6 +4474,7 @@ const CourseTracking = () => {
                   onDuration={handleDuration}
                   onEnded={handleVideoEnd}
                   lessonData={currentLesson}
+                  previewResource={previewResource}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -5045,6 +5042,138 @@ const CourseTracking = () => {
                   const processedUrl = processFileUrl(imagePreview.url);
                   window.open(processedUrl, '_blank');
                   showSnackbar('تم فتح الصورة في نافذة جديدة', 'info');
+                }}
+              >
+                فتح في نافذة جديدة
+              </Button>
+            </Box>
+          </Box>
+        </Fade>
+      </Modal>
+
+      {/* File Preview Modal */}
+      <Modal
+        open={filePreview.open}
+        onClose={() => setFilePreview({ open: false, url: '', title: '', type: '', content: null })}
+        closeAfterTransition
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={filePreview.open}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: { xs: '95%', sm: '90%', md: '80%', lg: '70%' },
+            maxWidth: '1200px',
+            height: { xs: '90%', md: '80%' },
+            maxHeight: '800px',
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+          }}>
+            {/* Header */}
+            <Box sx={{
+              p: 2,
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                {filePreview.title}
+              </Typography>
+              <IconButton onClick={() => setFilePreview({ open: false, url: '', title: '', type: '', content: null })}>
+                <Close />
+              </IconButton>
+            </Box>
+
+            {/* Content */}
+            <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+              {filePreview.type === 'pdf' && (
+                <iframe
+                  src={filePreview.url}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none'
+                  }}
+                  title={filePreview.title}
+                />
+              )}
+              
+              {filePreview.type === 'video' && (
+                <video
+                  src={filePreview.url}
+                  controls
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                  title={filePreview.title}
+                />
+              )}
+              
+              {filePreview.type === 'text' && (
+                <Box sx={{
+                  p: 2,
+                  height: '100%',
+                  overflow: 'auto',
+                  bgcolor: '#f5f5f5',
+                  fontFamily: 'monospace',
+                  fontSize: '14px',
+                  lineHeight: 1.5
+                }}>
+                  <pre style={{ 
+                    margin: 0, 
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word'
+                  }}>
+                    {filePreview.content}
+                  </pre>
+                </Box>
+              )}
+            </Box>
+
+            {/* Footer Actions */}
+            <Box sx={{
+              p: 2,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 2
+            }}>
+              <Button
+                variant="contained"
+                startIcon={<Download />}
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = filePreview.url;
+                  link.download = filePreview.title;
+                  link.target = '_blank';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  showSnackbar('تم بدء تحميل الملف', 'success');
+                }}
+              >
+                تحميل الملف
+              </Button>
+              
+              <Button
+                variant="outlined"
+                startIcon={<OpenInNew />}
+                onClick={() => {
+                  window.open(filePreview.url, '_blank');
+                  showSnackbar('تم فتح الملف في نافذة جديدة', 'info');
                 }}
               >
                 فتح في نافذة جديدة
