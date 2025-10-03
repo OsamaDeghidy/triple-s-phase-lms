@@ -63,12 +63,29 @@ const StyledAppBar = styled(AppBar, {
     ? '0 4px 20px rgba(102, 51, 153, 0.3)'
     : 'none',
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-  padding: scrolled ? '12px 0' : '20px 0',
-  minHeight: scrolled ? '70px' : '90px',
   borderBottom: scrolled
     ? '1px solid rgba(255, 255, 255, 0.08)'
     : 'none',
   animation: `${fadeIn} 0.6s ease-out`,
+  // Enhanced responsive sizing
+  padding: scrolled ? '6px 0' : '12px 0',
+  minHeight: scrolled ? '56px' : '70px',
+  '@media (min-width: 480px)': {
+    padding: scrolled ? '8px 0' : '14px 0',
+    minHeight: scrolled ? '60px' : '75px',
+  },
+  '@media (min-width: 768px)': {
+    padding: scrolled ? '10px 0' : '16px 0',
+    minHeight: scrolled ? '65px' : '80px',
+  },
+  '@media (min-width: 1024px)': {
+    padding: scrolled ? '12px 0' : '18px 0',
+    minHeight: scrolled ? '70px' : '85px',
+  },
+  '@media (min-width: 1200px)': {
+    padding: scrolled ? '12px 0' : '20px 0',
+    minHeight: scrolled ? '70px' : '90px',
+  },
   '&.MuiAppBar-root': {
     zIndex: theme.zIndex.drawer + 1,
   },
@@ -93,10 +110,8 @@ const GradientButton = styled(Button)(({ theme, scrolled }) => ({
     : 'linear-gradient(135deg, #2D1B69 0%, #1A103F 50%, #0F0A2A 100%)',
   color: 'white',
   borderRadius: '30px',
-  padding: '12px 30px',
   fontWeight: '600',
   textTransform: 'none',
-  fontSize: '15px',
   boxShadow: scrolled
     ? '0 6px 20px rgba(102, 51, 153, 0.4)'
     : '0 6px 20px rgba(45, 27, 105, 0.4)',
@@ -104,6 +119,30 @@ const GradientButton = styled(Button)(({ theme, scrolled }) => ({
   border: scrolled
     ? '1px solid rgba(255, 255, 255, 0.1)'
     : '1px solid rgba(229, 151, 139, 0.3)',
+  // Enhanced responsive sizing
+  padding: '8px 20px',
+  fontSize: '13px',
+  minHeight: '40px',
+  '@media (min-width: 480px)': {
+    padding: '10px 24px',
+    fontSize: '14px',
+    minHeight: '42px',
+  },
+  '@media (min-width: 768px)': {
+    padding: '12px 28px',
+    fontSize: '15px',
+    minHeight: '44px',
+  },
+  '@media (min-width: 1024px)': {
+    padding: '12px 30px',
+    fontSize: '15px',
+    minHeight: '48px',
+  },
+  '@media (min-width: 1200px)': {
+    padding: '12px 30px',
+    fontSize: '15px',
+    minHeight: '48px',
+  },
   '&:hover': {
     transform: 'translateY(-3px) scale(1.02)',
     boxShadow: scrolled
@@ -128,6 +167,27 @@ const Search = styled('div')(({ theme, scrolled }) => ({
   border: scrolled
     ? '1px solid rgba(255, 255, 255, 0.15)'
     : '1px solid rgba(255, 255, 255, 0.1)',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  // Enhanced responsive sizing
+  margin: '0 4px',
+  width: '100%',
+  maxWidth: '200px',
+  '@media (min-width: 480px)': {
+    margin: '0 6px',
+    maxWidth: '240px',
+  },
+  '@media (min-width: 768px)': {
+    margin: '0 8px',
+    maxWidth: '300px',
+  },
+  '@media (min-width: 1024px)': {
+    margin: '0 12px',
+    maxWidth: '350px',
+  },
+  '@media (min-width: 1200px)': {
+    margin: '0 16px',
+    maxWidth: '450px',
+  },
   '&:hover': {
     backgroundColor: scrolled
       ? 'rgba(255, 255, 255, 0.18)'
@@ -147,15 +207,6 @@ const Search = styled('div')(({ theme, scrolled }) => ({
     boxShadow: scrolled
       ? '0 0 0 3px rgba(102, 51, 153, 0.2)'
       : '0 0 0 3px rgba(229, 151, 139, 0.2)',
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: theme.spacing(2),
-  width: '100%',
-  maxWidth: '450px',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  [theme.breakpoints.down('sm')]: {
-    margin: '10px 0',
-    width: '100%',
   },
 }));
 
@@ -177,10 +228,27 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: '#FFFFFF',
   width: '100%',
   '& .MuiInputBase-input': {
-    padding: '16px 20px 16px 55px',
     width: '100%',
-    fontSize: '15px',
     fontWeight: '500',
+    // Enhanced responsive sizing
+    padding: '8px 12px 8px 35px',
+    fontSize: '12px',
+    '@media (min-width: 480px)': {
+      padding: '10px 14px 10px 40px',
+      fontSize: '13px',
+    },
+    '@media (min-width: 768px)': {
+      padding: '12px 16px 12px 45px',
+      fontSize: '14px',
+    },
+    '@media (min-width: 1024px)': {
+      padding: '14px 18px 14px 50px',
+      fontSize: '15px',
+    },
+    '@media (min-width: 1200px)': {
+      padding: '16px 20px 16px 55px',
+      fontSize: '15px',
+    },
     '&::placeholder': {
       color: 'rgba(255, 255, 255, 0.7)',
       opacity: 1,
@@ -255,17 +323,26 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const LogoImage = styled('img')({
-  height: '80px', // Increased from 64px
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   filter: 'drop-shadow(0 2px 8px rgba(102, 51, 153, 0.3))',
-  '@media (max-width: 600px)': {
-    height: '65px', // Increased from 52px
+  // Enhanced responsive sizing
+  height: '40px',
+  '@media (min-width: 480px)': {
+    height: '50px',
+  },
+  '@media (min-width: 768px)': {
+    height: '60px',
+  },
+  '@media (min-width: 1024px)': {
+    height: '70px',
+  },
+  '@media (min-width: 1200px)': {
+    height: '80px',
   },
 });
 
 const LogoText = styled(Typography)(({ theme, scrolled }) => ({
   fontWeight: 700,
-  fontSize: '1.5rem',
   background: scrolled
     ? 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)'
     : 'linear-gradient(135deg, #4DBFB3 0%, #D17A6F 50%, #4DBFB3 100%)',
@@ -274,8 +351,19 @@ const LogoText = styled(Typography)(({ theme, scrolled }) => ({
   marginRight: '15px',
   lineHeight: 1.2,
   transition: 'all 0.3s ease',
-  [theme.breakpoints.down('sm')]: {
+  // Enhanced responsive font sizing
+  fontSize: '1rem',
+  '@media (min-width: 480px)': {
+    fontSize: '1.1rem',
+  },
+  '@media (min-width: 768px)': {
+    fontSize: '1.2rem',
+  },
+  '@media (min-width: 1024px)': {
     fontSize: '1.3rem',
+  },
+  '@media (min-width: 1200px)': {
+    fontSize: '1.5rem',
   },
 }));
 
@@ -768,8 +856,11 @@ const Header = () => {
   return (
     <>
       <StyledAppBar position="fixed" scrolled={scrolled}>
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
+        <Container maxWidth="xl" sx={{ px: { xs: 0.5, sm: 1, md: 2, lg: 3 } }}>
+          <Toolbar disableGutters sx={{ 
+            minHeight: { xs: 48, sm: 52, md: 56, lg: 64 },
+            px: { xs: 0.5, sm: 1, md: 1.5, lg: 2 }
+          }}>
             {/* User Avatar and Language Switch - moved to left */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {/* User Avatar and Icons */}
@@ -927,10 +1018,12 @@ const Header = () => {
             {/* Desktop Navigation */}
             <Box sx={{
               flexGrow: 1,
-              display: { xs: 'none', md: 'flex' },
-              ml: 4,
+              display: { xs: 'none', lg: 'flex' },
+              ml: { lg: 2, xl: 4 },
+              justifyContent: 'center',
+              gap: { lg: 1, xl: 2 },
               '& > *:not(:last-child)': {
-                mr: 1,
+                mr: { lg: 0.5, xl: 1 },
               },
             }}>
               {navItems.map((item) => {
@@ -1059,7 +1152,7 @@ const Header = () => {
             </Box>
 
             {/* Mobile Menu Button */}
-            <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>
+            <Box sx={{ display: { xs: 'flex', lg: 'none' }, mr: { xs: 0.5, sm: 1 } }}>
               <IconButton
                 size="large"
                 aria-label="show menu"
@@ -1090,13 +1183,13 @@ const Header = () => {
             position: 'fixed',
             top: 0,
             right: 0,
-            width: '80%',
-            maxWidth: '300px',
+            width: { xs: '90%', sm: '85%', md: '80%' },
+            maxWidth: { xs: '300px', sm: '320px', md: '350px' },
             height: '100vh',
             backgroundColor: '#1A1A2E',
             zIndex: 1300,
             boxShadow: '-5px 0 30px rgba(0, 0, 0, 0.3)',
-            padding: '20px',
+            padding: { xs: '12px', sm: '16px', md: '20px' },
             overflowY: 'auto',
             transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.3s ease-in-out',

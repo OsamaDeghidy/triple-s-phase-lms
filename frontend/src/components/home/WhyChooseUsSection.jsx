@@ -15,8 +15,18 @@ const bounceAnimation = keyframes`
 
 const SectionContainer = styled(Box)(({ theme }) => ({
     position: 'relative',
-    padding: theme.spacing(8, 0),
     backgroundColor: '#FFFFFF',
+    // Responsive padding
+    padding: theme.spacing(8, 0),
+    '@media (max-width: 600px)': {
+        padding: theme.spacing(4, 0),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        padding: theme.spacing(6, 0),
+    },
+    '@media (min-width: 900px)': {
+        padding: theme.spacing(8, 0),
+    },
     '&:before': {
         content: '""',
         position: 'absolute',
@@ -40,9 +50,6 @@ const SectionContainer = styled(Box)(({ theme }) => ({
         `,
         zIndex: 0,
     },
-    [theme.breakpoints.down('md')]: {
-        padding: theme.spacing(6, 0),
-    },
 }));
 
 const ContentWrapper = styled(Box)(({ theme }) => ({
@@ -52,15 +59,27 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
     alignItems: 'center',
     position: 'relative',
     zIndex: 1,
-    [theme.breakpoints.down('lg')]: {
+    // Enhanced responsive layout
+    '@media (max-width: 600px)': {
+        gridTemplateColumns: '1fr',
+        gap: theme.spacing(4),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        gridTemplateColumns: '1fr',
+        gap: theme.spacing(5),
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
         gridTemplateColumns: '1fr',
         gap: theme.spacing(6),
+    },
+    '@media (min-width: 1200px)': {
+        gridTemplateColumns: '1fr 1fr',
+        gap: theme.spacing(8),
     },
 }));
 
 const LeftSection = styled(Box)(({ theme, backgroundImage }) => ({
     position: 'relative',
-    height: '500px',
     borderRadius: '16px',
     overflow: 'hidden',
     backgroundImage: backgroundImage || 'url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80")',
@@ -72,9 +91,23 @@ const LeftSection = styled(Box)(({ theme, backgroundImage }) => ({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    [theme.breakpoints.down('lg')]: {
+    // Responsive height and order
+    height: '500px',
+    '@media (max-width: 600px)': {
+        height: '300px',
+        order: 2,
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        height: '350px',
+        order: 2,
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
         height: '400px',
         order: 2,
+    },
+    '@media (min-width: 1200px)': {
+        height: '500px',
+        order: 1,
     },
 }));
 
@@ -183,30 +216,56 @@ const SectionSubtitle = styled(Typography)(({ theme }) => ({
 }));
 
 const MainTitle = styled(Typography)(({ theme }) => ({
-    fontSize: '2.5rem',
     fontWeight: 800,
     color: '#663399',
     lineHeight: 1.2,
     marginBottom: theme.spacing(3),
-    [theme.breakpoints.down('sm')]: {
+    // Responsive font size
+    fontSize: '2.5rem',
+    '@media (max-width: 600px)': {
+        fontSize: '1.75rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
         fontSize: '2rem',
+    },
+    '@media (min-width: 900px)': {
+        fontSize: '2.5rem',
     },
 }));
 
 const Description = styled(Typography)(({ theme }) => ({
-    fontSize: '1rem',
     color: '#A0A0A0',
     lineHeight: 1.6,
     marginBottom: theme.spacing(4),
     maxWidth: '500px',
+    // Responsive font size and width
+    fontSize: '1rem',
+    '@media (max-width: 600px)': {
+        fontSize: '0.9rem',
+        maxWidth: '100%',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        fontSize: '0.95rem',
+        maxWidth: '100%',
+    },
+    '@media (min-width: 900px)': {
+        fontSize: '1rem',
+        maxWidth: '500px',
+    },
 }));
 
 const FeaturesGrid = styled(Box)(({ theme }) => ({
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
     gap: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    // Enhanced responsive grid
+    '@media (max-width: 600px)': {
         gridTemplateColumns: '1fr',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        gridTemplateColumns: '1fr 1fr',
+    },
+    '@media (min-width: 900px)': {
+        gridTemplateColumns: '1fr 1fr',
     },
 }));
 

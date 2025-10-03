@@ -34,10 +34,20 @@ const floatAnimation = keyframes`
 `;
 
 const SectionContainer = styled(Box)(({ theme }) => ({
-  // padding: theme.spacing(4, 0),
   backgroundColor: '#ffffff',
   position: 'relative',
   overflow: 'hidden',
+  // Responsive padding
+  padding: theme.spacing(4, 0),
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(2, 0),
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    padding: theme.spacing(3, 0),
+  },
+  '@media (min-width: 900px)': {
+    padding: theme.spacing(4, 0),
+  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -82,9 +92,6 @@ const SectionContainer = styled(Box)(({ theme }) => ({
     position: 'relative',
     zIndex: 1,
   },
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(3, 0),
-  },
 }));
 
 const ContentWrapper = styled(Box)(({ theme }) => ({
@@ -95,9 +102,26 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   zIndex: 2,
   minHeight: '400px',
-  [theme.breakpoints.down('lg')]: {
+  // Enhanced responsive layout
+  '@media (max-width: 600px)': {
+    gridTemplateColumns: '1fr',
+    gap: theme.spacing(4),
+    minHeight: 'auto',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    gridTemplateColumns: '1fr',
+    gap: theme.spacing(5),
+    minHeight: 'auto',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
     gridTemplateColumns: '1fr',
     gap: theme.spacing(6),
+    minHeight: 'auto',
+  },
+  '@media (min-width: 1200px)': {
+    gridTemplateColumns: '1fr 1fr',
+    gap: theme.spacing(8),
+    minHeight: '400px',
   },
 }));
 
@@ -105,9 +129,21 @@ const LeftSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),
-  [theme.breakpoints.down('lg')]: {
+  // Enhanced responsive layout
+  '@media (max-width: 600px)': {
     textAlign: 'center',
     order: 2,
+    gap: theme.spacing(2),
+  },
+  '@media (min-width: 600px) and (max-width: 1200px)': {
+    textAlign: 'center',
+    order: 2,
+    gap: theme.spacing(2.5),
+  },
+  '@media (min-width: 1200px)': {
+    textAlign: 'left',
+    order: 1,
+    gap: theme.spacing(3),
   },
 }));
 
@@ -128,13 +164,33 @@ const CategoryIcon = styled(Box)(({ theme }) => ({
 }));
 
 const MainTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '2.5rem',
   fontWeight: 800,
   color: '#5C2D91',
   lineHeight: 1.2,
   marginBottom: theme.spacing(2),
-  whiteSpace: 'nowrap', // Prevent line breaks
   overflow: 'hidden',
+  // Responsive font size
+  fontSize: '2.5rem',
+  '@media (max-width: 600px)': {
+    fontSize: '1.75rem',
+    whiteSpace: 'normal',
+    textAlign: 'center',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '2rem',
+    whiteSpace: 'normal',
+    textAlign: 'center',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    fontSize: '2.25rem',
+    whiteSpace: 'normal',
+    textAlign: 'center',
+  },
+  '@media (min-width: 1200px)': {
+    fontSize: '2.5rem',
+    whiteSpace: 'nowrap',
+    textAlign: 'left',
+  },
   textOverflow: 'ellipsis',
   [theme.breakpoints.down('sm')]: {
     fontSize: '2rem',
@@ -149,24 +205,56 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   lineHeight: 1.6,
   marginBottom: theme.spacing(3),
   maxWidth: '500px',
-  [theme.breakpoints.down('lg')]: {
+  // Responsive font size and width
+  '@media (max-width: 600px)': {
+    fontSize: '0.95rem',
     maxWidth: '100%',
+    textAlign: 'center',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '1rem',
+    maxWidth: '100%',
+    textAlign: 'center',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    fontSize: '1.05rem',
+    maxWidth: '100%',
+    textAlign: 'center',
+  },
+  '@media (min-width: 1200px)': {
+    fontSize: '1.1rem',
+    maxWidth: '500px',
+    textAlign: 'left',
   },
 }));
 
 const ViewAllButton = styled(Button)(({ theme }) => ({
   background: '#34498B',
   color: '#fff',
-  padding: theme.spacing(1.5, 3),
   borderRadius: '30px',
   textTransform: 'none',
   fontWeight: 600,
-  fontSize: '1rem',
   boxShadow: '0 4px 15px rgba(52, 73, 139, 0.3)',
   transition: 'all 0.3s ease',
-  alignSelf: 'flex-start',
-  [theme.breakpoints.down('lg')]: {
+  // Responsive sizing
+  padding: theme.spacing(1.5, 3),
+  fontSize: '1rem',
+  minHeight: '44px',
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1.2, 2.5),
+    fontSize: '0.9rem',
+    minHeight: '40px',
     alignSelf: 'center',
+  },
+  '@media (min-width: 600px) and (max-width: 1200px)': {
+    padding: theme.spacing(1.3, 2.8),
+    fontSize: '0.95rem',
+    alignSelf: 'center',
+  },
+  '@media (min-width: 1200px)': {
+    padding: theme.spacing(1.5, 3),
+    fontSize: '1rem',
+    alignSelf: 'flex-start',
   },
   '&:hover': {
     transform: 'translateY(-2px)',
@@ -180,17 +268,23 @@ const RightSection = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   gap: theme.spacing(2),
-  [theme.breakpoints.down('lg')]: {
+  // Enhanced responsive layout
+  '@media (max-width: 600px)': {
     order: 1,
+    gap: theme.spacing(1.5),
+  },
+  '@media (min-width: 600px) and (max-width: 1200px)': {
+    order: 1,
+    gap: theme.spacing(1.8),
+  },
+  '@media (min-width: 1200px)': {
+    order: 2,
+    gap: theme.spacing(2),
   },
 }));
 
 
 const CategoryCard = styled(Card)(({ theme }) => ({
-  minWidth: '200px',
-  maxWidth: '220px',
-  width: '200px',
-  minHeight: '300px',
   borderRadius: '16px',
   boxShadow: '0 8px 25px rgba(0, 0, 0, 0.08)',
   border: '1px solid rgba(0, 0, 0, 0.05)',
@@ -201,15 +295,38 @@ const CategoryCard = styled(Card)(({ theme }) => ({
   flexShrink: 0, // Prevent cards from shrinking
   display: 'flex',
   flexDirection: 'column',
-  '&:hover': {
-    transform: 'translateY(-8px)',
-    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.12)',
+  // Responsive sizing
+  minWidth: '200px',
+  maxWidth: '220px',
+  width: '200px',
+  minHeight: '300px',
+  '@media (max-width: 600px)': {
+    minWidth: '160px',
+    maxWidth: '160px',
+    width: '160px',
+    minHeight: '260px',
   },
-  [theme.breakpoints.down('md')]: {
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    minWidth: '170px',
+    maxWidth: '170px',
+    width: '170px',
+    minHeight: '270px',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
     minWidth: '180px',
     maxWidth: '180px',
     width: '180px',
     minHeight: '280px',
+  },
+  '@media (min-width: 1200px)': {
+    minWidth: '200px',
+    maxWidth: '220px',
+    width: '200px',
+    minHeight: '300px',
+  },
+  '&:hover': {
+    transform: 'translateY(-8px)',
+    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.12)',
   },
 }));
 
@@ -221,25 +338,74 @@ const CardHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  // Responsive padding
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1.5, 1.5, 0.5, 1.5),
+  },
+  '@media (min-width: 600px) and (max-width: 1200px)': {
+    padding: theme.spacing(1.8, 1.8, 0.8, 1.8),
+  },
+  '@media (min-width: 1200px)': {
+    padding: theme.spacing(2, 2, 1, 2),
+  },
   '& .MuiSvgIcon-root': {
-    fontSize: '3rem',
     marginBottom: theme.spacing(1),
     color: '#87CEEB',
     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+    // Responsive icon size
+    fontSize: '3rem',
+    '@media (max-width: 600px)': {
+      fontSize: '2.5rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+      fontSize: '2.7rem',
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+      fontSize: '2.8rem',
+    },
+    '@media (min-width: 1200px)': {
+      fontSize: '3rem',
+    },
   },
 }));
 
 const CardTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '1.1rem',
   fontWeight: 700,
   marginBottom: theme.spacing(0.5),
   color: '#5C2D91',
+  // Responsive font size
+  fontSize: '1.1rem',
+  '@media (max-width: 600px)': {
+    fontSize: '0.95rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '1rem',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    fontSize: '1.05rem',
+  },
+  '@media (min-width: 1200px)': {
+    fontSize: '1.1rem',
+  },
 }));
 
 const CourseCount = styled(Typography)(({ theme }) => ({
-  fontSize: '0.9rem',
   color: '#666666',
   fontWeight: 500,
+  // Responsive font size
+  fontSize: '0.9rem',
+  '@media (max-width: 600px)': {
+    fontSize: '0.8rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '0.85rem',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    fontSize: '0.87rem',
+  },
+  '@media (min-width: 1200px)': {
+    fontSize: '0.9rem',
+  },
 }));
 
 const CategoryCardContent = styled(Box)(({ theme }) => ({

@@ -19,11 +19,18 @@ import { articleAPI } from '../../services/api.service';
 import { useArticle } from '../../contexts/ArticleContext';
 
 const SectionContainer = styled(Box)(({ theme }) => ({
-    padding: theme.spacing(8, 0),
     backgroundColor: '#FFFFFF',
     position: 'relative',
-    [theme.breakpoints.down('md')]: {
+    // Responsive padding
+    padding: theme.spacing(8, 0),
+    '@media (max-width: 600px)': {
+        padding: theme.spacing(4, 0),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
         padding: theme.spacing(6, 0),
+    },
+    '@media (min-width: 900px)': {
+        padding: theme.spacing(8, 0),
     },
 }));
 
@@ -32,10 +39,24 @@ const SectionHeader = styled(Box)(({ theme }) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing(6),
-    [theme.breakpoints.down('md')]: {
+    // Enhanced responsive layout
+    '@media (max-width: 600px)': {
         flexDirection: 'column',
-        gap: theme.spacing(3),
+        gap: theme.spacing(2),
         alignItems: 'flex-start',
+        marginBottom: theme.spacing(4),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        flexDirection: 'column',
+        gap: theme.spacing(2.5),
+        alignItems: 'flex-start',
+        marginBottom: theme.spacing(5),
+    },
+    '@media (min-width: 900px)': {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: theme.spacing(6),
     },
 }));
 
@@ -55,27 +76,49 @@ const SectionSubtitle = styled(Typography)(({ theme }) => ({
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
-    fontSize: '2.5rem',
     fontWeight: 800,
     color: '#663399',
     lineHeight: 1.2,
     direction: 'rtl',
-    [theme.breakpoints.down('sm')]: {
+    // Responsive font size
+    fontSize: '2.5rem',
+    '@media (max-width: 600px)': {
+        fontSize: '1.75rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
         fontSize: '2rem',
+    },
+    '@media (min-width: 900px)': {
+        fontSize: '2.5rem',
     },
 }));
 
 const ViewAllButton = styled(Button)(({ theme }) => ({
     backgroundColor: '#333679',
     color: '#FFFFFF',
-    padding: theme.spacing(1.5, 3),
     borderRadius: '8px',
     textTransform: 'none',
     fontWeight: 600,
-    fontSize: '1rem',
     boxShadow: '0 4px 12px rgba(51, 54, 121, 0.3)',
     transition: 'all 0.3s ease',
     direction: 'rtl',
+    // Responsive sizing
+    padding: theme.spacing(1.5, 3),
+    fontSize: '1rem',
+    minHeight: '44px',
+    '@media (max-width: 600px)': {
+        padding: theme.spacing(1.2, 2.5),
+        fontSize: '0.9rem',
+        minHeight: '40px',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        padding: theme.spacing(1.3, 2.8),
+        fontSize: '0.95rem',
+    },
+    '@media (min-width: 900px)': {
+        padding: theme.spacing(1.5, 3),
+        fontSize: '1rem',
+    },
     '&:hover': {
         backgroundColor: '#2A2D5F',
         transform: 'translateY(-2px)',
@@ -94,9 +137,26 @@ const ArticlesContainer = styled(Box)(({ theme }) => ({
     overflow: 'visible',
     padding: theme.spacing(0, 8),
     margin: theme.spacing(0, -2),
-    [theme.breakpoints.down('lg')]: {
+    // Enhanced responsive spacing
+    '@media (max-width: 600px)': {
+        gap: theme.spacing(1.5),
+        padding: theme.spacing(0, 2),
+        margin: theme.spacing(0, -1),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
         gap: theme.spacing(2),
+        padding: theme.spacing(0, 4),
+        margin: theme.spacing(0, -1.5),
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        gap: theme.spacing(2.5),
         padding: theme.spacing(0, 6),
+        margin: theme.spacing(0, -1.8),
+    },
+    '@media (min-width: 1200px)': {
+        gap: theme.spacing(3),
+        padding: theme.spacing(0, 8),
+        margin: theme.spacing(0, -2),
     },
     [theme.breakpoints.down('md')]: {
         padding: theme.spacing(0, 4),
@@ -167,41 +227,56 @@ const ArticleCard = styled(Box)(({ theme }) => ({
     overflow: 'hidden',
     transition: 'all 0.3s ease',
     border: '1px solid rgba(0, 0, 0, 0.05)',
-    minWidth: '320px',
-    maxWidth: '380px',
     width: '100%',
     flex: '0 0 auto',
     '&:hover': {
         transform: 'translateY(-4px)',
         boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
     },
-    [theme.breakpoints.down('xl')]: {
-        minWidth: '300px',
-        maxWidth: '350px',
+    // Enhanced responsive sizing
+    '@media (max-width: 600px)': {
+        minWidth: '100%',
+        maxWidth: '100%',
+        width: '100%',
     },
-    [theme.breakpoints.down('lg')]: {
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        minWidth: '260px',
+        maxWidth: '300px',
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
         minWidth: '280px',
         maxWidth: '320px',
     },
-    [theme.breakpoints.down('md')]: {
-        minWidth: '100%',
-        maxWidth: '100%',
-        width: '100%',
+    '@media (min-width: 1200px) and (max-width: 1536px)': {
+        minWidth: '300px',
+        maxWidth: '350px',
     },
-    [theme.breakpoints.down('sm')]: {
-        minWidth: '100%',
-        maxWidth: '100%',
-        width: '100%',
+    '@media (min-width: 1536px)': {
+        minWidth: '320px',
+        maxWidth: '380px',
     },
 }));
 
 const ArticleImage = styled(Box)(({ theme }) => ({
     width: '100%',
-    height: '180px',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     position: 'relative',
+    // Responsive height
+    height: '180px',
+    '@media (max-width: 600px)': {
+        height: '160px',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        height: '170px',
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        height: '175px',
+    },
+    '@media (min-width: 1200px)': {
+        height: '180px',
+    },
     '&:after': {
         content: '""',
         position: 'absolute',
@@ -211,23 +286,21 @@ const ArticleImage = styled(Box)(({ theme }) => ({
         height: '4px',
         backgroundColor: '#000000',
     },
-    [theme.breakpoints.down('lg')]: {
-        height: '160px',
-    },
-    [theme.breakpoints.down('md')]: {
-        height: '200px',
-    },
-    [theme.breakpoints.down('sm')]: {
-        height: '180px',
-    },
 }));
 
 const ArticleContent = styled(Box)(({ theme }) => ({
+    // Responsive padding
     padding: theme.spacing(2.5),
-    [theme.breakpoints.down('lg')]: {
+    '@media (max-width: 600px)': {
         padding: theme.spacing(2),
     },
-    [theme.breakpoints.down('md')]: {
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        padding: theme.spacing(2.2),
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        padding: theme.spacing(2.3),
+    },
+    '@media (min-width: 1200px)': {
         padding: theme.spacing(2.5),
     },
 }));

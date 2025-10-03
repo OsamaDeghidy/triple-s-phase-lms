@@ -44,12 +44,19 @@ const floatAnimation = keyframes`
 `;
 
 const SectionContainer = styled(Box)(({ theme }) => ({
-    padding: theme.spacing(10, 0),
     backgroundColor: '#f9fafb',
     position: 'relative',
     overflow: 'hidden',
-    [theme.breakpoints.down('md')]: {
+    // Responsive padding
+    padding: theme.spacing(10, 0),
+    '@media (max-width: 600px)': {
+        padding: theme.spacing(4, 0),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
         padding: theme.spacing(6, 0),
+    },
+    '@media (min-width: 900px)': {
+        padding: theme.spacing(10, 0),
     },
 }));
 
@@ -59,17 +66,40 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
     gap: theme.spacing(8),
     alignItems: 'center',
     position: 'relative',
-    [theme.breakpoints.down('lg')]: {
+    // Enhanced responsive layout
+    '@media (max-width: 600px)': {
+        gridTemplateColumns: '1fr',
+        gap: theme.spacing(3),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
         gridTemplateColumns: '1fr',
         gap: theme.spacing(4),
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        gridTemplateColumns: '1fr',
+        gap: theme.spacing(5),
+    },
+    '@media (min-width: 1200px)': {
+        gridTemplateColumns: '1.2fr 1fr',
+        gap: theme.spacing(8),
     },
 }));
 
 const LeftSection = styled(Box)(({ theme }) => ({
     position: 'relative',
+    // Responsive height
     height: '500px',
-    [theme.breakpoints.down('lg')]: {
+    '@media (max-width: 600px)': {
+        height: '300px',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        height: '350px',
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
         height: '400px',
+    },
+    '@media (min-width: 1200px)': {
+        height: '500px',
     },
 }));
 
@@ -156,24 +186,41 @@ const SectionLabel = styled(Box)(({ theme }) => ({
 }));
 
 const MainTitle = styled(Typography)(({ theme }) => ({
-    fontSize: '2.5rem',
     fontWeight: 800,
     color: '#1f2937',
     lineHeight: 1.2,
     marginBottom: theme.spacing(2),
+    // Responsive font size
+    fontSize: '2.5rem',
+    '@media (max-width: 600px)': {
+        fontSize: '1.75rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        fontSize: '2rem',
+    },
+    '@media (min-width: 900px)': {
+        fontSize: '2.5rem',
+    },
     '& span': {
         color: '#6f42c1',
-    },
-    [theme.breakpoints.down('sm')]: {
-        fontSize: '2rem',
     },
 }));
 
 const DescriptionText = styled(Typography)(({ theme }) => ({
-    fontSize: '1.1rem',
     color: '#4b5563',
     lineHeight: 1.7,
     marginBottom: theme.spacing(2),
+    // Responsive font size
+    fontSize: '1.1rem',
+    '@media (max-width: 600px)': {
+        fontSize: '0.95rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        fontSize: '1rem',
+    },
+    '@media (min-width: 900px)': {
+        fontSize: '1.1rem',
+    },
 }));
 
 const BenefitsList = styled(Box)(({ theme }) => ({
@@ -202,14 +249,28 @@ const BenefitItem = styled(Box)(({ theme }) => ({
 const CallToActionButton = styled(Button)(({ theme }) => ({
     background: 'linear-gradient(135deg, #6f42c1 0%, #333679 100%)',
     color: '#fff',
-    padding: theme.spacing(1.5, 3),
     borderRadius: '8px',
     textTransform: 'none',
     fontWeight: 600,
-    fontSize: '1rem',
     boxShadow: '0 4px 15px rgba(111, 66, 193, 0.3)',
     transition: 'all 0.3s ease',
-    alignSelf: 'flex-start',
+    // Responsive sizing
+    padding: theme.spacing(1.5, 3),
+    fontSize: '1rem',
+    minHeight: '44px',
+    '@media (max-width: 600px)': {
+        padding: theme.spacing(1.2, 2.5),
+        fontSize: '0.9rem',
+        minHeight: '40px',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        padding: theme.spacing(1.3, 2.8),
+        fontSize: '0.95rem',
+    },
+    '@media (min-width: 900px)': {
+        padding: theme.spacing(1.5, 3),
+        fontSize: '1rem',
+    },
     '&:hover': {
         transform: 'translateY(-2px)',
         boxShadow: '0 6px 20px rgba(111, 66, 193, 0.4)',

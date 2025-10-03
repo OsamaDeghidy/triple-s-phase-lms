@@ -2,6 +2,20 @@ import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   direction: 'rtl',
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+      // Custom breakpoints for better mobile experience
+      mobile: 480,
+      tablet: 768,
+      laptop: 1024,
+      desktop: 1440,
+    },
+  },
   palette: {
     primary: {
       main: '#0288d1',
@@ -59,32 +73,68 @@ const theme = createTheme({
       fontSize: '3.5rem',
       lineHeight: 1.2,
       letterSpacing: '-0.02em',
+      '@media (max-width: 768px)': {
+        fontSize: '2.5rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '2rem',
+      },
     },
     h2: {
       fontWeight: 700,
       fontSize: '2.5rem',
       lineHeight: 1.2,
       letterSpacing: '-0.01em',
+      '@media (max-width: 768px)': {
+        fontSize: '2rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '1.75rem',
+      },
     },
     h3: {
       fontWeight: 600,
       fontSize: '2rem',
       lineHeight: 1.3,
+      '@media (max-width: 768px)': {
+        fontSize: '1.75rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '1.5rem',
+      },
     },
     h4: {
       fontWeight: 600,
       fontSize: '1.5rem',
       lineHeight: 1.3,
+      '@media (max-width: 768px)': {
+        fontSize: '1.375rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '1.25rem',
+      },
     },
     h5: {
       fontWeight: 600,
       fontSize: '1.25rem',
       lineHeight: 1.4,
+      '@media (max-width: 768px)': {
+        fontSize: '1.125rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '1rem',
+      },
     },
     h6: {
       fontWeight: 600,
       fontSize: '1.125rem',
       lineHeight: 1.4,
+      '@media (max-width: 768px)': {
+        fontSize: '1rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '0.9rem',
+      },
     },
     subtitle1: {
       fontSize: '1rem',
@@ -99,10 +149,22 @@ const theme = createTheme({
     body1: {
       fontSize: '1rem',
       lineHeight: 1.75,
+      '@media (max-width: 768px)': {
+        fontSize: '0.9rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '0.85rem',
+      },
     },
     body2: {
       fontSize: '0.875rem',
       lineHeight: 1.75,
+      '@media (max-width: 768px)': {
+        fontSize: '0.8rem',
+      },
+      '@media (max-width: 480px)': {
+        fontSize: '0.75rem',
+      },
     },
     button: {
       textTransform: 'none',
@@ -134,11 +196,19 @@ const theme = createTheme({
           color: 'inherit',
         },
         '.MuiContainer-root': {
-          paddingLeft: '24px',
-          paddingRight: '24px',
+          paddingLeft: '16px',
+          paddingRight: '16px',
           '@media (min-width: 600px)': {
+            paddingLeft: '24px',
+            paddingRight: '24px',
+          },
+          '@media (min-width: 900px)': {
             paddingLeft: '32px',
             paddingRight: '32px',
+          },
+          '@media (min-width: 1200px)': {
+            paddingLeft: '40px',
+            paddingRight: '40px',
           },
         },
       },
@@ -153,6 +223,14 @@ const theme = createTheme({
           fontWeight: 600,
           fontSize: '0.9375rem',
           transition: 'all 0.3s ease',
+          '@media (max-width: 768px)': {
+            padding: '8px 20px',
+            fontSize: '0.875rem',
+          },
+          '@media (max-width: 480px)': {
+            padding: '6px 16px',
+            fontSize: '0.8rem',
+          },
           '&:hover': {
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
             transform: 'translateY(-2px)',
@@ -264,6 +342,90 @@ const globalStyles = {
   },
   '.smooth-transition': {
     transition: 'all 0.3s ease',
+  },
+  // Responsive utility classes
+  '.mobile-only': {
+    display: 'block',
+    '@media (min-width: 769px)': {
+      display: 'none',
+    },
+  },
+  '.desktop-only': {
+    display: 'none',
+    '@media (min-width: 769px)': {
+      display: 'block',
+    },
+  },
+  '.tablet-up': {
+    display: 'none',
+    '@media (min-width: 768px)': {
+      display: 'block',
+    },
+  },
+  '.mobile-down': {
+    display: 'block',
+    '@media (min-width: 768px)': {
+      display: 'none',
+    },
+  },
+  // Responsive spacing utilities
+  '.responsive-padding': {
+    padding: '16px',
+    '@media (min-width: 600px)': {
+      padding: '24px',
+    },
+    '@media (min-width: 900px)': {
+      padding: '32px',
+    },
+    '@media (min-width: 1200px)': {
+      padding: '40px',
+    },
+  },
+  '.responsive-margin': {
+    margin: '16px',
+    '@media (min-width: 600px)': {
+      margin: '24px',
+    },
+    '@media (min-width: 900px)': {
+      margin: '32px',
+    },
+    '@media (min-width: 1200px)': {
+      margin: '40px',
+    },
+  },
+  // Responsive text utilities
+  '.responsive-text': {
+    fontSize: '0.875rem',
+    '@media (min-width: 600px)': {
+      fontSize: '1rem',
+    },
+    '@media (min-width: 900px)': {
+      fontSize: '1.125rem',
+    },
+  },
+  // Responsive flex utilities
+  '.responsive-flex': {
+    flexDirection: 'column',
+    '@media (min-width: 768px)': {
+      flexDirection: 'row',
+    },
+  },
+  '.responsive-grid': {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: '16px',
+    '@media (min-width: 600px)': {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: '20px',
+    },
+    '@media (min-width: 900px)': {
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: '24px',
+    },
+    '@media (min-width: 1200px)': {
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gap: '32px',
+    },
   },
 };
 

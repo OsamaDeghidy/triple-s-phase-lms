@@ -16,6 +16,19 @@ const SliderContainer = styled(Box)(({ theme }) => ({
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
   minHeight: '70vh',
+  // Responsive padding and height
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(2, 0),
+    minHeight: '60vh',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    padding: theme.spacing(3, 0),
+    minHeight: '65vh',
+  },
+  '@media (min-width: 900px)': {
+    padding: theme.spacing(4, 0),
+    minHeight: '70vh',
+  },
 }));
 
 const SliderHeader = styled(Box)(({ theme }) => ({
@@ -24,11 +37,38 @@ const SliderHeader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   marginBottom: theme.spacing(4),
   padding: theme.spacing(0, 2),
+  // Responsive layout
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(0, 1),
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    marginBottom: theme.spacing(3),
+    padding: theme.spacing(0, 1.5),
+  },
+  '@media (min-width: 900px)': {
+    marginBottom: theme.spacing(4),
+    padding: theme.spacing(0, 2),
+  },
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
   position: 'relative',
+  fontSize: '1.5rem',
+  // Responsive font size
+  '@media (max-width: 600px)': {
+    fontSize: '1.25rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '1.375rem',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '1.5rem',
+  },
   '&:after': {
     content: '""',
     position: 'absolute',
@@ -38,6 +78,12 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
     height: '4px',
     backgroundColor: theme.palette.primary.main,
     borderRadius: '2px',
+    // Responsive width
+    '@media (max-width: 600px)': {
+      width: '40px',
+      height: '3px',
+      bottom: -6,
+    },
   },
 }));
 
@@ -45,6 +91,28 @@ const SliderButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   color: theme.palette.text.primary,
   boxShadow: theme.shadows[2],
+  // Responsive sizing
+  '@media (max-width: 600px)': {
+    width: '36px',
+    height: '36px',
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.2rem',
+    },
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    width: '40px',
+    height: '40px',
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.3rem',
+    },
+  },
+  '@media (min-width: 900px)': {
+    width: '44px',
+    height: '44px',
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.5rem',
+    },
+  },
   '&:hover': {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
@@ -57,8 +125,15 @@ const SliderButton = styled(IconButton)(({ theme }) => ({
 const SliderTrack = styled(Box)(({ theme }) => ({
   display: 'flex',
   gap: theme.spacing(2.5),
-  [theme.breakpoints.down('md')]: {
+  // Responsive gap
+  '@media (max-width: 600px)': {
+    gap: theme.spacing(1.5),
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
     gap: theme.spacing(2),
+  },
+  '@media (min-width: 900px)': {
+    gap: theme.spacing(2.5),
   },
 }));
 
@@ -69,9 +144,27 @@ const CourseCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#ffffff',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  '&:hover': {
-    transform: 'translateY(-8px)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+  // Responsive width and hover effects
+  '@media (max-width: 600px)': {
+    width: '95%',
+    '&:hover': {
+      transform: 'translateY(-4px)',
+      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
+    },
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    width: '92%',
+    '&:hover': {
+      transform: 'translateY(-6px)',
+      boxShadow: '0 7px 22px rgba(0, 0, 0, 0.13)',
+    },
+  },
+  '@media (min-width: 900px)': {
+    width: '90%',
+    '&:hover': {
+      transform: 'translateY(-8px)',
+      boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+    },
   },
 }));
 
@@ -87,6 +180,26 @@ const DiscountBadge = styled(Box)(({ theme }) => ({
   fontWeight: 600,
   zIndex: 2,
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+  // Responsive sizing
+  '@media (max-width: 600px)': {
+    top: 8,
+    left: 8,
+    padding: '3px 6px',
+    fontSize: '0.65rem',
+    borderRadius: '8px',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    top: 10,
+    left: 10,
+    padding: '3px 7px',
+    fontSize: '0.68rem',
+  },
+  '@media (min-width: 900px)': {
+    top: 12,
+    left: 12,
+    padding: '4px 8px',
+    fontSize: '0.7rem',
+  },
 }));
 
 const CourseMedia = styled(CardMedia)({
@@ -126,8 +239,6 @@ const PlayButton = styled(Box)(({ theme }) => ({
   left: '50%',
   transform: 'translate(-50%, -50%)',
   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  width: 60,
-  height: 60,
   borderRadius: '50%',
   display: 'flex',
   alignItems: 'center',
@@ -135,6 +246,28 @@ const PlayButton = styled(Box)(({ theme }) => ({
   cursor: 'pointer',
   opacity: 0,
   transition: 'all 0.3s ease',
+  // Responsive sizing
+  '@media (max-width: 600px)': {
+    width: 45,
+    height: 45,
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.5rem',
+    },
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    width: 52,
+    height: 52,
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.7rem',
+    },
+  },
+  '@media (min-width: 900px)': {
+    width: 60,
+    height: 60,
+    '& .MuiSvgIcon-root': {
+      fontSize: '2rem',
+    },
+  },
   '&:hover': {
     backgroundColor: theme.palette.primary.main,
     '& .MuiSvgIcon-root': {
@@ -145,8 +278,28 @@ const PlayButton = styled(Box)(({ theme }) => ({
 
 const CourseCardContent = styled(CardContent)(({ theme }) => ({
   padding: '16px',
+  // Responsive padding
+  '@media (max-width: 600px)': {
+    padding: '12px',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    padding: '14px',
+  },
+  '@media (min-width: 900px)': {
+    padding: '16px',
+  },
   '& .MuiRating-root': {
     direction: 'ltr',
+    // Responsive rating size
+    '@media (max-width: 600px)': {
+      fontSize: '1rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+      fontSize: '1.1rem',
+    },
+    '@media (min-width: 900px)': {
+      fontSize: '1.2rem',
+    },
   },
 }));
 
@@ -155,6 +308,16 @@ const CourseCategory = styled(Typography)(({ theme }) => ({
   fontSize: '0.75rem',
   fontWeight: 600,
   marginBottom: theme.spacing(0.5),
+  // Responsive font size
+  '@media (max-width: 600px)': {
+    fontSize: '0.7rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '0.72rem',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '0.75rem',
+  },
 }));
 
 const CourseTitle = styled(Typography)({
@@ -169,6 +332,22 @@ const CourseTitle = styled(Typography)({
   color: '#333333',
   fontSize: '1rem',
   marginBottom: '8px',
+  // Responsive font size and height
+  '@media (max-width: 600px)': {
+    fontSize: '0.9rem',
+    minHeight: '3.2em',
+    marginBottom: '6px',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '0.95rem',
+    minHeight: '3.4em',
+    marginBottom: '7px',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '1rem',
+    minHeight: '3.6em',
+    marginBottom: '8px',
+  },
 });
 
 const InstructorText = styled(Typography)(({ theme }) => ({
@@ -178,6 +357,19 @@ const InstructorText = styled(Typography)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '4px',
+  // Responsive font size and margin
+  '@media (max-width: 600px)': {
+    fontSize: '0.75rem',
+    marginBottom: '10px',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '0.78rem',
+    marginBottom: '11px',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '0.8rem',
+    marginBottom: '12px',
+  },
 }));
 
 const PriceContainer = styled(Box)({
@@ -191,12 +383,32 @@ const CurrentPrice = styled(Typography)(({ theme }) => ({
   color: '#FF0000',
   fontWeight: 700,
   fontSize: '1.1rem',
+  // Responsive font size
+  '@media (max-width: 600px)': {
+    fontSize: '1rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '1.05rem',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '1.1rem',
+  },
 }));
 
 const OriginalPrice = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.disabled,
   textDecoration: 'line-through',
   fontSize: '0.875rem',
+  // Responsive font size
+  '@media (max-width: 600px)': {
+    fontSize: '0.8rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '0.825rem',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '0.875rem',
+  },
 }));
 
 const StudentsCount = styled(Typography)(({ theme }) => ({
@@ -398,12 +610,16 @@ const CourseCollections = () => {
                   textTransform: 'none',
                   fontWeight: 500,
                   px: 3,
+                  // Responsive sizing
+                  fontSize: { xs: '0.8rem', md: '0.875rem' },
+                  minHeight: { xs: '36px', md: '40px' },
                   '&:hover': {
                     backgroundColor: 'rgba(74, 108, 247, 0.05)',
                   },
                   '& .MuiButton-endIcon': {
                     marginRight: '4px',
                     marginLeft: '-4px',
+                    fontSize: { xs: '1rem', md: '1.2rem' },
                   }
                 }}
               >
@@ -423,17 +639,28 @@ const CourseCollections = () => {
                   sx={{
                     display: 'grid',
                     gridTemplateColumns: {
-                      xs: 'repeat(auto-fill, minmax(280px, 1fr))',
-                      sm: 'repeat(auto-fill, minmax(300px, 1fr))',
-                      md: 'repeat(auto-fill, minmax(320px, 1fr))',
-                      lg: 'repeat(auto-fill, minmax(350px, 1fr))'
+                      xs: 'repeat(auto-fill, minmax(260px, 1fr))',
+                      sm: 'repeat(auto-fill, minmax(280px, 1fr))',
+                      md: 'repeat(auto-fill, minmax(300px, 1fr))',
+                      lg: 'repeat(auto-fill, minmax(320px, 1fr))',
+                      xl: 'repeat(auto-fill, minmax(350px, 1fr))'
                     },
                     gap: theme.spacing(2.5),
                     width: '100%',
                     padding: theme.spacing(0, 2, 4, 2),
-                    [theme.breakpoints.down('sm')]: {
+                    // Enhanced responsive spacing
+                    '@media (max-width: 600px)': {
+                      gap: theme.spacing(1.5),
+                      padding: theme.spacing(0, 0.5, 3, 0.5),
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                    },
+                    '@media (min-width: 600px) and (max-width: 900px)': {
                       gap: theme.spacing(2),
-                      padding: theme.spacing(0, 1, 4, 1),
+                      padding: theme.spacing(0, 1.5, 3.5, 1.5),
+                    },
+                    '@media (min-width: 900px)': {
+                      gap: theme.spacing(2.5),
+                      padding: theme.spacing(0, 2, 4, 2),
                     },
                   }}
                 >

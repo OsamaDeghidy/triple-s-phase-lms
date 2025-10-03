@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import profileImage from '../../assets/images/profile.jpg';
 import {
   Box, Drawer, AppBar, Toolbar, Typography, IconButton, List, ListItemButton, ListItemIcon, ListItemText,
-  Avatar, Divider, Badge, InputBase, Paper, Select, MenuItem, FormControl, Chip, Collapse
+  Avatar, Divider, Badge, InputBase, Paper, Select, MenuItem, FormControl, Chip, Collapse, useTheme, useMediaQuery
 } from '@mui/material';
 import {
   Menu as MenuIcon, 
@@ -34,7 +34,13 @@ import {
 } from '@mui/icons-material';
 import { courseAPI } from '../../services/courseService';
 
-const drawerWidth = 270;
+const drawerWidth = {
+  xs: 280,
+  sm: 270,
+  md: 270,
+  lg: 270,
+  xl: 270,
+};
 
 // Navigation items for teacher
 const teacherNavItems = [
@@ -62,6 +68,10 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { getUserRole, user } = useAuth(); // Get user data from auth context
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const profileRef = useRef(null);
@@ -74,6 +84,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
   const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [loadingCourses, setLoadingCourses] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Sample notifications data
   const notifications = [
@@ -461,7 +472,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
     }}>
       {/* Sidebar */}
       <Box sx={{ 
-        width: drawerWidth, 
+        width: { xs: 0, md: drawerWidth.md },
         flexShrink: 0, 
         position: 'relative', 
         height: '100%', 
@@ -473,19 +484,46 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
           },
         },
       }}>
+        {/* Desktop Drawer */}
         <Drawer
           variant="permanent"
           anchor="right"
           sx={{
-            width: drawerWidth,
+            display: { xs: 'none', md: 'block' },
+            width: drawerWidth.md,
             flexShrink: 0,
             '& .MuiDrawer-paper': {
-              width: drawerWidth,
+              width: drawerWidth.md,
               boxSizing: 'border-box',
               border: 'none',
               background: 'transparent',
               boxShadow: 'none',
               position: 'relative',
+              height: '100%',
+              overflow: 'visible'
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
+
+        {/* Mobile Drawer */}
+        <Drawer
+          variant="temporary"
+          anchor="right"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile
+          }}
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            '& .MuiDrawer-paper': {
+              width: drawerWidth.xs,
+              boxSizing: 'border-box',
+              border: 'none',
+              background: 'rgba(255,255,255,0.98)',
+              boxShadow: '0 8px 32px 0 rgba(31,38,135,0.15)',
               height: '100%',
               overflow: 'visible'
             },
@@ -552,17 +590,48 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
             zIndex: 1
           }
         }}>
-          <Toolbar sx={{ justifyContent: 'space-between', py: 1, position: 'relative', zIndex: 2 }}>
+          <Toolbar sx={{ 
+            justifyContent: 'space-between', 
+            py: { xs: 0.5, md: 1 }, 
+            px: { xs: 1, md: 2 },
+            position: 'relative', 
+            zIndex: 2,
+            minHeight: { xs: 56, md: 64 }
+          }}>
+            {/* Mobile Menu Button */}
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => setMobileOpen(true)}
+              edge="start"
+              sx={{
+                mr: 2,
+                display: { xs: 'block', md: 'none' },
+                color: '#333679',
+                '&:hover': {
+                  backgroundColor: 'rgba(51, 54, 121, 0.1)',
+                }
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
             {/* Search Bar and Filters */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ 
+              display: { xs: 'none', sm: 'flex' }, 
+              alignItems: 'center', 
+              gap: { xs: 1, md: 2 },
+              flex: 1,
+              justifyContent: 'center'
+            }}>
               {/* Search Bar with Enhanced Design */}
               <Paper
                 component="form"
                 sx={{ 
-                  p: '4px 12px', 
+                  p: { xs: '2px 8px', md: '4px 12px' }, 
                   display: 'flex', 
                   alignItems: 'center', 
-                  width: 300, 
+                  width: { xs: 200, sm: 250, md: 300 }, 
+                  maxWidth: { xs: '100%', md: 300 },
                   background: 'rgba(255,255,255,0.9)', 
                   borderRadius: 3, 
                   boxShadow: '0 4px 20px rgba(14,81,129,0.1)',
@@ -608,7 +677,8 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
               <FormControl 
                 size="small" 
                 sx={{ 
-                  minWidth: 150,
+                  minWidth: { xs: 120, md: 150 },
+                  display: { xs: 'none', md: 'block' },
                   '& .MuiOutlinedInput-root': {
                     background: 'rgba(255,255,255,0.9)',
                     borderRadius: 3,
@@ -651,14 +721,19 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
 
             </Box>
             
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: { xs: 1, md: 3 },
+              ml: 'auto'
+            }}>
               {/* Notification Dropdown with Enhanced Design */}
               <Box ref={notifRef} sx={{ position: 'relative' }}>
                 <IconButton 
                   color="inherit" 
                   sx={{ 
                     bgcolor: notifAnchorEl ? 'rgba(77, 191, 179, 0.15)' : 'rgba(77, 191, 179, 0.08)', 
-                    p: 1.5,
+                    p: { xs: 1, md: 1.5 },
                     borderRadius: 3,
                     transition: 'all 0.3s ease',
                     '&:hover': {
@@ -700,8 +775,8 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                       position: 'absolute',
                       top: '100%',
                       left: 0,
-                      width: 380,
-                      maxHeight: 450,
+                      width: { xs: 320, md: 380 },
+                      maxHeight: { xs: 350, md: 450 },
                       overflowY: 'auto',
                       borderRadius: 3,
                       boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
@@ -862,8 +937,8 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                     src={userData.avatar}
                     alt={userData.name}
                     sx={{ 
-                      width: 44, 
-                      height: 44, 
+                      width: { xs: 36, md: 44 }, 
+                      height: { xs: 36, md: 44 }, 
                       border: '3px solid white',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
@@ -884,7 +959,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                       position: 'absolute',
                       top: '100%',
                       left: 0,
-                      width: 280,
+                      width: { xs: 260, md: 280 },
                       borderRadius: 3,
                       boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
                       zIndex: 10000,
@@ -1043,13 +1118,13 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
         {/* Main Dashboard Content */}
         <Box component="main" sx={{ 
           flexGrow: 1, 
-          p: 0, 
-          pt: 0, 
+          p: { xs: 1, sm: 2, md: 3, lg: 4 }, 
+          pt: { xs: 1, md: 0 }, 
           width: '100%',
           height: '100%',
           overflow: 'auto',
           '&::-webkit-scrollbar': {
-            width: '8px',
+            width: { xs: '4px', md: '8px' },
           },
           '&::-webkit-scrollbar-track': {
             backgroundColor: 'rgba(0,0,0,0.05)',
@@ -1063,7 +1138,10 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
             },
           },
         }}>
-          <Box sx={{ pb: 10 }}>
+          <Box sx={{ 
+            pb: { xs: 5, md: 10 },
+            px: { xs: 1, md: 0 }
+          }}>
             {children}
           </Box>
         </Box>

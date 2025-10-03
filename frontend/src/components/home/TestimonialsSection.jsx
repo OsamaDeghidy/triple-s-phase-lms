@@ -59,13 +59,33 @@ const floatAnimation = keyframes`
 const StatsBanner = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(90deg, #663399 0%, #333679 100%)',
   borderRadius: '16px',
-  padding: theme.spacing(4, 2),
-  marginBottom: theme.spacing(8),
+  boxShadow: '0 8px 32px rgba(102, 51, 153, 0.2)',
+  position: 'relative',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  boxShadow: '0 8px 32px rgba(102, 51, 153, 0.2)',
-  position: 'relative',
+  // Responsive padding and margin
+  padding: theme.spacing(4, 2),
+  marginBottom: theme.spacing(8),
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+    gap: theme.spacing(2),
+    padding: theme.spacing(2, 1),
+    marginBottom: theme.spacing(4),
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    flexDirection: 'column',
+    gap: theme.spacing(2.5),
+    padding: theme.spacing(3, 1.5),
+    marginBottom: theme.spacing(6),
+  },
+  '@media (min-width: 900px)': {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: theme.spacing(4, 2),
+    marginBottom: theme.spacing(8),
+  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -80,11 +100,6 @@ const StatsBanner = styled(Box)(({ theme }) => ({
     `,
     borderRadius: '16px',
     pointerEvents: 'none',
-  },
-  [theme.breakpoints.down('md')]: {
-    flexDirection: 'column',
-    gap: theme.spacing(3),
-    padding: theme.spacing(3, 2),
   },
 }));
 
@@ -160,15 +175,22 @@ const SectionSubtitle = styled(Typography)(({ theme }) => ({
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
-  fontSize: '2.5rem',
   fontWeight: 800,
   color: '#663399',
   lineHeight: 1.2,
   marginBottom: theme.spacing(4),
   direction: 'rtl',
   textAlign: 'center',
-  [theme.breakpoints.down('sm')]: {
+  // Responsive font size
+  fontSize: '2.5rem',
+  '@media (max-width: 600px)': {
+    fontSize: '1.75rem',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
     fontSize: '2rem',
+  },
+  '@media (min-width: 900px)': {
+    fontSize: '2.5rem',
   },
 }));
 
@@ -212,16 +234,29 @@ const TestimonialFooter = styled(Box)(({ theme }) => ({
 const TestimonialAvatar = styled(Avatar, {
   shouldForwardProp: (prop) => prop !== 'bgColor',
 })(({ theme, bgColor }) => ({
-  width: 60,
-  height: 60,
   marginRight: theme.spacing(2),
   border: `3px solid #fff`,
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
   transition: 'all 0.3s ease',
+  backgroundColor: bgColor || theme.palette.primary.main,
+  // Responsive sizing
+  width: 60,
+  height: 60,
+  '@media (max-width: 600px)': {
+    width: 50,
+    height: 50,
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    width: 55,
+    height: 55,
+  },
+  '@media (min-width: 900px)': {
+    width: 60,
+    height: 60,
+  },
   '&:hover': {
     transform: 'scale(1.1)',
   },
-  backgroundColor: bgColor || theme.palette.primary.main,
 }));
 
 const TestimonialInfo = styled(Box)({

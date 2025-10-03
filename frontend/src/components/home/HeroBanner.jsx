@@ -209,28 +209,40 @@ const BackgroundSlide = styled(Box, {
 // Carousel indicators (right side dots)
 const CarouselIndicators = styled(Box)(({ theme }) => ({
   position: 'absolute',
-  right: '40px',
+  right: '20px',
   top: '50%',
   transform: 'translateY(-50%)',
   display: 'flex',
   flexDirection: 'column',
-  gap: '20px',
+  gap: '15px',
   zIndex: 10,
-  [theme.breakpoints.down('md')]: {
-    right: '20px',
-    gap: '15px',
+  [theme.breakpoints.up('sm')]: {
+    right: '30px',
+    gap: '18px',
+  },
+  [theme.breakpoints.up('md')]: {
+    right: '40px',
+    gap: '20px',
   },
 }));
 
 const IndicatorDot = styled(Box)(({ active, theme }) => ({
-  width: active ? '16px' : '12px',
-  height: active ? '16px' : '12px',
+  width: active ? '12px' : '8px',
+  height: active ? '12px' : '8px',
   borderRadius: '50%',
   backgroundColor: active ? '#fff' : 'rgba(255, 255, 255, 0.6)',
   border: active ? '2px solid #4DBFB3' : '2px solid transparent',
   cursor: 'pointer',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   boxShadow: active ? '0 0 15px rgba(229, 151, 139, 0.8)' : 'none',
+  [theme.breakpoints.up('sm')]: {
+    width: active ? '14px' : '10px',
+    height: active ? '14px' : '10px',
+  },
+  [theme.breakpoints.up('md')]: {
+    width: active ? '16px' : '12px',
+    height: active ? '16px' : '12px',
+  },
   '&:hover': {
     backgroundColor: active ? '#fff' : 'rgba(255, 255, 255, 0.8)',
     transform: 'scale(1.2)',
@@ -242,10 +254,10 @@ const IndicatorDot = styled(Box)(({ active, theme }) => ({
 // Refresh button (top right)
 const RefreshButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
-  top: '20px',
-  right: '20px',
-  width: '50px',
-  height: '50px',
+  top: '15px',
+  right: '15px',
+  width: '40px',
+  height: '40px',
   backgroundColor: 'rgba(255, 255, 255, 0.1)',
   color: '#fff',
   borderRadius: '50%',
@@ -258,11 +270,11 @@ const RefreshButton = styled(IconButton)(({ theme }) => ({
     transform: 'scale(1.1)',
     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
   },
-  [theme.breakpoints.down('sm')]: {
-    top: '15px',
-    right: '15px',
-    width: '40px',
-    height: '40px',
+  [theme.breakpoints.up('sm')]: {
+    top: '20px',
+    right: '20px',
+    width: '50px',
+    height: '50px',
   },
 }));
 
@@ -274,12 +286,18 @@ const HeroSection = styled('section', {
   padding: '0',
   overflow: 'hidden',
   height: '100vh', // Full viewport height to cover header
-  minHeight: '600px',
+  minHeight: '500px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
   textAlign: 'left',
   background: 'linear-gradient(135deg, #2D1B69 0%, #1A103F 50%, #0F0A2A 100%)',
+  '@media (min-width: 768px)': {
+    minHeight: '600px',
+  },
+  '@media (min-width: 1024px)': {
+    minHeight: '700px',
+  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -314,13 +332,21 @@ const HeroContent = styled(Container)(({ theme }) => ({
   textAlign: 'left',
   height: '100%',
   justifyContent: 'center',
-  padding: theme.spacing(6, 0, 6, 2),
+  padding: theme.spacing(4, 2, 4, 2),
   maxWidth: '1000px',
   marginLeft: 0,
-  paddingTop: '120px', // Add top padding to account for header
+  paddingTop: '80px', // Add top padding to account for header
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(5, 3, 5, 3),
+    paddingTop: '100px',
+  },
+  [theme.breakpoints.up('md')]: {
+    padding: theme.spacing(6, 4, 6, 4),
+    paddingTop: '120px',
+    textAlign: 'left',
+    alignItems: 'flex-start',
+  },
   [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(4, 2),
-    paddingTop: '100px', // Adjust for mobile
     textAlign: 'center',
     alignItems: 'center',
   },
@@ -329,36 +355,43 @@ const HeroContent = styled(Container)(({ theme }) => ({
 const HeroTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 800,
   marginBottom: theme.spacing(2),
-  fontSize: '4rem',
+  fontSize: '2rem',
   lineHeight: 1.1,
   maxWidth: '1000px',
   animation: `${slideInLeft} 1s ease-out 0.3s both`,
   color: '#FFFFFF',
   textShadow: '0 2px 10px rgba(0,0,0,0.3)',
-  [theme.breakpoints.down('md')]: {
-    fontSize: '3rem',
-  },
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.up('sm')]: {
     fontSize: '2.5rem',
+  },
+  [theme.breakpoints.up('md')]: {
+    fontSize: '3.5rem',
+  },
+  [theme.breakpoints.up('lg')]: {
+    fontSize: '4rem',
   },
 }));
 
 const HeroSubtitle = styled(Typography)(({ theme }) => ({
-  fontSize: '1.5rem',
-  marginBottom: theme.spacing(4),
+  fontSize: '1rem',
+  marginBottom: theme.spacing(3),
   maxWidth: '600px',
   opacity: 0.95,
   animation: `${slideInUp} 1s ease-out 0.6s both`,
   color: '#FFFFFF',
   fontWeight: 400,
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.up('sm')]: {
     fontSize: '1.25rem',
+    marginBottom: theme.spacing(4),
+  },
+  [theme.breakpoints.up('md')]: {
+    fontSize: '1.5rem',
   },
 }));
 
 const HeroButton = styled(Button)(({ theme, variant }) => ({
-  padding: theme.spacing(2, 4),
-  fontSize: '1.1rem',
+  padding: theme.spacing(1.5, 3),
+  fontSize: '0.9rem',
   fontWeight: 700,
   borderRadius: '12px',
   textTransform: 'none',
@@ -372,6 +405,10 @@ const HeroButton = styled(Button)(({ theme, variant }) => ({
   overflow: 'hidden',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   animation: `${slideInUp} 1s ease-out 0.9s both`,
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(2, 4),
+    fontSize: '1.1rem',
+  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -863,16 +900,16 @@ const HeroBanner = () => {
             maxWidth: '1000px',
             position: 'relative',
             zIndex: 2,
-            padding: '0 20px 0 0',
+            padding: { xs: '0 10px 0 0', md: '0 20px 0 0' },
             marginLeft: 0,
-            marginTop: '60px', // Add margin to push content below header
+            marginTop: { xs: '40px', md: '60px' }, // Add margin to push content below header
             transform: `translateY(${scrollProgress * -30}px)`,
             transition: 'transform 0.3s ease-out',
           }}>
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: '2rem', sm: '2.75rem', md: '3.25rem' },
+                fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem', lg: '3.5rem' },
                 fontWeight: 800,
                 lineHeight: 1.2,
                 mb: 1,
@@ -886,10 +923,10 @@ const HeroBanner = () => {
                 '&:after': {
                   content: '""',
                   display: 'block',
-                  width: '100px',
+                  width: { xs: '60px', md: '100px' },
                   height: '4px',
                   background: 'rgba(255,255,255,0.8)',
-                  margin: '12px auto 8px',
+                  margin: { xs: '8px auto 6px', md: '12px auto 8px' },
                   borderRadius: '2px'
                 }
               }}
@@ -900,9 +937,9 @@ const HeroBanner = () => {
             <Typography
               variant="h6"
               sx={{
-                fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                fontSize: { xs: '1rem', sm: '1.2rem', md: '1.3rem' },
                 fontWeight: 400,
-                mb: 1.5,
+                mb: { xs: 1, md: 1.5 },
                 color: 'rgba(255,255,255,0.95)',
                 maxWidth: '700px',
                 mx: 'auto',
@@ -928,6 +965,8 @@ const HeroBanner = () => {
                 transform: `translateX(${scrollProgress * -10}px) scale(${1 - scrollProgress * 0.1})`,
                 transition: 'all 0.3s ease-out',
                 opacity: 1 - scrollProgress * 0.4,
+                width: { xs: '100%', sm: 'auto' },
+                mt: { xs: 2, md: 0 },
               }}
             >
               ابدأ رحلتك
