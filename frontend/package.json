@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:local": "node setup-local.js && vite",
     "build": "vite build",
-    "build:vercel": "vite build --config vite.config.vercel.optimized.js",
+    "build:vercel": "vite build --config vite.config.vercel.simple.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "setup:local": "node setup-local.js"
@@ -58,8 +58,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "terser": "^5.44.0",
-    "vite": "^7.0.4",
-    "@emotion/babel-plugin": "^11.14.0"
+    "vite": "^7.0.4"
   },
   "engines": {
     "node": "20.x",
