@@ -1,24 +1,45 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
+
+// Define __dirname for ES modules
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 // Final optimized Vercel configuration
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      jsxImportSource: '@emotion/react',
+      babel: {
+        plugins: ['@emotion/babel-plugin'],
+      },
+    })
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
     minify: 'esbuild',
-    target: 'es2015',
+    target: 'es2020',
     rollupOptions: {
       output: {
-        format: 'iife',
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          mui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+          antd: ['antd', '@ant-design/icons'],
+          utils: ['axios', 'dayjs', 'date-fns', 'yup', 'formik'],
+        },
       },
     },
     commonjsOptions: {
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
   },
   base: '/',
   define: {
@@ -27,9 +48,23 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
+      '@mui/material',
+      '@mui/icons-material',
+      '@emotion/react',
+      '@emotion/styled',
       'react',
       'react-dom',
       'react-router-dom',
     ],
+    exclude: ['@rollup/plugin-commonjs'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    drop: ['console', 'debugger'],
   },
 })

@@ -74,6 +74,6 @@
     "minimatch": "^9.0.3"
   },
   "resolutions": {
-    "rollup": "^4.0.0"
+    "rollup": "^4.40.0"
   }
 }
