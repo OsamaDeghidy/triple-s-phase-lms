@@ -45,13 +45,40 @@ const CourseReviewsTab = ({
     return (
         <Box>
             {/* Reviews Section */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Box>
-                    <SectionTitle variant="h5" component="h2" sx={{ mb: 0.5 }}>
+            <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: 'space-between', 
+                alignItems: { xs: 'flex-start', sm: 'center' }, 
+                mb: { xs: 3, sm: 4 },
+                gap: { xs: 2, sm: 0 }
+            }}>
+                <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
+                    <SectionTitle 
+                        variant="h5" 
+                        component="h2" 
+                        sx={{ 
+                            mb: 0.5,
+                            fontSize: { xs: '1.3rem', sm: '1.5rem' }
+                        }}
+                    >
                         تقييمات الطلاب
                     </SectionTitle>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography variant="h3" component="span" sx={{ mr: 1, fontWeight: 700 }}>
+                    <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: { xs: 'flex-start', sm: 'center' },
+                        gap: { xs: 1, sm: 0 }
+                    }}>
+                        <Typography 
+                            variant="h3" 
+                            component="span" 
+                            sx={{ 
+                                mr: { xs: 0, sm: 1 }, 
+                                fontWeight: 700,
+                                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+                            }}
+                        >
                             {(() => {
                                 const rating = course.rating;
                                 if (typeof rating === 'number') {
@@ -70,9 +97,21 @@ const CourseReviewsTab = ({
                             readOnly
                             size="large"
                             emptyIcon={<StarBorder fontSize="inherit" />}
-                            sx={{ mr: 1.25 }}
+                            sx={{ 
+                                mr: { xs: 0, sm: 1.25 },
+                                '& .MuiRating-icon': {
+                                    fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
+                                }
+                            }}
                         />
-                        <Typography variant="body1" color="text.secondary" sx={{ ml: 0.5 }}>
+                        <Typography 
+                            variant="body1" 
+                            color="text.secondary" 
+                            sx={{ 
+                                ml: { xs: 0, sm: 0.5 },
+                                fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                            }}
+                        >
                             تقييم الدورة • {course.courseReviews?.length || 0} تقييم
                         </Typography>
                     </Box>
@@ -80,16 +119,19 @@ const CourseReviewsTab = ({
                 {isAuthenticated ? (
                     <Button
                         variant="contained"
-                        startIcon={<DescriptionOutlined />}
+                        startIcon={<DescriptionOutlined sx={{ fontSize: { xs: '16px', sm: '18px' } }} />}
                         onClick={() => setShowReviewForm(true)}
                         sx={{
-                            borderRadius: 3,
-                            px: 4,
-                            py: 1.5,
+                            borderRadius: { xs: 2, sm: 3 },
+                            px: { xs: 2, sm: 4 },
+                            py: { xs: 1, sm: 1.5 },
                             textTransform: 'none',
                             fontWeight: 600,
+                            fontSize: { xs: '0.8rem', sm: '0.875rem' },
                             background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
                             boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)',
+                            width: { xs: '100%', sm: 'auto' },
+                            minWidth: { xs: 'auto', sm: '140px' },
                             '&:hover': {
                                 background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
                                 boxShadow: '0 12px 35px rgba(14, 81, 129, 0.3)',

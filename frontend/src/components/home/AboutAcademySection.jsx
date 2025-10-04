@@ -326,14 +326,38 @@ const BottomElements = styled(Box)(({ theme }) => ({
     display: 'flex',
     justifyContent: 'space-between',
     pointerEvents: 'none',
-    [theme.breakpoints.down('md')]: {
-        position: 'relative',
-        bottom: 'auto',
-        left: 'auto',
-        right: 'auto',
-        marginTop: theme.spacing(3),
-        justifyContent: 'center',
+    // Enhanced responsive positioning
+    '@media (max-width: 600px)': {
+        position: 'fixed',
+        bottom: '15px',
+        left: '15px',
+        right: '15px',
+        justifyContent: 'space-between',
+        gap: theme.spacing(1),
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        position: 'fixed',
+        bottom: '18px',
+        left: '18px',
+        right: '18px',
+        justifyContent: 'space-between',
+        gap: theme.spacing(1.5),
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        position: 'fixed',
+        bottom: '20px',
+        left: '20px',
+        right: '20px',
+        justifyContent: 'space-between',
         gap: theme.spacing(2),
+    },
+    '@media (min-width: 1200px)': {
+        position: 'fixed',
+        bottom: '25px',
+        left: '25px',
+        right: '25px',
+        justifyContent: 'space-between',
+        gap: theme.spacing(2.5),
     },
 }));
 
@@ -344,9 +368,48 @@ const ChatButton = styled(IconButton)(({ theme }) => ({
     height: '60px',
     boxShadow: '0 4px 15px rgba(111, 66, 193, 0.3)',
     pointerEvents: 'auto',
+    borderRadius: '50%',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    // Enhanced responsive sizing
+    '@media (max-width: 600px)': {
+        width: '50px',
+        height: '50px',
+        boxShadow: '0 3px 12px rgba(111, 66, 193, 0.25)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.3rem',
+        },
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        width: '55px',
+        height: '55px',
+        boxShadow: '0 3px 13px rgba(111, 66, 193, 0.28)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.4rem',
+        },
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        width: '58px',
+        height: '58px',
+        boxShadow: '0 4px 14px rgba(111, 66, 193, 0.3)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.5rem',
+        },
+    },
+    '@media (min-width: 1200px)': {
+        width: '60px',
+        height: '60px',
+        boxShadow: '0 4px 15px rgba(111, 66, 193, 0.3)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.6rem',
+        },
+    },
     '&:hover': {
         background: '#5a3594',
         transform: 'scale(1.1)',
+        boxShadow: '0 6px 20px rgba(111, 66, 193, 0.4)',
+    },
+    '&:active': {
+        transform: 'scale(0.95)',
     },
 }));
 
@@ -357,9 +420,48 @@ const ScrollToTopButton = styled(IconButton)(({ theme }) => ({
     height: '60px',
     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
     pointerEvents: 'auto',
+    borderRadius: '50%',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    // Enhanced responsive sizing
+    '@media (max-width: 600px)': {
+        width: '50px',
+        height: '50px',
+        boxShadow: '0 3px 12px rgba(0, 0, 0, 0.08)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.3rem',
+        },
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+        width: '55px',
+        height: '55px',
+        boxShadow: '0 3px 13px rgba(0, 0, 0, 0.09)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.4rem',
+        },
+    },
+    '@media (min-width: 900px) and (max-width: 1200px)': {
+        width: '58px',
+        height: '58px',
+        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.1)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.5rem',
+        },
+    },
+    '@media (min-width: 1200px)': {
+        width: '60px',
+        height: '60px',
+        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+        '& .MuiSvgIcon-root': {
+            fontSize: '1.6rem',
+        },
+    },
     '&:hover': {
         background: '#f3f4f6',
         transform: 'scale(1.1)',
+        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
+    },
+    '&:active': {
+        transform: 'scale(0.95)',
     },
 }));
 

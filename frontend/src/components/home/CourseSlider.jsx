@@ -138,29 +138,25 @@ const SliderTrack = styled(Box)(({ theme }) => ({
 }));
 
 const CourseCard = styled(Card)(({ theme }) => ({
-  width: '90%',
   borderRadius: '12px',
   overflow: 'hidden',
   backgroundColor: '#ffffff',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-  // Responsive width and hover effects
+  // Responsive hover effects
   '@media (max-width: 600px)': {
-    width: '95%',
     '&:hover': {
       transform: 'translateY(-4px)',
       boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)',
     },
   },
   '@media (min-width: 600px) and (max-width: 900px)': {
-    width: '92%',
     '&:hover': {
       transform: 'translateY(-6px)',
       boxShadow: '0 7px 22px rgba(0, 0, 0, 0.13)',
     },
   },
   '@media (min-width: 900px)': {
-    width: '90%',
     '&:hover': {
       transform: 'translateY(-8px)',
       boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
@@ -451,6 +447,36 @@ const CourseCollections = () => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slidesToShow, setSlidesToShow] = useState(4);
+  const sliderRef = useRef(null);
+
+  // Calculate slides to show based on screen size
+  useEffect(() => {
+    const updateSlidesToShow = () => {
+      if (isMobile) {
+        setSlidesToShow(1); // Mobile: 1 card
+      } else if (isTablet) {
+        setSlidesToShow(2); // Tablet: 2 cards
+      } else {
+        setSlidesToShow(3); // Desktop: 3 cards
+      }
+    };
+
+    updateSlidesToShow();
+    window.addEventListener('resize', updateSlidesToShow);
+    return () => window.removeEventListener('resize', updateSlidesToShow);
+  }, [isMobile, isTablet]);
+
+  // Reset current slide when collections change
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [collections]);
+
+  // Reset current slide when slidesToShow changes
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [slidesToShow]);
 
   // Fetch collections from API
   useEffect(() => {
@@ -469,6 +495,23 @@ const CourseCollections = () => {
 
     fetchCollections();
   }, []);
+
+  // Slider navigation functions
+  const nextSlide = (collectionIndex = 0) => {
+    if (collections.length > collectionIndex && collections[collectionIndex]?.courses?.length > 0) {
+      const courses = collections[collectionIndex].courses;
+      const maxSlide = Math.max(0, courses.length - slidesToShow);
+      setCurrentSlide(prev => Math.min(prev + 1, maxSlide));
+    }
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => Math.max(prev - 1, 0));
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
 
   if (loading) {
     return (
@@ -630,42 +673,93 @@ const CourseCollections = () => {
             {collection.courses && collection.courses.length > 0 ? (
               <Box
                 sx={{
+                  position: 'relative',
                   overflow: 'hidden',
                   width: '100%',
                   margin: '0 auto',
                 }}
               >
+                {/* Navigation Buttons */}
+                {collection.courses.length > slidesToShow && (
+                  <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 0,
+                    right: 0,
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    pointerEvents: 'none',
+                    zIndex: 2,
+                    px: 1,
+                  }}>
+                  <SliderButton
+                    onClick={() => prevSlide()}
+                    disabled={currentSlide === 0}
+                    sx={{
+                      pointerEvents: 'auto',
+                      opacity: currentSlide === 0 ? 0.3 : 1,
+                      ml: { xs: -0.5, sm: -1, md: -2 }, // Responsive margin
+                      display: { xs: 'flex', sm: 'flex', md: 'flex' }, // Always visible on mobile
+                    }}
+                  >
+                    <KeyboardArrowRight />
+                  </SliderButton>
+                  <SliderButton
+                    onClick={() => nextSlide(collectionIndex)}
+                    disabled={collection.courses.length <= slidesToShow || currentSlide >= Math.max(0, collection.courses.length - slidesToShow)}
+                    sx={{
+                      pointerEvents: 'auto',
+                      opacity: (collection.courses.length <= slidesToShow || currentSlide >= Math.max(0, collection.courses.length - slidesToShow)) ? 0.3 : 1,
+                      mr: { xs: -0.5, sm: -1, md: -2 }, // Responsive margin
+                      display: { xs: 'flex', sm: 'flex', md: 'flex' }, // Always visible on mobile
+                    }}
+                  >
+                    <KeyboardArrowLeft />
+                  </SliderButton>
+                  </Box>
+                )}
+
                 <SliderTrack
+                  ref={sliderRef}
                   sx={{
-                    display: 'grid',
-                    gridTemplateColumns: {
-                      xs: 'repeat(auto-fill, minmax(260px, 1fr))',
-                      sm: 'repeat(auto-fill, minmax(280px, 1fr))',
-                      md: 'repeat(auto-fill, minmax(300px, 1fr))',
-                      lg: 'repeat(auto-fill, minmax(320px, 1fr))',
-                      xl: 'repeat(auto-fill, minmax(350px, 1fr))'
+                    display: 'flex',
+                    width: collection.courses.length > slidesToShow ? `${collection.courses.length * 100}%` : '100%',
+                    transform: collection.courses.length > slidesToShow ? `translateX(-${currentSlide * (100 / collection.courses.length)}%)` : 'translateX(0%)',
+                    transition: 'transform 0.5s ease-in-out',
+                    justifyContent: collection.courses.length <= slidesToShow ? 'center' : 'flex-start',
+                    // Enhanced responsive spacing based on slidesToShow
+                    gap: {
+                      xs: theme.spacing(1.5), // Mobile: smaller gap
+                      sm: theme.spacing(2),   // Tablet: medium gap
+                      md: theme.spacing(2.5), // Desktop: larger gap
                     },
-                    gap: theme.spacing(2.5),
-                    width: '100%',
-                    padding: theme.spacing(0, 2, 4, 2),
-                    // Enhanced responsive spacing
-                    '@media (max-width: 600px)': {
-                      gap: theme.spacing(1.5),
-                      padding: theme.spacing(0, 0.5, 3, 0.5),
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                    },
-                    '@media (min-width: 600px) and (max-width: 900px)': {
-                      gap: theme.spacing(2),
-                      padding: theme.spacing(0, 1.5, 3.5, 1.5),
-                    },
-                    '@media (min-width: 900px)': {
-                      gap: theme.spacing(2.5),
-                      padding: theme.spacing(0, 2, 4, 2),
+                    padding: {
+                      xs: theme.spacing(0, 0.5, 3, 0.5),   // Mobile: minimal padding
+                      sm: theme.spacing(0, 1.5, 3.5, 1.5), // Tablet: medium padding
+                      md: theme.spacing(0, 2, 4, 2),       // Desktop: larger padding
                     },
                   }}
                 >
                   {collection.courses.map((course) => (
-                    <CourseCard key={course.id} component={RouterLink} to={`/courses/${course.id}`} sx={{ textDecoration: 'none', color: 'inherit' }}>
+                    <CourseCard 
+                      key={course.id} 
+                      component={RouterLink} 
+                      to={`/courses/${course.id}`} 
+                      sx={{ 
+                        textDecoration: 'none', 
+                        color: 'inherit',
+                        flex: collection.courses.length > slidesToShow ? `0 0 ${100 / collection.courses.length}%` : `0 0 ${100 / slidesToShow}%`,
+                        minWidth: 0,
+                        maxWidth: collection.courses.length <= slidesToShow ? `${100 / slidesToShow}%` : 'none',
+                        // Responsive card sizing
+                        width: {
+                          xs: collection.courses.length > slidesToShow ? `${100 / collection.courses.length}%` : '90%', // Mobile: smaller width
+                          sm: collection.courses.length > slidesToShow ? `${100 / collection.courses.length}%` : '85%', // Tablet: medium width
+                          md: collection.courses.length > slidesToShow ? `${100 / collection.courses.length}%` : '80%', // Desktop: larger width
+                        },
+                      }}
+                    >
                       <Box sx={{ position: 'relative' }}>
                         <CourseMedia
                           image={course.image_url || 'https://via.placeholder.com/300x180'}
@@ -781,6 +875,19 @@ const CourseCollections = () => {
                     </CourseCard>
                   ))}
                 </SliderTrack>
+
+                {/* Slider Dots */}
+                {collection.courses.length > slidesToShow && (
+                  <SliderDots>
+                    {Array.from({ length: Math.ceil(collection.courses.length / slidesToShow) }).map((_, index) => (
+                      <Dot
+                        key={index}
+                        active={Math.floor(currentSlide / slidesToShow) === index}
+                        onClick={() => goToSlide(index * slidesToShow)}
+                      />
+                    ))}
+                  </SliderDots>
+                )}
               </Box>
             ) : (
               <Box sx={{

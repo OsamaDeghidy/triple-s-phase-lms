@@ -216,11 +216,20 @@ const CarouselIndicators = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: '15px',
   zIndex: 10,
-  [theme.breakpoints.up('sm')]: {
-    right: '30px',
+  // Responsive positioning and sizing
+  '@media (max-width: 600px)': {
+    right: '15px',
+    gap: '12px',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    right: '25px',
+    gap: '15px',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    right: '35px',
     gap: '18px',
   },
-  [theme.breakpoints.up('md')]: {
+  '@media (min-width: 1200px)': {
     right: '40px',
     gap: '20px',
   },
@@ -235,11 +244,20 @@ const IndicatorDot = styled(Box)(({ active, theme }) => ({
   cursor: 'pointer',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   boxShadow: active ? '0 0 15px rgba(229, 151, 139, 0.8)' : 'none',
-  [theme.breakpoints.up('sm')]: {
+  // Responsive sizing
+  '@media (max-width: 600px)': {
+    width: active ? '10px' : '6px',
+    height: active ? '10px' : '6px',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    width: active ? '12px' : '8px',
+    height: active ? '12px' : '8px',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
     width: active ? '14px' : '10px',
     height: active ? '14px' : '10px',
   },
-  [theme.breakpoints.up('md')]: {
+  '@media (min-width: 1200px)': {
     width: active ? '16px' : '12px',
     height: active ? '16px' : '12px',
   },
@@ -286,17 +304,48 @@ const HeroSection = styled('section', {
   padding: '0',
   overflow: 'hidden',
   height: '100vh', // Full viewport height to cover header
-  minHeight: '500px',
+  minHeight: '400px', // Reduced for mobile
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
   textAlign: 'left',
   background: 'linear-gradient(135deg, #2D1B69 0%, #1A103F 50%, #0F0A2A 100%)',
-  '@media (min-width: 768px)': {
-    minHeight: '600px',
+  // Enhanced responsive height adjustments for mobile
+  '@media (max-width: 480px)': {
+    minHeight: '500px',
+    height: '100vh',
+    maxHeight: '800px', // Prevent excessive height on small screens
   },
-  '@media (min-width: 1024px)': {
+  '@media (min-width: 480px) and (max-width: 600px)': {
+    minHeight: '550px',
+    height: '100vh',
+    maxHeight: '850px',
+  },
+  '@media (min-width: 600px) and (max-width: 768px)': {
+    minHeight: '600px',
+    height: '100vh',
+    maxHeight: '900px',
+  },
+  '@media (min-width: 768px) and (max-width: 900px)': {
+    minHeight: '650px',
+    height: '100vh',
+    maxHeight: '950px',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
     minHeight: '700px',
+    height: '100vh',
+    maxHeight: '1000px',
+  },
+  '@media (min-width: 1200px)': {
+    minHeight: '750px',
+    height: '100vh',
+    maxHeight: '1100px',
+  },
+  // Handle landscape orientation on mobile
+  '@media (max-height: 600px) and (orientation: landscape)': {
+    minHeight: '100vh',
+    height: '100vh',
+    maxHeight: '100vh',
   },
   '&:before': {
     content: '""',
@@ -336,19 +385,61 @@ const HeroContent = styled(Container)(({ theme }) => ({
   maxWidth: '1000px',
   marginLeft: 0,
   paddingTop: '80px', // Add top padding to account for header
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(5, 3, 5, 3),
-    paddingTop: '100px',
+  // Enhanced responsive padding and alignment for mobile
+  '@media (max-width: 480px)': {
+    padding: theme.spacing(2, 1, 2, 1),
+    paddingTop: '60px',
+    textAlign: 'center',
+    alignItems: 'center',
+    minHeight: 'calc(100vh - 60px)',
+    justifyContent: 'center',
   },
-  [theme.breakpoints.up('md')]: {
+  '@media (min-width: 480px) and (max-width: 600px)': {
+    padding: theme.spacing(2.5, 1.5, 2.5, 1.5),
+    paddingTop: '65px',
+    textAlign: 'center',
+    alignItems: 'center',
+    minHeight: 'calc(100vh - 65px)',
+    justifyContent: 'center',
+  },
+  '@media (min-width: 600px) and (max-width: 768px)': {
+    padding: theme.spacing(3, 2, 3, 2),
+    paddingTop: '75px',
+    textAlign: 'center',
+    alignItems: 'center',
+    minHeight: 'calc(100vh - 75px)',
+    justifyContent: 'center',
+  },
+  '@media (min-width: 768px) and (max-width: 900px)': {
+    padding: theme.spacing(3.5, 2.5, 3.5, 2.5),
+    paddingTop: '85px',
+    textAlign: 'center',
+    alignItems: 'center',
+    minHeight: 'calc(100vh - 85px)',
+    justifyContent: 'center',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    padding: theme.spacing(5, 3, 5, 3),
+    paddingTop: '110px',
+    textAlign: 'left',
+    alignItems: 'flex-start',
+    minHeight: 'calc(100vh - 110px)',
+    justifyContent: 'center',
+  },
+  '@media (min-width: 1200px)': {
     padding: theme.spacing(6, 4, 6, 4),
     paddingTop: '120px',
     textAlign: 'left',
     alignItems: 'flex-start',
+    minHeight: 'calc(100vh - 120px)',
+    justifyContent: 'center',
   },
-  [theme.breakpoints.down('md')]: {
-    textAlign: 'center',
-    alignItems: 'center',
+  // Handle landscape orientation on mobile
+  '@media (max-height: 600px) and (orientation: landscape)': {
+    paddingTop: '50px',
+    paddingBottom: '20px',
+    minHeight: 'calc(100vh - 50px)',
+    justifyContent: 'flex-start',
   },
 }));
 
@@ -361,14 +452,23 @@ const HeroTitle = styled(Typography)(({ theme }) => ({
   animation: `${slideInLeft} 1s ease-out 0.3s both`,
   color: '#FFFFFF',
   textShadow: '0 2px 10px rgba(0,0,0,0.3)',
-  [theme.breakpoints.up('sm')]: {
-    fontSize: '2.5rem',
+  // Responsive font sizes
+  '@media (max-width: 600px)': {
+    fontSize: '1.5rem',
+    marginBottom: theme.spacing(1.5),
+    lineHeight: 1.2,
   },
-  [theme.breakpoints.up('md')]: {
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '2rem',
+    marginBottom: theme.spacing(1.5),
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    fontSize: '2.8rem',
+    marginBottom: theme.spacing(2),
+  },
+  '@media (min-width: 1200px)': {
     fontSize: '3.5rem',
-  },
-  [theme.breakpoints.up('lg')]: {
-    fontSize: '4rem',
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -380,12 +480,26 @@ const HeroSubtitle = styled(Typography)(({ theme }) => ({
   animation: `${slideInUp} 1s ease-out 0.6s both`,
   color: '#FFFFFF',
   fontWeight: 400,
-  [theme.breakpoints.up('sm')]: {
-    fontSize: '1.25rem',
-    marginBottom: theme.spacing(4),
+  // Responsive font sizes and spacing
+  '@media (max-width: 600px)': {
+    fontSize: '0.9rem',
+    marginBottom: theme.spacing(2),
+    lineHeight: 1.4,
   },
-  [theme.breakpoints.up('md')]: {
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    fontSize: '1.1rem',
+    marginBottom: theme.spacing(2.5),
+    lineHeight: 1.5,
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    fontSize: '1.3rem',
+    marginBottom: theme.spacing(3),
+    lineHeight: 1.6,
+  },
+  '@media (min-width: 1200px)': {
     fontSize: '1.5rem',
+    marginBottom: theme.spacing(4),
+    lineHeight: 1.6,
   },
 }));
 
@@ -405,9 +519,42 @@ const HeroButton = styled(Button)(({ theme, variant }) => ({
   overflow: 'hidden',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   animation: `${slideInUp} 1s ease-out 0.9s both`,
-  [theme.breakpoints.up('sm')]: {
+  // Responsive sizing - smaller button width
+  '@media (max-width: 600px)': {
+    padding: theme.spacing(1, 2),
+    fontSize: '0.8rem',
+    minWidth: '120px',
+    maxWidth: '140px',
+    width: 'auto',
+    marginBottom: theme.spacing(1),
+    alignSelf: 'center',
+  },
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    padding: theme.spacing(1.2, 2.5),
+    fontSize: '0.9rem',
+    minWidth: '140px',
+    maxWidth: '160px',
+    width: 'auto',
+    marginBottom: theme.spacing(1),
+    alignSelf: 'center',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    padding: theme.spacing(1.5, 3),
+    fontSize: '1rem',
+    minWidth: '160px',
+    maxWidth: '180px',
+    width: 'auto',
+    marginBottom: theme.spacing(2),
+    alignSelf: 'flex-start',
+  },
+  '@media (min-width: 1200px)': {
     padding: theme.spacing(2, 4),
     fontSize: '1.1rem',
+    minWidth: '180px',
+    maxWidth: '200px',
+    width: 'auto',
+    marginBottom: theme.spacing(2),
+    alignSelf: 'flex-start',
   },
   '&:before': {
     content: '""',
@@ -434,10 +581,6 @@ const HeroButton = styled(Button)(({ theme, variant }) => ({
   },
   '&:active': {
     transform: 'translateY(1px)',
-  },
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -900,19 +1043,26 @@ const HeroBanner = () => {
             maxWidth: '1000px',
             position: 'relative',
             zIndex: 2,
-            padding: { xs: '0 10px 0 0', md: '0 20px 0 0' },
+            padding: { xs: '0 10px 0 0', sm: '0 15px 0 0', md: '0 20px 0 0' },
             marginLeft: 0,
-            marginTop: { xs: '40px', md: '60px' }, // Add margin to push content below header
+            marginTop: { xs: '20px', sm: '30px', md: '40px' }, // Reduced margin for better mobile spacing
             transform: `translateY(${scrollProgress * -30}px)`,
             transition: 'transform 0.3s ease-out',
+            width: '100%',
+            // Enhanced mobile height handling
+            minHeight: { xs: 'calc(100vh - 120px)', sm: 'calc(100vh - 140px)', md: 'auto' },
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: { xs: 'center', sm: 'center', md: 'flex-start' },
+            alignItems: { xs: 'center', sm: 'center', md: 'flex-start' },
           }}>
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem', lg: '3.5rem' },
+                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.8rem', lg: '3.5rem' },
                 fontWeight: 800,
                 lineHeight: 1.2,
-                mb: 1,
+                mb: { xs: 0.5, sm: 1, md: 1 },
                 color: '#fff',
                 textShadow: `0 ${2 + scrollProgress * 3}px ${10 + scrollProgress * 5}px rgba(0,0,0,${0.3 + scrollProgress * 0.2})`,
                 animation: `${slideInUp} 1s ease-out 0.3s both`,
@@ -920,13 +1070,14 @@ const HeroBanner = () => {
                 zIndex: 2,
                 transform: `translateX(${scrollProgress * -20}px)`,
                 transition: 'transform 0.3s ease-out',
+                textAlign: { xs: 'center', md: 'left' },
                 '&:after': {
                   content: '""',
                   display: 'block',
-                  width: { xs: '60px', md: '100px' },
-                  height: '4px',
+                  width: { xs: '50px', sm: '70px', md: '100px' },
+                  height: { xs: '3px', md: '4px' },
                   background: 'rgba(255,255,255,0.8)',
-                  margin: { xs: '8px auto 6px', md: '12px auto 8px' },
+                  margin: { xs: '6px auto 4px', sm: '8px auto 6px', md: '12px auto 8px' },
                   borderRadius: '2px'
                 }
               }}
@@ -937,9 +1088,9 @@ const HeroBanner = () => {
             <Typography
               variant="h6"
               sx={{
-                fontSize: { xs: '1rem', sm: '1.2rem', md: '1.3rem' },
+                fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.3rem' },
                 fontWeight: 400,
-                mb: { xs: 1, md: 1.5 },
+                mb: { xs: 1, sm: 1.5, md: 1.5 },
                 color: 'rgba(255,255,255,0.95)',
                 maxWidth: '700px',
                 mx: 'auto',
@@ -950,6 +1101,7 @@ const HeroBanner = () => {
                 transform: `translateX(${scrollProgress * -15}px)`,
                 transition: 'transform 0.3s ease-out',
                 opacity: 0.95 - scrollProgress * 0.3,
+                textAlign: { xs: 'center', md: 'left' },
               }}
             >
               {currentSlide.subtitle}
@@ -965,8 +1117,9 @@ const HeroBanner = () => {
                 transform: `translateX(${scrollProgress * -10}px) scale(${1 - scrollProgress * 0.1})`,
                 transition: 'all 0.3s ease-out',
                 opacity: 1 - scrollProgress * 0.4,
-                width: { xs: '100%', sm: 'auto' },
-                mt: { xs: 2, md: 0 },
+                width: 'auto',
+                mt: { xs: 1.5, sm: 2, md: 0 },
+                alignSelf: { xs: 'center', md: 'flex-start' },
               }}
             >
               ابدأ رحلتك

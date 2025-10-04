@@ -185,7 +185,7 @@ const CourseDetails = ({ course, onClose }) => {
         width: '100%',
         height: '100%',
         background: 'white',
-        borderRadius: 3,
+        borderRadius: { xs: 2, sm: 3 },
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
         border: '1px solid #e0e0e0',
         display: 'flex',
@@ -194,28 +194,42 @@ const CourseDetails = ({ course, onClose }) => {
         {/* Course Header */}
         <Box sx={{
           background: 'linear-gradient(135deg, #333679, #1a6ba8)',
-          borderRadius: '12px 12px 0 0',
-          p: 1.5,
+          borderRadius: { xs: '8px 8px 0 0', sm: '12px 12px 0 0' },
+          p: { xs: 1, sm: 1.5 },
           color: 'white',
           flexShrink: 0
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 }, mb: 0 }}>
             <Avatar sx={{
-              width: 35,
-              height: 35,
+              width: { xs: 30, sm: 35 },
+              height: { xs: 30, sm: 35 },
               background: 'rgba(255,255,255,0.2)',
               backdropFilter: 'blur(10px)'
             }}>
-              <SchoolIcon sx={{ fontSize: 18 }} />
+              <SchoolIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
             </Avatar>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 0.25 }}>
+              <Typography 
+                variant="subtitle1" 
+                fontWeight={700} 
+                sx={{ 
+                  mb: 0.25,
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  lineHeight: { xs: 1.2, sm: 1.3 }
+                }}
+              >
                 {course.title}
               </Typography>
-              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  opacity: 0.9,
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                }}
+              >
                 {course.description || 'لا يوجد وصف متاح'}
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+              <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 1 }, mt: 0.5 }}>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>
                   {(() => {
                     const totalLessons = modules.reduce((total, module) => {
@@ -263,39 +277,48 @@ const CourseDetails = ({ course, onClose }) => {
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
             sx={{
               '& .MuiTab-root': {
                 fontWeight: 600,
-                fontSize: '0.8rem',
-                minHeight: 40,
-                textTransform: 'none'
+                fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                minHeight: { xs: 36, sm: 40 },
+                textTransform: 'none',
+                px: { xs: 1, sm: 2 }
+              },
+              '& .MuiTabs-scrollButtons': {
+                width: { xs: 30, sm: 40 },
+                '&.Mui-disabled': {
+                  opacity: 0.3
+                }
               }
             }}
           >
             <Tab
-              icon={<MenuBookIcon sx={{ fontSize: 16 }} />}
+              icon={<MenuBookIcon sx={{ fontSize: { xs: 14, sm: 16 } }} />}
               label="الدروس"
               iconPosition="start"
-              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+              sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.3, sm: 0.5 } }}
             />
             <Tab
-              icon={<QuizIcon sx={{ fontSize: 16 }} />}
+              icon={<QuizIcon sx={{ fontSize: { xs: 14, sm: 16 } }} />}
               label="بنك الأسئلة"
               iconPosition="start"
-              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+              sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.3, sm: 0.5 } }}
             />
             <Tab
-              icon={<PsychologyIcon sx={{ fontSize: 16 }} />}
+              icon={<PsychologyIcon sx={{ fontSize: { xs: 14, sm: 16 } }} />}
               label="البطاقات التعليمية"
               iconPosition="start"
-              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+              sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.3, sm: 0.5 } }}
             />
           </Tabs>
         </Box>
 
         {/* Tab Content */}
         <Box sx={{ 
-          p: 1.5, 
+          p: { xs: 1, sm: 1.5 }, 
           flex: 1, 
           overflow: 'auto',
           display: 'flex',

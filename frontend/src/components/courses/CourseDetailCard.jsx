@@ -741,6 +741,252 @@ const CourseDetailCard = ({
                 </Container>
             </Box>
 
+            {/* Mobile Layout */}
+            <Box sx={{
+                display: { xs: 'block', md: 'none' },
+                bgcolor: '#ffffff',
+                width: '100%',
+                overflow: 'hidden'
+            }}>
+                <Container
+                    maxWidth="sm"
+                    sx={{
+                        py: { xs: 2, sm: 3 },
+                        px: { xs: 2, sm: 3 },
+                        width: '100%'
+                    }}
+                >
+                    <Box sx={{
+                        width: '100%',
+                        direction: 'rtl'
+                    }}>
+                        {/* Mobile Course Card */}
+                        <Paper
+                            elevation={4}
+                            sx={{
+                                borderRadius: 3,
+                                overflow: 'hidden',
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                                border: '1px solid rgba(255, 255, 255, 0.8)',
+                                background: 'rgba(255, 255, 255, 0.95)',
+                                backdropFilter: 'blur(10px)',
+                                width: '100%'
+                            }}
+                        >
+                            {/* Course Image */}
+                            <Box
+                                sx={{
+                                    position: 'relative',
+                                    height: { xs: '200px', sm: '220px' },
+                                    backgroundImage: `url(${getCourseImageUrl()})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat',
+                                    overflow: 'hidden',
+                                    '&::before': {
+                                        content: '""',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        background: 'linear-gradient(135deg, rgba(27, 27, 72, 0.2) 0%, rgba(51, 54, 121, 0.2) 50%, rgba(102, 51, 153, 0.2) 100%)',
+                                        zIndex: 1
+                                    }
+                                }}
+                            >
+                                {/* Course Badge */}
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        zIndex: 3,
+                                        background: 'rgba(255, 255, 255, 0.95)',
+                                        borderRadius: '12px',
+                                        px: { xs: 1.5, sm: 2 },
+                                        py: 0.5,
+                                        backdropFilter: 'blur(10px)'
+                                    }}
+                                >
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: '#333679',
+                                            fontWeight: 'bold',
+                                            fontSize: { xs: '10px', sm: '11px' }
+                                        }}
+                                    >
+                                        {course?.level || 'متوسط'}
+                                    </Typography>
+                                </Box>
+
+                                {/* Play Button */}
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        zIndex: 3,
+                                        width: { xs: '60px', sm: '70px' },
+                                        height: { xs: '60px', sm: '70px' },
+                                        borderRadius: '50%',
+                                        background: 'rgba(255, 255, 255, 0.9)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            background: 'rgba(255, 255, 255, 1)',
+                                            transform: 'translate(-50%, -50%) scale(1.1)'
+                                        }
+                                    }}
+                                >
+                                    <PlayCircleOutline
+                                        sx={{
+                                            color: '#333679',
+                                            fontSize: { xs: '30px', sm: '35px' }
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+
+                            {/* Course Content */}
+                            <Box sx={{ p: { xs: 2, sm: 2.5 } }}>
+                                {/* Course Title */}
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        color: '#222222',
+                                        fontWeight: 'bold',
+                                        fontSize: { xs: '1.1rem', sm: '1.2rem' },
+                                        lineHeight: 1.3,
+                                        mb: 1.5,
+                                        textAlign: 'right'
+                                    }}
+                                >
+                                    {course?.title || 'إتقان الطب الباطني لامتحانات الترخيص'}
+                                </Typography>
+
+                                {/* Course Stats */}
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1,
+                                    mb: 2
+                                }}>
+                                    {/* Students */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1
+                                    }}>
+                                        <PeopleAltOutlined sx={{
+                                            color: '#4DBFB3',
+                                            fontSize: { xs: '18px', sm: '20px' }
+                                        }} />
+                                        <Typography sx={{
+                                            color: '#666666',
+                                            fontSize: { xs: '13px', sm: '14px' }
+                                        }}>
+                                            {course?.studentCount || '1,234'} طالب مسجل
+                                        </Typography>
+                                    </Box>
+
+                                    {/* Duration */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1
+                                    }}>
+                                        <AccessTime sx={{
+                                            color: '#4DBFB3',
+                                            fontSize: { xs: '18px', sm: '20px' }
+                                        }} />
+                                        <Typography sx={{
+                                            color: '#666666',
+                                            fontSize: { xs: '13px', sm: '14px' }
+                                        }}>
+                                            {course?.duration || '12 ساعة'} مدة الدورة
+                                        </Typography>
+                                    </Box>
+
+                                    {/* Rating */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1
+                                    }}>
+                                        <StarIcon sx={{
+                                            color: '#FFD700',
+                                            fontSize: { xs: '18px', sm: '20px' }
+                                        }} />
+                                        <Typography sx={{
+                                            color: '#666666',
+                                            fontSize: { xs: '13px', sm: '14px' }
+                                        }}>
+                                            {course?.rating || '4.5'} ({course?.reviewCount || '20'} تقييم)
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                {/* Price and Add to Cart */}
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: 2,
+                                    mt: 2,
+                                    pt: 2,
+                                    borderTop: '1px solid rgba(0, 0, 0, 0.1)'
+                                }}>
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            color: '#333679',
+                                            fontWeight: 'bold',
+                                            fontSize: { xs: '1.3rem', sm: '1.4rem' }
+                                        }}
+                                    >
+                                        {course?.price ? `$${course.price}` : '$99'}
+                                    </Typography>
+
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleAddToCart}
+                                        disabled={isAddingToCart}
+                                        sx={{
+                                            background: 'linear-gradient(135deg, #4DBFB3 0%, #333679 100%)',
+                                            borderRadius: 2,
+                                            px: { xs: 2, sm: 3 },
+                                            py: { xs: 1, sm: 1.2 },
+                                            fontSize: { xs: '13px', sm: '14px' },
+                                            fontWeight: 'bold',
+                                            textTransform: 'none',
+                                            minWidth: { xs: '120px', sm: '140px' },
+                                            '&:hover': {
+                                                background: 'linear-gradient(135deg, #45A69A 0%, #2E2A5A 100%)',
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: '0 4px 12px rgba(77, 191, 179, 0.3)'
+                                            },
+                                            '&:disabled': {
+                                                background: '#cccccc',
+                                                color: '#666666'
+                                            }
+                                        }}
+                                        endIcon={<ArrowForward sx={{ fontSize: { xs: '16px', sm: '18px' } }} />}
+                                    >
+                                        {isAddingToCart ? 'جاري الإضافة...' : 'أضف للسلة'}
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    </Box>
+                </Container>
+            </Box>
+
         </>
     );
 };

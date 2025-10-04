@@ -57,12 +57,17 @@ const ModuleHeader = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing(3),
+    padding: { xs: theme.spacing(2), sm: theme.spacing(3) },
     backgroundColor: 'background.paper',
     cursor: 'pointer',
-    borderRadius: 3,
+    borderRadius: { xs: 2, sm: 3 },
     '&:hover': {
         backgroundColor: 'rgba(14, 81, 129, 0.04)',
+    },
+    [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: theme.spacing(1),
     },
 }));
 
@@ -103,19 +108,35 @@ const CourseContentTab = ({
                 <Alert
                     severity="info"
                     sx={{
-                        mb: 3,
-                        borderRadius: 2,
+                        mb: { xs: 2, sm: 3 },
+                        borderRadius: { xs: 1.5, sm: 2 },
                         background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.05) 0%, rgba(229, 151, 139, 0.05) 100%)',
                         border: '1px solid rgba(14, 81, 129, 0.1)',
                         '& .MuiAlert-icon': {
                             color: '#333679'
+                        },
+                        '& .MuiAlert-message': {
+                            width: '100%'
                         }
                     }}
                 >
-                    <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+                    <Typography 
+                        variant="body1" 
+                        fontWeight={600} 
+                        sx={{ 
+                            mb: 1,
+                            fontSize: { xs: '0.9rem', sm: '1rem' }
+                        }}
+                    >
                         🔒 محتوى الدورة الحقيقي
                     </Typography>
-                    <Typography variant="body2">
+                    <Typography 
+                        variant="body2"
+                        sx={{
+                            fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                            lineHeight: { xs: 1.4, sm: 1.5 }
+                        }}
+                    >
                         هذا هو المحتوى الحقيقي للدورة من قاعدة البيانات، يتضمن المحاضرات والواجبات والكويزات والامتحانات. سجل في الدورة للوصول إلى جميع المحتويات.
                     </Typography>
                 </Alert>
@@ -126,19 +147,35 @@ const CourseContentTab = ({
                 <Alert
                     severity="success"
                     sx={{
-                        mb: 3,
-                        borderRadius: 2,
+                        mb: { xs: 2, sm: 3 },
+                        borderRadius: { xs: 1.5, sm: 2 },
                         background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(76, 175, 80, 0.02) 100%)',
                         border: '1px solid rgba(76, 175, 80, 0.1)',
                         '& .MuiAlert-icon': {
                             color: '#4caf50'
+                        },
+                        '& .MuiAlert-message': {
+                            width: '100%'
                         }
                     }}
                 >
-                    <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+                    <Typography 
+                        variant="body1" 
+                        fontWeight={600} 
+                        sx={{ 
+                            mb: 1,
+                            fontSize: { xs: '0.9rem', sm: '1rem' }
+                        }}
+                    >
                         ✅ محتوى الدورة الكامل
                     </Typography>
-                    <Typography variant="body2">
+                    <Typography 
+                        variant="body2"
+                        sx={{
+                            fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                            lineHeight: { xs: 1.4, sm: 1.5 }
+                        }}
+                    >
                         مرحباً بك في الدورة! يمكنك الآن الوصول إلى جميع المحتويات: المحاضرات والواجبات والكويزات والامتحانات.
                     </Typography>
                 </Alert>

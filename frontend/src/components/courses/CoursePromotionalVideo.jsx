@@ -62,7 +62,11 @@ const CoursePromotionalVideo = ({ course }) => {
           height="400"
           frameBorder="0"
           allowFullScreen
-          style={{ borderRadius: '8px' }}
+          style={{ 
+            borderRadius: '8px',
+            minHeight: '200px',
+            maxHeight: '400px'
+          }}
         />
       );
     } else if (videoSource === 'external') {
@@ -83,7 +87,11 @@ const CoursePromotionalVideo = ({ course }) => {
               height="400"
               frameBorder="0"
               allowFullScreen
-              style={{ borderRadius: '8px' }}
+              style={{ 
+                borderRadius: '8px',
+                minHeight: '200px',
+                maxHeight: '400px'
+              }}
             />
           );
         }
@@ -115,7 +123,7 @@ const CoursePromotionalVideo = ({ course }) => {
   return (
     <Box sx={{ mb: 3 }}>
       <Card sx={{ 
-        borderRadius: '12px',
+        borderRadius: { xs: '8px', sm: '12px' },
         overflow: 'hidden',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
         position: 'relative',
@@ -129,7 +137,7 @@ const CoursePromotionalVideo = ({ course }) => {
         <Box
           sx={{
             position: 'relative',
-            height: '200px',
+            height: { xs: '150px', sm: '180px', md: '200px' },
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             display: 'flex',
             alignItems: 'center',
@@ -147,8 +155,8 @@ const CoursePromotionalVideo = ({ course }) => {
               transform: 'translate(-50%, -50%)',
               background: 'rgba(0, 0, 0, 0.7)',
               borderRadius: '50%',
-              width: '80px',
-              height: '80px',
+              width: { xs: '60px', sm: '70px', md: '80px' },
+              height: { xs: '60px', sm: '70px', md: '80px' },
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -159,11 +167,19 @@ const CoursePromotionalVideo = ({ course }) => {
               }
             }}
           >
-            <PlayIcon sx={{ color: 'white', fontSize: '40px', ml: 0.5 }} />
+            <PlayIcon sx={{ 
+              color: 'white', 
+              fontSize: { xs: '30px', sm: '35px', md: '40px' }, 
+              ml: 0.5 
+            }} />
           </Box>
 
           {/* Video Source Badge */}
-          <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          <Box sx={{ 
+            position: 'absolute', 
+            top: { xs: 8, sm: 12, md: 16 }, 
+            right: { xs: 8, sm: 12, md: 16 } 
+          }}>
             <Chip
               icon={videoSource === 'bunny' ? <CheckIcon /> : <VideoIcon />}
               label={videoSource === 'bunny' ? 'Bunny CDN' : 'فيديو خارجي'}
@@ -173,16 +189,33 @@ const CoursePromotionalVideo = ({ course }) => {
                 background: 'rgba(255, 255, 255, 0.9)',
                 color: videoSource === 'bunny' ? 'success.main' : 'primary.main',
                 fontWeight: 600,
+                fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                height: { xs: '24px', sm: '28px', md: '32px' }
               }}
             />
           </Box>
         </Box>
 
-        <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+          <Typography 
+            variant="h6" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: 600,
+              fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' }
+            }}
+          >
             الفيديو التعريفي للدورة
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography 
+            variant="body2" 
+            color="text.secondary" 
+            sx={{ 
+              mb: 2,
+              fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              lineHeight: { xs: 1.4, sm: 1.5 }
+            }}
+          >
             {videoSource === 'bunny' 
               ? 'شاهد الفيديو التعريفي عالي الجودة من Bunny CDN'
               : 'شاهد الفيديو التعريفي الخارجي للدورة'
@@ -193,12 +226,13 @@ const CoursePromotionalVideo = ({ course }) => {
             variant="contained"
             color="primary"
             onClick={handlePlayClick}
-            startIcon={<PlayIcon />}
+            startIcon={<PlayIcon sx={{ fontSize: { xs: '16px', sm: '18px' } }} />}
             fullWidth
             sx={{ 
-              borderRadius: '8px',
-              py: 1.5,
+              borderRadius: { xs: '6px', sm: '8px' },
+              py: { xs: 1, sm: 1.5 },
               fontWeight: 600,
+              fontSize: { xs: '0.8rem', sm: '0.875rem' }
             }}
           >
             مشاهدة الفيديو التعريفي
@@ -212,10 +246,13 @@ const CoursePromotionalVideo = ({ course }) => {
         onClose={handleClose}
         maxWidth="md"
         fullWidth
+        fullScreen={false}
         PaperProps={{
           sx: {
-            borderRadius: '12px',
+            borderRadius: { xs: '8px', sm: '12px' },
             overflow: 'hidden',
+            margin: { xs: 1, sm: 2 },
+            maxHeight: { xs: '90vh', sm: '80vh' }
           }
         }}
       >

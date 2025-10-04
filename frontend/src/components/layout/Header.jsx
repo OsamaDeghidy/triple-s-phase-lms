@@ -496,7 +496,7 @@ const LanguageSwitch = styled(Box)(({ theme }) => ({
 const LanguageLabel = styled(Typography)(({ theme, active }) => ({
   fontSize: '12px',
   fontWeight: '600',
-  color: active ? '#fff' : 'rgba(255, 255, 255, 0.6)',
+  color: active ? '#663399' : 'rgba(102, 51, 153, 0.6)',
   margin: '0 5px',
   transition: 'all 0.3s ease',
   minWidth: '20px',
@@ -504,6 +504,109 @@ const LanguageLabel = styled(Typography)(({ theme, active }) => ({
   letterSpacing: '0.3px',
   textShadow: active ? '0 1px 2px rgba(0, 0, 0, 0.2)' : 'none',
 }));
+
+// Mobile Navigation Item Component
+const MobileNavItem = ({ item, location, loadingCategories, onClose }) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleItemClick = () => {
+    if (item.dropdown) {
+      setDropdownOpen(!dropdownOpen);
+    } else {
+      navigate(item.path);
+      onClose();
+    }
+  };
+
+  const isActive = location.pathname === item.path || 
+    (item.path !== '/' && location.pathname.startsWith(item.path));
+
+  return (
+    <Box sx={{ mb: 1 }}>
+      <Button
+        fullWidth
+        startIcon={item.icon}
+        endIcon={item.dropdown ? (dropdownOpen ? <KeyboardArrowDown sx={{ transform: 'rotate(180deg)' }} /> : <KeyboardArrowDown />) : null}
+        onClick={handleItemClick}
+        sx={{
+          justifyContent: 'flex-start',
+          color: isActive ? '#663399' : '#333',
+          backgroundColor: isActive ? 'rgba(102, 51, 153, 0.1)' : 'transparent',
+          mb: 1,
+          borderRadius: '12px',
+          padding: '12px 16px',
+          textAlign: 'left',
+          border: '1px solid rgba(102, 51, 153, 0.1)',
+          '&:hover': {
+            backgroundColor: 'rgba(102, 51, 153, 0.08)',
+            borderColor: 'rgba(102, 51, 153, 0.2)',
+          },
+          '& .MuiButton-startIcon': {
+            marginRight: '15px',
+            marginLeft: '5px',
+            color: isActive ? '#663399' : '#666',
+          },
+          '& .MuiButton-endIcon': {
+            marginLeft: 'auto',
+            color: '#666',
+            marginRight: '2px',
+            transition: 'transform 0.3s ease',
+          }
+        }}
+      >
+        {item.text}
+      </Button>
+
+      {/* Dropdown Items */}
+      {item.dropdown && dropdownOpen && (
+        <Box sx={{ 
+          ml: 2, 
+          mt: 1,
+          borderLeft: '2px solid rgba(102, 51, 153, 0.1)',
+          pl: 2
+        }}>
+          {loadingCategories ? (
+            <Box display="flex" justifyContent="center" p={2}>
+              <CircularProgress size={20} sx={{ color: '#663399' }} />
+            </Box>
+          ) : item.dropdown.length > 0 ? (
+            item.dropdown.map((subItem, index) => (
+              <Button
+                key={`${subItem.path}-${index}`}
+                component={RouterLink}
+                to={subItem.path}
+                fullWidth
+                size="small"
+                onClick={onClose}
+                sx={{
+                  justifyContent: 'flex-start',
+                  color: location.pathname === subItem.path ? '#663399' : '#666',
+                  backgroundColor: location.pathname === subItem.path ? 'rgba(102, 51, 153, 0.08)' : 'transparent',
+                  mb: 0.5,
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  fontSize: '0.9rem',
+                  textAlign: 'left',
+                  '&:hover': {
+                    backgroundColor: 'rgba(102, 51, 153, 0.08)',
+                    color: '#663399',
+                  },
+                }}
+              >
+                {subItem.text}
+              </Button>
+            ))
+          ) : (
+            <Typography variant="body2" color="#999" sx={{ px: 2, py: 1, fontStyle: 'italic' }}>
+              لا توجد أقسام متاحة
+            </Typography>
+          )}
+        </Box>
+      )}
+    </Box>
+  );
+};
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -861,8 +964,11 @@ const Header = () => {
             minHeight: { xs: 48, sm: 52, md: 56, lg: 64 },
             px: { xs: 0.5, sm: 1, md: 1.5, lg: 2 }
           }}>
-            {/* User Avatar and Language Switch - moved to left */}
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Desktop User Avatar and Language Switch - hidden on mobile */}
+            <Box sx={{ 
+              display: { xs: 'none', lg: 'flex' }, 
+              alignItems: 'center' 
+            }}>
               {/* User Avatar and Icons */}
               {isAuthenticated ? (
                 <>
@@ -1004,7 +1110,7 @@ const Header = () => {
               )}
 
               {/* Language Switch */}
-              <LanguageSwitch sx={{ marginLeft: 20 }}> {/* Very large margin for more spacing */}
+              <LanguageSwitch sx={{ marginLeft: 20 }}>
                 <LanguageLabel active={language === 'ar'}>AR</LanguageLabel>
                 <Switch
                   checked={language === 'en'}
@@ -1186,146 +1292,149 @@ const Header = () => {
             width: { xs: '90%', sm: '85%', md: '80%' },
             maxWidth: { xs: '300px', sm: '320px', md: '350px' },
             height: '100vh',
-            backgroundColor: '#1A1A2E',
+            backgroundColor: 'rgba(248, 249, 250, 0.95)',
+            backdropFilter: 'blur(20px)',
             zIndex: 1300,
-            boxShadow: '-5px 0 30px rgba(0, 0, 0, 0.3)',
-            padding: { xs: '12px', sm: '16px', md: '20px' },
+            boxShadow: '-5px 0 30px rgba(0, 0, 0, 0.15)',
+            padding: { xs: '16px', sm: '20px', md: '24px' },
             overflowY: 'auto',
             transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.3s ease-in-out',
           }}
         >
+          {/* Mobile Header with Close Button */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <LogoContainer component={RouterLink} to="/" onClick={() => setMobileMenuOpen(false)}>
+              <LogoImage src={logo} alt="شعار المنصة" />
+            </LogoContainer>
+            <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#333' }}>
+              <Box component="span" sx={{ fontSize: '1.5rem' }}>×</Box>
+            </IconButton>
+          </Box>
+
+          {/* User Profile Section for Mobile */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            mb: 3,
+            p: 2,
+            borderRadius: '12px',
+            background: 'rgba(102, 51, 153, 0.08)',
+            border: '1px solid rgba(102, 51, 153, 0.15)'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {isAuthenticated ? (
                 <Avatar
                   alt={user?.name || 'User'}
                   src={user?.avatar}
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                     border: '2px solid #663399',
                   }}
                 />
               ) : (
-                <AccountCircleIcon sx={{ fontSize: 40, color: '#663399' }} />
+                <AccountCircleIcon sx={{ fontSize: 50, color: '#663399' }} />
               )}
-
-              {/* Language Switch for Mobile */}
-              <LanguageSwitch sx={{ marginLeft: 16 }}> {/* Very large margin for mobile */}
-                <LanguageLabel active={language === 'ar'}>AR</LanguageLabel>
-                <Switch
-                  checked={language === 'en'}
-                  onChange={handleLanguageChange}
-                  size="small"
-                />
-                <LanguageLabel active={language === 'en'}>EN</LanguageLabel>
-              </LanguageSwitch>
+              
+              <Box>
+                <Typography variant="h6" sx={{ color: '#333', fontWeight: 600 }}>
+                  {isAuthenticated ? (user?.name || 'المستخدم') : 'زائر'}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(51, 51, 51, 0.7)' }}>
+                  {isAuthenticated ? (user?.email || '') : 'تسجيل الدخول للوصول للمزيد'}
+                </Typography>
+              </Box>
             </Box>
-            <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: '#FFFFFF' }}>
-              <Box component="span" sx={{ fontSize: '1.5rem' }}>×</Box>
-            </IconButton>
+
+            {/* Language Switch for Mobile */}
+            <LanguageSwitch sx={{ marginLeft: 2 }}>
+              <LanguageLabel active={language === 'ar'}>AR</LanguageLabel>
+              <Switch
+                checked={language === 'en'}
+                onChange={handleLanguageChange}
+                size="small"
+              />
+              <LanguageLabel active={language === 'en'}>EN</LanguageLabel>
+            </LanguageSwitch>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
-            <LogoContainer component={RouterLink} to="/" onClick={() => setMobileMenuOpen(false)}>
-              <LogoImage src={logo} alt="شعار المنصة" />
-              <LogoText variant="h6" scrolled={scrolled}>أكاديمية التطوير</LogoText>
-            </LogoContainer>
-          </Box>
+          {/* Mobile Action Buttons */}
+          {isAuthenticated && (
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 1, 
+              mb: 3,
+              flexWrap: 'wrap'
+            }}>
+              {/* Notifications Button */}
+              <IconButton
+                sx={{
+                  flex: 1,
+                  minWidth: '120px',
+                  backgroundColor: 'rgba(102, 51, 153, 0.08)',
+                  border: '1px solid rgba(102, 51, 153, 0.15)',
+                  borderRadius: '12px',
+                  py: 1.5,
+                  color: '#333',
+                  '&:hover': {
+                    backgroundColor: 'rgba(102, 51, 153, 0.1)',
+                  }
+                }}
+              >
+                <Badge badgeContent={3} color="error" sx={{ mr: 1 }}>
+                  <NotificationsNoneIcon />
+                </Badge>
+                <Typography variant="body2" sx={{ ml: 1 }}>
+                  الإشعارات
+                </Typography>
+              </IconButton>
 
-
-          <Box>
-            {navItems.map((item) => (
-              (!item.auth || isAuthenticated) && (
-                <div key={item.path}>
-                  <Button
-                    component={RouterLink}
-                    to={item.path}
-                    fullWidth
-                    startIcon={item.icon}
-                    sx={{
-                      justifyContent: 'flex-start',
-                      color: location.pathname === item.path ? '#663399' : '#FFFFFF',
-                      mb: 1,
-                      borderRadius: '8px',
-                      padding: '10px 15px',
-                      '&:hover': {
-                        backgroundColor: 'rgba(102, 51, 153, 0.1)',
-                      },
-                    }}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.text}
-                  </Button>
-
-                  {/* Show dropdown items for categories in mobile menu */}
-                  {item.dropdown && item.text === 'الأقسام' && (
-                    <Box ml={2} mt={1}>
-                      {loadingCategories ? (
-                        <Box display="flex" justifyContent="center" p={1}>
-                          <CircularProgress size={16} sx={{ color: '#663399' }} />
-                        </Box>
-                      ) : item.dropdown.length > 0 ? (
-                        item.dropdown.map((subItem) => (
-                          <Button
-                            key={subItem.path}
-                            component={RouterLink}
-                            to={subItem.path}
-                            fullWidth
-                            size="small"
-                            sx={{
-                              justifyContent: 'flex-start',
-                              color: 'rgba(255, 255, 255, 0.8)',
-                              mb: 0.5,
-                              borderRadius: '6px',
-                              padding: '6px 12px',
-                              fontSize: '0.9rem',
-                              '&:hover': {
-                                backgroundColor: 'rgba(14, 81, 129, 0.1)',
-                                color: '#663399',
-                              },
-                            }}
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            {subItem.text}
-                          </Button>
-                        ))
-                      ) : (
-                        <Typography variant="body2" color="rgba(255, 255, 255, 0.5)" sx={{ px: 2, py: 1 }}>
-                          لا توجد أقسام متاحة
-                        </Typography>
-                      )}
-                    </Box>
-                  )}
-                </div>
-              )
-            ))}
-
-            {/* Cart Button for Mobile */}
-            {isAuthenticated && (
-              <Button
+              {/* Cart Button */}
+              <IconButton
                 component={RouterLink}
                 to="/cart"
-                fullWidth
-                startIcon={<ShoppingCartIcon />}
                 sx={{
-                  justifyContent: 'flex-start',
-                  color: location.pathname === '/cart' ? '#663399' : '#FFFFFF',
-                  mb: 1,
-                  borderRadius: '8px',
-                  padding: '10px 15px',
+                  flex: 1,
+                  minWidth: '120px',
+                  backgroundColor: 'rgba(102, 51, 153, 0.08)',
+                  border: '1px solid rgba(102, 51, 153, 0.15)',
+                  borderRadius: '12px',
+                  py: 1.5,
+                  color: '#333',
                   '&:hover': {
-                    backgroundColor: 'rgba(14, 81, 129, 0.1)',
-                  },
+                    backgroundColor: 'rgba(102, 51, 153, 0.1)',
+                  }
                 }}
-                onClick={() => setMobileMenuOpen(false)}
               >
-                سلة التسوق
-              </Button>
-            )}
+                <Badge badgeContent={0} color="error" sx={{ mr: 1 }}>
+                  <ShoppingCartIcon />
+                </Badge>
+                <Typography variant="body2" sx={{ ml: 1 }}>
+                  سلة التسوق
+                </Typography>
+              </IconButton>
+            </Box>
+          )}
+
+
+          {/* Navigation Menu */}
+          <Box sx={{ mb: 3 }}>
+            {navItems.map((item) => (
+              (!item.auth || isAuthenticated) && (
+                <MobileNavItem 
+                  key={item.path} 
+                  item={item} 
+                  location={location} 
+                  loadingCategories={loadingCategories}
+                  onClose={() => setMobileMenuOpen(false)}
+                />
+              )
+            ))}
           </Box>
 
+          {/* Login/Logout Button */}
           <Box mt={3}>
             {isAuthenticated ? (
               <Button
@@ -1335,8 +1444,14 @@ const Header = () => {
                 startIcon={<ExitToAppIcon />}
                 sx={{
                   background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
+                  color: '#FFFFFF',
+                  borderRadius: '12px',
+                  py: 1.5,
+                  fontWeight: 600,
+                  boxShadow: '0 4px 12px rgba(102, 51, 153, 0.3)',
                   '&:hover': {
-                    opacity: 0.9,
+                    background: 'linear-gradient(135deg, #7a3fb3 0%, #3d42a0 50%, #23235a 100%)',
+                    boxShadow: '0 6px 16px rgba(102, 51, 153, 0.4)',
                   },
                 }}
               >
@@ -1351,8 +1466,14 @@ const Header = () => {
                 startIcon={<AccountCircleIcon />}
                 sx={{
                   background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
+                  color: '#FFFFFF',
+                  borderRadius: '12px',
+                  py: 1.5,
+                  fontWeight: 600,
+                  boxShadow: '0 4px 12px rgba(102, 51, 153, 0.3)',
                   '&:hover': {
-                    opacity: 0.9,
+                    background: 'linear-gradient(135deg, #7a3fb3 0%, #3d42a0 50%, #23235a 100%)',
+                    boxShadow: '0 6px 16px rgba(102, 51, 153, 0.4)',
                   },
                 }}
                 onClick={() => setMobileMenuOpen(false)}

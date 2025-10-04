@@ -23,7 +23,8 @@ import {
   LocalHospital,
   Description,
   KeyboardArrowLeft,
-  KeyboardArrowRight
+  KeyboardArrowRight,
+  MenuBook
 } from '@mui/icons-material';
 import { courseAPI } from '../../services/api.service';
 
@@ -37,16 +38,19 @@ const SectionContainer = styled(Box)(({ theme }) => ({
   backgroundColor: '#ffffff',
   position: 'relative',
   overflow: 'hidden',
-  // Responsive padding
-  padding: theme.spacing(4, 0),
+  // Minimal padding
+  padding: theme.spacing(1, 0),
   '@media (max-width: 600px)': {
-    padding: theme.spacing(2, 0),
+    padding: theme.spacing(0.5, 0),
   },
   '@media (min-width: 600px) and (max-width: 900px)': {
-    padding: theme.spacing(3, 0),
+    padding: theme.spacing(0.8, 0),
   },
-  '@media (min-width: 900px)': {
-    padding: theme.spacing(4, 0),
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    padding: theme.spacing(1, 0),
+  },
+  '@media (min-width: 1200px)': {
+    padding: theme.spacing(1, 0),
   },
   '&:before': {
     content: '""',
@@ -97,77 +101,111 @@ const SectionContainer = styled(Box)(({ theme }) => ({
 const ContentWrapper = styled(Box)(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: theme.spacing(8),
+  gap: theme.spacing(1), // Minimal gap
   alignItems: 'center',
   position: 'relative',
   zIndex: 2,
-  minHeight: '400px',
-  // Enhanced responsive layout
+  minHeight: '200px', // Much smaller height
+  // Enhanced responsive layout with minimal spacing
   '@media (max-width: 600px)': {
     gridTemplateColumns: '1fr',
-    gap: theme.spacing(4),
+    gap: theme.spacing(0.5), // Minimal gap
     minHeight: 'auto',
+    alignItems: 'flex-start',
   },
   '@media (min-width: 600px) and (max-width: 900px)': {
     gridTemplateColumns: '1fr',
-    gap: theme.spacing(5),
+    gap: theme.spacing(0.8), // Minimal gap
     minHeight: 'auto',
+    alignItems: 'flex-start',
   },
   '@media (min-width: 900px) and (max-width: 1200px)': {
     gridTemplateColumns: '1fr',
-    gap: theme.spacing(6),
+    gap: theme.spacing(1), // Minimal gap
     minHeight: 'auto',
+    alignItems: 'flex-start',
   },
   '@media (min-width: 1200px)': {
     gridTemplateColumns: '1fr 1fr',
-    gap: theme.spacing(8),
-    minHeight: '400px',
+    gap: theme.spacing(1), // Minimal gap
+    minHeight: '200px', // Much smaller height
+    alignItems: 'center',
   },
 }));
 
 const LeftSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(3),
-  // Enhanced responsive layout
+  gap: theme.spacing(0.5), // Minimal gap
+  // Enhanced responsive layout with minimal spacing
   '@media (max-width: 600px)': {
     textAlign: 'center',
-    order: 2,
-    gap: theme.spacing(2),
+    order: 1, // Changed from 2 to 1 to show title first
+    gap: theme.spacing(0.3), // Minimal gap
+    padding: theme.spacing(0, 0.5),
   },
-  '@media (min-width: 600px) and (max-width: 1200px)': {
+  '@media (min-width: 600px) and (max-width: 900px)': {
     textAlign: 'center',
-    order: 2,
-    gap: theme.spacing(2.5),
+    order: 1, // Changed from 2 to 1 to show title first
+    gap: theme.spacing(0.4), // Minimal gap
+    padding: theme.spacing(0, 1),
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    textAlign: 'center',
+    order: 1, // Changed from 2 to 1 to show title first
+    gap: theme.spacing(0.5), // Minimal gap
+    padding: theme.spacing(0, 1.5),
   },
   '@media (min-width: 1200px)': {
     textAlign: 'left',
     order: 1,
-    gap: theme.spacing(3),
+    gap: theme.spacing(0.5), // Minimal gap
+    padding: 0,
   },
 }));
 
 const CategoryIcon = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: theme.spacing(1),
-  marginBottom: theme.spacing(1),
+  gap: theme.spacing(0.5), // Minimal gap
+  marginBottom: theme.spacing(0.3), // Minimal margin
+  justifyContent: { xs: 'center', md: 'flex-start' },
   '& .MuiSvgIcon-root': {
     color: '#A0A0A0',
     fontSize: '1.2rem',
+    // Responsive icon size
+    '@media (max-width: 600px)': {
+      fontSize: '1rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+      fontSize: '1.1rem',
+    },
+    '@media (min-width: 900px)': {
+      fontSize: '1.2rem',
+    },
   },
   '& span': {
     color: '#333333',
     fontSize: '0.9rem',
     fontWeight: 500,
+    // Responsive text size
+    '@media (max-width: 600px)': {
+      fontSize: '0.8rem',
+    },
+    '@media (min-width: 600px) and (max-width: 900px)': {
+      fontSize: '0.85rem',
+    },
+    '@media (min-width: 900px)': {
+      fontSize: '0.9rem',
+    },
   },
 }));
 
 const MainTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 800,
   color: '#5C2D91',
-  lineHeight: 1.2,
-  marginBottom: theme.spacing(2),
+  lineHeight: 1.1, // Tighter line height
+  marginBottom: theme.spacing(0.5), // Minimal margin
   overflow: 'hidden',
   // Responsive font size
   fontSize: '2.5rem',
@@ -202,8 +240,8 @@ const MainTitle = styled(Typography)(({ theme }) => ({
 const Subtitle = styled(Typography)(({ theme }) => ({
   fontSize: '1.1rem',
   color: '#6c757d',
-  lineHeight: 1.6,
-  marginBottom: theme.spacing(3),
+  lineHeight: 1.4, // Tighter line height
+  marginBottom: theme.spacing(0.5), // Minimal margin
   maxWidth: '500px',
   // Responsive font size and width
   '@media (max-width: 600px)': {
@@ -267,19 +305,31 @@ const RightSection = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  gap: theme.spacing(2),
-  // Enhanced responsive layout
+  gap: theme.spacing(0.3), // Minimal gap
+  // Enhanced responsive layout with minimal spacing
   '@media (max-width: 600px)': {
-    order: 1,
-    gap: theme.spacing(1.5),
+    order: 2, // Changed from 1 to 2 to show after title
+    gap: theme.spacing(0.2), // Minimal gap
+    padding: theme.spacing(0, 0.5),
+    width: '100%',
   },
-  '@media (min-width: 600px) and (max-width: 1200px)': {
-    order: 1,
-    gap: theme.spacing(1.8),
+  '@media (min-width: 600px) and (max-width: 900px)': {
+    order: 2, // Changed from 1 to 2 to show after title
+    gap: theme.spacing(0.3), // Minimal gap
+    padding: theme.spacing(0, 1),
+    width: '100%',
+  },
+  '@media (min-width: 900px) and (max-width: 1200px)': {
+    order: 2, // Changed from 1 to 2 to show after title
+    gap: theme.spacing(0.3), // Minimal gap
+    padding: theme.spacing(0, 1.5),
+    width: '100%',
   },
   '@media (min-width: 1200px)': {
     order: 2,
-    gap: theme.spacing(2),
+    gap: theme.spacing(0.3), // Minimal gap
+    padding: 0,
+    width: 'auto',
   },
 }));
 
@@ -467,11 +517,21 @@ const LearningMethodsSection = () => {
   const [scrollContainer, setScrollContainer] = useState(null);
   const navigate = useNavigate();
 
-  // Scroll navigation functions
+  // Enhanced responsive scroll navigation functions
   const scrollLeft = () => {
     if (scrollContainer) {
-      // Scroll by exactly one card width + gap (16px)
-      const cardWidth = window.innerWidth >= 960 ? 200 + 16 : 180 + 16;
+      // Responsive scroll distance based on screen size
+      let cardWidth;
+      if (window.innerWidth <= 600) {
+        cardWidth = 160 + 12; // Mobile card width + gap
+      } else if (window.innerWidth <= 900) {
+        cardWidth = 170 + 16; // Small tablet card width + gap
+      } else if (window.innerWidth <= 1200) {
+        cardWidth = 180 + 16; // Large tablet card width + gap
+      } else {
+        cardWidth = 200 + 16; // Desktop card width + gap
+      }
+      
       scrollContainer.scrollBy({
         left: -cardWidth,
         behavior: 'smooth'
@@ -481,8 +541,18 @@ const LearningMethodsSection = () => {
 
   const scrollRight = () => {
     if (scrollContainer) {
-      // Scroll by exactly one card width + gap (16px)
-      const cardWidth = window.innerWidth >= 960 ? 200 + 16 : 180 + 16;
+      // Responsive scroll distance based on screen size
+      let cardWidth;
+      if (window.innerWidth <= 600) {
+        cardWidth = 160 + 12; // Mobile card width + gap
+      } else if (window.innerWidth <= 900) {
+        cardWidth = 170 + 16; // Small tablet card width + gap
+      } else if (window.innerWidth <= 1200) {
+        cardWidth = 180 + 16; // Large tablet card width + gap
+      } else {
+        cardWidth = 200 + 16; // Desktop card width + gap
+      }
+      
       scrollContainer.scrollBy({
         left: cardWidth,
         behavior: 'smooth'
@@ -595,19 +665,30 @@ const LearningMethodsSection = () => {
                 {/* Dynamic Category Cards from API - Horizontal Scroll */}
                 <Box sx={{
                   position: 'relative',
-                  mb: 3,
+                  mb: 0.5, // Minimal margin
                   maxWidth: '672px', // Exactly 3 cards: (200px + 16px gap) * 3 = 648px + 24px padding
                   width: '100%',
                   mx: 'auto',
-                  [theme.breakpoints.down('md')]: {
+                  // Enhanced responsive max width
+                  '@media (max-width: 600px)': {
+                    maxWidth: '100%',
+                    px: 2,
+                  },
+                  '@media (min-width: 600px) and (max-width: 900px)': {
                     maxWidth: '588px', // (180px + 16px gap) * 3 = 552px + 36px padding
+                  },
+                  '@media (min-width: 900px) and (max-width: 1200px)': {
+                    maxWidth: '588px', // (180px + 16px gap) * 3 = 552px + 36px padding
+                  },
+                  '@media (min-width: 1200px)': {
+                    maxWidth: '672px', // (200px + 16px gap) * 3 = 648px + 24px padding
                   },
                   '&::before': {
                     content: '""',
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    width: '60px',
+                    width: { xs: '30px', sm: '40px', md: '60px' },
                     height: '100%',
                     background: 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
                     zIndex: 2,
@@ -618,7 +699,7 @@ const LearningMethodsSection = () => {
                     position: 'absolute',
                     top: 0,
                     right: 0,
-                    width: '60px',
+                    width: { xs: '30px', sm: '40px', md: '60px' },
                     height: '100%',
                     background: 'linear-gradient(270deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
                     zIndex: 2,
@@ -629,27 +710,27 @@ const LearningMethodsSection = () => {
                     ref={setScrollContainer}
                     sx={{
                       display: 'flex',
-                      gap: theme.spacing(2),
+                      gap: { xs: theme.spacing(0.5), sm: theme.spacing(0.8), md: theme.spacing(1) },
                       overflowX: 'auto',
                       overflowY: 'hidden',
-                      padding: theme.spacing(2, 0),
+                      padding: { xs: theme.spacing(0.5, 0), sm: theme.spacing(0.8, 0), md: theme.spacing(1, 0) },
                       scrollBehavior: 'smooth',
                       '&::-webkit-scrollbar': {
-                        height: '6px',
+                        height: { xs: '4px', sm: '5px', md: '6px' },
                       },
                       '&::-webkit-scrollbar-track': {
                         background: 'rgba(0,0,0,0.1)',
-                        borderRadius: '3px',
+                        borderRadius: { xs: '2px', sm: '2.5px', md: '3px' },
                       },
                       '&::-webkit-scrollbar-thumb': {
                         background: 'linear-gradient(90deg, #5C2D91 0%, #8A7BAA 100%)',
-                        borderRadius: '3px',
+                        borderRadius: { xs: '2px', sm: '2.5px', md: '3px' },
                         '&:hover': {
                           background: 'linear-gradient(90deg, #4a2475 0%, #7a6b9a 100%)',
                         }
                       },
                       // Hide scrollbar on mobile
-                      [theme.breakpoints.down('md')]: {
+                      '@media (max-width: 900px)': {
                         '&::-webkit-scrollbar': {
                           display: 'none',
                         },
@@ -663,7 +744,7 @@ const LearningMethodsSection = () => {
                         {/* Image Section at Top Center */}
                         <Box sx={{
                           width: '100%',
-                          height: '140px',
+                          height: { xs: '120px', sm: '130px', md: '140px' },
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -672,16 +753,16 @@ const LearningMethodsSection = () => {
                           overflow: 'hidden'
                         }}>
                           <Box sx={{
-                            width: '100px',
-                            height: '100px',
-                            borderRadius: '18px',
+                            width: { xs: '80px', sm: '90px', md: '100px' },
+                            height: { xs: '80px', sm: '90px', md: '100px' },
+                            borderRadius: { xs: '14px', sm: '16px', md: '18px' },
                             background: 'linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             overflow: 'hidden',
                             boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
-                            border: '4px solid #ffffff'
+                            border: { xs: '3px solid #ffffff', sm: '3.5px solid #ffffff', md: '4px solid #ffffff' }
                           }}>
                             {getImageUrl(category.image) ? (
                               <img
@@ -691,7 +772,7 @@ const LearningMethodsSection = () => {
                                   width: '100%',
                                   height: '100%',
                                   objectFit: 'cover',
-                                  borderRadius: '14px'
+                                  borderRadius: '12px'
                                 }}
                                 onError={(e) => {
                                   // Fallback to icon if image fails to load
@@ -770,50 +851,50 @@ const LearningMethodsSection = () => {
                         onClick={scrollLeft}
                         sx={{
                           position: 'absolute',
-                          left: '-20px',
+                          left: { xs: '-15px', sm: '-18px', md: '-20px' },
                           top: '50%',
                           transform: 'translateY(-50%)',
                           backgroundColor: '#ffffff',
                           color: '#5C2D91',
-                          width: '40px',
-                          height: '40px',
+                          width: { xs: '35px', sm: '38px', md: '40px' },
+                          height: { xs: '35px', sm: '38px', md: '40px' },
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                           zIndex: 3,
                           '&:hover': {
                             backgroundColor: '#f8f9fa',
                             transform: 'translateY(-50%) scale(1.1)',
                           },
-                          [theme.breakpoints.down('md')]: {
-                            display: 'none', // Hide on mobile
+                          '@media (max-width: 900px)': {
+                            display: 'none', // Hide on mobile and tablet
                           }
                         }}
                       >
-                        <KeyboardArrowLeft />
+                        <KeyboardArrowLeft sx={{ fontSize: { xs: '1.2rem', sm: '1.3rem', md: '1.5rem' } }} />
                       </IconButton>
 
                       <IconButton
                         onClick={scrollRight}
                         sx={{
                           position: 'absolute',
-                          right: '-20px',
+                          right: { xs: '-15px', sm: '-18px', md: '-20px' },
                           top: '50%',
                           transform: 'translateY(-50%)',
                           backgroundColor: '#ffffff',
                           color: '#5C2D91',
-                          width: '40px',
-                          height: '40px',
+                          width: { xs: '35px', sm: '38px', md: '40px' },
+                          height: { xs: '35px', sm: '38px', md: '40px' },
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                           zIndex: 3,
                           '&:hover': {
                             backgroundColor: '#f8f9fa',
                             transform: 'translateY(-50%) scale(1.1)',
                           },
-                          [theme.breakpoints.down('md')]: {
-                            display: 'none', // Hide on mobile
+                          '@media (max-width: 900px)': {
+                            display: 'none', // Hide on mobile and tablet
                           }
                         }}
                       >
-                        <KeyboardArrowRight />
+                        <KeyboardArrowRight sx={{ fontSize: { xs: '1.2rem', sm: '1.3rem', md: '1.5rem' } }} />
                       </IconButton>
                     </>
                   )}
@@ -827,7 +908,7 @@ const LearningMethodsSection = () => {
         <ConnectingLine />
 
         {/* Keep the existing tabs and course display for functionality */}
-        <Box sx={{ position: 'relative', zIndex: 1, mt: 8 }}>
+        <Box sx={{ position: 'relative', zIndex: 1, mt: 1 }}> {/* Minimal margin */}
           <Fade in={true} timeout={500}>
             <Box>
               {loading && categories.length === 0 ? (

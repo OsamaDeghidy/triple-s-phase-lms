@@ -276,9 +276,9 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
   const drawer = (
     <Box sx={{
       height: '100%',
-      background: 'rgba(255,255,255,0.95)',
+      background: '#FFFFFF',
       borderRadius: { xs: '16px', md: '24px 0 0 24px' },
-      boxShadow: '0 8px 32px 0 rgba(31,38,135,0.10)',
+      boxShadow: '0 8px 32px 0 rgba(31,38,135,0.15)',
       p: { xs: 1.5, sm: 2, md: 2.5 },
       display: 'flex',
       flexDirection: 'column',
@@ -286,6 +286,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
       minHeight: '100vh',
       width: '100%',
       overflowY: 'auto',
+      border: '1px solid rgba(0,0,0,0.08)',
       '&::-webkit-scrollbar': {
         width: '4px',
       },
@@ -307,10 +308,11 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
         flexDirection: 'column', 
         alignItems: 'center', 
         mb: { xs: 2, sm: 3 },
-        background: 'rgba(14,81,129,0.05)', 
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)', 
         borderRadius: { xs: 2, sm: 3 }, 
         p: { xs: 1.5, sm: 2 }, 
-        boxShadow: '0 2px 8px 0 rgba(14,81,129,0.07)',
+        boxShadow: '0 4px 12px 0 rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.06)',
         width: '100%',
         maxWidth: { xs: '90%', sm: '100%' }
       }}>
@@ -321,8 +323,8 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
             width: { xs: 70, sm: 80, md: 90 }, 
             height: { xs: 70, sm: 80, md: 90 }, 
             mb: { xs: 1, sm: 1.5 }, 
-            border: { xs: '2px solid #4DBFB3', md: '3px solid #4DBFB3' }, 
-            boxShadow: '0 2px 8px 0 rgba(14,81,129,0.09)'
+            border: { xs: '3px solid #e3f2fd', md: '4px solid #e3f2fd' }, 
+            boxShadow: '0 4px 12px 0 rgba(0,0,0,0.12)'
           }}
         />
         <Typography 
@@ -363,20 +365,22 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                   onClick={handleCoursesDropdownToggle}
                   sx={{
                     borderRadius: { xs: 1.5, sm: 2 },
-                    color: active ? '#333679' : '#757575',
-                    background: active ? 'linear-gradient(90deg, rgba(14,81,129,0.1) 0%, #fff 100%)' : 'none',
-                    boxShadow: active ? '0 2px 8px 0 rgba(14,81,129,0.10)' : 'none',
+                    color: active ? '#1976d2' : '#616161',
+                    background: active ? 'linear-gradient(90deg, rgba(25,118,210,0.1) 0%, #ffffff 100%)' : 'none',
+                    boxShadow: active ? '0 4px 12px 0 rgba(25,118,210,0.15)' : 'none',
                     py: { xs: 1, sm: 1.5 },
                     px: { xs: 1, sm: 2 },
+                    border: active ? '1px solid rgba(25,118,210,0.2)' : '1px solid transparent',
                     '&:hover': {
-                      background: 'linear-gradient(90deg, rgba(14,81,129,0.05) 0%, #fff 100%)',
-                      color: '#333679'
+                      background: 'linear-gradient(90deg, rgba(25,118,210,0.08) 0%, #ffffff 100%)',
+                      color: '#1976d2',
+                      border: '1px solid rgba(25,118,210,0.15)'
                     }
                   }}
                 >
                   <ListItemIcon sx={{
                     minWidth: { xs: 32, sm: 36 },
-                    color: active ? '#333679' : '#bdbdbd',
+                    color: active ? '#1976d2' : '#9e9e9e',
                     fontSize: { xs: 20, sm: 24 }
                   }}>{item.icon}</ListItemIcon>
                   <ListItemText 
@@ -394,7 +398,7 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                     sx={{ 
                       mr: { xs: 0.5, sm: 1 },
                       '& .MuiBadge-badge': {
-                        background: 'linear-gradient(45deg, #4DBFB3, #333679)',
+                        background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
                         fontSize: { xs: '8px', sm: '10px' },
                         fontWeight: 700,
                         width: { xs: 16, sm: 18 },
@@ -448,18 +452,19 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                             }
                           }}
                           sx={{
-                            borderRadius: { xs: 0.8, sm: 1 },
+                            borderRadius: '8px',
                             mb: { xs: 0.3, sm: 0.5 },
                             py: { xs: 0.5, sm: 1 },
                             px: { xs: 1, sm: 1.5 },
                             color: '#666',
+                            margin: '2px 0',
                             '&:hover': {
-                              background: 'rgba(77, 191, 179, 0.1)',
-                              color: '#333679'
+                              background: 'rgba(25, 118, 210, 0.1)',
+                              color: '#1976d2'
                             },
                             '&.active': {
-                              background: 'rgba(77, 191, 179, 0.15)',
-                              color: '#333679',
+                              background: 'rgba(25, 118, 210, 0.15)',
+                              color: '#1976d2',
                               fontWeight: 600
                             }
                           }}
@@ -507,8 +512,9 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                 display: 'block',
                 marginBottom: '8px',
                 borderRadius: '8px',
-                background: active ? 'linear-gradient(90deg, rgba(14,81,129,0.1) 0%, #fff 100%)' : 'none',
-                boxShadow: active ? '0 2px 8px 0 rgba(14,81,129,0.10)' : 'none',
+                background: active ? 'linear-gradient(90deg, rgba(25,118,210,0.1) 0%, #ffffff 100%)' : 'none',
+                boxShadow: active ? '0 4px 12px 0 rgba(25,118,210,0.15)' : 'none',
+                border: active ? '1px solid rgba(25,118,210,0.2)' : '1px solid transparent',
               }}
               onClick={() => {
                 // Close mobile drawer after navigation
@@ -520,18 +526,18 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
               <ListItemButton
                 sx={{
                   borderRadius: { xs: 1.5, sm: 2 },
-                  color: active ? '#333679' : '#757575',
+                  color: active ? '#1976d2' : '#616161',
                   py: { xs: 1, sm: 1.5 },
                   px: { xs: 1, sm: 2 },
                   '&:hover': {
-                    background: 'linear-gradient(90deg, rgba(14,81,129,0.05) 0%, #fff 100%)',
-                    color: '#333679'
+                    background: 'linear-gradient(90deg, rgba(25,118,210,0.08) 0%, #ffffff 100%)',
+                    color: '#1976d2'
                   }
                 }}
               >
                 <ListItemIcon sx={{
                   minWidth: { xs: 32, sm: 36 },
-                  color: active ? '#333679' : '#bdbdbd',
+                  color: active ? '#1976d2' : '#9e9e9e',
                   fontSize: { xs: 20, sm: 24 }
                 }}>{item.icon}</ListItemIcon>
                 <ListItemText 
@@ -551,7 +557,9 @@ const MainLayout = ({ children, toggleDarkMode, isDarkMode }) => {
                       position: 'absolute', 
                       left: { xs: 12, sm: 16 },
                       '& .MuiBadge-badge': {
+                        background: 'linear-gradient(45deg, #f44336, #ff5722)',
                         fontSize: { xs: '8px', sm: '10px' },
+                        fontWeight: 700,
                         width: { xs: 16, sm: 18 },
                         height: { xs: 16, sm: 18 }
                       }

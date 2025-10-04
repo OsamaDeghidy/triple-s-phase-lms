@@ -33,7 +33,7 @@ const CourseDetailBottomBar = ({
             backgroundColor: 'white',
             borderTop: '1px solid #e0e0e0',
             boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)',
-            p: 2,
+            p: { xs: 1.5, sm: 2 },
             backdropFilter: 'blur(10px)',
             transition: 'all 0.3s ease',
             width: '100%', // Fixed width
@@ -45,7 +45,7 @@ const CourseDetailBottomBar = ({
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 2,
+                    gap: { xs: 1.5, sm: 2 },
                     width: '100%',
                     maxWidth: '100%'
                 }}>
@@ -53,16 +53,16 @@ const CourseDetailBottomBar = ({
                     <Box sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 2,
+                        gap: { xs: 1.5, sm: 2 },
                         width: '100%',
                         minWidth: 0 // Prevent overflow
                     }}>
                         {/* Course Image */}
                         <Box
                             sx={{
-                                width: '60px',
-                                height: '60px',
-                                borderRadius: '8px',
+                                width: { xs: '50px', sm: '60px' },
+                                height: { xs: '50px', sm: '60px' },
+                                borderRadius: { xs: '6px', sm: '8px' },
                                 backgroundImage: 'url(/src/assets/images/CourseDetail.png)',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
@@ -79,7 +79,7 @@ const CourseDetailBottomBar = ({
                             <Typography variant="h6" sx={{
                                 fontWeight: 'bold',
                                 mb: 0.5,
-                                fontSize: '1.2rem',
+                                fontSize: { xs: '1rem', sm: '1.2rem' },
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis'
@@ -87,7 +87,7 @@ const CourseDetailBottomBar = ({
                                 ${course?.price || '74.00'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{
-                                fontSize: '0.9rem',
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' },
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap'
@@ -100,7 +100,7 @@ const CourseDetailBottomBar = ({
                     {/* Course Info Icons */}
                     <Box sx={{
                         display: 'flex',
-                        gap: 2,
+                        gap: { xs: 1.5, sm: 2 },
                         justifyContent: 'center',
                         width: '100%',
                         flexWrap: 'wrap' // Allow wrapping if needed
@@ -112,10 +112,13 @@ const CourseDetailBottomBar = ({
                             minWidth: 0,
                             flex: '1 1 auto'
                         }}>
-                            <PeopleAltOutlined sx={{ color: '#666', fontSize: 14 }} />
+                            <PeopleAltOutlined sx={{ 
+                                color: '#666', 
+                                fontSize: { xs: 12, sm: 14 } 
+                            }} />
                             <Typography sx={{
                                 color: '#666',
-                                fontSize: '12px',
+                                fontSize: { xs: '10px', sm: '12px' },
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis'
@@ -130,10 +133,13 @@ const CourseDetailBottomBar = ({
                             minWidth: 0,
                             flex: '1 1 auto'
                         }}>
-                            <PlayCircleOutline sx={{ color: '#666', fontSize: 14 }} />
+                            <PlayCircleOutline sx={{ 
+                                color: '#666', 
+                                fontSize: { xs: 12, sm: 14 } 
+                            }} />
                             <Typography sx={{
                                 color: '#666',
-                                fontSize: '12px',
+                                fontSize: { xs: '10px', sm: '12px' },
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis'
@@ -148,10 +154,13 @@ const CourseDetailBottomBar = ({
                             minWidth: 0,
                             flex: '1 1 auto'
                         }}>
-                            <AccessTime sx={{ color: '#666', fontSize: 14 }} />
+                            <AccessTime sx={{ 
+                                color: '#666', 
+                                fontSize: { xs: 12, sm: 14 } 
+                            }} />
                             <Typography sx={{
                                 color: '#666',
-                                fontSize: '12px',
+                                fontSize: { xs: '10px', sm: '12px' },
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis'
@@ -165,17 +174,17 @@ const CourseDetailBottomBar = ({
                     <Button
                         variant="contained"
                         size="large"
-                        endIcon={<ArrowForward sx={{ fontSize: 16 }} />}
+                        endIcon={<ArrowForward sx={{ fontSize: { xs: 14, sm: 16 } }} />}
                         onClick={handleAddToCart}
                         disabled={isAddingToCart}
                         sx={{
                             backgroundColor: '#28a745',
                             color: 'white',
                             fontWeight: 'bold',
-                            py: 1.5,
-                            borderRadius: '8px',
+                            py: { xs: 1.2, sm: 1.5 },
+                            borderRadius: { xs: '6px', sm: '8px' },
                             textTransform: 'none',
-                            fontSize: '14px',
+                            fontSize: { xs: '13px', sm: '14px' },
                             width: '100%',
                             maxWidth: '100%',
                             '&:hover': {

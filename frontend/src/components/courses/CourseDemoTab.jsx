@@ -38,43 +38,91 @@ const CourseDemoTab = ({ course }) => {
         <ContentSection>
             {/* Compact horizontal instructor strip */}
             <Box sx={{
-                mb: 3,
-                p: 2,
+                mb: { xs: 2, sm: 3 },
+                p: { xs: 1.5, sm: 2 },
                 display: 'flex',
-                alignItems: 'center',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'flex-start', sm: 'center' },
                 justifyContent: 'space-between',
-                gap: 2,
+                gap: { xs: 1.5, sm: 2 },
                 border: '1px solid',
                 borderColor: 'divider',
-                borderRadius: 2,
+                borderRadius: { xs: 1.5, sm: 2 },
                 bgcolor: 'background.paper'
             }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: { xs: 1.5, sm: 2 },
+                    width: { xs: '100%', sm: 'auto' }
+                }}>
                     <Avatar
                         src={course.instructorAvatar}
                         alt={course.instructor}
-                        sx={{ width: 64, height: 64, border: '2px solid', borderColor: 'primary.main' }}
+                        sx={{ 
+                            width: { xs: 50, sm: 56, md: 64 }, 
+                            height: { xs: 50, sm: 56, md: 64 }, 
+                            border: '2px solid', 
+                            borderColor: 'primary.main' 
+                        }}
                     />
-                    <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="subtitle1" fontWeight={700}>
+                    <Box sx={{ textAlign: 'right', flex: 1 }}>
+                        <Typography 
+                            variant="subtitle1" 
+                            fontWeight={700}
+                            sx={{
+                                fontSize: { xs: '0.9rem', sm: '1rem' }
+                            }}
+                        >
                             {course.instructor}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+                        <Typography 
+                            variant="body2" 
+                            color="text.secondary" 
+                            sx={{ 
+                                mt: 0.25,
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                            }}
+                        >
                             {course.instructorTitle}
                         </Typography>
                     </Box>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: { xs: 1, sm: 2 }, 
+                    flexWrap: 'wrap',
+                    width: { xs: '100%', sm: 'auto' }
+                }}>
+                    <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 1,
+                        order: { xs: 1, sm: 1 }
+                    }}>
                         <Rating
                             value={course.instructorRating}
                             precision={0.1}
                             readOnly
                             size="small"
                             emptyIcon={<StarBorder fontSize="inherit" />}
-                            sx={{ mr: 1 }}
+                            sx={{ 
+                                mr: 1,
+                                '& .MuiRating-icon': {
+                                    fontSize: { xs: '1rem', sm: '1.1rem' }
+                                }
+                            }}
                         />
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
+                        <Typography 
+                            variant="body2" 
+                            color="text.secondary" 
+                            sx={{ 
+                                ml: 0.5,
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                            }}
+                        >
                             {(() => {
                                 const r = course.instructorRating;
                                 if (typeof r === 'number') return r.toFixed(1);
@@ -83,18 +131,32 @@ const CourseDemoTab = ({ course }) => {
                             })()} / 5.0
                         </Typography>
                     </Box>
-                    <Chip
-                        size="small"
-                        color="default"
-                        variant="outlined"
-                        label={`${course.instructorStudents?.toLocaleString?.() || course.instructorStudents || 0} طالب`}
-                    />
-                    <Chip
-                        size="small"
-                        color="default"
-                        variant="outlined"
-                        label={`${course.instructorCourses || 0} دورة`}
-                    />
+                    <Box sx={{
+                        display: 'flex',
+                        gap: 1,
+                        order: { xs: 2, sm: 2 }
+                    }}>
+                        <Chip
+                            size="small"
+                            color="default"
+                            variant="outlined"
+                            label={`${course.instructorStudents?.toLocaleString?.() || course.instructorStudents || 0} طالب`}
+                            sx={{
+                                fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                height: { xs: '24px', sm: '28px' }
+                            }}
+                        />
+                        <Chip
+                            size="small"
+                            color="default"
+                            variant="outlined"
+                            label={`${course.instructorCourses || 0} دورة`}
+                            sx={{
+                                fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                height: { xs: '24px', sm: '28px' }
+                            }}
+                        />
+                    </Box>
                     <Button
                         variant="text"
                         size="small"
@@ -102,6 +164,9 @@ const CourseDemoTab = ({ course }) => {
                             textTransform: 'none',
                             color: '#333679',
                             fontWeight: 600,
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                            order: { xs: 3, sm: 3 },
+                            alignSelf: { xs: 'flex-start', sm: 'center' },
                             '&:hover': {
                                 bgcolor: 'rgba(14, 81, 129, 0.1)',
                                 color: '#333679'

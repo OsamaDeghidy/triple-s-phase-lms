@@ -43,14 +43,20 @@ const FeatureItem = styled(Box)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     gap: theme.spacing(1),
-    padding: theme.spacing(1.5),
+    padding: { xs: theme.spacing(1), sm: theme.spacing(1.5) },
     borderRadius: theme.spacing(1),
     backgroundColor: 'rgba(14, 81, 129, 0.05)',
     border: '1px solid rgba(14, 81, 129, 0.1)',
     transition: 'all 0.3s ease',
+    minHeight: { xs: '48px', sm: '56px' },
     '&:hover': {
         backgroundColor: 'rgba(14, 81, 129, 0.08)',
         transform: 'translateY(-2px)',
+    },
+    [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
+        textAlign: 'center',
+        gap: theme.spacing(0.5),
     },
 }));
 
@@ -77,7 +83,18 @@ const CourseDescriptionTab = ({ course, totalLessons }) => {
                 onChange={handleOverviewSubTabChange}
                 variant="scrollable"
                 scrollButtons="auto"
-                sx={{ mb: 3, '& .MuiTab-root': { minWidth: 'auto' } }}
+                sx={{ 
+                    mb: { xs: 2, sm: 3 }, 
+                    '& .MuiTab-root': { 
+                        minWidth: 'auto',
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                        px: { xs: 1, sm: 2 },
+                        py: { xs: 0.5, sm: 1 }
+                    },
+                    '& .MuiTabs-scrollButtons': {
+                        width: { xs: 30, sm: 40 }
+                    }
+                }}
             >
                 <Tab label="وصف الدورة" />
                 <Tab label="الخطة الزمنية" />
@@ -86,15 +103,30 @@ const CourseDescriptionTab = ({ course, totalLessons }) => {
 
             {overviewSubTab === 0 && (
                 <Box>
-                    <SectionTitle variant="h5" component="h2" gutterBottom>
+                    <SectionTitle 
+                        variant="h5" 
+                        component="h2" 
+                        gutterBottom
+                        sx={{
+                            fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.75rem' }
+                        }}
+                    >
                         وصف الدورة
                     </SectionTitle>
-                    <Typography variant="body1" paragraph dir="rtl" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
+                    <Typography 
+                        variant="body1" 
+                        paragraph 
+                        dir="rtl" 
+                        sx={{ 
+                            lineHeight: { xs: 1.6, sm: 1.8 }, 
+                            fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' }
+                        }}
+                    >
                         {course.longDescription}
                     </Typography>
 
                     {/* بطاقة معلومات سريعة */}
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
+                    <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mt: 1 }}>
                         <Grid xs={6} md={3}>
                             <FeatureItem>
                                 <ScheduleIcon />

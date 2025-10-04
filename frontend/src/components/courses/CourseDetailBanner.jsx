@@ -55,7 +55,7 @@ const pulse = keyframes`
 const HeroSection = styled('div')(({ theme }) => ({
     background: '#ffffff',
     color: '#333333',
-    padding: theme.spacing(16, 0, 0),
+    padding: { xs: theme.spacing(8, 0, 0), sm: theme.spacing(12, 0, 0), md: theme.spacing(16, 0, 0) },
     margin: '0',
     position: 'relative',
     overflow: 'hidden',
@@ -69,14 +69,14 @@ const HeroSection = styled('div')(({ theme }) => ({
         top: 0,
         left: 0,
         right: 0,
-        height: '200px',
+        height: { xs: '120px', sm: '160px', md: '200px' },
         background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%)',
         zIndex: 1,
         pointerEvents: 'none'
     }
 }));
 
-const FloatingShape = styled('div')({
+const FloatingShape = styled('div')(({ theme }) => ({
     position: 'absolute',
     borderRadius: '50%',
     background: 'linear-gradient(45deg, rgba(102, 51, 153, 0.15), rgba(139, 75, 140, 0.12))',
@@ -84,31 +84,39 @@ const FloatingShape = styled('div')({
     opacity: 0.3,
     zIndex: 1,
     animation: `${float} 20s ease-in-out infinite`,
+    [theme.breakpoints.down('md')]: {
+        filter: 'blur(60px)',
+        opacity: 0.2,
+    },
+    [theme.breakpoints.down('sm')]: {
+        filter: 'blur(40px)',
+        opacity: 0.15,
+    },
     '&:nth-of-type(1)': {
-        width: '400px',
-        height: '400px',
-        top: '-150px',
-        right: '-150px',
+        width: { xs: '200px', sm: '300px', md: '400px' },
+        height: { xs: '200px', sm: '300px', md: '400px' },
+        top: { xs: '-80px', sm: '-120px', md: '-150px' },
+        right: { xs: '-80px', sm: '-120px', md: '-150px' },
         animationDelay: '0s',
         background: 'linear-gradient(45deg, rgba(102, 51, 153, 0.18), rgba(139, 75, 140, 0.08))',
     },
     '&:nth-of-type(2)': {
-        width: '300px',
-        height: '300px',
+        width: { xs: '150px', sm: '200px', md: '300px' },
+        height: { xs: '150px', sm: '200px', md: '300px' },
         bottom: '10%',
-        right: '10%',
+        right: { xs: '5%', sm: '8%', md: '10%' },
         animationDelay: '8s',
         background: 'linear-gradient(45deg, rgba(102, 51, 153, 0.12), rgba(153, 102, 204, 0.15))',
     },
     '&:nth-of-type(3)': {
-        width: '350px',
-        height: '350px',
+        width: { xs: '180px', sm: '250px', md: '350px' },
+        height: { xs: '180px', sm: '250px', md: '350px' },
         top: '20%',
-        left: '10%',
+        left: { xs: '5%', sm: '8%', md: '10%' },
         animationDelay: '15s',
         background: 'linear-gradient(45deg, rgba(102, 51, 153, 0.14), rgba(123, 63, 152, 0.10))',
     },
-});
+}));
 
 const CourseHeader = styled(Box)(({ theme }) => ({
     position: 'relative',
@@ -145,10 +153,16 @@ const CourseDetailBanner = ({
             <FloatingShape />
 
             <CourseHeader>
-                <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: 0, px: { xs: 2, sm: 3, md: 4 }, left: "25%" }}>
+                <Container maxWidth="lg" sx={{ 
+                    position: 'relative', 
+                    zIndex: 1, 
+                    py: 0, 
+                    px: { xs: 2, sm: 3, md: 4 },
+                    left: { xs: 0, md: "25%" }
+                }}>
                     {/* Banner content matching the image design exactly */}
                     <Box sx={{
-                        textAlign: 'right',
+                        textAlign: { xs: 'center', md: 'right' },
                         maxWidth: '1200px',
                         width: '100%',
                         direction: 'rtl',
@@ -159,45 +173,64 @@ const CourseDetailBanner = ({
                             aria-label="breadcrumb"
                             sx={{
                                 color: '#666666',
-                                mb: 2,
+                                mb: { xs: 1.5, sm: 2 },
                                 direction: 'rtl',
+                                justifyContent: { xs: 'center', md: 'flex-start' },
+                                flexWrap: 'wrap',
                                 '& .MuiBreadcrumbs-separator': {
                                     color: '#999999',
-                                    fontSize: '16px',
-                                    mx: 1
+                                    fontSize: { xs: '14px', sm: '16px' },
+                                    mx: { xs: 0.5, sm: 1 }
                                 }
                             }}
                         >
                             <Link to="/" style={{
                                 color: '#666666',
                                 textDecoration: 'none',
-                                fontSize: '24px'
+                                fontSize: '18px',
+                                '@media (max-width: 600px)': {
+                                    fontSize: '16px'
+                                }
                             }}>
                                 الرئيسية
                             </Link>
                             <Link to="/courses" style={{
                                 color: '#666666',
                                 textDecoration: 'none',
-                                fontSize: '24px'
+                                fontSize: '18px',
+                                '@media (max-width: 600px)': {
+                                    fontSize: '16px'
+                                }
                             }}>
                                 الدورات
                             </Link>
-                            <Typography color="#333333" sx={{ fontSize: '24px', fontWeight: 400 }}>
+                            <Typography color="#333333" sx={{ 
+                                fontSize: { xs: '16px', sm: '20px', md: '24px' }, 
+                                fontWeight: 400,
+                                textAlign: { xs: 'center', md: 'right' }
+                            }}>
                                 {course?.title || 'إتقان الطب الباطني لامتحانات الترخيص'}
                             </Typography>
                         </Breadcrumbs>
 
                         {/* Categories */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3, justifyContent: 'flex-start' }}>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: { xs: 0.5, sm: 1 }, 
+                            mb: { xs: 2, sm: 3 }, 
+                            justifyContent: { xs: 'center', md: 'flex-start' },
+                            flexWrap: 'wrap'
+                        }}>
                             <Chip
                                 label="البحث"
                                 size="small"
                                 sx={{
                                     backgroundColor: '#4CAF50',
                                     color: 'white',
-                                    fontSize: '16px',
-                                    height: '32px',
-                                    borderRadius: '16px'
+                                    fontSize: { xs: '12px', sm: '14px', md: '16px' },
+                                    height: { xs: '28px', sm: '30px', md: '32px' },
+                                    borderRadius: { xs: '14px', sm: '15px', md: '16px' }
                                 }}
                             />
                             <Chip
@@ -206,9 +239,9 @@ const CourseDetailBanner = ({
                                 sx={{
                                     backgroundColor: '#4CAF50',
                                     color: 'white',
-                                    fontSize: '16px',
-                                    height: '32px',
-                                    borderRadius: '16px'
+                                    fontSize: { xs: '12px', sm: '14px', md: '16px' },
+                                    height: { xs: '28px', sm: '30px', md: '32px' },
+                                    borderRadius: { xs: '14px', sm: '15px', md: '16px' }
                                 }}
                             />
                         </Box>
@@ -219,31 +252,50 @@ const CourseDetailBanner = ({
                             component="h1"
                             sx={{
                                 color: '#222222',
-                                fontSize: { xs: '3.0rem', md: '3.5rem', lg: '3.2rem' },
+                                fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem', lg: '3.2rem' },
                                 fontWeight: 'bold',
-                                lineHeight: 1.2,
-                                mb: 3,
-                                textAlign: 'right'
+                                lineHeight: { xs: 1.1, sm: 1.2 },
+                                mb: { xs: 2, sm: 3 },
+                                textAlign: { xs: 'center', md: 'right' },
+                                wordBreak: 'break-word'
                             }}
                         >
                             {course?.title || 'إتقان الطب الباطني لامتحانات الترخيص'}
                         </Typography>
 
                         {/* Review Section */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3, justifyContent: 'flex-start' }}>
-                            <Typography sx={{ color: '#333333', fontSize: '20px', fontWeight: 500 }}>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: { xs: 0.5, sm: 1 }, 
+                            mb: { xs: 2, sm: 3 }, 
+                            justifyContent: { xs: 'center', md: 'flex-start' },
+                            flexWrap: 'wrap'
+                        }}>
+                            <Typography sx={{ 
+                                color: '#333333', 
+                                fontSize: { xs: '14px', sm: '16px', md: '18px', lg: '20px' }, 
+                                fontWeight: 500 
+                            }}>
                                 التقييم:
                             </Typography>
-                            <StarIcon sx={{ color: '#FFD700', fontSize: '24px' }} />
+                            <StarIcon sx={{ 
+                                color: '#FFD700', 
+                                fontSize: { xs: '18px', sm: '20px', md: '22px', lg: '24px' } 
+                            }} />
                             <Typography sx={{
                                 color: '#222222',
-                                fontSize: '22px',
+                                fontSize: { xs: '16px', sm: '18px', md: '20px', lg: '22px' },
                                 fontWeight: 'bold',
-                                mr: 1
+                                mr: { xs: 0.5, sm: 1 }
                             }}>
                                 {course?.rating || '4.5'}
                             </Typography>
-                            <Typography sx={{ color: '#222222', fontSize: '20px', fontWeight: 'bold', }}>
+                            <Typography sx={{ 
+                                color: '#222222', 
+                                fontSize: { xs: '14px', sm: '16px', md: '18px', lg: '20px' }, 
+                                fontWeight: 'bold' 
+                            }}>
                                 ({course?.reviewCount || '20'} طالب)
                             </Typography>
                         </Box>
