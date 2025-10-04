@@ -632,24 +632,41 @@ const Profile = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 6, direction: 'rtl' }}>
+    <Container maxWidth="xl" sx={{ 
+      py: { xs: 3, sm: 4, md: 6 }, 
+      px: { xs: 2, sm: 3, md: 4 },
+      direction: 'rtl',
+      width: '100%',
+      maxWidth: '100vw',
+      overflowX: 'hidden'
+    }}>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
         {/* Single Block - All Profile Information */}
         <Grid item xs={12}>
           <Slide direction="up" in timeout={1000}>
             <ProfileCard>
-              <CardContent sx={{ p: 4 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
                 <Box sx={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  mb: 4,
+                  alignItems: { xs: 'flex-start', sm: 'center' }, 
+                  mb: { xs: 3, sm: 4 },
                   pb: 2,
                   borderBottom: '2px solid',
-                  borderColor: alpha('#333679', 0.1)
+                  borderColor: alpha('#333679', 0.1),
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  gap: { xs: 2, sm: 0 }
                 }}>
-                  <Typography variant="h5" fontWeight="bold" color="#333679">
+                  <Typography 
+                    variant="h5" 
+                    fontWeight="bold" 
+                    color="#333679"
+                    sx={{
+                      fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.75rem' },
+                      textAlign: { xs: 'center', sm: 'left' }
+                    }}
+                  >
                     معلومات الملف الشخصي
                   </Typography>
                   <Button 
@@ -661,10 +678,12 @@ const Profile = () => {
                       '&:hover': {
                         backgroundColor: editMode ? '#0a3d5f' : alpha('#333679', 0.1),
                       },
-                      px: 3,
-                      py: 1.5,
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 1, sm: 1.5 },
                       borderRadius: 2,
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
+                      fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+                      minWidth: { xs: '100%', sm: 'auto' }
                     }}
                     startIcon={editMode ? <Save /> : <Edit />}
                     onClick={editMode ? handleSaveProfile : handleEditToggle}
@@ -674,14 +693,14 @@ const Profile = () => {
                   </Button>
                 </Box>
 
-                <Grid container spacing={4}>
+                <Grid container spacing={{ xs: 3, sm: 4 }}>
                   {/* Left Side - Profile Picture and Password */}
                   <Grid item xs={12} md={4}>
                     {/* Profile Picture Section */}
                     <Box sx={{ 
                       textAlign: 'center', 
-                      mb: 4,
-                      p: 3,
+                      mb: { xs: 3, sm: 4 },
+                      p: { xs: 2, sm: 3 },
                       borderRadius: 3,
                       background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
@@ -692,11 +711,11 @@ const Profile = () => {
                           src={profileData.avatar} 
                           alt={`${profileData.firstName} ${profileData.lastName}`}
                           sx={{ 
-                            width: 140, 
-                            height: 140,
+                            width: { xs: 100, sm: 120, md: 140 }, 
+                            height: { xs: 100, sm: 120, md: 140 },
                             border: '4px solid',
                             borderColor: '#333679',
-                            mb: 3,
+                            mb: { xs: 2, sm: 3 },
                             boxShadow: '0 8px 25px rgba(14, 81, 129, 0.2)'
                           }}
                         />
@@ -705,10 +724,12 @@ const Profile = () => {
                             color="error"
                             sx={{
                               position: 'absolute',
-                              top: -8,
-                              right: -8,
+                              top: { xs: -6, sm: -8 },
+                              right: { xs: -6, sm: -8 },
                               backgroundColor: 'error.main',
                               color: 'white',
+                              width: { xs: 24, sm: 32 },
+                              height: { xs: 24, sm: 32 },
                               '&:hover': {
                                 backgroundColor: 'error.dark',
                               },
@@ -722,13 +743,15 @@ const Profile = () => {
                       {editMode && (
                         <Button
                           variant="outlined"
-                          startIcon={<PhotoCamera />}
+                          startIcon={<PhotoCamera sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }} />}
                           onClick={() => fileInputRef.current?.click()}
                           fullWidth
                           sx={{ 
                             mb: 2,
                             borderColor: '#333679',
                             color: '#333679',
+                            fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                            py: { xs: 1, sm: 1.5 },
                             '&:hover': {
                               borderColor: '#0a3d5f',
                               backgroundColor: alpha('#333679', 0.05),
@@ -749,13 +772,22 @@ const Profile = () => {
                     
                     {/* Password Change Section */}
                     <Box sx={{
-                      p: 3,
+                      p: { xs: 2, sm: 3 },
                       borderRadius: 3,
                       background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
                       borderColor: alpha('#333679', 0.08)
                     }}>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#333679' }}>
+                      <Typography 
+                        variant="subtitle1" 
+                        fontWeight="bold" 
+                        gutterBottom 
+                        sx={{ 
+                          mb: { xs: 2, sm: 3 }, 
+                          color: '#333679',
+                          fontSize: { xs: '1rem', sm: '1.1rem' }
+                        }}
+                      >
                         تغيير كلمة المرور
                       </Typography>
                       <Grid container spacing={2}>
@@ -783,6 +815,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               endAdornment: (
@@ -824,6 +862,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                           />
                         </Grid>
@@ -839,9 +883,10 @@ const Profile = () => {
                               '&:hover': {
                                 backgroundColor: '#0a3d5f',
                               },
-                              py: 1.5,
+                              py: { xs: 1.2, sm: 1.5 },
                               borderRadius: 2,
-                              fontWeight: 'bold'
+                              fontWeight: 'bold',
+                              fontSize: { xs: '0.8rem', sm: '0.9rem' }
                             }}
                           >
                             تغيير كلمة المرور
@@ -855,17 +900,26 @@ const Profile = () => {
                   <Grid item xs={12} md={8}>
                     {/* Profile Information Section */}
                     <Box sx={{
-                      p: 3,
+                      p: { xs: 2, sm: 3 },
                       borderRadius: 3,
                       background: `linear-gradient(135deg, ${alpha('#333679', 0.02)} 0%, ${alpha('#4DBFB3', 0.02)} 100%)`,
                       border: '1px solid',
                       borderColor: alpha('#333679', 0.08),
-                      mb: 4
+                      mb: { xs: 3, sm: 4 }
                     }}>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 3, color: '#333679' }}>
+                      <Typography 
+                        variant="subtitle1" 
+                        fontWeight="bold" 
+                        gutterBottom 
+                        sx={{ 
+                          mb: { xs: 2, sm: 3 }, 
+                          color: '#333679',
+                          fontSize: { xs: '1rem', sm: '1.1rem' }
+                        }}
+                      >
                         المعلومات الشخصية
                       </Typography>
-                      <Grid container spacing={3}>
+                      <Grid container spacing={{ xs: 2, sm: 3 }}>
                         <Grid item xs={12} sm={6}>
                           <TextField
                             fullWidth
@@ -886,6 +940,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -913,6 +973,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -940,6 +1006,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -966,6 +1038,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: true,
@@ -993,6 +1071,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -1020,6 +1104,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -1064,6 +1154,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -1091,6 +1187,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -1118,6 +1220,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -1145,6 +1253,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,
@@ -1172,6 +1286,12 @@ const Profile = () => {
                                   borderColor: '#333679',
                                 },
                               },
+                              '& .MuiInputLabel-root': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                              }
                             }}
                             InputProps={{
                               readOnly: !editMode,

@@ -384,7 +384,15 @@ const CartPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      position: 'relative',
+      width: '100%',
+      maxWidth: '100vw',
+      overflowX: 'hidden'
+    }}>
       <AnimatedBackground>
         <FloatingShape />
         <FloatingShape style={{ width: '200px', height: '200px', bottom: '20%', right: '15%', animationDelay: '5s' }} />
@@ -395,12 +403,39 @@ const CartPage = () => {
       {/* Hero Section */}
       <HeroSection backgroundImage={headerBanner?.image_url}>
         <AnimatedTriangle />
-        {/* Animated Background Elements */}
-        <FloatingShape style={{ width: '300px', height: '300px', top: '-100px', right: '-100px', animationDelay: '0s' }} />
-        <FloatingShape style={{ width: '200px', height: '200px', bottom: '-50px', right: '20%', animationDelay: '2s', animationDuration: '15s' }} />
-        <FloatingShape style={{ width: '400px', height: '400px', bottom: '-200px', left: '-150px', animationDelay: '4s', animationDuration: '20s' }} />
+        {/* Animated Background Elements - Responsive sizing */}
+        <FloatingShape style={{ 
+          width: '300px', 
+          height: '300px', 
+          top: '-100px', 
+          right: '-100px', 
+          animationDelay: '0s',
+          '@media (max-width: 768px)': { width: '150px', height: '150px', top: '-50px', right: '-50px' }
+        }} />
+        <FloatingShape style={{ 
+          width: '200px', 
+          height: '200px', 
+          bottom: '-50px', 
+          right: '20%', 
+          animationDelay: '2s', 
+          animationDuration: '15s',
+          '@media (max-width: 768px)': { width: '100px', height: '100px', bottom: '-25px' }
+        }} />
+        <FloatingShape style={{ 
+          width: '400px', 
+          height: '400px', 
+          bottom: '-200px', 
+          left: '-150px', 
+          animationDelay: '4s', 
+          animationDuration: '20s',
+          '@media (max-width: 768px)': { width: '200px', height: '200px', bottom: '-100px', left: '-75px' }
+        }} />
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3 }}>
+        <Container maxWidth="lg" sx={{ 
+          position: 'relative', 
+          zIndex: 3,
+          px: { xs: 2, sm: 3, md: 4 }
+        }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -408,13 +443,13 @@ const CartPage = () => {
           >
             <Box sx={{
               textAlign: 'center',
-              py: 3,
+              py: { xs: 2, sm: 3 },
               position: 'relative',
               '&::before, &::after': {
                 content: '""',
                 position: 'absolute',
-                width: '100px',
-                height: '100px',
+                width: { xs: '60px', sm: '80px', md: '100px' },
+                height: { xs: '60px', sm: '80px', md: '100px' },
                 borderRadius: '50%',
                 background: 'rgba(255,255,255,0.1)',
                 filter: 'blur(40px)',
@@ -422,18 +457,31 @@ const CartPage = () => {
               },
               '&::before': {
                 top: '20%',
-                left: '10%',
+                left: { xs: '5%', sm: '8%', md: '10%' },
                 animation: `${pulse} 8s ease-in-out infinite`,
               },
               '&::after': {
                 bottom: '10%',
-                right: '15%',
+                right: { xs: '8%', sm: '12%', md: '15%' },
                 animation: `${pulse} 10s ease-in-out infinite reverse`,
               }
             }}>
-              <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center' }}>
-                <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
-                  <ArrowBack />
+              <Box sx={{ 
+                mb: { xs: 3, sm: 4 }, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: { xs: 1, sm: 2 }, 
+                justifyContent: 'center',
+                flexWrap: 'wrap'
+              }}>
+                <IconButton 
+                  onClick={() => navigate(-1)} 
+                  sx={{ 
+                    color: 'white',
+                    p: { xs: 1, sm: 1.5 }
+                  }}
+                >
+                  <ArrowBack sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
                 </IconButton>
                 <Typography
                   variant="h3"
@@ -442,14 +490,18 @@ const CartPage = () => {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 1,
+                    gap: { xs: 0.5, sm: 1 },
                     color: 'white',
-                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.2rem' },
-                    lineHeight: 1.2,
-                    textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                    fontSize: { xs: '1.3rem', sm: '1.8rem', md: '2.2rem' },
+                    lineHeight: { xs: 1.3, sm: 1.2 },
+                    textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                    wordBreak: 'break-word'
                   }}
                 >
-                  <CartIcon color="inherit" />
+                  <CartIcon 
+                    color="inherit" 
+                    sx={{ fontSize: { xs: '1.3rem', sm: '1.8rem', md: '2.2rem' } }}
+                  />
                   سلة التسوق
                 </Typography>
               </Box>
@@ -458,76 +510,182 @@ const CartPage = () => {
         </Container>
       </HeroSection>
 
-      <Container maxWidth="lg" sx={{ py: 4, flex: 1 }}>
+      <Container maxWidth="lg" sx={{ 
+        py: { xs: 3, sm: 4 }, 
+        px: { xs: 2, sm: 3, md: 4 },
+        flex: 1 
+      }}>
 
         {cartItems.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <CartIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h5" gutterBottom>
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: { xs: 6, sm: 8 },
+            px: { xs: 2, sm: 0 }
+          }}>
+            <CartIcon sx={{ 
+              fontSize: { xs: 60, sm: 80 }, 
+              color: 'text.secondary', 
+              mb: { xs: 1.5, sm: 2 } 
+            }} />
+            <Typography 
+              variant="h5" 
+              gutterBottom
+              sx={{
+                fontSize: { xs: '1.3rem', sm: '1.5rem' },
+                mb: { xs: 1.5, sm: 2 }
+              }}
+            >
               السلة فارغة
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography 
+              variant="body1" 
+              color="text.secondary" 
+              sx={{ 
+                mb: { xs: 2.5, sm: 3 },
+                fontSize: { xs: '0.9rem', sm: '1rem' },
+                px: { xs: 2, sm: 0 }
+              }}
+            >
               لم تقم بإضافة أي دورات إلى السلة بعد
             </Typography>
             <Button
               variant="contained"
               size="large"
               onClick={() => navigate('/courses')}
-              sx={{ borderRadius: 3, px: 4, py: 1.5 }}
+              sx={{ 
+                borderRadius: 3, 
+                px: { xs: 3, sm: 4 }, 
+                py: { xs: 1.2, sm: 1.5 },
+                fontSize: { xs: '0.9rem', sm: '1rem' }
+              }}
             >
               تصفح الدورات
             </Button>
           </Box>
         ) : (
-          <Grid container spacing={4}>
+          <Grid container spacing={{ xs: 3, sm: 4 }}>
             <Grid xs={12} lg={8}>
               <StyledCard>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CartIcon color="primary" />
+                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                  <Typography 
+                    variant="h6" 
+                    gutterBottom 
+                    sx={{ 
+                      mb: { xs: 2, sm: 3 }, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 1,
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }}
+                  >
+                    <CartIcon color="primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
                     الدورات المضافة ({cartItems.length})
                   </Typography>
 
                   {cartItems.map((item) => (
                     <Box key={item.course.id} sx={{
                       display: 'flex',
-                      alignItems: 'center',
-                      p: 2,
-                      mb: 2,
+                      alignItems: { xs: 'flex-start', sm: 'center' },
+                      p: { xs: 1.5, sm: 2 },
+                      mb: { xs: 1.5, sm: 2 },
                       border: '1px solid',
                       borderColor: 'divider',
-                      borderRadius: 2
+                      borderRadius: 2,
+                      flexDirection: { xs: 'column', sm: 'row' },
+                      gap: { xs: 2, sm: 0 }
                     }}>
                       <Avatar
                         src={item.course.image}
                         alt={item.course.title}
-                        sx={{ width: 80, height: 80, mr: 2 }}
+                        sx={{ 
+                          width: { xs: 60, sm: 80 }, 
+                          height: { xs: 60, sm: 80 }, 
+                          mr: { xs: 0, sm: 2 },
+                          alignSelf: { xs: 'center', sm: 'flex-start' }
+                        }}
                       />
-                      <Box sx={{ flex: 1, mr: 2 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                      <Box sx={{ 
+                        flex: 1, 
+                        mr: { xs: 0, sm: 2 },
+                        textAlign: { xs: 'center', sm: 'left' },
+                        width: { xs: '100%', sm: 'auto' }
+                      }}>
+                        <Typography 
+                          variant="h6" 
+                          fontWeight={600} 
+                          gutterBottom
+                          sx={{
+                            fontSize: { xs: '1rem', sm: '1.25rem' },
+                            mb: { xs: 1, sm: 1.5 }
+                          }}
+                        >
                           {item.course.title}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography 
+                          variant="body2" 
+                          color="text.secondary" 
+                          sx={{ 
+                            mb: { xs: 1, sm: 1 },
+                            fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                          }}
+                        >
                           {item.course.instructor}
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: 2,
+                          justifyContent: { xs: 'center', sm: 'flex-start' },
+                          flexWrap: 'wrap'
+                        }}>
                           <Chip
                             label={item.course.level}
                             size="small"
                             color="primary"
                             variant="outlined"
+                            sx={{
+                              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                              height: { xs: '24px', sm: '28px' }
+                            }}
                           />
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography 
+                            variant="body2" 
+                            color="text.secondary"
+                            sx={{
+                              fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                            }}
+                          >
                             {item.course.duration}
                           </Typography>
                         </Box>
                       </Box>
-                      <Box sx={{ textAlign: 'left', mr: 2 }}>
-                        <Typography variant="h6" color="primary" fontWeight={700}>
+                      <Box sx={{ 
+                        textAlign: { xs: 'center', sm: 'left' }, 
+                        mr: { xs: 0, sm: 2 },
+                        mb: { xs: 1, sm: 0 },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: { xs: 'center', sm: 'flex-start' }
+                      }}>
+                        <Typography 
+                          variant="h6" 
+                          color="primary" 
+                          fontWeight={700}
+                          sx={{
+                            fontSize: { xs: '1rem', sm: '1.25rem' }
+                          }}
+                        >
                           {parseFloat(item.course.discount_price || item.course.price).toFixed(2)} ر.س
                         </Typography>
                         {item.course.discount_price && (
-                          <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                          <Typography 
+                            variant="body2" 
+                            color="text.secondary" 
+                            sx={{ 
+                              textDecoration: 'line-through',
+                              fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                            }}
+                          >
                             {parseFloat(item.course.price).toFixed(2)} ر.س
                           </Typography>
                         )}
@@ -535,9 +693,13 @@ const CartPage = () => {
                       <IconButton
                         color="error"
                         onClick={() => removeFromCart(item.id)}
-                        sx={{ ml: 1 }}
+                        sx={{ 
+                          ml: { xs: 0, sm: 1 },
+                          alignSelf: { xs: 'center', sm: 'flex-start' },
+                          p: { xs: 1, sm: 1.5 }
+                        }}
                       >
-                        <DeleteIcon />
+                        <DeleteIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
                       </IconButton>
                     </Box>
                   ))}
@@ -546,36 +708,87 @@ const CartPage = () => {
             </Grid>
 
             <Grid xs={12} lg={4}>
-              <StyledCard>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <ReceiptIcon color="primary" />
+              <StyledCard sx={{ 
+                position: { xs: 'static', lg: 'sticky' },
+                top: { lg: '20px' }
+              }}>
+                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                  <Typography 
+                    variant="h6" 
+                    gutterBottom 
+                    sx={{ 
+                      mb: { xs: 2, sm: 3 }, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 1,
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }}
+                  >
+                    <ReceiptIcon color="primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
                     ملخص الطلب
                   </Typography>
 
-                  <Box sx={{ mb: 3 }}>
+                  <Box sx={{ mb: { xs: 2.5, sm: 3 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body1">عدد الدورات:</Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      <Typography 
+                        variant="body1"
+                        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                      >
+                        عدد الدورات:
+                      </Typography>
+                      <Typography 
+                        variant="body1" 
+                        fontWeight={600}
+                        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                      >
                         {cartItems.length}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body1">المجموع الفرعي:</Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      <Typography 
+                        variant="body1"
+                        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                      >
+                        المجموع الفرعي:
+                      </Typography>
+                      <Typography 
+                        variant="body1" 
+                        fontWeight={600}
+                        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                      >
                         {calculateTotal().toFixed(2)} ر.س
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body1">الضريبة (15%):</Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      <Typography 
+                        variant="body1"
+                        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                      >
+                        الضريبة (15%):
+                      </Typography>
+                      <Typography 
+                        variant="body1" 
+                        fontWeight={600}
+                        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                      >
                         {(calculateTotal() * 0.15).toFixed(2)} ر.س
                       </Typography>
                     </Box>
-                    <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="h6" fontWeight={700}>المجموع الكلي:</Typography>
-                      <Typography variant="h6" color="primary" fontWeight={700}>
+                      <Typography 
+                        variant="h6" 
+                        fontWeight={700}
+                        sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                      >
+                        المجموع الكلي:
+                      </Typography>
+                      <Typography 
+                        variant="h6" 
+                        color="primary" 
+                        fontWeight={700}
+                        sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                      >
                         {(calculateTotal() * 1.15).toFixed(2)} ر.س
                       </Typography>
                     </Box>
@@ -586,6 +799,10 @@ const CartPage = () => {
                     onClick={handleCheckout}
                     startIcon={processingPayment ? <CircularProgress size={20} color="inherit" /> : <PaymentIcon />}
                     disabled={cartItems.length === 0 || processingPayment}
+                    sx={{
+                      fontSize: { xs: '0.9rem', sm: '1rem' },
+                      py: { xs: 1.5, sm: 2 }
+                    }}
                   >
                     {processingPayment ? 'جاري التوجيه...' : 'إتمام الشراء'}
                   </PaymentButton>
@@ -593,7 +810,12 @@ const CartPage = () => {
                   <Button
                     variant="outlined"
                     fullWidth
-                    sx={{ mt: 2, borderRadius: 3, py: 1.5 }}
+                    sx={{ 
+                      mt: 2, 
+                      borderRadius: 3, 
+                      py: { xs: 1.2, sm: 1.5 },
+                      fontSize: { xs: '0.9rem', sm: '1rem' }
+                    }}
                     onClick={() => navigate('/courses')}
                   >
                     إضافة المزيد من الدورات

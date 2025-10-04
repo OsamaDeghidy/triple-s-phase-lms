@@ -3429,6 +3429,25 @@ const CourseTracking = () => {
       background: 'linear-gradient(135deg, #663399 0%, #333679 50%, #1B1B48 100%)',
       fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
+      {/* Mobile Backdrop/Overlay */}
+      {showSidebar && (
+        <Box
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1099,
+            backdropFilter: 'blur(2px)',
+            transition: 'all 0.3s ease-in-out',
+          }}
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Left Sidebar - Course Content */}
       <Box
         sx={{
@@ -3465,9 +3484,29 @@ const CourseTracking = () => {
             alignItems: 'center',
             mb: isSidebarExpanded ? 2 : 1
           }}>
+            {/* Mobile close button - only show on mobile */}
+            <IconButton
+              onClick={toggleSidebar}
+              sx={{
+                display: { xs: 'flex', md: 'none' },
+                color: 'white',
+                bgcolor: 'rgba(255,255,255,0.1)',
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                }
+              }}
+            >
+              <Close sx={{ fontSize: 18 }} />
+            </IconButton>
+
+            {/* Desktop navigation button - only show on desktop */}
             <IconButton
               onClick={() => navigate('/student/dashboard')}
               sx={{
+                display: { xs: 'none', md: 'flex' },
                 color: 'white',
                 bgcolor: 'rgba(255,255,255,0.1)',
                 width: 32,
@@ -3785,15 +3824,32 @@ const CourseTracking = () => {
           backdropFilter: 'blur(10px)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
+          {/* Menu Button */}
           <IconButton onClick={toggleSidebar} sx={{ mr: 2, color: 'white' }}>
             <Menu />
           </IconButton>
+          
+          {/* Course Title */}
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white' }}>
               {currentLesson?.title || courseData.title}
             </Typography>
-            
           </Box>
+          
+          {/* Dashboard Return Button */}
+          <IconButton 
+            onClick={() => navigate('/student/dashboard')} 
+            sx={{ 
+              ml: 2, 
+              color: 'white',
+              bgcolor: 'rgba(255,255,255,0.1)',
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,0.2)',
+              }
+            }}
+          >
+            <Close sx={{ fontSize: 20 }} />
+          </IconButton>
         </Box>
 
         {/* Main Split Layout */}

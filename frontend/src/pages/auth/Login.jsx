@@ -53,7 +53,13 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-  padding: theme.spacing(3),
+  padding: theme.spacing(1),
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(2),
+  },
+  [theme.breakpoints.up('md')]: {
+    padding: theme.spacing(3),
+  },
 }));
 
 const LoginContainer = styled(Paper)(({ theme }) => ({
@@ -66,6 +72,11 @@ const LoginContainer = styled(Paper)(({ theme }) => ({
   boxShadow: theme.shadows[10],
   position: 'relative',
   zIndex: 1,
+  minHeight: { xs: 'auto', sm: '600px' },
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column',
+    maxWidth: 500,
+  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -93,6 +104,9 @@ const LeftPanel = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     display: 'none',
   },
+  [theme.breakpoints.up('lg')]: {
+    padding: theme.spacing(8, 6),
+  },
 }));
 
 const RightPanel = styled(Box)(({ theme }) => ({
@@ -102,8 +116,14 @@ const RightPanel = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   backgroundColor: theme.palette.background.paper,
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(3, 2),
+  },
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(4, 3),
+  },
+  [theme.breakpoints.up('lg')]: {
+    padding: theme.spacing(6, 6),
   },
 }));
 
@@ -116,6 +136,10 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   animation: `${pulse} 2s infinite`,
+  [theme.breakpoints.down('sm')]: {
+    width: 60,
+    height: 60,
+  },
 }));
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
@@ -260,14 +284,38 @@ const Login = () => {
               <PersonIcon fontSize="inherit" />
             </FloatingIcon>
             <Box sx={{ position: 'relative', zIndex: 1 }}>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
+              <Typography 
+                variant="h3" 
+                sx={{ 
+                  fontWeight: 700, 
+                  mb: 2,
+                  fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3rem' },
+                  lineHeight: { xs: 1.3, sm: 1.2 }
+                }}
+              >
                 مرحباً بعودتك!
               </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9, mb: 4, maxWidth: '80%', mx: 'auto' }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  opacity: 0.9, 
+                  mb: 4, 
+                  maxWidth: '80%', 
+                  mx: 'auto',
+                  fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+                  lineHeight: { xs: 1.5, sm: 1.6 }
+                }}
+              >
 استمر في رحلة التعلم معنا. تصفح دوراتك، تتبع تقدمك، وحقق أهدافك.
               </Typography>
               <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ mb: 2 }}>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    mb: 2,
+                    fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                  }}
+                >
                   ليس لديك حساب؟
                 </Typography>
                 <Button
@@ -278,6 +326,9 @@ const Login = () => {
                   sx={{
                     borderColor: 'rgba(255, 255, 255, 0.5)',
                     color: 'white',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                    px: { xs: 2, sm: 3 },
+                    py: { xs: 1, sm: 1.5 },
                     '&:hover': {
                       borderColor: 'white',
                       backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -292,14 +343,33 @@ const Login = () => {
 
           {/* Right Panel - Login Form */}
           <RightPanel>
-            <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Box sx={{ 
+              textAlign: 'center', 
+              mb: { xs: 3, sm: 4 }
+            }}>
               <StyledAvatar>
                 <LockIcon />
               </StyledAvatar>
-              <Typography component="h1" variant="h4" sx={{ fontWeight: 700, mb: 1, color: theme.palette.primary.main }}>
-
+              <Typography 
+                component="h1" 
+                variant="h4" 
+                sx={{ 
+                  fontWeight: 700, 
+                  mb: 1, 
+                  color: theme.palette.primary.main,
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+                }}
+              >
+                تسجيل الدخول
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                  px: { xs: 1, sm: 0 }
+                }}
+              >
                 أدخل بيانات الاعتماد الخاصة بك للوصول إلى حسابك
               </Typography>
             </Box>
@@ -335,10 +405,14 @@ const Login = () => {
                 error={!!errors.email}
                 helperText={errors.email}
                 disabled={loading}
+                size="small"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <EmailIcon color={errors.email ? 'error' : 'action'} />
+                      <EmailIcon 
+                        color={errors.email ? 'error' : 'action'} 
+                        sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
+                      />
                     </InputAdornment>
                   ),
                 }}
@@ -357,6 +431,12 @@ const Login = () => {
                       boxShadow: `0 0 0 2px ${theme.palette.primary.light}`,
                     },
                   },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  },
+                  '& .MuiInputBase-input': {
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  }
                 }}
               />
               
@@ -374,10 +454,14 @@ const Login = () => {
                 error={!!errors.password}
                 helperText={errors.password}
                 disabled={loading}
+                size="small"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LockIcon color={errors.password ? 'error' : 'action'} />
+                      <LockIcon 
+                        color={errors.password ? 'error' : 'action'} 
+                        sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
+                      />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -395,7 +479,7 @@ const Login = () => {
                           },
                         }}
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                        {showPassword ? <VisibilityOff sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }} /> : <Visibility sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }} />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -414,10 +498,21 @@ const Login = () => {
                       boxShadow: `0 0 0 2px ${theme.palette.primary.light}`,
                     },
                   },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  },
+                  '& .MuiInputBase-input': {
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  }
                 }}
               />
               
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1, mb: 2 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                mt: 1, 
+                mb: 2 
+              }}>
                 <Link 
                   component={RouterLink} 
                   to="/forgot-password" 
@@ -425,6 +520,7 @@ const Login = () => {
                   sx={{ 
                     textDecoration: 'none',
                     color: theme.palette.text.secondary,
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
                     '&:hover': {
                       color: theme.palette.primary.main,
                     },
@@ -442,13 +538,15 @@ const Login = () => {
                 disabled={isLoading}
                 sx={{
                   background: 'linear-gradient(45deg, #6200ee 0%, #7c4dff 100%)',
+                  fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                  py: { xs: 1.2, sm: 1.5 },
                   '&:hover': {
                     background: 'linear-gradient(45deg, #7c4dff 0%, #6200ee 100%)',
                   },
                 }}
               >
                 {isLoading ? (
-                  <CircularProgress size={24} color="inherit" />
+                  <CircularProgress size={20} color="inherit" />
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <span>تسجيل الدخول</span>
@@ -456,23 +554,69 @@ const Login = () => {
                 )}
               </StyledButton>
               
-              <Box sx={{ my: 3, display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ 
+                my: { xs: 2, sm: 3 }, 
+                display: 'flex', 
+                alignItems: 'center' 
+              }}>
                 <Divider sx={{ flexGrow: 1 }} />
-                <Typography variant="body2" color="text.secondary" sx={{ px: 2 }}>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary" 
+                  sx={{ 
+                    px: 2,
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                  }}
+                >
                   أو تابع باستخدام
                 </Typography>
                 <Divider sx={{ flexGrow: 1 }} />
               </Box>
               
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
-                <SocialButton onClick={() => handleSocialLogin('google')} aria-label="Google">
-                  <GoogleIcon color="error" />
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                gap: { xs: 1.5, sm: 2 }, 
+                mb: { xs: 2, sm: 3 }
+              }}>
+                <SocialButton 
+                  onClick={() => handleSocialLogin('google')} 
+                  aria-label="Google"
+                  sx={{
+                    width: { xs: 40, sm: 48 },
+                    height: { xs: 40, sm: 48 }
+                  }}
+                >
+                  <GoogleIcon 
+                    color="error" 
+                    sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}
+                  />
                 </SocialButton>
-                <SocialButton onClick={() => handleSocialLogin('facebook')} aria-label="Facebook">
-                  <FacebookIcon color="primary" />
+                <SocialButton 
+                  onClick={() => handleSocialLogin('facebook')} 
+                  aria-label="Facebook"
+                  sx={{
+                    width: { xs: 40, sm: 48 },
+                    height: { xs: 40, sm: 48 }
+                  }}
+                >
+                  <FacebookIcon 
+                    color="primary" 
+                    sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}
+                  />
                 </SocialButton>
-                <SocialButton onClick={() => handleSocialLogin('twitter')} aria-label="Twitter">
-                  <TwitterIcon color="info" />
+                <SocialButton 
+                  onClick={() => handleSocialLogin('twitter')} 
+                  aria-label="Twitter"
+                  sx={{
+                    width: { xs: 40, sm: 48 },
+                    height: { xs: 40, sm: 48 }
+                  }}
+                >
+                  <TwitterIcon 
+                    color="info" 
+                    sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}
+                  />
                 </SocialButton>
               </Box>
             </Box>

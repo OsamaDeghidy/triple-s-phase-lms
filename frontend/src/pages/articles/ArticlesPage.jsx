@@ -951,13 +951,20 @@ const ArticlesPage = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      width: '100%',
+      maxWidth: '100vw',
+      overflowX: 'hidden'
+    }}>
       <Header />
 
       <Box component="main" sx={{ flex: 1 }}>
         <HeroSection backgroundImage={headerBanner?.image_url}>
           <AnimatedTriangle />
-          <Container>
+          <Container sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -969,23 +976,28 @@ const ArticlesPage = () => {
                 component="h1"
                 sx={{
                   fontWeight: 800,
-                  mb: 3,
+                  mb: { xs: 2, sm: 3 },
                   color: '#ffffff',
-                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                  lineHeight: 1.2,
-                  textShadow: '0 4px 20px rgba(0,0,0,0.4)'
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' },
+                  lineHeight: { xs: 1.3, sm: 1.2 },
+                  textShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                  textAlign: 'center',
+                  wordBreak: 'break-word'
                 }}
               >
                 المدونة
               </Typography>
               <Typography variant="body1" sx={{
                 opacity: 0.95,
-                mb: 4,
+                mb: { xs: 3, sm: 4 },
                 fontWeight: 400,
-                fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
-                maxWidth: '600px',
+                fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem', lg: '1.2rem' },
+                maxWidth: { xs: '100%', sm: '500px', md: '600px' },
                 mx: 'auto',
-                textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                px: { xs: 2, sm: 0 },
+                textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                textAlign: 'center',
+                lineHeight: { xs: 1.5, sm: 1.6 }
               }}>
                 اكتشف أحدث المقالات والتقنيات في عالم التطوير والتصميم
               </Typography>
@@ -994,47 +1006,88 @@ const ArticlesPage = () => {
           </Container>
         </HeroSection>
 
-        <Container sx={{ py: 8 }}>
-          <FilterPaper sx={{ mb: 6 }}>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{
-                fontWeight: 700,
-                mr: 2,
-                color: '#663399',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1
-              }}>
-                <TrendingUpIcon />
+        <Container sx={{ 
+          py: { xs: 4, sm: 6, md: 8 },
+          px: { xs: 2, sm: 3, md: 4 }
+        }}>
+          <FilterPaper sx={{ 
+            mb: { xs: 4, sm: 5, md: 6 },
+            p: { xs: 2, sm: 3 }
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              gap: { xs: 1.5, sm: 2 }, 
+              flexWrap: 'wrap', 
+              alignItems: 'center',
+              flexDirection: { xs: 'column', sm: 'row' },
+              '& > *': {
+                width: { xs: '100%', sm: 'auto' }
+              }
+            }}>
+              <Typography 
+                variant="h6" 
+                sx={{
+                  fontWeight: 700,
+                  mr: { xs: 0, sm: 2 },
+                  mb: { xs: 2, sm: 0 },
+                  color: '#663399',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  fontSize: { xs: '1rem', sm: '1.25rem' },
+                  justifyContent: { xs: 'center', sm: 'flex-start' }
+                }}
+              >
+                <TrendingUpIcon sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
                 تصفية المقالات:
               </Typography>
 
-              <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel>الفئة</InputLabel>
+              <FormControl sx={{ 
+                minWidth: { xs: '100%', sm: 150 },
+                maxWidth: { xs: '100%', sm: 'none' }
+              }}>
+                <InputLabel sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>الفئة</InputLabel>
                 <Select
                   value={selectedCategory}
                   onChange={handleCategoryChange}
                   label="الفئة"
                   size="small"
+                  sx={{
+                    fontSize: { xs: '0.9rem', sm: '1rem' }
+                  }}
                 >
                   {categories.map((category) => (
-                    <MenuItem key={category.value} value={category.value}>
+                    <MenuItem 
+                      key={category.value} 
+                      value={category.value}
+                      sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                    >
                       {category.label}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
 
-              <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel>الترتيب</InputLabel>
+              <FormControl sx={{ 
+                minWidth: { xs: '100%', sm: 150 },
+                maxWidth: { xs: '100%', sm: 'none' }
+              }}>
+                <InputLabel sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>الترتيب</InputLabel>
                 <Select
                   value={sortBy}
                   onChange={handleSortChange}
                   label="الترتيب"
                   size="small"
+                  sx={{
+                    fontSize: { xs: '0.9rem', sm: '1rem' }
+                  }}
                 >
                   {sortOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
+                    <MenuItem 
+                      key={option.value} 
+                      value={option.value}
+                      sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                    >
                       {option.label}
                     </MenuItem>
                   ))}
@@ -1045,15 +1098,28 @@ const ArticlesPage = () => {
 
           {paginatedArticles.length > 0 ? (
             <Box>
-              {/* Horizontal Scrolling Container */}
+              {/* Responsive Grid Layout */}
               <Box sx={{
-                display: 'flex',
-                gap: 3,
-                overflowX: 'auto',
-                pb: 2,
-                px: 1,
+                display: {
+                  xs: 'flex',
+                  md: 'grid'
+                },
+                flexDirection: {
+                  xs: 'column',
+                  sm: 'row'
+                },
+                gap: { xs: 2, sm: 2.5, md: 3 },
+                overflowX: { xs: 'visible', sm: 'auto' },
+                pb: { xs: 0, sm: 2 },
+                px: { xs: 0, sm: 1 },
+                // Grid layout for desktop
+                gridTemplateColumns: {
+                  md: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  lg: 'repeat(auto-fit, minmax(320px, 1fr))'
+                },
                 '&::-webkit-scrollbar': {
                   height: '8px',
+                  display: { xs: 'none', sm: 'block' }
                 },
                 '&::-webkit-scrollbar-track': {
                   backgroundColor: 'rgba(0,0,0,0.1)',
@@ -1068,11 +1134,30 @@ const ArticlesPage = () => {
                 },
               }}>
                 {paginatedArticles.map((article) => (
-                  <Box key={article.id} sx={{
-                    flexShrink: 0,
-                    width: { xs: '280px', sm: '320px', md: '350px' },
-                    height: '420px'
-                  }}>
+                  <Box 
+                    key={article.id} 
+                    sx={{
+                      flexShrink: { xs: 'none', sm: 0 },
+                      width: { 
+                        xs: '100%', 
+                        sm: '280px', 
+                        md: '100%' 
+                      },
+                      maxWidth: { 
+                        xs: '100%', 
+                        sm: '280px', 
+                        md: '350px' 
+                      },
+                      height: { 
+                        xs: 'auto', 
+                        sm: '420px' 
+                      },
+                      minHeight: { 
+                        xs: '400px', 
+                        sm: '420px' 
+                      }
+                    }}
+                  >
                     {renderArticleCard(article)}
                   </Box>
                 ))}
@@ -1080,18 +1165,23 @@ const ArticlesPage = () => {
 
               {/* Pagination - Keep if needed */}
               {totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  mt: { xs: 3, sm: 4 },
+                  px: { xs: 2, sm: 0 }
+                }}>
                   <Pagination
                     count={totalPages}
                     page={currentPage}
                     onChange={handlePageChange}
                     color="primary"
-                    size="large"
+                    size={{ xs: 'small', sm: 'medium', md: 'large' }}
                     sx={{
                       '& .MuiPaginationItem-root': {
                         borderRadius: 2,
                         fontWeight: 600,
-                        fontSize: '1rem',
+                        fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
                       },
                       '& .Mui-selected': {
                         background: 'linear-gradient(45deg, #663399, #42a5f5)',

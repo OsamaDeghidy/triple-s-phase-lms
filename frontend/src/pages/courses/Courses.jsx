@@ -909,7 +909,15 @@ const Courses = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      position: 'relative',
+      width: '100%',
+      maxWidth: '100vw',
+      overflowX: 'hidden'
+    }}>
       <AnimatedBackground>
         <FloatingShape />
         <FloatingShape style={{ width: '200px', height: '200px', bottom: '20%', right: '15%', animationDelay: '5s' }} />
@@ -920,12 +928,41 @@ const Courses = () => {
       {/* Hero Section */}
       <HeroSection backgroundImage={headerBanner?.image_url}>
         <AnimatedTriangle />
-        {/* Animated Background Elements */}
-        <FloatingShape style={{ width: '300px', height: '300px', top: '-100px', right: '-100px', animationDelay: '0s' }} />
-        <FloatingShape style={{ width: '200px', height: '200px', bottom: '-50px', right: '20%', animationDelay: '2s', animationDuration: '15s' }} />
-        <FloatingShape style={{ width: '400px', height: '400px', bottom: '-200px', left: '-150px', animationDelay: '4s', animationDuration: '20s' }} />
+        {/* Animated Background Elements - Responsive sizing */}
+        <FloatingShape style={{ 
+          width: '300px', 
+          height: '300px', 
+          top: '-100px', 
+          right: '-100px', 
+          animationDelay: '0s',
+          // Responsive adjustments
+          '@media (max-width: 768px)': { width: '150px', height: '150px', top: '-50px', right: '-50px' }
+        }} />
+        <FloatingShape style={{ 
+          width: '200px', 
+          height: '200px', 
+          bottom: '-50px', 
+          right: '20%', 
+          animationDelay: '2s', 
+          animationDuration: '15s',
+          '@media (max-width: 768px)': { width: '100px', height: '100px', bottom: '-25px' }
+        }} />
+        <FloatingShape style={{ 
+          width: '400px', 
+          height: '400px', 
+          bottom: '-200px', 
+          left: '-150px', 
+          animationDelay: '4s', 
+          animationDuration: '20s',
+          '@media (max-width: 768px)': { width: '200px', height: '200px', bottom: '-100px', left: '-75px' }
+        }} />
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3 }}>
+        <Container maxWidth="lg" sx={{ 
+          position: 'relative', 
+          zIndex: 3,
+          // Responsive container adjustments
+          px: { xs: 2, sm: 3, md: 4 }
+        }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -933,13 +970,13 @@ const Courses = () => {
           >
             <Box sx={{
               textAlign: 'center',
-              py: 3,
+              py: { xs: 2, sm: 3, md: 4 },
               position: 'relative',
               '&::before, &::after': {
                 content: '""',
                 position: 'absolute',
-                width: '100px',
-                height: '100px',
+                width: { xs: '60px', sm: '80px', md: '100px' },
+                height: { xs: '60px', sm: '80px', md: '100px' },
                 borderRadius: '50%',
                 background: 'rgba(255,255,255,0.1)',
                 filter: 'blur(40px)',
@@ -947,12 +984,12 @@ const Courses = () => {
               },
               '&::before': {
                 top: '20%',
-                left: '10%',
+                left: { xs: '5%', sm: '8%', md: '10%' },
                 animation: `${pulse} 8s ease-in-out infinite`,
               },
               '&::after': {
                 bottom: '10%',
-                right: '15%',
+                right: { xs: '8%', sm: '12%', md: '15%' },
                 animation: `${pulse} 10s ease-in-out infinite reverse`,
               }
             }}>
@@ -961,11 +998,14 @@ const Courses = () => {
                 component="h1"
                 sx={{
                   fontWeight: 800,
-                  mb: 2,
+                  mb: { xs: 1, sm: 2 },
                   color: '#ffffff',
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.2rem' },
-                  lineHeight: 1.2,
-                  textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                  fontSize: { xs: '1.3rem', sm: '1.8rem', md: '2.2rem', lg: '2.5rem' },
+                  lineHeight: { xs: 1.3, sm: 1.2 },
+                  textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                  // Better text wrapping on mobile
+                  wordBreak: 'break-word',
+                  hyphens: 'auto'
                 }}
               >
                 اكتشف دوراتنا التعليمية
@@ -978,12 +1018,13 @@ const Courses = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    maxWidth: '600px',
+                    maxWidth: { xs: '100%', sm: '500px', md: '600px' },
                     mx: 'auto',
-                    mb: 2,
+                    mb: { xs: 1.5, sm: 2 },
+                    px: { xs: 2, sm: 0 },
                     color: 'rgba(255,255,255,0.9)',
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    lineHeight: 1.6,
+                    fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+                    lineHeight: { xs: 1.5, sm: 1.6 },
                     fontWeight: 300,
                     textShadow: '0 1px 3px rgba(0,0,0,0.2)'
                   }}
@@ -999,8 +1040,9 @@ const Courses = () => {
               >
                 <Box sx={{
                   position: 'relative',
-                  maxWidth: '400px',
+                  maxWidth: { xs: '100%', sm: '350px', md: '400px' },
                   mx: 'auto',
+                  px: { xs: 2, sm: 0 },
                   '&::before': {
                     content: '""',
                     position: 'absolute',
@@ -1037,11 +1079,11 @@ const Courses = () => {
                           border: 'none',
                           boxShadow: '0 0 0 2px rgba(229, 151, 139, 0.5)',
                         },
-                        paddingRight: '15px',
+                        paddingRight: { xs: '12px', sm: '15px' },
                       },
                       '& .MuiInputBase-input': {
-                        padding: '10px 15px',
-                        fontSize: '0.9rem',
+                        padding: { xs: '8px 12px', sm: '10px 15px' },
+                        fontSize: { xs: '0.8rem', sm: '0.9rem' },
                         '&::placeholder': {
                           opacity: 0.7,
                           color: theme.palette.text.secondary,
@@ -1053,8 +1095,8 @@ const Courses = () => {
                         <InputAdornment position="start">
                           <Search sx={{
                             color: '#333679',
-                            ml: 1,
-                            fontSize: '1.1rem',
+                            ml: { xs: 0.5, sm: 1 },
+                            fontSize: { xs: '1rem', sm: '1.1rem' },
                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
                           }} />
                         </InputAdornment>
@@ -1069,18 +1111,41 @@ const Courses = () => {
       </HeroSection>
 
       {/* Main Content */}
-      <Container maxWidth="xl" sx={{ flex: 1, py: 6, position: 'relative', zIndex: 1 }}>
-        <Box sx={{ mb: 6 }}>
+      <Container maxWidth="xl" sx={{ 
+        flex: 1, 
+        py: { xs: 3, sm: 4, md: 6 }, 
+        px: { xs: 2, sm: 3, md: 4 },
+        position: 'relative', 
+        zIndex: 1 
+      }}>
+        <Box sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
           {/* Categories Filter Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Box sx={{ mb: 4 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" component="h3" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Category sx={{ color: 'primary.main' }} />
+            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                mb: 2,
+                flexWrap: 'wrap',
+                gap: 1
+              }}>
+                <Typography 
+                  variant="h6" 
+                  component="h3" 
+                  fontWeight={600} 
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1,
+                    fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' }
+                  }}
+                >
+                  <Category sx={{ color: 'primary.main', fontSize: { xs: '1.1rem', sm: '1.25rem' } }} />
                   التصنيفات
                 </Typography>
                 {(activeCategory !== 'all' || searchTerm || tabValue !== 'all') && (
@@ -1094,11 +1159,13 @@ const Courses = () => {
                       setTabValue('all');
                       setSearchParams({});
                     }}
-                    startIcon={<FilterList />}
+                    startIcon={<FilterList sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }} />}
                     sx={{
                       borderRadius: '20px',
                       textTransform: 'none',
-                      fontSize: '0.8rem'
+                      fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                      minWidth: 'auto',
+                      px: { xs: 1.5, sm: 2 }
                     }}
                   >
                     مسح الفلاتر
@@ -1108,9 +1175,9 @@ const Courses = () => {
               <Box sx={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: 1.5,
-                maxHeight: { xs: '140px', sm: 'auto' },
-                overflowY: { xs: 'auto', sm: 'visible' },
+                gap: { xs: 1, sm: 1.5 },
+                maxHeight: { xs: '120px', sm: '140px', md: 'auto' },
+                overflowY: { xs: 'auto', md: 'visible' },
                 pb: { xs: 1, sm: 0 },
                 '&::-webkit-scrollbar': {
                   width: '6px',
@@ -1132,9 +1199,12 @@ const Courses = () => {
                   selected={activeCategory === 'all'}
                   onClick={() => handleCategoryChange('all')}
                   icon={<Category fontSize="small" />}
+                  size="small"
                   sx={{
                     backgroundColor: activeCategory === 'all' ? 'primary.main' : 'background.paper',
                     color: activeCategory === 'all' ? 'white' : 'text.primary',
+                    fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                    height: { xs: '28px', sm: '32px' },
                     '&:hover': {
                       backgroundColor: activeCategory === 'all' ? 'primary.dark' : 'primary.light',
                       color: 'white',
@@ -1149,9 +1219,12 @@ const Courses = () => {
                       label={category.name}
                       selected={activeCategory === category.id.toString()}
                       onClick={() => handleCategoryChange(category.id.toString())}
+                      size="small"
                       sx={{
                         backgroundColor: activeCategory === category.id.toString() ? 'primary.main' : 'background.paper',
                         color: activeCategory === category.id.toString() ? 'white' : 'text.primary',
+                        fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                        height: { xs: '28px', sm: '32px' },
                         '&:hover': {
                           backgroundColor: activeCategory === category.id.toString() ? 'primary.dark' : 'primary.light',
                           color: 'white',
@@ -1164,13 +1237,42 @@ const Courses = () => {
             </Box>
           </motion.div>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
-            <Box>
-              <Typography variant="h4" component="h2" fontWeight={700}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: { xs: 'flex-start', sm: 'center' }, 
+            mb: { xs: 3, sm: 4 }, 
+            flexWrap: 'wrap', 
+            gap: 2,
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}>
+            <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
+              <Typography 
+                variant="h4" 
+                component="h2" 
+                fontWeight={700}
+                sx={{
+                  fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.125rem' },
+                  lineHeight: { xs: 1.3, sm: 1.2 },
+                  mb: { xs: 1, sm: 0.5 },
+                  wordBreak: 'break-word'
+                }}
+              >
                 {activeCategory === 'all' ? 'جميع الدورات' : `دورات ${categories.find(c => c.id === parseInt(activeCategory))?.name || ''}`}
                 {searchTerm && `: نتائج البحث عن "${searchTerm}"`}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Typography 
+                variant="body2" 
+                color="text.secondary" 
+                sx={{ 
+                  mt: 0.5, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 0.5,
+                  flexWrap: 'wrap',
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                }}
+              >
                 <span style={{ fontWeight: 600, color: 'primary.main' }}>{filteredCourses.length}</span>
                 دورة متاحة من إجمالي {courses.length} دورة
                 {(activeCategory !== 'all' || searchTerm || tabValue !== 'all') && (
@@ -1180,8 +1282,8 @@ const Courses = () => {
                     color="primary"
                     variant="outlined"
                     sx={{
-                      height: '20px',
-                      fontSize: '0.7rem',
+                      height: '18px',
+                      fontSize: { xs: '0.6rem', sm: '0.7rem' },
                       ml: 1
                     }}
                   />
@@ -1198,15 +1300,17 @@ const Courses = () => {
               scrollButtons="auto"
               allowScrollButtonsMobile
               sx={{
+                width: { xs: '100%', sm: 'auto' },
                 '& .MuiTabs-flexContainer': {
-                  gap: 1,
+                  gap: { xs: 0.5, sm: 1 },
                 },
                 '& .MuiTab-root': {
-                  minHeight: 36,
-                  padding: '6px 16px',
+                  minHeight: { xs: 32, sm: 36 },
+                  padding: { xs: '4px 12px', sm: '6px 16px' },
                   borderRadius: '20px',
                   fontWeight: 500,
                   minWidth: 'auto',
+                  fontSize: { xs: '0.7rem', sm: '0.875rem' },
                   '&.Mui-selected': {
                     color: 'white',
                     backgroundColor: 'primary.main',
@@ -1233,8 +1337,10 @@ const Courses = () => {
                 md: 'repeat(3, 1fr)',
                 lg: 'repeat(4, 1fr)'
               },
-              gap: 3,
-              width: '100%'
+              gap: { xs: 2, sm: 2.5, md: 3 },
+              width: '100%',
+              // Responsive grid adjustments
+              px: { xs: 1, sm: 0 }
             }}>
               {filteredCourses.map((course, index) => (
                 <Box key={course.id} sx={{ width: '100%' }}>
@@ -1245,7 +1351,17 @@ const Courses = () => {
                     variants={cardVariants}
                     style={{ height: '100%' }}
                   >
-                    <StyledCard elevation={0} component={Link} to={`/courses/${course.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <StyledCard 
+                      elevation={0} 
+                      component={Link} 
+                      to={`/courses/${course.id}`} 
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                      sx={{
+                        // Responsive card adjustments
+                        height: '100%',
+                        minHeight: { xs: '400px', sm: '450px', md: '500px' }
+                      }}
+                    >
                       <CourseMedia>
                         <img
                           src={getCourseImage(course)}
@@ -1262,6 +1378,8 @@ const Courses = () => {
                               bgcolor: 'primary.main',
                               color: 'white',
                               fontWeight: 600,
+                              fontSize: { xs: '0.6rem', sm: '0.7rem' },
+                              height: { xs: '20px', sm: '24px' }
                             }}
                           />
                         )}
@@ -1276,6 +1394,8 @@ const Courses = () => {
                               color: 'white',
                               fontWeight: 600,
                               top: course.is_featured ? 50 : 16,
+                              fontSize: { xs: '0.6rem', sm: '0.7rem' },
+                              height: { xs: '20px', sm: '24px' }
                             }}
                           />
                         )}
@@ -1283,6 +1403,13 @@ const Courses = () => {
                           className="cart-button"
                           onClick={(e) => toggleCartItem(course.id, e)}
                           added={cartItems[course.id]}
+                          sx={{
+                            width: { xs: '36px', sm: '44px' },
+                            height: { xs: '36px', sm: '44px' },
+                            '& svg': {
+                              fontSize: { xs: '1rem', sm: '1.2rem' }
+                            }
+                          }}
                         >
                           {cartItems[course.id] ? (
                             <Check className="cart-icon" />
@@ -1297,9 +1424,9 @@ const Courses = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         flexGrow: 1,
-                        p: 3,
+                        p: { xs: 2, sm: 2.5, md: 3 },
                       }}>
-                        <Box sx={{ mb: 1.5 }}>
+                        <Box sx={{ mb: { xs: 1, sm: 1.5 } }}>
                           {getCategoryName(course) && (
                             <Chip
                               label={getCategoryName(course)}
@@ -1309,11 +1436,11 @@ const Courses = () => {
                                 color: 'primary.main',
                                 border: '1px solid rgba(229, 151, 139, 0.3)',
                                 fontWeight: 500,
-                                fontSize: '0.7rem',
-                                height: '24px',
+                                fontSize: { xs: '0.6rem', sm: '0.7rem' },
+                                height: { xs: '20px', sm: '24px' },
                                 mb: 1,
                                 '& .MuiChip-label': {
-                                  px: 1.5,
+                                  px: { xs: 1, sm: 1.5 },
                                 },
                                 '&:hover': {
                                   backgroundColor: 'rgba(229, 151, 139, 0.2)',
@@ -1322,42 +1449,98 @@ const Courses = () => {
                               }}
                             />
                           )}
-                          <CourseTitle variant="h6" component="h3" gutterBottom>
+                          <CourseTitle 
+                            variant="h6" 
+                            component="h3" 
+                            gutterBottom
+                            sx={{
+                              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+                              lineHeight: { xs: 1.3, sm: 1.2 },
+                              mb: { xs: 1, sm: 1.5 }
+                            }}
+                          >
                             {course.title}
                           </CourseTitle>
                         </Box>
 
-                        <InstructorInfo>
+                        <InstructorInfo sx={{
+                          mt: 'auto',
+                          pt: { xs: 1, sm: 1.5 }
+                        }}>
                           <Avatar
                             src={getInstructorAvatar(course.instructors)}
                             alt={getInstructorName(course.instructors)}
-                            sx={{ width: 32, height: 32, ml: 1.5 }}
+                            sx={{ 
+                              width: { xs: 28, sm: 32 }, 
+                              height: { xs: 28, sm: 32 }, 
+                              ml: { xs: 1, sm: 1.5 } 
+                            }}
                           />
                           <Box sx={{ flexGrow: 1 }}>
-                            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                            <Typography 
+                              variant="body2" 
+                              color="text.secondary" 
+                              sx={{ 
+                                fontSize: { xs: '0.65rem', sm: '0.75rem' } 
+                              }}
+                            >
                               المدرب
                             </Typography>
-                            <Typography variant="subtitle2" fontWeight={500}>
+                            <Typography 
+                              variant="subtitle2" 
+                              fontWeight={500}
+                              sx={{
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                              }}
+                            >
                               {getInstructorName(course.instructors)}
                             </Typography>
                           </Box>
                           <Box sx={{ textAlign: 'left' }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                              <Star color="warning" fontSize="small" sx={{ ml: 0.5 }} />
-                              <Typography variant="body2" fontWeight={600}>
+                              <Star 
+                                color="warning" 
+                                fontSize="small" 
+                                sx={{ 
+                                  ml: 0.5,
+                                  fontSize: { xs: '1rem', sm: '1.1rem' }
+                                }} 
+                              />
+                              <Typography 
+                                variant="body2" 
+                                fontWeight={600}
+                                sx={{
+                                  fontSize: { xs: '0.7rem', sm: '0.8rem' }
+                                }}
+                              >
                                 {course.average_rating?.toFixed(1) || '0.0'}
                               </Typography>
                             </Box>
                           </Box>
                         </InstructorInfo>
 
-                        <Divider sx={{ my: 2 }} />
+                        <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
 
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: 1
+                        }}>
                           <CourseMeta>
-                            <Box>
-                              <AccessTime fontSize="small" />
-                              <Typography variant="caption" sx={{ mr: 0.5 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <AccessTime 
+                                fontSize="small" 
+                                sx={{ fontSize: { xs: '1rem', sm: '1.1rem' } }}
+                              />
+                              <Typography 
+                                variant="caption" 
+                                sx={{ 
+                                  mr: 0.5,
+                                  fontSize: { xs: '0.65rem', sm: '0.75rem' }
+                                }}
+                              >
                                 {course.duration ? formatDuration(course.duration) : 'غير محدد'}
                               </Typography>
                             </Box>
@@ -1366,15 +1549,37 @@ const Courses = () => {
                           <Box sx={{ textAlign: 'left' }}>
                             {course.discount_price ? (
                               <>
-                                <Typography variant="body2" color="error" sx={{ textDecoration: 'line-through', opacity: 0.7, fontSize: '0.8rem' }}>
+                                <Typography 
+                                  variant="body2" 
+                                  color="error" 
+                                  sx={{ 
+                                    textDecoration: 'line-through', 
+                                    opacity: 0.7, 
+                                    fontSize: { xs: '0.7rem', sm: '0.8rem' } 
+                                  }}
+                                >
                                   ${formatPrice(course.price)}
                                 </Typography>
-                                <Typography variant="h6" color="primary" sx={{ lineHeight: 1, mt: -0.5 }}>
+                                <Typography 
+                                  variant="h6" 
+                                  color="primary" 
+                                  sx={{ 
+                                    lineHeight: 1, 
+                                    mt: -0.5,
+                                    fontSize: { xs: '1rem', sm: '1.25rem' }
+                                  }}
+                                >
                                   ${formatPrice(course.discount_price)}
                                 </Typography>
                               </>
                             ) : (
-                              <Typography variant="h6" color="primary">
+                              <Typography 
+                                variant="h6" 
+                                color="primary"
+                                sx={{
+                                  fontSize: { xs: '1rem', sm: '1.25rem' }
+                                }}
+                              >
                                 {course.is_free ? 'مجاني' : `$${formatPrice(course.price)}`}
                               </Typography>
                             )}
