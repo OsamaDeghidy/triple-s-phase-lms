@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
@@ -36,21 +36,22 @@ import {
     Quiz as QuizIconFilled,
     Info as InfoIcon,
     VideoLibrary as VideoLibraryIcon,
-    AssignmentTurnedIn as AssignmentTurnedInIcon
+    AssignmentTurnedIn as AssignmentTurnedInIcon,
+    Download as DownloadIcon,
+    Code as CodeIcon,
+    Quiz as QuizIcon
 } from '@mui/icons-material';
-import { styled, keyframes, alpha } from '@mui/material/styles';
+import { styled, keyframes } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
-
-// Lazy load heavy components
-const CourseDetailBanner = lazy(() => import('../../components/courses/CourseDetailBanner'));
-const CourseDetailCard = lazy(() => import('../../components/courses/CourseDetailCard'));
-const CourseDescriptionTab = lazy(() => import('../../components/courses/CourseDescriptionTab'));
-const CourseContentTab = lazy(() => import('../../components/courses/CourseContentTab'));
-const CourseDemoTab = lazy(() => import('../../components/courses/CourseDemoTab'));
-const CourseReviewsTab = lazy(() => import('../../components/courses/CourseReviewsTab'));
-const CoursePromotionalVideo = lazy(() => import('../../components/courses/CoursePromotionalVideo'));
-import { courseAPI, cartAPI, paymentAPI } from '../../services/courseService';
+import CourseDetailBanner from '../../components/courses/CourseDetailBanner';
+import CourseDetailCard from '../../components/courses/CourseDetailCard';
+import CourseDescriptionTab from '../../components/courses/CourseDescriptionTab';
+import CourseContentTab from '../../components/courses/CourseContentTab';
+import CourseDemoTab from '../../components/courses/CourseDemoTab';
+import CourseReviewsTab from '../../components/courses/CourseReviewsTab';
+import CoursePromotionalVideo from '../../components/courses/CoursePromotionalVideo';
+import { courseAPI, cartAPI } from '../../services/courseService';
 import { contentAPI } from '../../services/content.service';
 // import { assignmentsAPI } from '../../services/assignment.service';
 // import { examAPI } from '../../services/exam.service';
@@ -195,19 +196,6 @@ const SkeletonPulse = styled(Box)(({ theme }) => ({
     borderRadius: theme.shape.borderRadius,
 }));
 
-// Loading component for lazy loaded components
-const ComponentLoader = ({ height = 200 }) => (
-    <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height,
-        width: '100%'
-    }}>
-        <CircularProgress sx={{ color: '#4DBFB3' }} />
-    </Box>
-);
-
 const CourseSkeleton = () => (
     <Box sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
         <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
@@ -250,11 +238,10 @@ const CourseDetail = () => {
     const [expandedModules, setExpandedModules] = useState({});
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [loadingModules, setLoadingModules] = useState({});
     
-    // Separate loading states for better UX
-    const [basicDataLoaded, setBasicDataLoaded] = useState(false);
-    const [modulesLoaded, setModulesLoaded] = useState(false);
-    const [reviewsLoaded, setReviewsLoaded] = useState(false);
+    // Simple cache for course data
+    const courseCache = useRef(new Map());
 
     // Review states
     const [showReviewForm, setShowReviewForm] = useState(false);
@@ -280,18 +267,147 @@ const CourseDetail = () => {
         return initialExpanded;
     };
 
-    // Load basic course data first (fast loading)
+    // Check cache and fetch course details
+    const fetchCourseDetails = async (courseId) => {
+        const cacheKey = `course_${courseId}`;
+        const cached = courseCache.current.get(cacheKey);
+        
+        // Return cached data if available and not expired (5 minutes)
+        if (cached && Date.now() - cached.timestamp < 300000) {
+            console.log('Using cached course data');
+            return cached.data;
+        }
+        
+        const data = await courseAPI.getCourseById(courseId);
+        
+        // Cache the data
+        courseCache.current.set(cacheKey, {
+            data,
+            timestamp: Date.now()
+        });
+        
+        return data;
+    };
+
+    // Optimized function to fetch course reviews and rating stats in parallel
+    const fetchCourseReviews = async (courseId) => {
+        try {
+            const [reviewsResponse, ratingResponse] = await Promise.allSettled([
+                reviewsAPI.getCourseReviews(courseId),
+                reviewsAPI.getCourseRating(courseId)
+            ]);
+
+            const reviewsData = reviewsResponse.status === 'fulfilled' 
+                ? (reviewsResponse.value.results || reviewsResponse.value || [])
+                : [];
+
+            const ratingStats = ratingResponse.status === 'fulfilled' 
+                ? ratingResponse.value 
+                : null;
+
+            return { reviewsData, ratingStats };
+        } catch (error) {
+            console.warn('Error fetching reviews:', error);
+            return { reviewsData: [], ratingStats: null };
+        }
+    };
+
+    // Optimized function to fetch modules with all content in parallel
+    const fetchModulesWithContent = async (courseId) => {
+        try {
+            // First, get modules structure
+            const modulesResponse = await contentAPI.getCourseModulesWithLessons(courseId);
+            let modulesData = [];
+
+                        // Handle different response formats
+                        if (modulesResponse && typeof modulesResponse === 'object') {
+                            if (Array.isArray(modulesResponse)) {
+                                modulesData = modulesResponse;
+                            } else if (modulesResponse.modules && Array.isArray(modulesResponse.modules)) {
+                                modulesData = modulesResponse.modules;
+                            } else if (modulesResponse.results && Array.isArray(modulesResponse.results)) {
+                                modulesData = modulesResponse.results;
+                            } else if (modulesResponse.data && Array.isArray(modulesResponse.data)) {
+                                modulesData = modulesResponse.data;
+                }
+            }
+
+            if (modulesData.length === 0) {
+                return [];
+            }
+
+            // Fetch all content for all modules in parallel
+            const moduleContentPromises = modulesData.map(async (module, index) => {
+                const moduleId = module.id;
+                
+                // Create parallel promises for each module's content
+                const [lessonsResponse, quizzesResponse] = await Promise.allSettled([
+                    contentAPI.getLessons({ moduleId: moduleId, courseId: courseId }),
+                    api.get(`/api/assignments/quizzes/`, {
+                        params: { course: courseId, module: moduleId }
+                    }).catch(() => ({ data: [] }))
+                ]);
+
+                // Process lessons
+                let lessons = [];
+                if (lessonsResponse.status === 'fulfilled') {
+                    const lessonsData = lessonsResponse.value;
+                    if (Array.isArray(lessonsData)) {
+                        lessons = lessonsData;
+                    } else if (lessonsData && Array.isArray(lessonsData.results)) {
+                        lessons = lessonsData.results;
+                    } else if (lessonsData && Array.isArray(lessonsData.data)) {
+                        lessons = lessonsData.data;
+                    }
+                }
+
+                // Process quizzes
+                let quizzes = [];
+                if (quizzesResponse.status === 'fulfilled') {
+                    const quizzesData = quizzesResponse.value.data;
+                    if (Array.isArray(quizzesData)) {
+                        quizzes = quizzesData;
+                    } else if (Array.isArray(quizzesData.results)) {
+                        quizzes = quizzesData.results;
+                    }
+                }
+
+                return {
+                    ...module,
+                    lessons,
+                    assignments: [], // Disabled for now
+                    quizzes,
+                    exams: [] // Disabled for now
+                };
+            });
+
+            // Wait for all modules to complete
+            const modulesWithContent = await Promise.all(moduleContentPromises);
+            console.log('All modules with content fetched:', modulesWithContent);
+            
+            return modulesWithContent;
+                        } catch (error) {
+            console.warn('Error fetching modules with content:', error);
+            return [];
+        }
+    };
+
+    // Load course data with optimized parallel fetching
     useEffect(() => {
-        const fetchBasicCourseData = async () => {
+        const fetchCourseData = async () => {
             setLoading(true);
             setError(null);
             try {
-                console.log('Fetching basic course data for ID:', id);
+                console.log('Fetching course data for ID:', id);
 
-                // Fetch course details only
+                // Start fetching course details and reviews in parallel
+                const courseDataPromise = fetchCourseDetails(id);
+                const reviewsPromise = isAuthenticated ? fetchCourseReviews(id) : Promise.resolve({ reviews: [], ratingStats: null });
+
+                // Wait for course details first (needed for basic info)
                 let courseData;
                 try {
-                    courseData = await courseAPI.getCourseById(id);
+                    courseData = await courseDataPromise;
                     console.log('Course data from API:', courseData);
                 } catch (error) {
                     // If course details require authentication, try to get basic info from public courses
@@ -315,24 +431,77 @@ const CourseDetail = () => {
                     }
                 }
 
-                // Transform basic course data first
-                const basicCourseData = transformCourseData(courseData, [], [], false, null);
-                console.log('Basic course data:', basicCourseData);
+                // Set initial course data for immediate display
+                const initialCourse = transformCourseData(courseData, [], [], false, null);
+                setCourse(initialCourse);
+                setLoading(false);
 
-                setCourse(basicCourseData);
-                setBasicDataLoaded(true);
-                setLoading(false); // Allow page to render with basic data
+                // Fetch detailed content in background (parallel)
+                const { reviewsData, ratingStats } = await reviewsPromise;
+                
+                // Fetch modules and content in parallel if user is authenticated
+                let modulesData = [];
+                let isUserEnrolled = false;
+                
+                if (isAuthenticated) {
+                    try {
+                        modulesData = await fetchModulesWithContent(id);
+                        isUserEnrolled = modulesData.length > 0;
+                    } catch (error) {
+                        console.warn('Could not fetch modules:', error);
+                        modulesData = [];
+                    }
+                } else {
+                    // For non-authenticated users, try to get basic modules structure
+                    try {
+                        console.log('Fetching basic modules for non-authenticated user...');
+                        const modulesResponse = await contentAPI.getCourseModulesWithLessons(id);
+                        let basicModulesData = [];
 
+                        if (modulesResponse && typeof modulesResponse === 'object') {
+                            if (Array.isArray(modulesResponse)) {
+                                basicModulesData = modulesResponse;
+                            } else if (modulesResponse.modules && Array.isArray(modulesResponse.modules)) {
+                                basicModulesData = modulesResponse.modules;
+                            } else if (modulesResponse.results && Array.isArray(modulesResponse.results)) {
+                                basicModulesData = modulesResponse.results;
+                            } else if (modulesResponse.data && Array.isArray(modulesResponse.data)) {
+                                basicModulesData = modulesResponse.data;
+                            }
+                        }
+
+                        // Only show modules structure without detailed content
+                        modulesData = basicModulesData.map(module => ({
+                            ...module,
+                            lessons: [], // No lessons for non-authenticated users
+                            assignments: [],
+                            quizzes: [],
+                            exams: []
+                        }));
+
+                        console.log('Basic modules for non-authenticated user:', modulesData);
+                    } catch (error) {
+                        console.warn('Could not fetch basic modules for non-authenticated user:', error);
+                        modulesData = [];
+                    }
+                }
+
+                // Update course with complete data
+                const completeCourse = transformCourseData(courseData, modulesData, reviewsData, isUserEnrolled, ratingStats);
+                setCourse(completeCourse);
+                setExpandedModules(initializeExpandedModules(completeCourse.modules));
             } catch (error) {
-                console.error('Error fetching basic course data:', error);
+                console.error('Error fetching course data:', error);
                 let errorMessage = 'فشل في تحميل بيانات الدورة';
 
                 if (error.response) {
+                    // Server responded with error status
                     if (error.response.status === 404) {
                         errorMessage = 'الدورة غير موجودة';
                     } else if (error.response.status === 403) {
                         errorMessage = 'ليس لديك صلاحية لعرض هذه الدورة';
                     } else if (error.response.status === 401) {
+                        // Don't show login required message for public course details
                         if (!isAuthenticated) {
                             errorMessage = 'هذه الدورة غير متاحة للعرض العام. يرجى تسجيل الدخول لعرض التفاصيل الكاملة.';
                         } else {
@@ -346,8 +515,10 @@ const CourseDetail = () => {
                         errorMessage = error.response.data.message;
                     }
                 } else if (error.request) {
+                    // Network error
                     errorMessage = 'خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت.';
                 } else {
+                    // Other error
                     errorMessage = error.message || 'حدث خطأ غير متوقع';
                 }
 
@@ -357,74 +528,9 @@ const CourseDetail = () => {
         };
 
         if (id) {
-            fetchBasicCourseData();
+            fetchCourseData();
         }
     }, [id, isAuthenticated]);
-
-    // Load modules data separately (after basic data is loaded)
-    useEffect(() => {
-        const fetchModulesData = async () => {
-            if (!basicDataLoaded || !isAuthenticated || !course) return;
-            
-            try {
-                console.log('Fetching modules data for course:', id);
-                
-                // Simplified modules fetching with pagination
-                const modulesResponse = await contentAPI.getCourseModulesWithLessons(id);
-                let modulesData = Array.isArray(modulesResponse) ? modulesResponse : 
-                                 modulesResponse?.modules || modulesResponse?.results || modulesResponse?.data || [];
-                
-                console.log('Processed modules data:', modulesData.length, 'modules');
-
-                // Update course with modules data
-                if (modulesData.length > 0) {
-                    const updatedCourse = {
-                        ...course,
-                        modules: transformModulesData(modulesData, course, true),
-                        isEnrolled: true
-                    };
-                    setCourse(updatedCourse);
-                    setModulesLoaded(true);
-                } else {
-                    setModulesLoaded(true);
-                }
-                
-            } catch (error) {
-                console.warn('Could not fetch modules data:', error);
-                setModulesLoaded(true); // Continue even if modules fail
-            }
-        };
-
-        fetchModulesData();
-    }, [basicDataLoaded, isAuthenticated, course, id]);
-
-    // Load reviews data separately (after basic data is loaded)
-    useEffect(() => {
-        const fetchReviewsData = async () => {
-            if (!basicDataLoaded || !isAuthenticated || !course) return;
-            
-            try {
-                console.log('Fetching reviews data for course:', id);
-                
-                const reviewsResponse = await reviewsAPI.getCourseReviews(id);
-                let reviewsData = reviewsResponse?.results || reviewsResponse || [];
-                
-                // Update course with reviews data
-                const updatedCourse = {
-                    ...course,
-                    courseReviews: reviewsData
-                };
-                setCourse(updatedCourse);
-                setReviewsLoaded(true);
-                
-            } catch (error) {
-                console.warn('Could not fetch reviews data:', error);
-                setReviewsLoaded(true); // Continue even if reviews fail
-            }
-        };
-
-        fetchReviewsData();
-    }, [basicDataLoaded, isAuthenticated, course, id]);
 
     // Transform API data to match expected format
     const transformCourseData = (apiCourse, modulesData = [], reviewsData = [], isUserEnrolled = false, ratingStats = null) => {
@@ -563,18 +669,24 @@ const CourseDetail = () => {
         console.log('Organized modules with submodules:', organizedModules);
 
         // Check if organizedModules has valid content
-        const hasValidModules = organizedModules.length > 0 && organizedModules.some(module => {
+        const hasValidModules = organizedModules.length > 0;
+        
+        // For enrolled users, check if modules have actual content
+        const hasContent = isUserEnrolled && organizedModules.some(module => {
             const mainLessons = module.lessons || module.content || module.lectures || [];
             const subModulesLessons = module.submodules ? 
                 module.submodules.reduce((total, sub) => total + (sub.lessons ? sub.lessons.length : 0), 0) : 0;
             return Array.isArray(mainLessons) && (mainLessons.length > 0 || subModulesLessons > 0);
         });
 
-        // If user is not enrolled or no valid modules, return empty array
-        if (!isUserEnrolled || !hasValidModules) {
-            console.log('User not enrolled or no valid modules, returning empty modules');
+        // If no valid modules, return empty array
+        if (!hasValidModules) {
+            console.log('No valid modules found, returning empty modules');
             return [];
         }
+
+        // Always show modules structure, but content availability depends on enrollment
+        console.log('User enrolled status:', isUserEnrolled, 'Has valid modules:', hasValidModules);
 
         const result = organizedModules.map((module, index) => {
             // Transform assignments
@@ -706,6 +818,36 @@ const CourseDetail = () => {
             const quizzes = module.quizzes || [];
             const exams = module.exams || [];
 
+            // For non-enrolled users, show placeholder content structure
+            if (!isUserEnrolled && lessons.length === 0) {
+                // Create placeholder lessons to show module structure
+                const placeholderLessons = [
+                    {
+                        id: `placeholder_${module.id}_1`,
+                        title: 'محتوى محمي - يرجى التسجيل في الدورة',
+                        duration: '--:--',
+                        type: 'locked',
+                        isPreview: false,
+                        completed: false,
+                        description: 'هذا المحتوى متاح فقط للطلاب المسجلين في الدورة',
+                        locked: true
+                    }
+                ];
+                
+                return {
+                    id: module.id || index + 1,
+                    title: module.name || module.title || `الوحدة ${index + 1}`,
+                    description: module.description || '',
+                    duration: formatModuleDuration(module.video_duration || module.duration),
+                    lessons: placeholderLessons,
+                    submodules: [],
+                    order: module.order || index + 1,
+                    status: module.status || 'published',
+                    isActive: module.is_active !== false,
+                    isLocked: true
+                };
+            }
+
             console.log(`Module ${module.id || index + 1}:`, {
                 lessons: lessons.length,
                 assignments: assignments.length,
@@ -720,16 +862,30 @@ const CourseDetail = () => {
             const transformedExams = transformExams(exams);
 
             // Combine all content and sort by order
-            const allContent = [
+            let allContent = [
                 ...transformedLessons,
                 ...transformedAssignments,
                 ...transformedQuizzes,
                 ...transformedExams
             ].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-            // If no content found, keep empty array
-            if (allContent.length === 0) {
+            // If no content found, create placeholder content for structure
+            if (allContent.length === 0 && isUserEnrolled) {
                 console.log(`No content found for module ${module.id || index + 1}, keeping empty`);
+            } else if (allContent.length === 0 && !isUserEnrolled) {
+                // For non-enrolled users, show placeholder content
+                allContent = [
+                    {
+                        id: `placeholder_${module.id || index + 1}`,
+                        title: 'محتوى محمي - يرجى التسجيل في الدورة',
+                        duration: '--:--',
+                        type: 'locked',
+                        isPreview: false,
+                        completed: false,
+                        description: 'هذا المحتوى متاح فقط للطلاب المسجلين في الدورة',
+                        locked: true
+                    }
+                ];
             }
 
             // Convert module duration from seconds to readable format
@@ -790,12 +946,95 @@ const CourseDetail = () => {
     };
 
 
-    // Toggle module expansion
-    const toggleModule = (moduleId) => {
+    // Toggle module expansion with lazy loading
+    const toggleModule = async (moduleId) => {
+        const isCurrentlyExpanded = expandedModules[moduleId];
+        
+        // If expanding and module doesn't have detailed content, load it
+        if (!isCurrentlyExpanded && course?.modules) {
+            const module = course.modules.find(m => m.id === moduleId);
+            
+            // Check if module needs detailed content loading
+            if (module && (!module.lessons || module.lessons.length === 0)) {
+                setLoadingModules(prev => ({ ...prev, [moduleId]: true }));
+                
+                try {
+                    // Load detailed content for this specific module
+                    const detailedModule = await loadModuleContent(moduleId);
+                    
+                    // Update course with detailed module content
+                    setCourse(prevCourse => ({
+                        ...prevCourse,
+                        modules: prevCourse.modules.map(m => 
+                            m.id === moduleId ? detailedModule : m
+                        )
+                    }));
+                } catch (error) {
+                    console.warn(`Failed to load content for module ${moduleId}:`, error);
+                } finally {
+                    setLoadingModules(prev => ({ ...prev, [moduleId]: false }));
+                }
+            }
+        }
+        
+        // Toggle expansion state
         setExpandedModules(prev => ({
             ...prev,
             [moduleId]: !prev[moduleId]
         }));
+    };
+
+    // Load detailed content for a specific module
+    const loadModuleContent = async (moduleId) => {
+        try {
+            const [lessonsResponse, quizzesResponse] = await Promise.allSettled([
+                contentAPI.getLessons({ moduleId: moduleId, courseId: id }),
+                api.get(`/api/assignments/quizzes/`, {
+                    params: { course: id, module: moduleId }
+                }).catch(() => ({ data: [] }))
+            ]);
+
+            // Process lessons
+            let lessons = [];
+            if (lessonsResponse.status === 'fulfilled') {
+                const lessonsData = lessonsResponse.value;
+                if (Array.isArray(lessonsData)) {
+                    lessons = lessonsData;
+                } else if (lessonsData && Array.isArray(lessonsData.results)) {
+                    lessons = lessonsData.results;
+                } else if (lessonsData && Array.isArray(lessonsData.data)) {
+                    lessons = lessonsData.data;
+                }
+            }
+
+            // Process quizzes
+            let quizzes = [];
+            if (quizzesResponse.status === 'fulfilled') {
+                const quizzesData = quizzesResponse.value.data;
+                if (Array.isArray(quizzesData)) {
+                    quizzes = quizzesData;
+                } else if (Array.isArray(quizzesData.results)) {
+                    quizzes = quizzesData.results;
+                }
+            }
+
+            // Find the current module and update it
+            const currentModule = course.modules.find(m => m.id === moduleId);
+            if (currentModule) {
+                return {
+                    ...currentModule,
+                    lessons,
+                    assignments: [],
+                    quizzes,
+                    exams: []
+                };
+            }
+            
+            return currentModule;
+        } catch (error) {
+            console.warn(`Error loading content for module ${moduleId}:`, error);
+            return course.modules.find(m => m.id === moduleId);
+        }
     };
 
     // Preview dialog handlers
@@ -805,6 +1044,9 @@ const CourseDetail = () => {
     const getLessonIcon = (lesson) => {
         if (lesson?.completed) {
             return <CheckCircle htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'locked' || lesson?.locked) {
+            return <LockIcon htmlColor="#ff9800" />;
         }
         if (lesson?.type === 'video') {
             return <VideoIcon htmlColor="#333679" />;
@@ -961,8 +1203,8 @@ const CourseDetail = () => {
         }
     };
 
-    // Show loading skeleton only for basic data
-    if (loading && !basicDataLoaded) {
+    // Show loading skeleton while loading
+    if (loading) {
         return (
             <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
                 <Header />
@@ -974,7 +1216,6 @@ const CourseDetail = () => {
         );
     }
 
-    // Show error state
     if (error) {
         return (
             <Container maxWidth="lg" sx={{ 
@@ -1070,7 +1311,6 @@ const CourseDetail = () => {
         );
     }
 
-    // Show not found state
     if (!course) {
         return (
             <Container maxWidth="lg" sx={{ 
@@ -1163,11 +1403,9 @@ const CourseDetail = () => {
             <Header pageType="course-detail" />
 
             {/* Course Banner */}
-            <Suspense fallback={<ComponentLoader height={300} />}>
-                <CourseDetailBanner
-                    course={course}
-                />
-            </Suspense>
+            <CourseDetailBanner
+                course={course}
+            />
 
             {/* Course Promotional Video */}
             <Container maxWidth="lg" sx={{ 
@@ -1175,19 +1413,15 @@ const CourseDetail = () => {
                 mb: { xs: 2, sm: 3, md: 4 },
                 px: { xs: 1, sm: 2, md: 3 }
             }}>
-                <Suspense fallback={<ComponentLoader height={250} />}>
-                    <CoursePromotionalVideo course={course} />
-                </Suspense>
+                <CoursePromotionalVideo course={course} />
             </Container>
 
             {/* Course Detail Card with Image */}
-            <Suspense fallback={<ComponentLoader height={400} />}>
-                <CourseDetailCard
-                    course={course}
-                    isAddingToCart={isAddingToCart}
-                    handleAddToCart={handleAddToCart}
-                />
-            </Suspense>
+            <CourseDetailCard
+                course={course}
+                isAddingToCart={isAddingToCart}
+                handleAddToCart={handleAddToCart}
+            />
 
             {/* Preview Dialog */}
             <Dialog open={isPreviewOpen} onClose={handleClosePreview} maxWidth="md" fullWidth>
@@ -1302,39 +1536,38 @@ const CourseDetail = () => {
                             width: '100%',
                             mt: { xs: 1, sm: 1.5, md: 2 }
                         }}>
-                            <Suspense fallback={<ComponentLoader height={300} />}>
-                                {tabValue === 0 && (
-                                    <CourseDescriptionTab
-                                        course={course}
-                                        totalLessons={totalLessons}
-                                    />
-                                )}
+                            {tabValue === 0 && (
+                                <CourseDescriptionTab
+                                    course={course}
+                                    totalLessons={totalLessons}
+                                />
+                            )}
 
-                                {tabValue === 1 && (
-                                    <CourseContentTab
-                                        course={course}
-                                        totalLessons={totalLessons}
-                                        expandedModules={expandedModules}
-                                        toggleModule={toggleModule}
-                                        getLessonIcon={getLessonIcon}
-                                    />
-                                )}
+                            {tabValue === 1 && (
+                                <CourseContentTab
+                                    course={course}
+                                    totalLessons={totalLessons}
+                                    expandedModules={expandedModules}
+                                    toggleModule={toggleModule}
+                                    getLessonIcon={getLessonIcon}
+                                    loadingModules={loadingModules}
+                                />
+                            )}
 
-                                {tabValue === 2 && (
-                                    <CourseDemoTab
-                                        course={course}
-                                    />
-                                )}
+                            {tabValue === 2 && (
+                                <CourseDemoTab
+                                    course={course}
+                                />
+                            )}
 
-                                {tabValue === 3 && (
-                                    <CourseReviewsTab
-                                        course={course}
-                                        setShowReviewForm={setShowReviewForm}
-                                        handleLikeReview={handleLikeReview}
-                                        isAuthenticated={isAuthenticated}
-                                    />
-                                )}
-                            </Suspense>
+                            {tabValue === 3 && (
+                                <CourseReviewsTab
+                                    course={course}
+                                    setShowReviewForm={setShowReviewForm}
+                                    handleLikeReview={handleLikeReview}
+                                    isAuthenticated={isAuthenticated}
+                                />
+                            )}
                         </Box>
                     </Box>
                 </Container>
