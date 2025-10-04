@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
@@ -41,13 +41,15 @@ import {
 import { styled, keyframes, alpha } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
-import CourseDetailBanner from '../../components/courses/CourseDetailBanner';
-import CourseDetailCard from '../../components/courses/CourseDetailCard';
-import CourseDescriptionTab from '../../components/courses/CourseDescriptionTab';
-import CourseContentTab from '../../components/courses/CourseContentTab';
-import CourseDemoTab from '../../components/courses/CourseDemoTab';
-import CourseReviewsTab from '../../components/courses/CourseReviewsTab';
-import CoursePromotionalVideo from '../../components/courses/CoursePromotionalVideo';
+
+// Lazy load heavy components
+const CourseDetailBanner = lazy(() => import('../../components/courses/CourseDetailBanner'));
+const CourseDetailCard = lazy(() => import('../../components/courses/CourseDetailCard'));
+const CourseDescriptionTab = lazy(() => import('../../components/courses/CourseDescriptionTab'));
+const CourseContentTab = lazy(() => import('../../components/courses/CourseContentTab'));
+const CourseDemoTab = lazy(() => import('../../components/courses/CourseDemoTab'));
+const CourseReviewsTab = lazy(() => import('../../components/courses/CourseReviewsTab'));
+const CoursePromotionalVideo = lazy(() => import('../../components/courses/CoursePromotionalVideo'));
 import { courseAPI, cartAPI, paymentAPI } from '../../services/courseService';
 import { contentAPI } from '../../services/content.service';
 // import { assignmentsAPI } from '../../services/assignment.service';
@@ -193,6 +195,19 @@ const SkeletonPulse = styled(Box)(({ theme }) => ({
     borderRadius: theme.shape.borderRadius,
 }));
 
+// Loading component for lazy loaded components
+const ComponentLoader = ({ height = 200 }) => (
+    <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height,
+        width: '100%'
+    }}>
+        <CircularProgress sx={{ color: '#4DBFB3' }} />
+    </Box>
+);
+
 const CourseSkeleton = () => (
     <Box sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
         <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
@@ -235,6 +250,11 @@ const CourseDetail = () => {
     const [expandedModules, setExpandedModules] = useState({});
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
+    
+    // Separate loading states for better UX
+    const [basicDataLoaded, setBasicDataLoaded] = useState(false);
+    const [modulesLoaded, setModulesLoaded] = useState(false);
+    const [reviewsLoaded, setReviewsLoaded] = useState(false);
 
     // Review states
     const [showReviewForm, setShowReviewForm] = useState(false);
@@ -260,15 +280,15 @@ const CourseDetail = () => {
         return initialExpanded;
     };
 
-    // Load course data
+    // Load basic course data first (fast loading)
     useEffect(() => {
-        const fetchCourseData = async () => {
+        const fetchBasicCourseData = async () => {
             setLoading(true);
             setError(null);
             try {
-                console.log('Fetching course data for ID:', id);
+                console.log('Fetching basic course data for ID:', id);
 
-                // Fetch course details
+                // Fetch course details only
                 let courseData;
                 try {
                     courseData = await courseAPI.getCourseById(id);
@@ -295,249 +315,24 @@ const CourseDetail = () => {
                     }
                 }
 
+                // Transform basic course data first
+                const basicCourseData = transformCourseData(courseData, [], [], false, null);
+                console.log('Basic course data:', basicCourseData);
 
-                // Fetch course modules from content API (real data)
-                let modulesData = [];
-                let isUserEnrolled = false;
+                setCourse(basicCourseData);
+                setBasicDataLoaded(true);
+                setLoading(false); // Allow page to render with basic data
 
-                // Only try to fetch modules if user is authenticated
-                if (isAuthenticated) {
-                    try {
-                        console.log('Fetching modules with lessons from content API for course:', id);
-                        const modulesResponse = await contentAPI.getCourseModulesWithLessons(id);
-                        console.log('Content API modules with lessons response:', modulesResponse);
-
-                        // Handle different response formats
-                        if (modulesResponse && typeof modulesResponse === 'object') {
-                            if (Array.isArray(modulesResponse)) {
-                                modulesData = modulesResponse;
-                            } else if (modulesResponse.modules && Array.isArray(modulesResponse.modules)) {
-                                modulesData = modulesResponse.modules;
-                            } else if (modulesResponse.results && Array.isArray(modulesResponse.results)) {
-                                modulesData = modulesResponse.results;
-                            } else if (modulesResponse.data && Array.isArray(modulesResponse.data)) {
-                                modulesData = modulesResponse.data;
-                            } else {
-                                modulesData = [];
-                            }
-                        } else {
-                            modulesData = [];
-                        }
-
-                        console.log('Processed content modules with lessons data:', modulesData);
-
-                        // If we got modules data, user is enrolled or content is public
-                        if (modulesData.length > 0) {
-                            isUserEnrolled = true;
-                        } else {
-                            // Try to get modules from course API as fallback
-                            try {
-                                const courseModulesResponse = await courseAPI.getCourseModules(id);
-                                console.log('Course API modules response:', courseModulesResponse);
-
-                                if (courseModulesResponse && typeof courseModulesResponse === 'object') {
-                                    if (Array.isArray(courseModulesResponse)) {
-                                        modulesData = courseModulesResponse;
-                                    } else if (courseModulesResponse.modules && Array.isArray(courseModulesResponse.modules)) {
-                                        modulesData = courseModulesResponse.modules;
-                                    } else if (courseModulesResponse.results && Array.isArray(courseModulesResponse.results)) {
-                                        modulesData = courseModulesResponse.results;
-                                    }
-                                }
-
-                                if (modulesData.length > 0) {
-                                    isUserEnrolled = true;
-                                }
-                            } catch (courseModulesError) {
-                                console.warn('Could not fetch course modules from course API:', courseModulesError);
-                                if (courseModulesError.response && courseModulesError.response.status === 403) {
-                                    isUserEnrolled = false;
-                                }
-                            }
-                        }
-                    } catch (error) {
-                        console.warn('Could not fetch modules from content API:', error);
-
-                        // Try course API as fallback
-                        try {
-                            const courseModulesResponse = await courseAPI.getCourseModules(id);
-                            console.log('Fallback course API modules response:', courseModulesResponse);
-
-                            if (courseModulesResponse && typeof courseModulesResponse === 'object') {
-                                if (Array.isArray(courseModulesResponse)) {
-                                    modulesData = courseModulesResponse;
-                                } else if (courseModulesResponse.modules && Array.isArray(courseModulesResponse.modules)) {
-                                    modulesData = courseModulesResponse.modules;
-                                } else if (courseModulesResponse.results && Array.isArray(courseModulesResponse.results)) {
-                                    modulesData = courseModulesResponse.results;
-                                }
-                            }
-
-                            if (modulesData.length > 0) {
-                                isUserEnrolled = true;
-                            }
-                        } catch (courseModulesError) {
-                            console.warn('Could not fetch course modules from course API:', courseModulesError);
-                            if (courseModulesError.response && courseModulesError.response.status === 403) {
-                                isUserEnrolled = false;
-                            }
-                            modulesData = [];
-                        }
-                    }
-                }
-
-                // Fetch lessons, assignments, quizzes, and exams for each module
-                if (modulesData.length > 0) {
-                    console.log('Fetching content for modules...');
-                    for (let i = 0; i < modulesData.length; i++) {
-                        const module = modulesData[i];
-                        const moduleId = module.id;
-
-                        // Fetch lessons
-                        try {
-                            const lessonsResponse = await contentAPI.getLessons({ moduleId: moduleId, courseId: id });
-                            console.log(`Lessons for module ${moduleId}:`, lessonsResponse);
-
-                            if (lessonsResponse && Array.isArray(lessonsResponse)) {
-                                modulesData[i].lessons = lessonsResponse;
-                            } else if (lessonsResponse && Array.isArray(lessonsResponse.results)) {
-                                modulesData[i].lessons = lessonsResponse.results;
-                            } else if (lessonsResponse && Array.isArray(lessonsResponse.data)) {
-                                modulesData[i].lessons = lessonsResponse.data;
-                            }
-                        } catch (error) {
-                            console.warn(`Could not fetch lessons for module ${moduleId}:`, error);
-                            modulesData[i].lessons = [];
-                        }
-
-                        // Fetch assignments for this module - DISABLED
-                        // try {
-                        //     const assignmentsResponse = await assignmentsAPI.getAssignments({
-                        //         course: id,
-                        //         module: moduleId
-                        //     });
-                        //     console.log(`Assignments for module ${moduleId}:`, assignmentsResponse);
-
-                        //     if (assignmentsResponse && Array.isArray(assignmentsResponse)) {
-                        //         modulesData[i].assignments = assignmentsResponse;
-                        //     } else if (assignmentsResponse && Array.isArray(assignmentsResponse.results)) {
-                        //         modulesData[i].assignments = assignmentsResponse.results;
-                        //     } else if (assignmentsResponse && Array.isArray(assignmentsResponse.data)) {
-                        //         modulesData[i].assignments = assignmentsResponse.data;
-                        //     }
-                        // } catch (error) {
-                        //     console.warn(`Could not fetch assignments for module ${moduleId}:`, error);
-                        //     modulesData[i].assignments = [];
-                        // }
-                        modulesData[i].assignments = [];
-
-                        // Fetch quizzes for this module
-                        try {
-                            const quizzesResponse = await api.get(`/api/assignments/quizzes/`, {
-                                params: { course: id, module: moduleId }
-                            });
-                            console.log(`Quizzes for module ${moduleId}:`, quizzesResponse.data);
-
-                            if (quizzesResponse.data && Array.isArray(quizzesResponse.data)) {
-                                modulesData[i].quizzes = quizzesResponse.data;
-                            } else if (quizzesResponse.data && Array.isArray(quizzesResponse.data.results)) {
-                                modulesData[i].quizzes = quizzesResponse.data.results;
-                            }
-                        } catch (error) {
-                            console.warn(`Could not fetch quizzes for module ${moduleId}:`, error);
-                            modulesData[i].quizzes = [];
-                        }
-
-                        // Fetch exams for this module - DISABLED
-                        // try {
-                        //     const examsResponse = await examAPI.getExams({
-                        //         course: id,
-                        //         module: moduleId
-                        //     });
-                        //     console.log(`Exams for module ${moduleId}:`, examsResponse);
-
-                        //     if (examsResponse && Array.isArray(examsResponse)) {
-                        //         modulesData[i].exams = examsResponse;
-                        //     } else if (examsResponse && Array.isArray(examsResponse.results)) {
-                        //         modulesData[i].exams = examsResponse.results;
-                        //     } else if (examsResponse && Array.isArray(examsResponse.data)) {
-                        //         modulesData[i].exams = examsResponse.data;
-                        //     }
-                        // } catch (error) {
-                        //     console.warn(`Could not fetch exams for module ${moduleId}:`, error);
-                        //     modulesData[i].exams = [];
-                        // }
-                        modulesData[i].exams = [];
-                    }
-                }
-
-                // Fetch course reviews from reviews API (real data)
-                let reviewsData = [];
-                let ratingStats = null;
-
-                // Only try to fetch reviews if user is authenticated
-                if (isAuthenticated) {
-                    try {
-                        console.log('Fetching reviews from reviews API for course:', id);
-                        const reviewsResponse = await reviewsAPI.getCourseReviews(id);
-                        console.log('Reviews API response:', reviewsResponse);
-
-                        if (reviewsResponse && reviewsResponse.results) {
-                            reviewsData = reviewsResponse.results;
-                        } else if (Array.isArray(reviewsResponse)) {
-                            reviewsData = reviewsResponse;
-                        } else {
-                            reviewsData = [];
-                        }
-
-                        console.log('Processed reviews data:', reviewsData);
-                    } catch (error) {
-                        console.warn('Could not fetch reviews from reviews API:', error);
-
-                        // Try course API as fallback
-                        try {
-                            const courseReviewsResponse = await courseAPI.getCourseReviews(id);
-                            reviewsData = courseReviewsResponse.results || courseReviewsResponse || [];
-                            console.log('Fallback course reviews data:', reviewsData);
-                        } catch (courseReviewsError) {
-                            console.warn('Could not fetch course reviews from course API:', courseReviewsError);
-                            reviewsData = [];
-                        }
-                    }
-                }
-
-                // Fetch course rating statistics (only if authenticated)
-                if (isAuthenticated) {
-                    try {
-                        const ratingResponse = await reviewsAPI.getCourseRating(id);
-                        console.log('Course rating stats:', ratingResponse);
-                        ratingStats = ratingResponse;
-                    } catch (error) {
-                        console.warn('Could not fetch course rating stats:', error);
-                        ratingStats = null;
-                    }
-                }
-
-                // Transform API data to match expected format
-                const transformedCourse = transformCourseData(courseData, modulesData, reviewsData, isUserEnrolled, ratingStats);
-                console.log('Transformed course:', transformedCourse);
-                console.log('Transformed course modules:', transformedCourse.modules);
-
-                setCourse(transformedCourse);
-                setExpandedModules(initializeExpandedModules(transformedCourse.modules));
-                setLoading(false);
             } catch (error) {
-                console.error('Error fetching course data:', error);
+                console.error('Error fetching basic course data:', error);
                 let errorMessage = 'فشل في تحميل بيانات الدورة';
 
                 if (error.response) {
-                    // Server responded with error status
                     if (error.response.status === 404) {
                         errorMessage = 'الدورة غير موجودة';
                     } else if (error.response.status === 403) {
                         errorMessage = 'ليس لديك صلاحية لعرض هذه الدورة';
                     } else if (error.response.status === 401) {
-                        // Don't show login required message for public course details
                         if (!isAuthenticated) {
                             errorMessage = 'هذه الدورة غير متاحة للعرض العام. يرجى تسجيل الدخول لعرض التفاصيل الكاملة.';
                         } else {
@@ -551,10 +346,8 @@ const CourseDetail = () => {
                         errorMessage = error.response.data.message;
                     }
                 } else if (error.request) {
-                    // Network error
                     errorMessage = 'خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت.';
                 } else {
-                    // Other error
                     errorMessage = error.message || 'حدث خطأ غير متوقع';
                 }
 
@@ -564,9 +357,74 @@ const CourseDetail = () => {
         };
 
         if (id) {
-            fetchCourseData();
+            fetchBasicCourseData();
         }
     }, [id, isAuthenticated]);
+
+    // Load modules data separately (after basic data is loaded)
+    useEffect(() => {
+        const fetchModulesData = async () => {
+            if (!basicDataLoaded || !isAuthenticated || !course) return;
+            
+            try {
+                console.log('Fetching modules data for course:', id);
+                
+                // Simplified modules fetching with pagination
+                const modulesResponse = await contentAPI.getCourseModulesWithLessons(id);
+                let modulesData = Array.isArray(modulesResponse) ? modulesResponse : 
+                                 modulesResponse?.modules || modulesResponse?.results || modulesResponse?.data || [];
+                
+                console.log('Processed modules data:', modulesData.length, 'modules');
+
+                // Update course with modules data
+                if (modulesData.length > 0) {
+                    const updatedCourse = {
+                        ...course,
+                        modules: transformModulesData(modulesData, course, true),
+                        isEnrolled: true
+                    };
+                    setCourse(updatedCourse);
+                    setModulesLoaded(true);
+                } else {
+                    setModulesLoaded(true);
+                }
+                
+            } catch (error) {
+                console.warn('Could not fetch modules data:', error);
+                setModulesLoaded(true); // Continue even if modules fail
+            }
+        };
+
+        fetchModulesData();
+    }, [basicDataLoaded, isAuthenticated, course, id]);
+
+    // Load reviews data separately (after basic data is loaded)
+    useEffect(() => {
+        const fetchReviewsData = async () => {
+            if (!basicDataLoaded || !isAuthenticated || !course) return;
+            
+            try {
+                console.log('Fetching reviews data for course:', id);
+                
+                const reviewsResponse = await reviewsAPI.getCourseReviews(id);
+                let reviewsData = reviewsResponse?.results || reviewsResponse || [];
+                
+                // Update course with reviews data
+                const updatedCourse = {
+                    ...course,
+                    courseReviews: reviewsData
+                };
+                setCourse(updatedCourse);
+                setReviewsLoaded(true);
+                
+            } catch (error) {
+                console.warn('Could not fetch reviews data:', error);
+                setReviewsLoaded(true); // Continue even if reviews fail
+            }
+        };
+
+        fetchReviewsData();
+    }, [basicDataLoaded, isAuthenticated, course, id]);
 
     // Transform API data to match expected format
     const transformCourseData = (apiCourse, modulesData = [], reviewsData = [], isUserEnrolled = false, ratingStats = null) => {
@@ -1103,8 +961,8 @@ const CourseDetail = () => {
         }
     };
 
-    // Show loading skeleton while loading
-    if (loading) {
+    // Show loading skeleton only for basic data
+    if (loading && !basicDataLoaded) {
         return (
             <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
                 <Header />
@@ -1116,6 +974,7 @@ const CourseDetail = () => {
         );
     }
 
+    // Show error state
     if (error) {
         return (
             <Container maxWidth="lg" sx={{ 
@@ -1211,6 +1070,7 @@ const CourseDetail = () => {
         );
     }
 
+    // Show not found state
     if (!course) {
         return (
             <Container maxWidth="lg" sx={{ 
@@ -1303,9 +1163,11 @@ const CourseDetail = () => {
             <Header pageType="course-detail" />
 
             {/* Course Banner */}
-            <CourseDetailBanner
-                course={course}
-            />
+            <Suspense fallback={<ComponentLoader height={300} />}>
+                <CourseDetailBanner
+                    course={course}
+                />
+            </Suspense>
 
             {/* Course Promotional Video */}
             <Container maxWidth="lg" sx={{ 
@@ -1313,15 +1175,19 @@ const CourseDetail = () => {
                 mb: { xs: 2, sm: 3, md: 4 },
                 px: { xs: 1, sm: 2, md: 3 }
             }}>
-                <CoursePromotionalVideo course={course} />
+                <Suspense fallback={<ComponentLoader height={250} />}>
+                    <CoursePromotionalVideo course={course} />
+                </Suspense>
             </Container>
 
             {/* Course Detail Card with Image */}
-            <CourseDetailCard
-                course={course}
-                isAddingToCart={isAddingToCart}
-                handleAddToCart={handleAddToCart}
-            />
+            <Suspense fallback={<ComponentLoader height={400} />}>
+                <CourseDetailCard
+                    course={course}
+                    isAddingToCart={isAddingToCart}
+                    handleAddToCart={handleAddToCart}
+                />
+            </Suspense>
 
             {/* Preview Dialog */}
             <Dialog open={isPreviewOpen} onClose={handleClosePreview} maxWidth="md" fullWidth>
@@ -1436,37 +1302,39 @@ const CourseDetail = () => {
                             width: '100%',
                             mt: { xs: 1, sm: 1.5, md: 2 }
                         }}>
-                            {tabValue === 0 && (
-                                <CourseDescriptionTab
-                                    course={course}
-                                    totalLessons={totalLessons}
-                                />
-                            )}
+                            <Suspense fallback={<ComponentLoader height={300} />}>
+                                {tabValue === 0 && (
+                                    <CourseDescriptionTab
+                                        course={course}
+                                        totalLessons={totalLessons}
+                                    />
+                                )}
 
-                            {tabValue === 1 && (
-                                <CourseContentTab
-                                    course={course}
-                                    totalLessons={totalLessons}
-                                    expandedModules={expandedModules}
-                                    toggleModule={toggleModule}
-                                    getLessonIcon={getLessonIcon}
-                                />
-                            )}
+                                {tabValue === 1 && (
+                                    <CourseContentTab
+                                        course={course}
+                                        totalLessons={totalLessons}
+                                        expandedModules={expandedModules}
+                                        toggleModule={toggleModule}
+                                        getLessonIcon={getLessonIcon}
+                                    />
+                                )}
 
-                            {tabValue === 2 && (
-                                <CourseDemoTab
-                                    course={course}
-                                />
-                            )}
+                                {tabValue === 2 && (
+                                    <CourseDemoTab
+                                        course={course}
+                                    />
+                                )}
 
-                            {tabValue === 3 && (
-                                <CourseReviewsTab
-                                    course={course}
-                                    setShowReviewForm={setShowReviewForm}
-                                    handleLikeReview={handleLikeReview}
-                                    isAuthenticated={isAuthenticated}
-                                />
-                            )}
+                                {tabValue === 3 && (
+                                    <CourseReviewsTab
+                                        course={course}
+                                        setShowReviewForm={setShowReviewForm}
+                                        handleLikeReview={handleLikeReview}
+                                        isAuthenticated={isAuthenticated}
+                                    />
+                                )}
+                            </Suspense>
                         </Box>
                     </Box>
                 </Container>
