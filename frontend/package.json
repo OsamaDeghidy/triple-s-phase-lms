@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:local": "node setup-local.js && vite",
     "build": "vite build",
-    "build:vercel": "vite build --config vite.config.vercel.legacy.js",
+    "build:vercel": "vite build --config vite.config.vercel.final.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "setup:local": "node setup-local.js"
