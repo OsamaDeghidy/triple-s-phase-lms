@@ -36,9 +36,12 @@ import {
     Quiz as QuizIconFilled,
     Info as InfoIcon,
     VideoLibrary as VideoLibraryIcon,
-    AssignmentTurnedIn as AssignmentTurnedInIcon
+    AssignmentTurnedIn as AssignmentTurnedInIcon,
+    Download as DownloadIcon,
+    Code as CodeIcon,
+    Quiz as QuizIcon
 } from '@mui/icons-material';
-import { styled, keyframes, alpha } from '@mui/material/styles';
+import { styled, keyframes } from '@mui/material/styles';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import CourseDetailBanner from '../../components/courses/CourseDetailBanner';
@@ -48,7 +51,7 @@ import CourseContentTab from '../../components/courses/CourseContentTab';
 import CourseDemoTab from '../../components/courses/CourseDemoTab';
 import CourseReviewsTab from '../../components/courses/CourseReviewsTab';
 import CoursePromotionalVideo from '../../components/courses/CoursePromotionalVideo';
-import { courseAPI, cartAPI, paymentAPI } from '../../services/courseService';
+import { courseAPI, cartAPI } from '../../services/courseService';
 import { contentAPI } from '../../services/content.service';
 // import { assignmentsAPI } from '../../services/assignment.service';
 // import { examAPI } from '../../services/exam.service';
@@ -235,6 +238,10 @@ const CourseDetail = () => {
     const [expandedModules, setExpandedModules] = useState({});
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [loadingModules, setLoadingModules] = useState({});
+    
+    // Simple cache for course data
+    const courseCache = useRef(new Map());
 
     // Review states
     const [showReviewForm, setShowReviewForm] = useState(false);
@@ -260,7 +267,132 @@ const CourseDetail = () => {
         return initialExpanded;
     };
 
-    // Load course data
+    // Check cache and fetch course details
+    const fetchCourseDetails = async (courseId) => {
+        const cacheKey = `course_${courseId}`;
+        const cached = courseCache.current.get(cacheKey);
+        
+        // Return cached data if available and not expired (5 minutes)
+        if (cached && Date.now() - cached.timestamp < 300000) {
+            console.log('Using cached course data');
+            return cached.data;
+        }
+        
+        const data = await courseAPI.getCourseById(courseId);
+        
+        // Cache the data
+        courseCache.current.set(cacheKey, {
+            data,
+            timestamp: Date.now()
+        });
+        
+        return data;
+    };
+
+    // Optimized function to fetch course reviews and rating stats in parallel
+    const fetchCourseReviews = async (courseId) => {
+        try {
+            const [reviewsResponse, ratingResponse] = await Promise.allSettled([
+                reviewsAPI.getCourseReviews(courseId),
+                reviewsAPI.getCourseRating(courseId)
+            ]);
+
+            const reviewsData = reviewsResponse.status === 'fulfilled' 
+                ? (reviewsResponse.value.results || reviewsResponse.value || [])
+                : [];
+
+            const ratingStats = ratingResponse.status === 'fulfilled' 
+                ? ratingResponse.value 
+                : null;
+
+            return { reviewsData, ratingStats };
+        } catch (error) {
+            console.warn('Error fetching reviews:', error);
+            return { reviewsData: [], ratingStats: null };
+        }
+    };
+
+    // Optimized function to fetch modules with all content in parallel
+    const fetchModulesWithContent = async (courseId) => {
+        try {
+            // First, get modules structure
+            const modulesResponse = await contentAPI.getCourseModulesWithLessons(courseId);
+            let modulesData = [];
+
+                        // Handle different response formats
+                        if (modulesResponse && typeof modulesResponse === 'object') {
+                            if (Array.isArray(modulesResponse)) {
+                                modulesData = modulesResponse;
+                            } else if (modulesResponse.modules && Array.isArray(modulesResponse.modules)) {
+                                modulesData = modulesResponse.modules;
+                            } else if (modulesResponse.results && Array.isArray(modulesResponse.results)) {
+                                modulesData = modulesResponse.results;
+                            } else if (modulesResponse.data && Array.isArray(modulesResponse.data)) {
+                                modulesData = modulesResponse.data;
+                }
+            }
+
+            if (modulesData.length === 0) {
+                return [];
+            }
+
+            // Fetch all content for all modules in parallel
+            const moduleContentPromises = modulesData.map(async (module, index) => {
+                const moduleId = module.id;
+                
+                // Create parallel promises for each module's content
+                const [lessonsResponse, quizzesResponse] = await Promise.allSettled([
+                    contentAPI.getLessons({ moduleId: moduleId, courseId: courseId }),
+                    api.get(`/api/assignments/quizzes/`, {
+                        params: { course: courseId, module: moduleId }
+                    }).catch(() => ({ data: [] }))
+                ]);
+
+                // Process lessons
+                let lessons = [];
+                if (lessonsResponse.status === 'fulfilled') {
+                    const lessonsData = lessonsResponse.value;
+                    if (Array.isArray(lessonsData)) {
+                        lessons = lessonsData;
+                    } else if (lessonsData && Array.isArray(lessonsData.results)) {
+                        lessons = lessonsData.results;
+                    } else if (lessonsData && Array.isArray(lessonsData.data)) {
+                        lessons = lessonsData.data;
+                    }
+                }
+
+                // Process quizzes
+                let quizzes = [];
+                if (quizzesResponse.status === 'fulfilled') {
+                    const quizzesData = quizzesResponse.value.data;
+                    if (Array.isArray(quizzesData)) {
+                        quizzes = quizzesData;
+                    } else if (Array.isArray(quizzesData.results)) {
+                        quizzes = quizzesData.results;
+                    }
+                }
+
+                return {
+                    ...module,
+                    lessons,
+                    assignments: [], // Disabled for now
+                    quizzes,
+                    exams: [] // Disabled for now
+                };
+            });
+
+            // Wait for all modules to complete
+            const modulesWithContent = await Promise.all(moduleContentPromises);
+            console.log('All modules with content fetched:', modulesWithContent);
+            
+            return modulesWithContent;
+                        } catch (error) {
+            console.warn('Error fetching modules with content:', error);
+            return [];
+        }
+    };
+
+    // Load course data with optimized parallel fetching
     useEffect(() => {
         const fetchCourseData = async () => {
             setLoading(true);
@@ -268,10 +400,14 @@ const CourseDetail = () => {
             try {
                 console.log('Fetching course data for ID:', id);
 
-                // Fetch course details
+                // Start fetching course details and reviews in parallel
+                const courseDataPromise = fetchCourseDetails(id);
+                const reviewsPromise = isAuthenticated ? fetchCourseReviews(id) : Promise.resolve({ reviews: [], ratingStats: null });
+
+                // Wait for course details first (needed for basic info)
                 let courseData;
                 try {
-                    courseData = await courseAPI.getCourseById(id);
+                    courseData = await courseDataPromise;
                     console.log('Course data from API:', courseData);
                 } catch (error) {
                     // If course details require authentication, try to get basic info from public courses
@@ -295,237 +431,65 @@ const CourseDetail = () => {
                     }
                 }
 
+                // Set initial course data for immediate display
+                const initialCourse = transformCourseData(courseData, [], [], false, null);
+                setCourse(initialCourse);
+                setLoading(false);
 
-                // Fetch course modules from content API (real data)
+                // Fetch detailed content in background (parallel)
+                const { reviewsData, ratingStats } = await reviewsPromise;
+                
+                // Fetch modules and content in parallel if user is authenticated
                 let modulesData = [];
                 let isUserEnrolled = false;
-
-                // Only try to fetch modules if user is authenticated
+                
                 if (isAuthenticated) {
                     try {
-                        console.log('Fetching modules with lessons from content API for course:', id);
+                        modulesData = await fetchModulesWithContent(id);
+                        isUserEnrolled = modulesData.length > 0;
+                    } catch (error) {
+                        console.warn('Could not fetch modules:', error);
+                        modulesData = [];
+                    }
+                } else {
+                    // For non-authenticated users, try to get basic modules structure
+                    try {
+                        console.log('Fetching basic modules for non-authenticated user...');
                         const modulesResponse = await contentAPI.getCourseModulesWithLessons(id);
-                        console.log('Content API modules with lessons response:', modulesResponse);
+                        let basicModulesData = [];
 
-                        // Handle different response formats
                         if (modulesResponse && typeof modulesResponse === 'object') {
                             if (Array.isArray(modulesResponse)) {
-                                modulesData = modulesResponse;
+                                basicModulesData = modulesResponse;
                             } else if (modulesResponse.modules && Array.isArray(modulesResponse.modules)) {
-                                modulesData = modulesResponse.modules;
+                                basicModulesData = modulesResponse.modules;
                             } else if (modulesResponse.results && Array.isArray(modulesResponse.results)) {
-                                modulesData = modulesResponse.results;
+                                basicModulesData = modulesResponse.results;
                             } else if (modulesResponse.data && Array.isArray(modulesResponse.data)) {
-                                modulesData = modulesResponse.data;
-                            } else {
-                                modulesData = [];
-                            }
-                        } else {
-                            modulesData = [];
-                        }
-
-                        console.log('Processed content modules with lessons data:', modulesData);
-
-                        // If we got modules data, user is enrolled or content is public
-                        if (modulesData.length > 0) {
-                            isUserEnrolled = true;
-                        } else {
-                            // Try to get modules from course API as fallback
-                            try {
-                                const courseModulesResponse = await courseAPI.getCourseModules(id);
-                                console.log('Course API modules response:', courseModulesResponse);
-
-                                if (courseModulesResponse && typeof courseModulesResponse === 'object') {
-                                    if (Array.isArray(courseModulesResponse)) {
-                                        modulesData = courseModulesResponse;
-                                    } else if (courseModulesResponse.modules && Array.isArray(courseModulesResponse.modules)) {
-                                        modulesData = courseModulesResponse.modules;
-                                    } else if (courseModulesResponse.results && Array.isArray(courseModulesResponse.results)) {
-                                        modulesData = courseModulesResponse.results;
-                                    }
-                                }
-
-                                if (modulesData.length > 0) {
-                                    isUserEnrolled = true;
-                                }
-                            } catch (courseModulesError) {
-                                console.warn('Could not fetch course modules from course API:', courseModulesError);
-                                if (courseModulesError.response && courseModulesError.response.status === 403) {
-                                    isUserEnrolled = false;
-                                }
+                                basicModulesData = modulesResponse.data;
                             }
                         }
+
+                        // Only show modules structure without detailed content
+                        modulesData = basicModulesData.map(module => ({
+                            ...module,
+                            lessons: [], // No lessons for non-authenticated users
+                            assignments: [],
+                            quizzes: [],
+                            exams: []
+                        }));
+
+                        console.log('Basic modules for non-authenticated user:', modulesData);
                     } catch (error) {
-                        console.warn('Could not fetch modules from content API:', error);
-
-                        // Try course API as fallback
-                        try {
-                            const courseModulesResponse = await courseAPI.getCourseModules(id);
-                            console.log('Fallback course API modules response:', courseModulesResponse);
-
-                            if (courseModulesResponse && typeof courseModulesResponse === 'object') {
-                                if (Array.isArray(courseModulesResponse)) {
-                                    modulesData = courseModulesResponse;
-                                } else if (courseModulesResponse.modules && Array.isArray(courseModulesResponse.modules)) {
-                                    modulesData = courseModulesResponse.modules;
-                                } else if (courseModulesResponse.results && Array.isArray(courseModulesResponse.results)) {
-                                    modulesData = courseModulesResponse.results;
-                                }
-                            }
-
-                            if (modulesData.length > 0) {
-                                isUserEnrolled = true;
-                            }
-                        } catch (courseModulesError) {
-                            console.warn('Could not fetch course modules from course API:', courseModulesError);
-                            if (courseModulesError.response && courseModulesError.response.status === 403) {
-                                isUserEnrolled = false;
-                            }
-                            modulesData = [];
-                        }
+                        console.warn('Could not fetch basic modules for non-authenticated user:', error);
+                        modulesData = [];
                     }
                 }
 
-                // Fetch lessons, assignments, quizzes, and exams for each module
-                if (modulesData.length > 0) {
-                    console.log('Fetching content for modules...');
-                    for (let i = 0; i < modulesData.length; i++) {
-                        const module = modulesData[i];
-                        const moduleId = module.id;
-
-                        // Fetch lessons
-                        try {
-                            const lessonsResponse = await contentAPI.getLessons({ moduleId: moduleId, courseId: id });
-                            console.log(`Lessons for module ${moduleId}:`, lessonsResponse);
-
-                            if (lessonsResponse && Array.isArray(lessonsResponse)) {
-                                modulesData[i].lessons = lessonsResponse;
-                            } else if (lessonsResponse && Array.isArray(lessonsResponse.results)) {
-                                modulesData[i].lessons = lessonsResponse.results;
-                            } else if (lessonsResponse && Array.isArray(lessonsResponse.data)) {
-                                modulesData[i].lessons = lessonsResponse.data;
-                            }
-                        } catch (error) {
-                            console.warn(`Could not fetch lessons for module ${moduleId}:`, error);
-                            modulesData[i].lessons = [];
-                        }
-
-                        // Fetch assignments for this module - DISABLED
-                        // try {
-                        //     const assignmentsResponse = await assignmentsAPI.getAssignments({
-                        //         course: id,
-                        //         module: moduleId
-                        //     });
-                        //     console.log(`Assignments for module ${moduleId}:`, assignmentsResponse);
-
-                        //     if (assignmentsResponse && Array.isArray(assignmentsResponse)) {
-                        //         modulesData[i].assignments = assignmentsResponse;
-                        //     } else if (assignmentsResponse && Array.isArray(assignmentsResponse.results)) {
-                        //         modulesData[i].assignments = assignmentsResponse.results;
-                        //     } else if (assignmentsResponse && Array.isArray(assignmentsResponse.data)) {
-                        //         modulesData[i].assignments = assignmentsResponse.data;
-                        //     }
-                        // } catch (error) {
-                        //     console.warn(`Could not fetch assignments for module ${moduleId}:`, error);
-                        //     modulesData[i].assignments = [];
-                        // }
-                        modulesData[i].assignments = [];
-
-                        // Fetch quizzes for this module
-                        try {
-                            const quizzesResponse = await api.get(`/api/assignments/quizzes/`, {
-                                params: { course: id, module: moduleId }
-                            });
-                            console.log(`Quizzes for module ${moduleId}:`, quizzesResponse.data);
-
-                            if (quizzesResponse.data && Array.isArray(quizzesResponse.data)) {
-                                modulesData[i].quizzes = quizzesResponse.data;
-                            } else if (quizzesResponse.data && Array.isArray(quizzesResponse.data.results)) {
-                                modulesData[i].quizzes = quizzesResponse.data.results;
-                            }
-                        } catch (error) {
-                            console.warn(`Could not fetch quizzes for module ${moduleId}:`, error);
-                            modulesData[i].quizzes = [];
-                        }
-
-                        // Fetch exams for this module - DISABLED
-                        // try {
-                        //     const examsResponse = await examAPI.getExams({
-                        //         course: id,
-                        //         module: moduleId
-                        //     });
-                        //     console.log(`Exams for module ${moduleId}:`, examsResponse);
-
-                        //     if (examsResponse && Array.isArray(examsResponse)) {
-                        //         modulesData[i].exams = examsResponse;
-                        //     } else if (examsResponse && Array.isArray(examsResponse.results)) {
-                        //         modulesData[i].exams = examsResponse.results;
-                        //     } else if (examsResponse && Array.isArray(examsResponse.data)) {
-                        //         modulesData[i].exams = examsResponse.data;
-                        //     }
-                        // } catch (error) {
-                        //     console.warn(`Could not fetch exams for module ${moduleId}:`, error);
-                        //     modulesData[i].exams = [];
-                        // }
-                        modulesData[i].exams = [];
-                    }
-                }
-
-                // Fetch course reviews from reviews API (real data)
-                let reviewsData = [];
-                let ratingStats = null;
-
-                // Only try to fetch reviews if user is authenticated
-                if (isAuthenticated) {
-                    try {
-                        console.log('Fetching reviews from reviews API for course:', id);
-                        const reviewsResponse = await reviewsAPI.getCourseReviews(id);
-                        console.log('Reviews API response:', reviewsResponse);
-
-                        if (reviewsResponse && reviewsResponse.results) {
-                            reviewsData = reviewsResponse.results;
-                        } else if (Array.isArray(reviewsResponse)) {
-                            reviewsData = reviewsResponse;
-                        } else {
-                            reviewsData = [];
-                        }
-
-                        console.log('Processed reviews data:', reviewsData);
-                    } catch (error) {
-                        console.warn('Could not fetch reviews from reviews API:', error);
-
-                        // Try course API as fallback
-                        try {
-                            const courseReviewsResponse = await courseAPI.getCourseReviews(id);
-                            reviewsData = courseReviewsResponse.results || courseReviewsResponse || [];
-                            console.log('Fallback course reviews data:', reviewsData);
-                        } catch (courseReviewsError) {
-                            console.warn('Could not fetch course reviews from course API:', courseReviewsError);
-                            reviewsData = [];
-                        }
-                    }
-                }
-
-                // Fetch course rating statistics (only if authenticated)
-                if (isAuthenticated) {
-                    try {
-                        const ratingResponse = await reviewsAPI.getCourseRating(id);
-                        console.log('Course rating stats:', ratingResponse);
-                        ratingStats = ratingResponse;
-                    } catch (error) {
-                        console.warn('Could not fetch course rating stats:', error);
-                        ratingStats = null;
-                    }
-                }
-
-                // Transform API data to match expected format
-                const transformedCourse = transformCourseData(courseData, modulesData, reviewsData, isUserEnrolled, ratingStats);
-                console.log('Transformed course:', transformedCourse);
-                console.log('Transformed course modules:', transformedCourse.modules);
-
-                setCourse(transformedCourse);
-                setExpandedModules(initializeExpandedModules(transformedCourse.modules));
-                setLoading(false);
+                // Update course with complete data
+                const completeCourse = transformCourseData(courseData, modulesData, reviewsData, isUserEnrolled, ratingStats);
+                setCourse(completeCourse);
+                setExpandedModules(initializeExpandedModules(completeCourse.modules));
             } catch (error) {
                 console.error('Error fetching course data:', error);
                 let errorMessage = 'فشل في تحميل بيانات الدورة';
@@ -705,18 +669,24 @@ const CourseDetail = () => {
         console.log('Organized modules with submodules:', organizedModules);
 
         // Check if organizedModules has valid content
-        const hasValidModules = organizedModules.length > 0 && organizedModules.some(module => {
+        const hasValidModules = organizedModules.length > 0;
+        
+        // For enrolled users, check if modules have actual content
+        const hasContent = isUserEnrolled && organizedModules.some(module => {
             const mainLessons = module.lessons || module.content || module.lectures || [];
             const subModulesLessons = module.submodules ? 
                 module.submodules.reduce((total, sub) => total + (sub.lessons ? sub.lessons.length : 0), 0) : 0;
             return Array.isArray(mainLessons) && (mainLessons.length > 0 || subModulesLessons > 0);
         });
 
-        // If user is not enrolled or no valid modules, return empty array
-        if (!isUserEnrolled || !hasValidModules) {
-            console.log('User not enrolled or no valid modules, returning empty modules');
+        // If no valid modules, return empty array
+        if (!hasValidModules) {
+            console.log('No valid modules found, returning empty modules');
             return [];
         }
+
+        // Always show modules structure, but content availability depends on enrollment
+        console.log('User enrolled status:', isUserEnrolled, 'Has valid modules:', hasValidModules);
 
         const result = organizedModules.map((module, index) => {
             // Transform assignments
@@ -848,6 +818,36 @@ const CourseDetail = () => {
             const quizzes = module.quizzes || [];
             const exams = module.exams || [];
 
+            // For non-enrolled users, show placeholder content structure
+            if (!isUserEnrolled && lessons.length === 0) {
+                // Create placeholder lessons to show module structure
+                const placeholderLessons = [
+                    {
+                        id: `placeholder_${module.id}_1`,
+                        title: 'محتوى محمي - يرجى التسجيل في الدورة',
+                        duration: '--:--',
+                        type: 'locked',
+                        isPreview: false,
+                        completed: false,
+                        description: 'هذا المحتوى متاح فقط للطلاب المسجلين في الدورة',
+                        locked: true
+                    }
+                ];
+                
+                return {
+                    id: module.id || index + 1,
+                    title: module.name || module.title || `الوحدة ${index + 1}`,
+                    description: module.description || '',
+                    duration: formatModuleDuration(module.video_duration || module.duration),
+                    lessons: placeholderLessons,
+                    submodules: [],
+                    order: module.order || index + 1,
+                    status: module.status || 'published',
+                    isActive: module.is_active !== false,
+                    isLocked: true
+                };
+            }
+
             console.log(`Module ${module.id || index + 1}:`, {
                 lessons: lessons.length,
                 assignments: assignments.length,
@@ -862,16 +862,30 @@ const CourseDetail = () => {
             const transformedExams = transformExams(exams);
 
             // Combine all content and sort by order
-            const allContent = [
+            let allContent = [
                 ...transformedLessons,
                 ...transformedAssignments,
                 ...transformedQuizzes,
                 ...transformedExams
             ].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-            // If no content found, keep empty array
-            if (allContent.length === 0) {
+            // If no content found, create placeholder content for structure
+            if (allContent.length === 0 && isUserEnrolled) {
                 console.log(`No content found for module ${module.id || index + 1}, keeping empty`);
+            } else if (allContent.length === 0 && !isUserEnrolled) {
+                // For non-enrolled users, show placeholder content
+                allContent = [
+                    {
+                        id: `placeholder_${module.id || index + 1}`,
+                        title: 'محتوى محمي - يرجى التسجيل في الدورة',
+                        duration: '--:--',
+                        type: 'locked',
+                        isPreview: false,
+                        completed: false,
+                        description: 'هذا المحتوى متاح فقط للطلاب المسجلين في الدورة',
+                        locked: true
+                    }
+                ];
             }
 
             // Convert module duration from seconds to readable format
@@ -932,12 +946,95 @@ const CourseDetail = () => {
     };
 
 
-    // Toggle module expansion
-    const toggleModule = (moduleId) => {
+    // Toggle module expansion with lazy loading
+    const toggleModule = async (moduleId) => {
+        const isCurrentlyExpanded = expandedModules[moduleId];
+        
+        // If expanding and module doesn't have detailed content, load it
+        if (!isCurrentlyExpanded && course?.modules) {
+            const module = course.modules.find(m => m.id === moduleId);
+            
+            // Check if module needs detailed content loading
+            if (module && (!module.lessons || module.lessons.length === 0)) {
+                setLoadingModules(prev => ({ ...prev, [moduleId]: true }));
+                
+                try {
+                    // Load detailed content for this specific module
+                    const detailedModule = await loadModuleContent(moduleId);
+                    
+                    // Update course with detailed module content
+                    setCourse(prevCourse => ({
+                        ...prevCourse,
+                        modules: prevCourse.modules.map(m => 
+                            m.id === moduleId ? detailedModule : m
+                        )
+                    }));
+                } catch (error) {
+                    console.warn(`Failed to load content for module ${moduleId}:`, error);
+                } finally {
+                    setLoadingModules(prev => ({ ...prev, [moduleId]: false }));
+                }
+            }
+        }
+        
+        // Toggle expansion state
         setExpandedModules(prev => ({
             ...prev,
             [moduleId]: !prev[moduleId]
         }));
+    };
+
+    // Load detailed content for a specific module
+    const loadModuleContent = async (moduleId) => {
+        try {
+            const [lessonsResponse, quizzesResponse] = await Promise.allSettled([
+                contentAPI.getLessons({ moduleId: moduleId, courseId: id }),
+                api.get(`/api/assignments/quizzes/`, {
+                    params: { course: id, module: moduleId }
+                }).catch(() => ({ data: [] }))
+            ]);
+
+            // Process lessons
+            let lessons = [];
+            if (lessonsResponse.status === 'fulfilled') {
+                const lessonsData = lessonsResponse.value;
+                if (Array.isArray(lessonsData)) {
+                    lessons = lessonsData;
+                } else if (lessonsData && Array.isArray(lessonsData.results)) {
+                    lessons = lessonsData.results;
+                } else if (lessonsData && Array.isArray(lessonsData.data)) {
+                    lessons = lessonsData.data;
+                }
+            }
+
+            // Process quizzes
+            let quizzes = [];
+            if (quizzesResponse.status === 'fulfilled') {
+                const quizzesData = quizzesResponse.value.data;
+                if (Array.isArray(quizzesData)) {
+                    quizzes = quizzesData;
+                } else if (Array.isArray(quizzesData.results)) {
+                    quizzes = quizzesData.results;
+                }
+            }
+
+            // Find the current module and update it
+            const currentModule = course.modules.find(m => m.id === moduleId);
+            if (currentModule) {
+                return {
+                    ...currentModule,
+                    lessons,
+                    assignments: [],
+                    quizzes,
+                    exams: []
+                };
+            }
+            
+            return currentModule;
+        } catch (error) {
+            console.warn(`Error loading content for module ${moduleId}:`, error);
+            return course.modules.find(m => m.id === moduleId);
+        }
     };
 
     // Preview dialog handlers
@@ -947,6 +1044,9 @@ const CourseDetail = () => {
     const getLessonIcon = (lesson) => {
         if (lesson?.completed) {
             return <CheckCircle htmlColor="#333679" />;
+        }
+        if (lesson?.type === 'locked' || lesson?.locked) {
+            return <LockIcon htmlColor="#ff9800" />;
         }
         if (lesson?.type === 'video') {
             return <VideoIcon htmlColor="#333679" />;
@@ -1450,6 +1550,7 @@ const CourseDetail = () => {
                                     expandedModules={expandedModules}
                                     toggleModule={toggleModule}
                                     getLessonIcon={getLessonIcon}
+                                    loadingModules={loadingModules}
                                 />
                             )}
 

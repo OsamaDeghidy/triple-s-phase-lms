@@ -122,10 +122,14 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 2000,
     target: 'es2015',
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
   base: '/',
   define: {
-    'process.env': {}
+    'process.env': {},
+    global: 'globalThis',
   },
   optimizeDeps: {
     include: [
@@ -146,5 +150,6 @@ export default defineConfig({
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    drop: ['console', 'debugger'],
   },
 })

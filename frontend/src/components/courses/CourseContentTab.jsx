@@ -9,7 +9,8 @@ import {
     List,
     ListItem,
     Collapse,
-    IconButton
+    IconButton,
+    CircularProgress
 } from '@mui/material';
 import {
     VideoLibrary as VideoLibraryIcon,
@@ -95,7 +96,8 @@ const CourseContentTab = ({
     totalLessons,
     expandedModules,
     toggleModule,
-    getLessonIcon
+    getLessonIcon,
+    loadingModules = {}
 }) => {
     if (!course) {
         return null;
@@ -240,7 +242,7 @@ const CourseContentTab = ({
 
             {/* Course Curriculum with hierarchical structure */}
             <Box sx={{ mb: 1 }}>
-                {Array.isArray(course.modules) ? course.modules.map((module, moduleIndex) => (
+                {Array.isArray(course.modules) && course.modules.length > 0 ? course.modules.map((module, moduleIndex) => (
                     <ModuleCard
                         key={module.id}
                         elevation={0}
@@ -281,29 +283,40 @@ const CourseContentTab = ({
                                 </Box>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                {(() => {
-                                    const completedInModule = module?.lessons?.filter((l) => l?.completed)?.length || 0;
-                                    const totalInModule = module?.lessons?.length || 0;
-                                    const percent = totalInModule ? Math.round((completedInModule / totalInModule) * 100) : 0;
-                                    return (
-                                        <Chip
-                                            size="small"
-                                            variant="outlined"
-                                            icon={<CheckCircleOutline />}
-                                            label={`إنجاز: ${completedInModule}/${totalInModule} (${percent}%)`}
-                                            sx={{
-                                                bgcolor: 'rgba(14, 81, 129, 0.08)',
-                                                borderColor: '#333679',
-                                                color: '#333679',
-                                                fontWeight: 600
-                                            }}
-                                        />
-                                    );
-                                })()}
-                                <AccessTime fontSize="small" sx={{ color: '#4DBFB3', opacity: 0.9 }} />
-                                <Typography variant="body2" sx={{ color: '#4DBFB3', opacity: 0.9, fontWeight: 600 }}>
-                                    {module.duration}
-                                </Typography>
+                                {loadingModules[module.id] ? (
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <CircularProgress size={16} sx={{ color: '#4DBFB3' }} />
+                                        <Typography variant="caption" sx={{ color: '#4DBFB3', fontWeight: 600 }}>
+                                            جاري التحميل...
+                                        </Typography>
+                                    </Box>
+                                ) : (
+                                    <>
+                                        {(() => {
+                                            const completedInModule = module?.lessons?.filter((l) => l?.completed)?.length || 0;
+                                            const totalInModule = module?.lessons?.length || 0;
+                                            const percent = totalInModule ? Math.round((completedInModule / totalInModule) * 100) : 0;
+                                            return (
+                                                <Chip
+                                                    size="small"
+                                                    variant="outlined"
+                                                    icon={<CheckCircleOutline />}
+                                                    label={`إنجاز: ${completedInModule}/${totalInModule} (${percent}%)`}
+                                                    sx={{
+                                                        bgcolor: 'rgba(14, 81, 129, 0.08)',
+                                                        borderColor: '#333679',
+                                                        color: '#333679',
+                                                        fontWeight: 600
+                                                    }}
+                                                />
+                                            );
+                                        })()}
+                                        <AccessTime fontSize="small" sx={{ color: '#4DBFB3', opacity: 0.9 }} />
+                                        <Typography variant="body2" sx={{ color: '#4DBFB3', opacity: 0.9, fontWeight: 600 }}>
+                                            {module.duration}
+                                        </Typography>
+                                    </>
+                                )}
                             </Box>
                             {expandedModules[module.id] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
                         </ModuleHeader>
@@ -536,7 +549,46 @@ const CourseContentTab = ({
                             </List>
                         </Collapse>
                     </ModuleCard>
-                )) : null}
+                )) : (
+                    <Alert
+                        severity="info"
+                        sx={{
+                            mt: 2,
+                            borderRadius: { xs: 1.5, sm: 2 },
+                            background: 'linear-gradient(135deg, rgba(14, 81, 129, 0.05) 0%, rgba(229, 151, 139, 0.05) 100%)',
+                            border: '1px solid rgba(14, 81, 129, 0.1)',
+                            '& .MuiAlert-icon': {
+                                color: '#333679'
+                            },
+                            '& .MuiAlert-message': {
+                                width: '100%'
+                            }
+                        }}
+                    >
+                        <Typography 
+                            variant="body1" 
+                            fontWeight={600} 
+                            sx={{ 
+                                mb: 1,
+                                fontSize: { xs: '0.9rem', sm: '1rem' }
+                            }}
+                        >
+                            📚 محتوى الدورة
+                        </Typography>
+                        <Typography 
+                            variant="body2"
+                            sx={{
+                                fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                lineHeight: { xs: 1.4, sm: 1.5 }
+                            }}
+                        >
+                            {!course.isEnrolled 
+                                ? 'لا يمكن عرض محتوى الدورة حالياً. يرجى تسجيل الدخول أو التسجيل في الدورة لعرض المحتوى الكامل.'
+                                : 'لا يوجد محتوى متاح لهذه الدورة حالياً. يرجى المحاولة لاحقاً.'
+                            }
+                        </Typography>
+                    </Alert>
+                )}
             </Box>
         </ContentSection>
     );

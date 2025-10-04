@@ -39,9 +39,9 @@ alisthomepros.com
  cd ~/myprojectdir
  source myprojectenv/bin/activate
 
-# su sammy
-# cd ~/myprojectapi
-# source myprojectenv/bin/activate
+
+#when change domain start with 
+#sudo nano /etc/nginx/sites-available/myproject  
 # sudo apt install snap
 # sudo snap install --classic certbot
 # sudo ln -s /snap/bin/certbot/usr/bin/certbot
@@ -63,7 +63,7 @@ python network_test.py
 python django_email_test.py
 sudo nano /etc/nginx/nginx.conf
 
-# sudo nano /etc/nginx/sites-available/myproject
+# sudo nano /etc/nginx/sites-available/myproject  #change domain name 
 # sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
 custrus.com
 Osama5555
@@ -178,7 +178,7 @@ goddady domain for triple sss
 
 
 
-
+https://osama.triplesacademy.com/
 
 
  bashar@bluetech-jo.com
