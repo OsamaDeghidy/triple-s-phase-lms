@@ -5,14 +5,11 @@ import path from 'path';
 // Define __dirname for ES modules
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-// Final optimized Vercel configuration
+// Vercel-specific configuration to avoid rollup native module issues
 export default defineConfig({
   plugins: [
     react({
       jsxImportSource: '@emotion/react',
-      babel: {
-        plugins: ['@emotion/babel-plugin'],
-      },
     })
   ],
   resolve: {
@@ -27,19 +24,18 @@ export default defineConfig({
     target: 'es2020',
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom'],
-          mui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          antd: ['antd', '@ant-design/icons'],
-          utils: ['axios', 'dayjs', 'date-fns', 'yup', 'formik'],
-        },
+        manualChunks: undefined, // Disable manual chunks to avoid rollup issues
+        format: 'es', // Use ES modules format
       },
+      external: [], // Don't externalize any modules
     },
     commonjsOptions: {
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
     chunkSizeWarningLimit: 2000,
+    // Use esbuild for bundling instead of rollup
+    lib: false,
   },
   base: '/',
   define: {
@@ -56,7 +52,6 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
     ],
-    exclude: ['@rollup/plugin-commonjs'],
     esbuildOptions: {
       define: {
         global: 'globalThis',
@@ -67,6 +62,7 @@ export default defineConfig({
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
     drop: ['console', 'debugger'],
   },
+  // Disable rollup optimizations that cause issues on Vercel
   ssr: {
     noExternal: ['@mui/material', '@emotion/react', '@emotion/styled'],
   },
