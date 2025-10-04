@@ -121,9 +121,10 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 2000,
-    target: 'es2015',
+    target: 'es2020',
     commonjsOptions: {
       include: [/node_modules/],
+      transformMixedEsModules: true,
     },
   },
   base: '/',
@@ -141,6 +142,7 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
     ],
+    exclude: ['@rollup/plugin-commonjs'],
     esbuildOptions: {
       // Enable esbuild polyfill for Node.js global variables
       define: {
