@@ -55,7 +55,11 @@ const pulse = keyframes`
 const HeroSection = styled('div')(({ theme }) => ({
     background: '#ffffff',
     color: '#333333',
-    padding: { xs: theme.spacing(8, 0, 0), sm: theme.spacing(12, 0, 0), md: theme.spacing(16, 0, 0) },
+    padding: { 
+        xs: theme.spacing(10, 0, 2), // زيادة المسافة العلوية للموبايل
+        sm: theme.spacing(12, 0, 3), 
+        md: theme.spacing(14, 0, 4) 
+    },
     margin: '0',
     position: 'relative',
     overflow: 'hidden',
@@ -63,6 +67,12 @@ const HeroSection = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'flex-start',
     boxShadow: 'none',
+    // إضافة مسافة إضافية لضمان عدم التداخل مع الـ header
+    marginTop: { 
+        xs: theme.spacing(2), // مسافة إضافية للموبايل
+        sm: theme.spacing(3), 
+        md: theme.spacing(4) 
+    },
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -124,9 +134,9 @@ const CourseHeader = styled(Box)(({ theme }) => ({
     maxWidth: '1200px',
     margin: '0 auto',
     transition: 'all 0.3s ease-in-out',
-    padding: theme.spacing(0, 2),
+    padding: theme.spacing(2, 2), // إضافة مسافة علوية داخلية
     [theme.breakpoints.down('sm')]: {
-        padding: theme.spacing(0, 1.5),
+        padding: theme.spacing(2, 1.5), // إضافة مسافة علوية للموبايل
         textAlign: 'center',
         '& .MuiBreadcrumbs-root': {
             justifyContent: 'center',
@@ -134,6 +144,9 @@ const CourseHeader = styled(Box)(({ theme }) => ({
                 margin: theme.spacing(0, 1),
             },
         },
+    },
+    [theme.breakpoints.down('md')]: {
+        padding: theme.spacing(2.5, 2), // مسافة إضافية للتابلت
     },
 }));
 
@@ -173,7 +186,8 @@ const CourseDetailBanner = ({
                             aria-label="breadcrumb"
                             sx={{
                                 color: '#666666',
-                                mb: { xs: 1.5, sm: 2 },
+                                mb: { xs: 2, sm: 2.5, md: 3 }, // زيادة المسافة السفلية
+                                mt: { xs: 1, sm: 1.5, md: 2 }, // إضافة مسافة علوية
                                 direction: 'rtl',
                                 justifyContent: { xs: 'center', md: 'flex-start' },
                                 flexWrap: 'wrap',
@@ -255,7 +269,8 @@ const CourseDetailBanner = ({
                                 fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem', lg: '3.2rem' },
                                 fontWeight: 'bold',
                                 lineHeight: { xs: 1.1, sm: 1.2 },
-                                mb: { xs: 2, sm: 3 },
+                                mb: { xs: 2.5, sm: 3.5, md: 4 }, // زيادة المسافة السفلية
+                                mt: { xs: 1, sm: 1.5, md: 2 }, // إضافة مسافة علوية إضافية
                                 textAlign: { xs: 'center', md: 'right' },
                                 wordBreak: 'break-word'
                             }}

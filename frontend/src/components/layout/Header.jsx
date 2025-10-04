@@ -49,23 +49,41 @@ const fadeIn = keyframes`
 
 // Styled components
 const StyledAppBar = styled(AppBar, {
-  shouldForwardProp: (prop) => prop !== 'scrolled',
-})(({ theme, scrolled }) => ({
-  background: scrolled
-    ? `linear-gradient(135deg, 
-        rgba(102, 51, 153, 0.65) 0%, 
-        rgba(51, 54, 121, 0.62) 50%, 
-        rgba(27, 27, 72, 0.58) 100%)`
-    : 'transparent', // Make header transparent when not scrolled
-  backdropFilter: 'none',
-  WebkitBackdropFilter: 'none',
-  boxShadow: scrolled
-    ? '0 4px 20px rgba(102, 51, 153, 0.3)'
-    : 'none',
+  shouldForwardProp: (prop) => prop !== 'scrolled' && prop !== 'pageType',
+})(({ theme, scrolled, pageType }) => ({
+  background: pageType === 'course-detail'
+    ? scrolled
+      ? `linear-gradient(135deg, 
+          rgba(102, 51, 153, 0.6) 0%, 
+          rgba(51, 54, 121, 0.5) 50%, 
+          rgba(27, 27, 72, 0.4) 100%)`
+      : `linear-gradient(135deg, 
+          rgba(102, 51, 153, 0.7) 0%, 
+          rgba(51, 54, 121, 0.6) 50%, 
+          rgba(27, 27, 72, 0.5) 100%)`
+    : scrolled
+      ? `linear-gradient(135deg, 
+          rgba(102, 51, 153, 0.65) 0%, 
+          rgba(51, 54, 121, 0.62) 50%, 
+          rgba(27, 27, 72, 0.58) 100%)`
+      : 'transparent', // Make header transparent when not scrolled
+  backdropFilter: pageType === 'course-detail' ? 'blur(10px)' : 'none',
+  WebkitBackdropFilter: pageType === 'course-detail' ? 'blur(10px)' : 'none',
+  boxShadow: pageType === 'course-detail'
+    ? scrolled
+      ? '0 4px 20px 0 rgba(31, 38, 135, 0.2)'
+      : '0 2px 10px 0 rgba(31, 38, 135, 0.15)'
+    : scrolled
+      ? '0 4px 20px rgba(102, 51, 153, 0.3)'
+      : 'none',
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-  borderBottom: scrolled
-    ? '1px solid rgba(255, 255, 255, 0.08)'
-    : 'none',
+  borderBottom: pageType === 'course-detail'
+    ? scrolled
+      ? '1px solid rgba(255, 255, 255, 0.15)'
+      : '1px solid rgba(255, 255, 255, 0.08)'
+    : scrolled
+      ? '1px solid rgba(255, 255, 255, 0.08)'
+      : 'none',
   animation: `${fadeIn} 0.6s ease-out`,
   // Enhanced responsive sizing
   padding: scrolled ? '6px 0' : '12px 0',
@@ -608,7 +626,7 @@ const MobileNavItem = ({ item, location, loadingCategories, onClose }) => {
   );
 };
 
-const Header = () => {
+const Header = ({ pageType }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -958,7 +976,7 @@ const Header = () => {
 
   return (
     <>
-      <StyledAppBar position="fixed" scrolled={scrolled}>
+      <StyledAppBar position="fixed" scrolled={scrolled} pageType={pageType}>
         <Container maxWidth="xl" sx={{ px: { xs: 0.5, sm: 1, md: 2, lg: 3 } }}>
           <Toolbar disableGutters sx={{ 
             minHeight: { xs: 48, sm: 52, md: 56, lg: 64 },

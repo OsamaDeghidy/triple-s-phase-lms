@@ -43,7 +43,6 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import CourseDetailBanner from '../../components/courses/CourseDetailBanner';
 import CourseDetailCard from '../../components/courses/CourseDetailCard';
-import CourseDetailBottomBar from '../../components/courses/CourseDetailBottomBar';
 import CourseDescriptionTab from '../../components/courses/CourseDescriptionTab';
 import CourseContentTab from '../../components/courses/CourseContentTab';
 import CourseDemoTab from '../../components/courses/CourseDemoTab';
@@ -195,26 +194,29 @@ const SkeletonPulse = styled(Box)(({ theme }) => ({
 }));
 
 const CourseSkeleton = () => (
-    <Box sx={{ py: 4 }}>
-        <Container maxWidth="lg">
-            <Grid container spacing={4}>
+    <Box sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
+            <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
                 <Grid xs={12} lg={8}>
-                    <SkeletonPulse variant="rectangular" width="100%" height={400} sx={{ mb: 3, borderRadius: 2 }} />
-                    <Box sx={{ mb: 4 }}>
-                        <SkeletonPulse variant="text" width="60%" height={40} sx={{ mb: 2 }} />
-                        <SkeletonPulse variant="text" width="90%" height={24} sx={{ mb: 1 }} />
-                        <SkeletonPulse variant="text" width="80%" height={24} sx={{ mb: 3 }} />
-                        <SkeletonPulse variant="rectangular" width={120} height={40} sx={{ borderRadius: 2 }} />
+                    <SkeletonPulse variant="rectangular" width="100%" height={{ xs: 250, sm: 300, md: 400 }} sx={{ mb: { xs: 2, sm: 3 }, borderRadius: 2 }} />
+                    <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+                        <SkeletonPulse variant="text" width={{ xs: "80%", sm: "70%", md: "60%" }} height={{ xs: 30, sm: 35, md: 40 }} sx={{ mb: 2 }} />
+                        <SkeletonPulse variant="text" width="90%" height={{ xs: 20, sm: 22, md: 24 }} sx={{ mb: 1 }} />
+                        <SkeletonPulse variant="text" width="80%" height={{ xs: 20, sm: 22, md: 24 }} sx={{ mb: { xs: 2, sm: 3 } }} />
+                        <SkeletonPulse variant="rectangular" width={{ xs: 100, sm: 110, md: 120 }} height={{ xs: 35, sm: 38, md: 40 }} sx={{ borderRadius: 2 }} />
                     </Box>
-                    <Tabs value={0} sx={{ mb: 3 }}>
+                    <Tabs value={0} sx={{ mb: { xs: 2, sm: 3 } }}>
                         {['Overview', 'Curriculum', 'Instructor', 'Reviews'].map((tab) => (
-                            <Tab key={tab} label={tab} sx={{ minWidth: 'auto' }} />
+                            <Tab key={tab} label={tab} sx={{ 
+                                minWidth: 'auto',
+                                fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' }
+                            }} />
                         ))}
                     </Tabs>
-                    <SkeletonPulse variant="rectangular" width="100%" height={300} sx={{ borderRadius: 2 }} />
+                    <SkeletonPulse variant="rectangular" width="100%" height={{ xs: 200, sm: 250, md: 300 }} sx={{ borderRadius: 2 }} />
                 </Grid>
                 <Grid xs={12} lg={4}>
-                    <SkeletonPulse variant="rectangular" width="100%" height={400} sx={{ borderRadius: 2 }} />
+                    <SkeletonPulse variant="rectangular" width="100%" height={{ xs: 300, sm: 350, md: 400 }} sx={{ borderRadius: 2 }} />
                 </Grid>
             </Grid>
         </Container>
@@ -1116,16 +1118,36 @@ const CourseDetail = () => {
 
     if (error) {
         return (
-            <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
-                <Alert severity="error" sx={{ mb: 4 }}>
-                    <Typography variant="h6" gutterBottom>
+            <Container maxWidth="lg" sx={{ 
+                py: { xs: 4, sm: 6, md: 8 }, 
+                px: { xs: 2, sm: 3, md: 4 },
+                textAlign: 'center' 
+            }}>
+                <Alert severity="error" sx={{ 
+                    mb: { xs: 3, sm: 4 },
+                    p: { xs: 2, sm: 3 },
+                    borderRadius: { xs: 2, sm: 3 }
+                }}>
+                    <Typography variant="h6" gutterBottom sx={{
+                        fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' }
+                    }}>
                         خطأ في تحميل الدورة
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{
+                        fontSize: { xs: '0.9rem', sm: '1rem' },
+                        lineHeight: 1.6
+                    }}>
                         {error}
                     </Typography>
                 </Alert>
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    gap: { xs: 1, sm: 2 }, 
+                    justifyContent: 'center', 
+                    flexWrap: 'wrap',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'stretch', sm: 'center' }
+                }}>
                     {!isAuthenticated && error.includes('تسجيل الدخول') && (
                         <Button
                             variant="contained"
@@ -1133,14 +1155,17 @@ const CourseDetail = () => {
                             size="large"
                             component={Link}
                             to="/login"
+                            fullWidth={window.innerWidth < 600}
                             sx={{
-                                px: 4,
-                                py: 1.5,
+                                px: { xs: 2, sm: 4 },
+                                py: { xs: 1.5, sm: 1.5 },
                                 borderRadius: 3,
                                 background: 'linear-gradient(45deg, #333679, #1a6ba8)',
                                 '&:hover': {
                                     background: 'linear-gradient(45deg, #1a6ba8, #333679)',
-                                }
+                                },
+                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                                fontWeight: 600
                             }}
                         >
                             تسجيل الدخول
@@ -1152,12 +1177,13 @@ const CourseDetail = () => {
                         size="large"
                         onClick={() => window.location.reload()}
                         startIcon={<ArrowBack />}
+                        fullWidth={window.innerWidth < 600}
                         sx={{
-                            px: 4,
-                            py: 1.5,
+                            px: { xs: 2, sm: 4 },
+                            py: { xs: 1.5, sm: 1.5 },
                             borderRadius: 3,
                             textTransform: 'none',
-                            fontSize: '1rem',
+                            fontSize: { xs: '0.9rem', sm: '1rem' },
                             fontWeight: 600
                         }}
                     >
@@ -1168,12 +1194,13 @@ const CourseDetail = () => {
                         color="primary"
                         size="large"
                         onClick={() => navigate('/courses')}
+                        fullWidth={window.innerWidth < 600}
                         sx={{
-                            px: 4,
-                            py: 1.5,
+                            px: { xs: 2, sm: 4 },
+                            py: { xs: 1.5, sm: 1.5 },
                             borderRadius: 3,
                             textTransform: 'none',
-                            fontSize: '1rem',
+                            fontSize: { xs: '0.9rem', sm: '1rem' },
                             fontWeight: 600
                         }}
                     >
@@ -1186,12 +1213,21 @@ const CourseDetail = () => {
 
     if (!course) {
         return (
-            <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
-                <Box mb={4}>
-                    <Typography variant="h4" component="h1" gutterBottom>
+            <Container maxWidth="lg" sx={{ 
+                py: { xs: 4, sm: 6, md: 8 }, 
+                px: { xs: 2, sm: 3, md: 4 },
+                textAlign: 'center' 
+            }}>
+                <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+                    <Typography variant="h4" component="h1" gutterBottom sx={{
+                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
+                    }}>
                         الدورة غير موجودة
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" paragraph>
+                    <Typography variant="body1" color="text.secondary" paragraph sx={{
+                        fontSize: { xs: '0.9rem', sm: '1rem' },
+                        lineHeight: 1.6
+                    }}>
                         الدورة التي تبحث عنها غير موجودة أو تم حذفها.
                     </Typography>
                 </Box>
@@ -1201,12 +1237,13 @@ const CourseDetail = () => {
                     size="large"
                     onClick={() => navigate('/courses')}
                     startIcon={<ArrowBack />}
+                    fullWidth={window.innerWidth < 600}
                     sx={{
-                        px: 4,
-                        py: 1.5,
+                        px: { xs: 2, sm: 4 },
+                        py: { xs: 1.5, sm: 1.5 },
                         borderRadius: 3,
                         textTransform: 'none',
-                        fontSize: '1rem',
+                        fontSize: { xs: '0.9rem', sm: '1rem' },
                         fontWeight: 600
                     }}
                 >
@@ -1221,14 +1258,49 @@ const CourseDetail = () => {
     const progress = Math.round((completedLessons / totalLessons) * 100) || 0;
 
     return (
-        <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <Box sx={{ 
+            bgcolor: 'background.default', 
+            minHeight: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            position: 'relative',
+            width: '100%',
+            maxWidth: '100vw',
+            overflowX: 'hidden',
+            // إضافة مسافة إضافية من الأعلى لضمان عدم التداخل مع الـ header
+            paddingTop: { xs: '80px', sm: '90px', md: '100px' }
+        }}>
             <AnimatedBackground>
                 <FloatingShape />
-                <FloatingShape style={{ width: '200px', height: '200px', bottom: '20%', right: '15%', animationDelay: '5s' }} />
-                <FloatingShape style={{ width: '250px', height: '250px', top: '30%', left: '15%', animationDelay: '7s' }} />
+                <FloatingShape style={{ 
+                    width: '200px', 
+                    height: '200px', 
+                    bottom: '20%', 
+                    right: '15%', 
+                    animationDelay: '5s',
+                    '@media (max-width: 768px)': {
+                        width: '120px',
+                        height: '120px',
+                        bottom: '15%',
+                        right: '10%',
+                    }
+                }} />
+                <FloatingShape style={{ 
+                    width: '250px', 
+                    height: '250px', 
+                    top: '30%', 
+                    left: '15%', 
+                    animationDelay: '7s',
+                    '@media (max-width: 768px)': {
+                        width: '150px',
+                        height: '150px',
+                        top: '25%',
+                        left: '10%',
+                    }
+                }} />
             </AnimatedBackground>
             {/* Header */}
-            <Header />
+            <Header pageType="course-detail" />
 
             {/* Course Banner */}
             <CourseDetailBanner
@@ -1236,7 +1308,11 @@ const CourseDetail = () => {
             />
 
             {/* Course Promotional Video */}
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth="lg" sx={{ 
+                mt: { xs: 2, sm: 3, md: 4 }, 
+                mb: { xs: 2, sm: 3, md: 4 },
+                px: { xs: 1, sm: 2, md: 3 }
+            }}>
                 <CoursePromotionalVideo course={course} />
             </Container>
 
@@ -1271,27 +1347,39 @@ const CourseDetail = () => {
             </Dialog>
 
             {/* Main Content - Single Column Layout - Right Aligned */}
-            <Box sx={{ bgcolor: '#ffffff', minHeight: { md: '10vh', lg: '20vh', xl: '30vh' }, }}>
-                <Container maxWidth="lg" sx={{ py: 0, px: { xs: 2, sm: 3, md: 4 } }}>
+            <Box sx={{ 
+                bgcolor: '#ffffff', 
+                minHeight: { xs: 'auto', sm: '10vh', md: '15vh', lg: '20vh', xl: '30vh' },
+                width: '100%',
+                maxWidth: '100vw',
+                overflowX: 'hidden'
+            }}>
+                <Container maxWidth="lg" sx={{ 
+                    py: { xs: 1, sm: 2, md: 3 }, 
+                    px: { xs: 1, sm: 2, md: 3, lg: 4 }
+                }}>
                     {/* Single Column Layout - All components start from right */}
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: 2,
+                        gap: { xs: 1, sm: 1.5, md: 2 },
                         maxWidth: '1200px',
                         margin: '0 auto',
-                        direction: 'rtl' // Right to left direction
+                        direction: 'rtl', // Right to left direction
+                        width: '100%'
                     }}>
                         {/* Navigation Tabs */}
-                        <Box>
+                        <Box sx={{ width: '100%' }}>
                             <Tabs
                                 value={tabValue}
                                 onChange={handleTabChange}
-                                variant="fullWidth"
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                allowScrollButtonsMobile
                                 sx={{
                                     '& .MuiTab-root': {
-                                        minHeight: 50,
-                                        fontSize: '16px',
+                                        minHeight: { xs: 45, sm: 50, md: 55 },
+                                        fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
                                         fontWeight: 500,
                                         textTransform: 'none',
                                         backgroundColor: '#f8f9fa',
@@ -1299,6 +1387,8 @@ const CourseDetail = () => {
                                         borderTopLeftRadius: '8px',
                                         borderTopRightRadius: '8px',
                                         borderBottom: 'none',
+                                        px: { xs: 1, sm: 1.5, md: 2 },
+                                        py: { xs: 0.5, sm: 1, md: 1.5 },
                                         '&.Mui-selected': {
                                             color: '#ffffff',
                                             backgroundColor: '#495057',
@@ -1310,34 +1400,42 @@ const CourseDetail = () => {
                                     },
                                     '& .MuiTabs-indicator': {
                                         display: 'none'
+                                    },
+                                    '& .MuiTabs-scrollButtons': {
+                                        '&.Mui-disabled': {
+                                            opacity: 0.3
+                                        }
                                     }
                                 }}
                             >
                                 <Tab
                                     label="الوصف"
-                                    icon={<DescriptionOutlined sx={{ fontSize: 18, mr: 1 }} />}
+                                    icon={<DescriptionOutlined sx={{ fontSize: { xs: 16, sm: 18, md: 20 }, mr: { xs: 0.5, sm: 1 } }} />}
                                     iconPosition="start"
                                 />
                                 <Tab
                                     label="محتوى الدورة"
-                                    icon={<VideoLibraryIcon sx={{ fontSize: 18, mr: 1 }} />}
+                                    icon={<VideoLibraryIcon sx={{ fontSize: { xs: 16, sm: 18, md: 20 }, mr: { xs: 0.5, sm: 1 } }} />}
                                     iconPosition="start"
                                 />
                                 <Tab
                                     label="العرض التوضيحي"
-                                    icon={<PlayCircleOutline sx={{ fontSize: 18, mr: 1 }} />}
+                                    icon={<PlayCircleOutline sx={{ fontSize: { xs: 16, sm: 18, md: 20 }, mr: { xs: 0.5, sm: 1 } }} />}
                                     iconPosition="start"
                                 />
                                 <Tab
                                     label="التقييمات"
-                                    icon={<StarIcon sx={{ fontSize: 18, mr: 1 }} />}
+                                    icon={<StarIcon sx={{ fontSize: { xs: 16, sm: 18, md: 20 }, mr: { xs: 0.5, sm: 1 } }} />}
                                     iconPosition="start"
                                 />
                             </Tabs>
                         </Box>
 
                         {/* Tab Content */}
-                        <Box>
+                        <Box sx={{ 
+                            width: '100%',
+                            mt: { xs: 1, sm: 1.5, md: 2 }
+                        }}>
                             {tabValue === 0 && (
                                 <CourseDescriptionTab
                                     course={course}
@@ -1383,23 +1481,42 @@ const CourseDetail = () => {
                 onClose={() => setShowReviewForm(false)}
                 maxWidth="sm"
                 fullWidth
+                fullScreen={false}
                 PaperProps={{
                     sx: {
-                        borderRadius: 3,
+                        borderRadius: { xs: 2, sm: 3 },
                         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)',
                         backdropFilter: 'blur(10px)',
                         border: '1px solid rgba(14, 81, 129, 0.1)',
                         direction: 'rtl',
+                        m: { xs: 2, sm: 3, md: 4 },
+                        maxHeight: { xs: '90vh', sm: '80vh', md: '70vh' },
+                        width: { xs: '95%', sm: '90%', md: 'auto' }
                     }
                 }}
             >
-                <DialogContent sx={{ p: 4, direction: 'rtl' }}>
-                    <Typography variant="h5" component="h2" sx={{ mb: 3, fontWeight: 700, textAlign: 'center' }}>
+                <DialogContent sx={{ 
+                    p: { xs: 2, sm: 3, md: 4 }, 
+                    direction: 'rtl',
+                    maxHeight: { xs: '80vh', sm: '70vh', md: '60vh' },
+                    overflowY: 'auto'
+                }}>
+                    <Typography variant="h5" component="h2" sx={{ 
+                        mb: { xs: 2, sm: 3 }, 
+                        fontWeight: 700, 
+                        textAlign: 'center',
+                        fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.75rem' }
+                    }}>
                         تقييم الدورة
                     </Typography>
 
-                    <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, textAlign: 'right' }}>
+                    <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+                        <Typography variant="subtitle1" sx={{ 
+                            mb: { xs: 1, sm: 2 }, 
+                            fontWeight: 600, 
+                            textAlign: 'right',
+                            fontSize: { xs: '0.9rem', sm: '1rem' }
+                        }}>
                             تقييمك للدورة
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -1417,13 +1534,21 @@ const CourseDetail = () => {
                                     '& .MuiRating-iconHover': {
                                         color: '#4DBFB3',
                                     },
+                                    '& .MuiRating-icon': {
+                                        fontSize: { xs: '1.8rem', sm: '2rem', md: '2.2rem' }
+                                    },
                                 }}
                             />
                         </Box>
                     </Box>
 
-                    <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, textAlign: 'right' }}>
+                    <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+                        <Typography variant="subtitle1" sx={{ 
+                            mb: { xs: 1, sm: 2 }, 
+                            fontWeight: 600, 
+                            textAlign: 'right',
+                            fontSize: { xs: '0.9rem', sm: '1rem' }
+                        }}>
                             تعليقك (اختياري)
                         </Typography>
                         <textarea
@@ -1432,24 +1557,32 @@ const CourseDetail = () => {
                             placeholder="اكتب تعليقك عن الدورة..."
                             style={{
                                 width: '100%',
-                                minHeight: '120px',
-                                padding: '12px',
+                                minHeight: window.innerWidth < 600 ? '100px' : '120px',
+                                padding: window.innerWidth < 600 ? '8px' : '12px',
                                 border: '1px solid #ddd',
                                 borderRadius: '8px',
-                                fontSize: '14px',
+                                fontSize: window.innerWidth < 600 ? '13px' : '14px',
                                 fontFamily: 'inherit',
                                 resize: 'vertical',
                                 direction: 'rtl',
-                                textAlign: 'right'
+                                textAlign: 'right',
+                                boxSizing: 'border-box'
                             }}
                         />
                     </Box>
 
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-start', flexDirection: 'row-reverse' }}>
+                    <Box sx={{ 
+                        display: 'flex', 
+                        gap: { xs: 1, sm: 2 }, 
+                        justifyContent: 'flex-start', 
+                        flexDirection: { xs: 'column', sm: 'row-reverse' },
+                        alignItems: { xs: 'stretch', sm: 'center' }
+                    }}>
                         <Button
                             variant="outlined"
                             onClick={() => setShowReviewForm(false)}
                             disabled={submittingReview}
+                            fullWidth={window.innerWidth < 600}
                             sx={{
                                 borderColor: '#333679',
                                 color: '#333679',
@@ -1460,6 +1593,10 @@ const CourseDetail = () => {
                                 borderRadius: 2,
                                 textTransform: 'none',
                                 fontWeight: 600,
+                                py: { xs: 1.5, sm: 1 },
+                                px: { xs: 2, sm: 3 },
+                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                                order: { xs: 2, sm: 1 }
                             }}
                         >
                             إلغاء
@@ -1468,6 +1605,7 @@ const CourseDetail = () => {
                             variant="contained"
                             onClick={handleSubmitReview}
                             disabled={submittingReview || !reviewForm.comment.trim()}
+                            fullWidth={window.innerWidth < 600}
                             endIcon={submittingReview ? <CircularProgress size={20} color="inherit" /> : null}
                             sx={{
                                 background: 'linear-gradient(135deg, #333679 0%, #4DBFB3 100%)',
@@ -1482,7 +1620,10 @@ const CourseDetail = () => {
                                 borderRadius: 2,
                                 textTransform: 'none',
                                 fontWeight: 600,
-                                px: 3,
+                                py: { xs: 1.5, sm: 1 },
+                                px: { xs: 2, sm: 3 },
+                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                                order: { xs: 1, sm: 2 }
                             }}
                         >
                             {submittingReview ? 'جاري الإرسال...' : 'إرسال التقييم'}
@@ -1491,12 +1632,6 @@ const CourseDetail = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Mobile Bottom Bar */}
-            <CourseDetailBottomBar
-                course={course}
-                isAddingToCart={isAddingToCart}
-                handleAddToCart={handleAddToCart}
-            />
 
             {/* Footer */}
             <Box sx={{ mt: 'auto' }}>
