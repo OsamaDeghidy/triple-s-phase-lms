@@ -121,11 +121,16 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 2000,
-    target: 'es2015',
+    target: 'es2020',
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
   },
   base: '/',
   define: {
-    'process.env': {}
+    'process.env': {},
+    global: 'globalThis',
   },
   optimizeDeps: {
     include: [
@@ -137,6 +142,7 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
     ],
+    exclude: ['@rollup/plugin-commonjs'],
     esbuildOptions: {
       // Enable esbuild polyfill for Node.js global variables
       define: {
@@ -146,5 +152,6 @@ export default defineConfig({
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    drop: ['console', 'debugger'],
   },
 })
