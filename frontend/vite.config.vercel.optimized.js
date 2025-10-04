@@ -5,7 +5,7 @@ import path from 'path';
 // Define __dirname for ES modules
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-// Final optimized Vercel configuration
+// Optimized Vercel configuration to handle rollup issues
 export default defineConfig({
   plugins: [
     react({
@@ -69,5 +69,11 @@ export default defineConfig({
   },
   ssr: {
     noExternal: ['@mui/material', '@emotion/react', '@emotion/styled'],
+  },
+  // Additional configuration for Vercel
+  server: {
+    fs: {
+      strict: false,
+    },
   },
 })
